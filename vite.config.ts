@@ -8,7 +8,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(__dirname, 'index.ts'),
+      entry: resolve(__dirname, 'src/index.ts'),
       name: 'OrganisationManagement',
       formats: ['es', 'umd'],
       fileName: (format) => `index.${format === 'es' ? 'esm' : format}.js`
@@ -21,8 +21,14 @@ export default defineConfig({
         '@supabase/supabase-js',
         '@tanstack/react-query',
         'react-router-dom',
+        'react-dropzone',
+        'papaparse',
         /^@\/components\/ui\/.*/,
         /^@\/hooks\/.*/,
+        /^@\/integrations\/.*/,
+        /^@\/components\/.*/,
+        /^@\/modules\/.*/,
+        /^@\/lib\/.*/,
       ],
       output: {
         globals: {
@@ -40,9 +46,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '@': resolve(__dirname, 'src'),
-      '@/components': resolve(__dirname, '../../components'),
-      '@/hooks': resolve(__dirname, '../../hooks')
+      '@': resolve(__dirname, 'src')
     }
   }
 });

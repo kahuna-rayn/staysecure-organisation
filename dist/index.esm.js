@@ -1,5 +1,5 @@
 import { jsx, jsxs, Fragment } from "react/jsx-runtime";
-import o, { forwardRef, createElement, createContext, useContext, useState, useCallback, useEffect, isValidElement, useRef, useMemo } from "react";
+import o, { forwardRef, createElement, createContext, useContext, useState, useCallback, useEffect, isValidElement, useRef, useMemo, useImperativeHandle } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -15,13 +15,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import EditableField$1 from "@/modules/organisation/components/profile/EditableField";
-import { DepartmentRolePairsDisplay } from "@/components/admin/DepartmentRolePairsDisplay";
+import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { DepartmentRolePairsDisplay as DepartmentRolePairsDisplay$1 } from "@/components/admin/DepartmentRolePairsDisplay";
 import { EditableTable } from "@/components/ui/editable-table";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useDropzone } from "react-dropzone";
 import Papa from "papaparse";
@@ -37,24 +36,28 @@ import { OrganisationProvider as OrganisationProvider$1, OrganisationPanel as Or
 import { useUserRole } from "@/hooks/useUserRole";
 import HardwareInventory from "@/components/HardwareInventory";
 import SoftwareAccounts from "@/components/SoftwareAccounts";
-import EditableCertificates from "@/components/EditableCertificates";
-import PhysicalLocationTab from "@/components/PhysicalLocationTab";
+import EditableCertificates$1 from "@/components/EditableCertificates";
+import PhysicalLocationTab$1 from "@/components/PhysicalLocationTab";
 import AssignHardwareDialog from "@/components/admin/AssignHardwareDialog";
 import AssignSoftwareDialog from "@/components/admin/AssignSoftwareDialog";
-import AddEducationDialog from "@/components/admin/AddEducationDialog";
-import MyDocuments from "@/components/knowledge/MyDocuments";
-import { UserDepartmentsRolesManager } from "@/components/admin/UserDepartmentsRolesManager";
+import AddEducationDialog$1 from "@/components/admin/AddEducationDialog";
+import { UserDepartmentsRolesManager as UserDepartmentsRolesManager$1 } from "@/components/admin/UserDepartmentsRolesManager";
 import LearningTracksTab from "@/components/LearningTracksTab";
 import { useUserDepartments } from "@/hooks/useUserDepartments";
 import { useUserProfileRoles } from "@/hooks/useUserProfileRoles";
 import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
-import ProfileAvatar$1 from "@/modules/organisation/components/profile/ProfileAvatar";
-import ProfileContactInfo$1 from "@/modules/organisation/components/profile/ProfileContactInfo";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserAssets } from "@/hooks/useUserAssets";
 import EditableProfileHeader$1 from "@/modules/organisation/components/EditableProfileHeader";
 import PersonaDetailsTabs$1 from "@/modules/organisation/components/PersonaDetailsTabs";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
+import { useAuth as useAuth$1 } from "staysecure-auth";
+import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, XAxis, YAxis, Bar, LineChart, Legend, Line } from "recharts";
+import { useReactToPrint } from "react-to-print";
+import * as XLSX from "xlsx";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 /**
  * @license lucide-react v0.462.0 - ISC
  *
@@ -136,6 +139,21 @@ const createLucideIcon = (iconName, iconNode) => {
   Component.displayName = `${iconName}`;
   return Component;
 };
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Activity = createLucideIcon("Activity", [
+  [
+    "path",
+    {
+      d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2",
+      key: "169zse"
+    }
+  ]
+]);
 /**
  * @license lucide-react v0.462.0 - ISC
  *
@@ -257,6 +275,33 @@ const Clock = createLucideIcon("Clock", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const Crown = createLucideIcon("Crown", [
+  [
+    "path",
+    {
+      d: "M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z",
+      key: "1vdc57"
+    }
+  ],
+  ["path", { d: "M5 21h14", key: "11awu3" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Download = createLucideIcon("Download", [
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["polyline", { points: "7 10 12 15 17 10", key: "2ggqvy" }],
+  ["line", { x1: "12", x2: "12", y1: "15", y2: "3", key: "1vk2je" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const Eye = createLucideIcon("Eye", [
   [
     "path",
@@ -279,6 +324,15 @@ const FileText = createLucideIcon("FileText", [
   ["path", { d: "M10 9H8", key: "b1mrlr" }],
   ["path", { d: "M16 13H8", key: "t4e002" }],
   ["path", { d: "M16 17H8", key: "z1uh3a" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Filter = createLucideIcon("Filter", [
+  ["polygon", { points: "22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3", key: "1yg77f" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -474,6 +528,23 @@ const Plus = createLucideIcon("Plus", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const Printer = createLucideIcon("Printer", [
+  [
+    "path",
+    {
+      d: "M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2",
+      key: "143wyd"
+    }
+  ],
+  ["path", { d: "M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6", key: "1itne7" }],
+  ["rect", { x: "6", y: "14", width: "12", height: "8", rx: "1", key: "1ue0tg" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const Save = createLucideIcon("Save", [
   [
     "path",
@@ -581,6 +652,18 @@ const UserCheck = createLucideIcon("UserCheck", [
   ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
   ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
   ["polyline", { points: "16 11 18 13 22 9", key: "1pwet4" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const UserX = createLucideIcon("UserX", [
+  ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
+  ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
+  ["line", { x1: "17", x2: "22", y1: "8", y2: "13", key: "3nzzx3" }],
+  ["line", { x1: "22", x2: "17", y1: "8", y2: "13", key: "1swrse" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -764,6 +847,105 @@ const handleDeleteUser = async (userId, userName, reason) => {
     return { success: false, error: "Failed to delete user" };
   }
 };
+const EditableField = ({
+  value,
+  fieldKey,
+  label,
+  placeholder,
+  className,
+  inputClassName,
+  locationId,
+  isEditing,
+  onEdit,
+  onSave,
+  onCancel,
+  type = "text",
+  options,
+  asyncOptions,
+  isLoading,
+  onSelectChange
+}) => {
+  const [editValue, setEditValue] = o.useState(value);
+  o.useEffect(() => {
+    setEditValue(value);
+  }, [value, isEditing]);
+  const validatePhoneInput = (input) => {
+    return input.replace(/[^0-9+\s\-\(\)]/g, "");
+  };
+  const handleSave = async () => {
+    if (fieldKey) {
+      await onSave(fieldKey, editValue);
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    } else if (e.key === "Escape") {
+      onCancel();
+    }
+  };
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    if (fieldKey === "phone") {
+      const validatedValue = validatePhoneInput(newValue);
+      setEditValue(validatedValue);
+    } else {
+      setEditValue(newValue);
+    }
+  };
+  if (isEditing) {
+    if (type === "select" && (options || asyncOptions)) {
+      const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
+      return /* @__PURE__ */ jsxs(
+        Select,
+        {
+          value: editValue,
+          onValueChange: (newValue) => {
+            setEditValue(newValue);
+            const selectedOption = selectOptions.find((opt) => opt.value === newValue);
+            if (onSelectChange && selectedOption) {
+              onSelectChange(newValue, selectedOption);
+            } else {
+              handleSave();
+            }
+          },
+          disabled: isLoading,
+          children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsx(SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
+              selectOptions.map((option) => /* @__PURE__ */ jsx(SelectItem, { value: option.value, children: option.label }, option.value))
+            ] })
+          ]
+        }
+      );
+    }
+    return /* @__PURE__ */ jsx(
+      Input,
+      {
+        type,
+        value: editValue,
+        placeholder,
+        onChange: handleInputChange,
+        onBlur: handleSave,
+        onKeyDown: handleKeyDown,
+        className: inputClassName || "h-6 text-sm w-32",
+        autoFocus: true
+      }
+    );
+  }
+  return /* @__PURE__ */ jsxs("div", { className, children: [
+    label && /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label }),
+    /* @__PURE__ */ jsx(
+      "span",
+      {
+        className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
+        onClick: () => fieldKey && onEdit(fieldKey),
+        children: value || placeholder
+      }
+    )
+  ] });
+};
 const UserCard = ({ user, onEdit, onDelete }) => {
   var _a;
   const navigate = useNavigate();
@@ -830,7 +1012,7 @@ const UserCard = ({ user, onEdit, onDelete }) => {
         ] }),
         /* @__PURE__ */ jsxs("div", { children: [
           /* @__PURE__ */ jsx("h3", { className: "font-medium", children: user.full_name || "No name" }),
-          /* @__PURE__ */ jsx("div", { className: "text-sm text-muted-foreground", children: /* @__PURE__ */ jsx(DepartmentRolePairsDisplay, { userId: user.id }) })
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-muted-foreground", children: /* @__PURE__ */ jsx(DepartmentRolePairsDisplay$1, { userId: user.id }) })
         ] })
       ] }),
       /* @__PURE__ */ jsx(Badge, { className: `${getStatusColor(user.status || "Active")} text-white`, children: user.status || "Active" })
@@ -839,7 +1021,7 @@ const UserCard = ({ user, onEdit, onDelete }) => {
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(Mail, { className: "h-3 w-3 text-muted-foreground" }),
         /* @__PURE__ */ jsx(
-          EditableField$1,
+          EditableField,
           {
             value: user.email || "No email",
             fieldKey: "email",
@@ -4493,7 +4675,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
             children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
           }
         ) }),
-        /* @__PURE__ */ jsx(UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
+        /* @__PURE__ */ jsx(UserDepartmentsRolesManager$1, { userId, ref: departmentRolesRef })
       ] }),
       /* @__PURE__ */ jsxs(Fragment, { children: [
         /* @__PURE__ */ jsxs(TabsContent, { value: "hardware", className: "space-y-4 animate-fade-in", children: [
@@ -4520,7 +4702,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
         ] }),
         /* @__PURE__ */ jsx(TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsx(MyDocuments, { userId: profile.id }) })
       ] }),
-      /* @__PURE__ */ jsx(TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsx(PhysicalLocationTab, { profile }) }),
+      /* @__PURE__ */ jsx(TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsx(PhysicalLocationTab$1, { profile }) }),
       /* @__PURE__ */ jsxs(TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
         /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
           Button,
@@ -4531,7 +4713,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
           }
         ) }),
         /* @__PURE__ */ jsx(
-          EditableCertificates,
+          EditableCertificates$1,
           {
             profile,
             onUpdate: handleCertificateUpdate,
@@ -4568,7 +4750,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
       )
     ] }),
     /* @__PURE__ */ jsx(
-      AddEducationDialog,
+      AddEducationDialog$1,
       {
         isOpen: isAddEducationOpen,
         onOpenChange: setIsAddEducationOpen,
@@ -4580,6 +4762,75 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
       }
     )
   ] }) });
+};
+const ProfileAvatar = ({ avatarUrl, firstName, lastName }) => {
+  const initials = firstName && lastName ? firstName.charAt(0) + lastName.charAt(0) : (firstName == null ? void 0 : firstName.slice(0, 2)) || "U";
+  const handleAvatarUpload = () => {
+    toast({
+      title: "Avatar Upload",
+      description: "Avatar upload functionality will be implemented with Supabase Storage."
+    });
+  };
+  return /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+    /* @__PURE__ */ jsxs(Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
+      /* @__PURE__ */ jsx(AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }),
+      /* @__PURE__ */ jsx(AvatarFallback, { className: "text-2xl", children: initials })
+    ] }),
+    /* @__PURE__ */ jsx(
+      Button,
+      {
+        size: "sm",
+        variant: "outline",
+        className: "absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0",
+        onClick: handleAvatarUpload,
+        children: /* @__PURE__ */ jsx(Upload, { className: "h-3 w-3" })
+      }
+    )
+  ] });
+};
+const ProfileContactInfo = ({
+  startDate,
+  status,
+  accessLevel,
+  lastLogin,
+  passwordLastChanged,
+  twoFactorEnabled
+}) => {
+  const formatDate = (dateString) => {
+    if (!dateString) return "Not set";
+    return new Date(dateString).toLocaleDateString();
+  };
+  return /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+      /* @__PURE__ */ jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
+      /* @__PURE__ */ jsx(Badge, { variant: status === "Active" ? "default" : "secondary", children: status || "Active" })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+      /* @__PURE__ */ jsx(Key, { className: "h-4 w-4 text-muted-foreground" }),
+      /* @__PURE__ */ jsx("span", { children: accessLevel || "User" })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+      /* @__PURE__ */ jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
+      /* @__PURE__ */ jsxs(Badge, { variant: twoFactorEnabled ? "default" : "secondary", children: [
+        "2FA ",
+        twoFactorEnabled ? "Enabled" : "Disabled"
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+      /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+      /* @__PURE__ */ jsxs("span", { children: [
+        "Started ",
+        formatDate(startDate)
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+      /* @__PURE__ */ jsx(Clock, { className: "h-4 w-4 text-muted-foreground" }),
+      /* @__PURE__ */ jsxs("span", { children: [
+        "Last login: ",
+        lastLogin ? formatDate(lastLogin) : "Never"
+      ] })
+    ] })
+  ] });
 };
 const EditableProfileHeader = ({
   profile,
@@ -4722,7 +4973,7 @@ const EditableProfileHeader = ({
   };
   return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col lg:flex-row lg:items-start gap-6", children: [
     /* @__PURE__ */ jsx("div", { className: "flex justify-center lg:justify-start", children: /* @__PURE__ */ jsx(
-      ProfileAvatar$1,
+      ProfileAvatar,
       {
         avatarUrl: profile.avatar,
         firstName: profile.firstName,
@@ -4734,7 +4985,7 @@ const EditableProfileHeader = ({
         /* @__PURE__ */ jsxs("div", { className: "text-center sm:text-left space-y-2", children: [
           /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
             /* @__PURE__ */ jsx(
-              EditableField$1,
+              EditableField,
               {
                 value: profile.firstName || "",
                 fieldKey: "firstName",
@@ -4748,7 +4999,7 @@ const EditableProfileHeader = ({
               }
             ),
             /* @__PURE__ */ jsx(
-              EditableField$1,
+              EditableField,
               {
                 value: profile.lastName || "",
                 fieldKey: "lastName",
@@ -4763,7 +5014,7 @@ const EditableProfileHeader = ({
             )
           ] }),
           /* @__PURE__ */ jsx(
-            EditableField$1,
+            EditableField,
             {
               value: profile.full_name || `${profile.firstName} ${profile.lastName}`.trim(),
               fieldKey: "full_name",
@@ -4789,7 +5040,7 @@ const EditableProfileHeader = ({
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsx(Phone, { className: "h-4 w-4 text-muted-foreground" }),
           /* @__PURE__ */ jsx(
-            EditableField$1,
+            EditableField,
             {
               value: profile.phone || "Not provided",
               fieldKey: "phone",
@@ -4818,7 +5069,7 @@ const EditableProfileHeader = ({
               ]
             }
           ) : /* @__PURE__ */ jsx(
-            EditableField$1,
+            EditableField,
             {
               value: managerName,
               fieldKey: "manager",
@@ -4834,7 +5085,7 @@ const EditableProfileHeader = ({
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
           /* @__PURE__ */ jsx(
-            EditableField$1,
+            EditableField,
             {
               value: profile.location || "Not specified",
               fieldKey: "location",
@@ -4862,7 +5113,7 @@ const EditableProfileHeader = ({
         ] })
       ] }),
       /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsx(
-        ProfileContactInfo$1,
+        ProfileContactInfo,
         {
           startDate: profile.startDate,
           userId: profile.id,
@@ -5095,105 +5346,6 @@ const UserDetailView = () => {
     /* @__PURE__ */ jsx(PersonaDetailsTabs$1, { profile: personaData, userId, onUpdate: refetch })
   ] });
 };
-const EditableField = ({
-  value,
-  fieldKey,
-  label,
-  placeholder,
-  className,
-  inputClassName,
-  locationId,
-  isEditing,
-  onEdit,
-  onSave,
-  onCancel,
-  type = "text",
-  options,
-  asyncOptions,
-  isLoading,
-  onSelectChange
-}) => {
-  const [editValue, setEditValue] = o.useState(value);
-  o.useEffect(() => {
-    setEditValue(value);
-  }, [value, isEditing]);
-  const validatePhoneInput = (input) => {
-    return input.replace(/[^0-9+\s\-\(\)]/g, "");
-  };
-  const handleSave = async () => {
-    if (fieldKey) {
-      await onSave(fieldKey, editValue);
-    }
-  };
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSave();
-    } else if (e.key === "Escape") {
-      onCancel();
-    }
-  };
-  const handleInputChange = (e) => {
-    const newValue = e.target.value;
-    if (fieldKey === "phone") {
-      const validatedValue = validatePhoneInput(newValue);
-      setEditValue(validatedValue);
-    } else {
-      setEditValue(newValue);
-    }
-  };
-  if (isEditing) {
-    if (type === "select" && (options || asyncOptions)) {
-      const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
-      return /* @__PURE__ */ jsxs(
-        Select,
-        {
-          value: editValue,
-          onValueChange: (newValue) => {
-            setEditValue(newValue);
-            const selectedOption = selectOptions.find((opt) => opt.value === newValue);
-            if (onSelectChange && selectedOption) {
-              onSelectChange(newValue, selectedOption);
-            } else {
-              handleSave();
-            }
-          },
-          disabled: isLoading,
-          children: [
-            /* @__PURE__ */ jsx(SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
-            /* @__PURE__ */ jsxs(SelectContent, { children: [
-              selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsx(SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
-              selectOptions.map((option) => /* @__PURE__ */ jsx(SelectItem, { value: option.value, children: option.label }, option.value))
-            ] })
-          ]
-        }
-      );
-    }
-    return /* @__PURE__ */ jsx(
-      Input,
-      {
-        type,
-        value: editValue,
-        placeholder,
-        onChange: handleInputChange,
-        onBlur: handleSave,
-        onKeyDown: handleKeyDown,
-        className: inputClassName || "h-6 text-sm w-32",
-        autoFocus: true
-      }
-    );
-  }
-  return /* @__PURE__ */ jsxs("div", { className, children: [
-    label && /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label }),
-    /* @__PURE__ */ jsx(
-      "span",
-      {
-        className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
-        onClick: () => fieldKey && onEdit(fieldKey),
-        children: value || placeholder
-      }
-    )
-  ] });
-};
 const UserRoleField = ({ userId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { role, isLoading, updateRole, isUpdating, getRoleDisplayName, getRoleBadgeVariant } = useUserRoleById(userId);
@@ -5403,75 +5555,6 @@ const ProfileBasicInfo = ({
     ] })
   ] });
 };
-const ProfileAvatar = ({ avatarUrl, firstName, lastName }) => {
-  const initials = firstName && lastName ? firstName.charAt(0) + lastName.charAt(0) : (firstName == null ? void 0 : firstName.slice(0, 2)) || "U";
-  const handleAvatarUpload = () => {
-    toast({
-      title: "Avatar Upload",
-      description: "Avatar upload functionality will be implemented with Supabase Storage."
-    });
-  };
-  return /* @__PURE__ */ jsxs("div", { className: "relative", children: [
-    /* @__PURE__ */ jsxs(Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
-      /* @__PURE__ */ jsx(AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }),
-      /* @__PURE__ */ jsx(AvatarFallback, { className: "text-2xl", children: initials })
-    ] }),
-    /* @__PURE__ */ jsx(
-      Button,
-      {
-        size: "sm",
-        variant: "outline",
-        className: "absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0",
-        onClick: handleAvatarUpload,
-        children: /* @__PURE__ */ jsx(Upload, { className: "h-3 w-3" })
-      }
-    )
-  ] });
-};
-const ProfileContactInfo = ({
-  startDate,
-  status,
-  accessLevel,
-  lastLogin,
-  passwordLastChanged,
-  twoFactorEnabled
-}) => {
-  const formatDate = (dateString) => {
-    if (!dateString) return "Not set";
-    return new Date(dateString).toLocaleDateString();
-  };
-  return /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
-    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-      /* @__PURE__ */ jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
-      /* @__PURE__ */ jsx(Badge, { variant: status === "Active" ? "default" : "secondary", children: status || "Active" })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-      /* @__PURE__ */ jsx(Key, { className: "h-4 w-4 text-muted-foreground" }),
-      /* @__PURE__ */ jsx("span", { children: accessLevel || "User" })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-      /* @__PURE__ */ jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
-      /* @__PURE__ */ jsxs(Badge, { variant: twoFactorEnabled ? "default" : "secondary", children: [
-        "2FA ",
-        twoFactorEnabled ? "Enabled" : "Disabled"
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-      /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-      /* @__PURE__ */ jsxs("span", { children: [
-        "Started ",
-        formatDate(startDate)
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-      /* @__PURE__ */ jsx(Clock, { className: "h-4 w-4 text-muted-foreground" }),
-      /* @__PURE__ */ jsxs("span", { children: [
-        "Last login: ",
-        lastLogin ? formatDate(lastLogin) : "Never"
-      ] })
-    ] })
-  ] });
-};
 const MultipleRolesField = ({
   userId,
   departmentValue,
@@ -5672,25 +5755,2513 @@ const MultipleRolesField = ({
     ] }) })
   ] });
 };
+const CreateCertificateDialog = ({
+  isOpen,
+  onOpenChange,
+  isOrganisationCertificate = false,
+  onSuccess
+}) => {
+  const { profiles } = useUserProfiles();
+  const [formData, setFormData] = useState({
+    user_id: "",
+    name: "",
+    issued_by: "",
+    date_acquired: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+    expiry_date: "",
+    credential_id: "",
+    status: "Valid"
+  });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error("User not authenticated");
+      }
+      const certificateData = {
+        ...formData,
+        user_id: isOrganisationCertificate ? user.id : formData.user_id,
+        // Use current user for org certs
+        date_acquired: new Date(formData.date_acquired).toISOString(),
+        expiry_date: formData.expiry_date ? new Date(formData.expiry_date).toISOString() : null,
+        credential_id: formData.credential_id || null,
+        org_cert: isOrganisationCertificate
+        // Set org_cert flag
+      };
+      const { error } = await supabase.from("certificates").insert([certificateData]);
+      if (error) throw error;
+      toast({
+        title: "Certificate added",
+        description: isOrganisationCertificate ? "Organisation certificate has been successfully added." : "Certificate has been successfully added to the user's profile."
+      });
+      onOpenChange(false);
+      setFormData({
+        user_id: "",
+        name: "",
+        issued_by: "",
+        date_acquired: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+        expiry_date: "",
+        credential_id: "",
+        status: "Valid"
+      });
+      onSuccess == null ? void 0 : onSuccess();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    }
+  };
+  return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxs(DialogContent, { children: [
+    /* @__PURE__ */ jsx(DialogHeader, { children: /* @__PURE__ */ jsx(DialogTitle, { children: isOrganisationCertificate ? "Add Organisation Certificate" : "Add Certificate to User" }) }),
+    /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+      !isOrganisationCertificate && /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "user", children: "Assign to User" }),
+        /* @__PURE__ */ jsxs(Select, { value: formData.user_id, onValueChange: (value) => setFormData({ ...formData, user_id: value }), children: [
+          /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select a user" }) }),
+          /* @__PURE__ */ jsx(SelectContent, { children: profiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "name", children: "Certificate Name" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "name",
+            value: formData.name,
+            onChange: (e) => setFormData({ ...formData, name: e.target.value }),
+            placeholder: "e.g., AWS Certified Developer, PMP",
+            required: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "issued_by", children: "Issued By" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "issued_by",
+            value: formData.issued_by,
+            onChange: (e) => setFormData({ ...formData, issued_by: e.target.value }),
+            placeholder: "e.g., Amazon Web Services, PMI",
+            required: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "date_acquired", children: "Date Acquired" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "date_acquired",
+            type: "date",
+            value: formData.date_acquired,
+            onChange: (e) => setFormData({ ...formData, date_acquired: e.target.value }),
+            required: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "expiry_date", children: "Expiry Date (Optional)" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "expiry_date",
+            type: "date",
+            value: formData.expiry_date,
+            onChange: (e) => setFormData({ ...formData, expiry_date: e.target.value })
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "credential_id", children: "Credential ID (Optional)" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "credential_id",
+            value: formData.credential_id,
+            onChange: (e) => setFormData({ ...formData, credential_id: e.target.value }),
+            placeholder: "Certificate credential ID"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "status", children: "Status" }),
+        /* @__PURE__ */ jsxs(Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
+          /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+          /* @__PURE__ */ jsxs(SelectContent, { children: [
+            /* @__PURE__ */ jsx(SelectItem, { value: "Valid", children: "Valid" }),
+            /* @__PURE__ */ jsx(SelectItem, { value: "Expired", children: "Expired" }),
+            /* @__PURE__ */ jsx(SelectItem, { value: "Pending", children: "Pending" })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", children: "Add Certificate" })
+      ] })
+    ] })
+  ] }) });
+};
+const CertificateManagement = () => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+      /* @__PURE__ */ jsx("h3", { className: "text-lg font-medium", children: "User Certificates" }),
+      /* @__PURE__ */ jsxs(
+        Button,
+        {
+          className: "flex items-center gap-2",
+          onClick: () => setIsDialogOpen(true),
+          children: [
+            /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }),
+            "Add Certificate"
+          ]
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsx(
+      CreateCertificateDialog,
+      {
+        isOpen: isDialogOpen,
+        onOpenChange: setIsDialogOpen,
+        isOrganisationCertificate: false
+      }
+    ),
+    /* @__PURE__ */ jsxs("div", { className: "text-center py-8 text-muted-foreground", children: [
+      /* @__PURE__ */ jsx(Award, { className: "h-12 w-12 mx-auto mb-4 opacity-50" }),
+      /* @__PURE__ */ jsx("p", { children: "Certificate management interface coming soon..." }),
+      /* @__PURE__ */ jsx("p", { className: "text-sm", children: 'Use the "Add Certificate" button to add new certificates.' })
+    ] })
+  ] });
+};
+const Certificates = ({ profile }) => {
+  const { certificates } = profile;
+  const formatDate = (dateString) => {
+    if (!dateString) return "No expiry";
+    return new Date(dateString).toLocaleDateString();
+  };
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Valid":
+        return "bg-green-500";
+      case "Expired":
+        return "bg-red-500";
+      case "Pending":
+        return "bg-yellow-500";
+      default:
+        return "bg-blue-500";
+    }
+  };
+  const getTypeIcon = (type) => {
+    return type === "Document" ? /* @__PURE__ */ jsx(FileText, { className: "h-5 w-5 text-primary flex-shrink-0" }) : /* @__PURE__ */ jsx(Award, { className: "h-5 w-5 text-primary flex-shrink-0" });
+  };
+  const getTypeColor = (type) => {
+    return type === "Document" ? "bg-blue-500" : "bg-purple-500";
+  };
+  const filteredCertificates = certificates.filter(
+    (cert) => cert.org_cert === false
+  );
+  return /* @__PURE__ */ jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsx("div", { className: "space-y-4", children: filteredCertificates.map((cert, index) => /* @__PURE__ */ jsxs("div", { className: "border rounded-lg p-4", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between gap-3 mb-3", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
+        getTypeIcon(cert.type),
+        /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
+          /* @__PURE__ */ jsx("span", { className: "text-base font-medium text-foreground", children: cert.issuedBy })
+        ] }),
+        cert.credentialId && /* @__PURE__ */ jsxs("span", { className: "text-base font-medium text-muted-foreground", children: [
+          "ID: ",
+          cert.credentialId
+        ] }),
+        /* @__PURE__ */ jsx(Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1 flex-shrink-0`, children: cert.type || "Certificate" })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-3 gap-4 text-sm ml-8", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
+        /* @__PURE__ */ jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
+        /* @__PURE__ */ jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsx(Badge, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }) })
+    ] })
+  ] }, index)) }) });
+};
+const EditableCertificates = ({ profile }) => {
+  const { certificates } = profile;
+  const formatDate = (dateString) => {
+    if (!dateString) return "No expiry";
+    return new Date(dateString).toLocaleDateString();
+  };
+  const getTypeIcon = (type) => {
+    return type === "Document" ? /* @__PURE__ */ jsx(FileText, { className: "h-5 w-5 text-primary flex-shrink-0" }) : /* @__PURE__ */ jsx(Award, { className: "h-5 w-5 text-primary flex-shrink-0" });
+  };
+  const getTypeColor = (type) => {
+    return type === "Document" ? "bg-blue-500" : "bg-purple-500";
+  };
+  const getValidityStatus = (expiryDate) => {
+    if (!expiryDate) return "Valid";
+    const expiry = new Date(expiryDate);
+    const today = /* @__PURE__ */ new Date();
+    today.setHours(0, 0, 0, 0);
+    if (expiry < today) {
+      return "Expired";
+    } else if (expiry <= new Date(today.getTime() + 30 * 24 * 60 * 60 * 1e3)) {
+      return "Expiring Soon";
+    } else {
+      return "Valid";
+    }
+  };
+  const getValidityStatusColor = (status) => {
+    switch (status) {
+      case "Valid":
+        return "bg-green-500";
+      case "Expired":
+        return "bg-red-500";
+      case "Expiring Soon":
+        return "bg-yellow-500";
+      default:
+        return "bg-blue-500";
+    }
+  };
+  const filteredCertificates = certificates.filter(
+    (cert) => cert.org_cert === false
+  );
+  return /* @__PURE__ */ jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsx("div", { className: "space-y-4", children: filteredCertificates.map((cert, index) => {
+    const validityStatus = getValidityStatus(cert.expiryDate);
+    return /* @__PURE__ */ jsxs("div", { className: "border rounded-lg p-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-3", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
+          getTypeIcon(cert.type),
+          /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsx(Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-4 gap-4 text-sm ml-8", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
+          /* @__PURE__ */ jsx("span", { className: "font-medium text-foreground", children: cert.issuedBy })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+          /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
+          /* @__PURE__ */ jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+          /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
+          /* @__PURE__ */ jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
+        ] }),
+        /* @__PURE__ */ jsx("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsx(Badge, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }) })
+      ] }),
+      cert.credentialId && /* @__PURE__ */ jsxs("div", { className: "text-sm ml-8 mt-2", children: [
+        /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "ID: " }),
+        /* @__PURE__ */ jsx("span", { className: "font-medium", children: cert.credentialId })
+      ] })
+    ] }, index);
+  }) }) });
+};
+const AssignPhysicalLocationDialog = ({
+  isOpen,
+  onOpenChange,
+  prefilledUser,
+  onSuccess
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const { profiles } = useUserProfiles();
+  const [formData, setFormData] = useState({
+    full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
+    email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
+    department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
+    role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
+    location: "",
+    access_purpose: "",
+    status: "Active"
+  });
+  const handleUserSelection = (userId) => {
+    setSelectedUserId(userId);
+    if (userId === "none") {
+      setFormData((prev) => ({
+        ...prev,
+        full_name: "",
+        email: "",
+        department: "",
+        role_account_type: ""
+      }));
+    } else {
+      const selectedUser = profiles.find((profile) => profile.id === userId);
+      if (selectedUser) {
+        setFormData((prev) => ({
+          ...prev,
+          full_name: selectedUser.full_name || "",
+          email: selectedUser.email || "",
+          department: selectedUser.department || "",
+          role_account_type: selectedUser.role || ""
+        }));
+      }
+    }
+  };
+  const resetForm = () => {
+    setSelectedUserId("");
+    setFormData({
+      full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
+      email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
+      department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
+      role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
+      location: "",
+      access_purpose: "",
+      status: "Active"
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (!formData.location || !formData.access_purpose) {
+        throw new Error("Location and Access Purpose are required");
+      }
+      const insertData = {
+        full_name: formData.full_name || "Unassigned",
+        user_id: selectedUserId || "ae5c8c73-e0c3-4a86-9c0d-123456789abc",
+        // Use selectedUserId or placeholder
+        location_id: formData.location,
+        // Assuming this is already a UUID
+        access_purpose: formData.access_purpose,
+        date_access_created: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+        date_access_revoked: null,
+        status: formData.status
+      };
+      const { error } = await supabase.from("physical_location_access").insert([insertData]);
+      if (error) throw error;
+      toast({
+        title: "Physical location access added",
+        description: formData.full_name === "Unassigned" ? "Location access record created without user assignment." : "Physical location access has been successfully added."
+      });
+      onOpenChange(false);
+      resetForm();
+      onSuccess == null ? void 0 : onSuccess();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl max-h-[80vh] overflow-y-auto", children: [
+    /* @__PURE__ */ jsx(DialogHeader, { children: /* @__PURE__ */ jsx(DialogTitle, { children: "Add Physical Location Access" }) }),
+    /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+        !prefilledUser && /* @__PURE__ */ jsxs("div", { className: "col-span-2", children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "user_select", children: "Assign to User (Optional)" }),
+          /* @__PURE__ */ jsxs(Select, { value: selectedUserId, onValueChange: handleUserSelection, children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select a user or create without assignment" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "Create without user assignment" }),
+              profiles.map((profile) => /* @__PURE__ */ jsxs(SelectItem, { value: profile.id, children: [
+                profile.full_name || "No name",
+                " (",
+                profile.email || profile.username || "No email",
+                ")"
+              ] }, profile.id))
+            ] })
+          ] })
+        ] }),
+        selectedUserId && selectedUserId !== "none" && /* @__PURE__ */ jsxs("div", { className: "col-span-2 p-3 bg-gray-50 rounded-lg", children: [
+          /* @__PURE__ */ jsx("h4", { className: "font-medium mb-2", children: "Selected User Details:" }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Name:" }),
+            " ",
+            formData.full_name
+          ] }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Email:" }),
+            " ",
+            formData.email
+          ] }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Department:" }),
+            " ",
+            formData.department || "Not specified"
+          ] }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Role:" }),
+            " ",
+            formData.role_account_type || "Not specified"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "full_name", children: "Full Name" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "full_name",
+              value: formData.full_name,
+              onChange: (e) => setFormData({ ...formData, full_name: e.target.value }),
+              placeholder: "Leave empty for unassigned",
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "email", children: "Email" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "email",
+              value: formData.email,
+              onChange: (e) => setFormData({ ...formData, email: e.target.value }),
+              placeholder: "Leave empty for unassigned",
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "department", children: "Department" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "department",
+              value: formData.department,
+              onChange: (e) => setFormData({ ...formData, department: e.target.value }),
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "role_account_type", children: "Role/Account Type" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "role_account_type",
+              value: formData.role_account_type,
+              onChange: (e) => setFormData({ ...formData, role_account_type: e.target.value }),
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "location", children: "Location *" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "location",
+              value: formData.location,
+              onChange: (e) => setFormData({ ...formData, location: e.target.value }),
+              placeholder: "e.g., Building A - Floor 3, Server Room",
+              required: true
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "access_purpose", children: "Access Purpose *" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "access_purpose",
+              value: formData.access_purpose,
+              onChange: (e) => setFormData({ ...formData, access_purpose: e.target.value }),
+              placeholder: "e.g., Maintenance, Security, Operations",
+              required: true
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "col-span-2", children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "status", children: "Status" }),
+          /* @__PURE__ */ jsxs(Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "Active", children: "Active" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Inactive", children: "Inactive" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Revoked", children: "Revoked" })
+            ] })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
+      ] })
+    ] })
+  ] }) });
+};
+const AddPhysicalLocationDialog = ({
+  isOpen,
+  onOpenChange,
+  prefilledUser,
+  onSuccess
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const { profiles } = useUserProfiles();
+  const [formData, setFormData] = useState({
+    full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
+    email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
+    department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
+    role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
+    location: "",
+    access_purpose: "",
+    date_access_created: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+    date_access_revoked: "",
+    status: "Active"
+  });
+  const handleUserSelection = (userId) => {
+    setSelectedUserId(userId);
+    if (userId === "none") {
+      setFormData((prev) => ({
+        ...prev,
+        full_name: "",
+        email: "",
+        department: "",
+        role_account_type: ""
+      }));
+    } else {
+      const selectedUser = profiles.find((profile) => profile.id === userId);
+      if (selectedUser) {
+        setFormData((prev) => ({
+          ...prev,
+          full_name: selectedUser.full_name || "",
+          email: selectedUser.email || "",
+          department: selectedUser.department || "",
+          role_account_type: selectedUser.role || ""
+        }));
+      }
+    }
+  };
+  const resetForm = () => {
+    setSelectedUserId("");
+    setFormData({
+      full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
+      email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
+      department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
+      role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
+      location: "",
+      access_purpose: "",
+      date_access_created: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
+      date_access_revoked: "",
+      status: "Active"
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      if (!formData.location || !formData.access_purpose) {
+        throw new Error("Location and Access Purpose are required");
+      }
+      const insertData = {
+        full_name: formData.full_name || "Unassigned",
+        user_id: "ae5c8c73-e0c3-4a86-9c0d-123456789abc",
+        // Placeholder user ID - should be dynamic
+        location_id: formData.location,
+        // Assuming this is already a UUID
+        access_purpose: formData.access_purpose,
+        date_access_created: formData.date_access_created,
+        date_access_revoked: formData.date_access_revoked || null,
+        status: formData.status
+      };
+      const { error } = await supabase.from("physical_location_access").insert([insertData]);
+      if (error) throw error;
+      toast({
+        title: "Physical location access added",
+        description: formData.full_name === "Unassigned" ? "Location access record created without user assignment." : "Physical location access has been successfully added."
+      });
+      onOpenChange(false);
+      resetForm();
+      onSuccess == null ? void 0 : onSuccess();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl max-h-[80vh] overflow-y-auto", children: [
+    /* @__PURE__ */ jsx(DialogHeader, { children: /* @__PURE__ */ jsx(DialogTitle, { children: "Add Physical Location Access" }) }),
+    /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+        !prefilledUser && /* @__PURE__ */ jsxs("div", { className: "col-span-2", children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "user_select", children: "Assign to User (Optional)" }),
+          /* @__PURE__ */ jsxs(Select, { value: selectedUserId, onValueChange: handleUserSelection, children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select a user or create without assignment" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "Create without user assignment" }),
+              profiles.map((profile) => /* @__PURE__ */ jsxs(SelectItem, { value: profile.id, children: [
+                profile.full_name || "No name",
+                " (",
+                profile.email || profile.username || "No email",
+                ")"
+              ] }, profile.id))
+            ] })
+          ] })
+        ] }),
+        selectedUserId && selectedUserId !== "none" && /* @__PURE__ */ jsxs("div", { className: "col-span-2 p-3 bg-gray-50 rounded-lg", children: [
+          /* @__PURE__ */ jsx("h4", { className: "font-medium mb-2", children: "Selected User Details:" }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Name:" }),
+            " ",
+            formData.full_name
+          ] }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Email:" }),
+            " ",
+            formData.email
+          ] }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Department:" }),
+            " ",
+            formData.department || "Not specified"
+          ] }),
+          /* @__PURE__ */ jsxs("p", { children: [
+            /* @__PURE__ */ jsx("strong", { children: "Role:" }),
+            " ",
+            formData.role_account_type || "Not specified"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "full_name", children: "Full Name" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "full_name",
+              value: formData.full_name,
+              onChange: (e) => setFormData({ ...formData, full_name: e.target.value }),
+              placeholder: "Leave empty for unassigned",
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "email", children: "Email" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "email",
+              value: formData.email,
+              onChange: (e) => setFormData({ ...formData, email: e.target.value }),
+              placeholder: "Leave empty for unassigned",
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "department", children: "Department" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "department",
+              value: formData.department,
+              onChange: (e) => setFormData({ ...formData, department: e.target.value }),
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "role_account_type", children: "Role/Account Type" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "role_account_type",
+              value: formData.role_account_type,
+              onChange: (e) => setFormData({ ...formData, role_account_type: e.target.value }),
+              disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "location", children: "Location *" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "location",
+              value: formData.location,
+              onChange: (e) => setFormData({ ...formData, location: e.target.value }),
+              placeholder: "e.g., Building A - Floor 3, Server Room",
+              required: true
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "access_purpose", children: "Access Purpose *" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "access_purpose",
+              value: formData.access_purpose,
+              onChange: (e) => setFormData({ ...formData, access_purpose: e.target.value }),
+              placeholder: "e.g., Maintenance, Security, Operations",
+              required: true
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "date_access_created", children: "Date Access Created *" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "date_access_created",
+              type: "date",
+              value: formData.date_access_created,
+              onChange: (e) => setFormData({ ...formData, date_access_created: e.target.value }),
+              required: true
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "date_access_revoked", children: "Date Access Revoked" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "date_access_revoked",
+              type: "date",
+              value: formData.date_access_revoked,
+              onChange: (e) => setFormData({ ...formData, date_access_revoked: e.target.value })
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "col-span-2", children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "status", children: "Status" }),
+          /* @__PURE__ */ jsxs(Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "Active", children: "Active" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Inactive", children: "Inactive" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Revoked", children: "Revoked" })
+            ] })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
+      ] })
+    ] })
+  ] }) });
+};
+const AddEducationDialog = ({
+  isOpen,
+  onOpenChange,
+  userId,
+  onSuccess
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    type: "Certificate",
+    name: "",
+    issued_by: "",
+    date_acquired: "",
+    expiry_date: "",
+    credential_id: "",
+    status: "Valid"
+  });
+  const { addCertificate } = useUserAssets();
+  const { data: userProfile } = useQuery({
+    queryKey: ["user-profile", userId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("profiles").select("id").eq("id", userId).single();
+      if (error) throw error;
+      return data;
+    }
+  });
+  const resetForm = () => {
+    setFormData({
+      type: "Certificate",
+      name: "",
+      issued_by: "",
+      date_acquired: "",
+      expiry_date: "",
+      credential_id: "",
+      status: "Valid"
+    });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!userProfile) {
+      toast$1({
+        title: "Error",
+        description: "User profile not found.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setLoading(true);
+    try {
+      const certificateData = {
+        user_id: userProfile.id,
+        type: formData.type,
+        name: formData.name,
+        issued_by: formData.issued_by,
+        date_acquired: formData.date_acquired,
+        expiry_date: formData.expiry_date || null,
+        credential_id: formData.credential_id || null,
+        status: formData.status
+      };
+      await addCertificate(certificateData);
+      toast$1({
+        title: "Education record added",
+        description: "Education record has been successfully added."
+      });
+      onOpenChange(false);
+      resetForm();
+      onSuccess == null ? void 0 : onSuccess();
+    } catch (error) {
+      toast$1({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxs(DialogContent, { children: [
+    /* @__PURE__ */ jsx(DialogHeader, { children: /* @__PURE__ */ jsx(DialogTitle, { children: "Add Education Record" }) }),
+    /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "type", children: "Type *" }),
+        /* @__PURE__ */ jsxs(Select, { value: formData.type, onValueChange: (value) => setFormData({ ...formData, type: value }), children: [
+          /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+          /* @__PURE__ */ jsxs(SelectContent, { children: [
+            /* @__PURE__ */ jsx(SelectItem, { value: "Certificate", children: "Certificate" }),
+            /* @__PURE__ */ jsx(SelectItem, { value: "Document", children: "Document" })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "name", children: "Name *" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "name",
+            value: formData.name,
+            onChange: (e) => setFormData({ ...formData, name: e.target.value }),
+            placeholder: "e.g., Cybersecurity Certificate, PDPC e-Learning, ISP, IRP",
+            required: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "issued_by", children: "Issued By *" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "issued_by",
+            value: formData.issued_by,
+            onChange: (e) => setFormData({ ...formData, issued_by: e.target.value }),
+            placeholder: "e.g., RAYN, PDPC,",
+            required: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "date_acquired", children: "Date Acquired *" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "date_acquired",
+              type: "date",
+              value: formData.date_acquired,
+              onChange: (e) => setFormData({ ...formData, date_acquired: e.target.value }),
+              required: true
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "expiry_date", children: "Expiry Date" }),
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "expiry_date",
+              type: "date",
+              value: formData.expiry_date,
+              onChange: (e) => setFormData({ ...formData, expiry_date: e.target.value })
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "credential_id", children: "Credential ID" }),
+        /* @__PURE__ */ jsx(
+          Input,
+          {
+            id: "credential_id",
+            value: formData.credential_id,
+            onChange: (e) => setFormData({ ...formData, credential_id: e.target.value }),
+            placeholder: "Certificate or credential identifier"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "status", children: "Status" }),
+        /* @__PURE__ */ jsxs(Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
+          /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+          /* @__PURE__ */ jsxs(SelectContent, { children: [
+            /* @__PURE__ */ jsx(SelectItem, { value: "Valid", children: "Valid" }),
+            /* @__PURE__ */ jsx(SelectItem, { value: "Expired", children: "Expired" }),
+            /* @__PURE__ */ jsx(SelectItem, { value: "Pending", children: "Pending" }),
+            /* @__PURE__ */ jsx(SelectItem, { value: "Revoked", children: "Revoked" })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Education Record" })
+      ] })
+    ] })
+  ] }) });
+};
+const UserDepartmentsManager = ({ userId }) => {
+  const [selectedDepartmentId, setSelectedDepartmentId] = o.useState("");
+  const {
+    userDepartments,
+    addDepartment,
+    removeDepartment,
+    setPrimaryDepartment,
+    isLoading,
+    isAddingDepartment
+  } = useUserDepartments(userId);
+  const { data: allDepartments = [] } = useQuery({
+    queryKey: ["departments"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("departments").select("id, name").order("name");
+      if (error) throw error;
+      return data;
+    }
+  });
+  const availableDepartments = allDepartments.filter(
+    (dept) => !userDepartments.some((ud) => ud.department_id === dept.id)
+  );
+  const handleAddDepartment = () => {
+    if (selectedDepartmentId) {
+      const isPrimary = userDepartments.length === 0;
+      addDepartment({
+        userId,
+        departmentId: selectedDepartmentId,
+        isPrimary
+      });
+      setSelectedDepartmentId("");
+    }
+  };
+  const handleRemoveDepartment = (assignmentId) => {
+    if (confirm("Are you sure you want to remove this department assignment?")) {
+      removeDepartment(assignmentId);
+    }
+  };
+  const handleSetPrimary = (departmentId) => {
+    setPrimaryDepartment({ userId, departmentId });
+  };
+  if (isLoading) {
+    return /* @__PURE__ */ jsxs(Card, { children: [
+      /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Department Assignments" }) }),
+      /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx("div", { className: "text-center py-4", children: "Loading..." }) })
+    ] });
+  }
+  return /* @__PURE__ */ jsxs(Card, { children: [
+    /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Department Assignments" }) }),
+    /* @__PURE__ */ jsxs(CardContent, { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsx("h4", { className: "text-sm font-medium", children: "Current Departments:" }),
+        userDepartments.length > 0 ? /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2", children: userDepartments.map((userDept) => /* @__PURE__ */ jsxs(
+          Badge,
+          {
+            variant: "secondary",
+            className: "flex items-center gap-2 px-3 py-1",
+            children: [
+              userDept.is_primary && /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }),
+              /* @__PURE__ */ jsx("span", { children: userDept.department_name }),
+              /* @__PURE__ */ jsx(
+                Button,
+                {
+                  size: "sm",
+                  variant: "ghost",
+                  className: "h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground ml-1",
+                  onClick: () => handleRemoveDepartment(userDept.id),
+                  children: /* @__PURE__ */ jsx(X, { className: "h-3 w-3" })
+                }
+              ),
+              !userDept.is_primary && userDepartments.length > 1 && /* @__PURE__ */ jsx(
+                Button,
+                {
+                  size: "sm",
+                  variant: "ghost",
+                  className: "h-4 w-4 p-0 ml-1 hover:bg-accent",
+                  onClick: () => handleSetPrimary(userDept.department_id),
+                  title: "Set as primary department",
+                  children: /* @__PURE__ */ jsx(Star, { className: "h-3 w-3" })
+                }
+              )
+            ]
+          },
+          userDept.id
+        )) }) : /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: "No departments assigned" })
+      ] }),
+      availableDepartments.length > 0 && /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsx("h4", { className: "text-sm font-medium", children: "Add Department:" }),
+        /* @__PURE__ */ jsxs("div", { className: "flex gap-2 items-center", children: [
+          /* @__PURE__ */ jsxs(
+            Select,
+            {
+              value: selectedDepartmentId,
+              onValueChange: setSelectedDepartmentId,
+              children: [
+                /* @__PURE__ */ jsx(SelectTrigger, { className: "flex-1", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select department to add..." }) }),
+                /* @__PURE__ */ jsx(SelectContent, { children: availableDepartments.map((dept) => /* @__PURE__ */ jsx(SelectItem, { value: dept.id, children: dept.name }, dept.id)) })
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxs(
+            Button,
+            {
+              onClick: handleAddDepartment,
+              disabled: !selectedDepartmentId || isAddingDepartment,
+              size: "sm",
+              children: [
+                /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }),
+                "Add"
+              ]
+            }
+          )
+        ] })
+      ] }),
+      userDepartments.length > 0 && /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground mt-4 p-2 bg-muted/50 rounded", children: [
+        /* @__PURE__ */ jsx("strong", { children: "Note:" }),
+        " The user can see roles from all assigned departments plus roles without specific departments (designations)."
+      ] })
+    ] })
+  ] });
+};
+const UserDepartmentsRolesTable = forwardRef(({ userId }, ref) => {
+  const [newRows, setNewRows] = useState([]);
+  const queryClient = useQueryClient();
+  const { user } = useAuth$1();
+  const {
+    userDepartments,
+    addDepartment,
+    removeDepartment,
+    setPrimaryDepartment,
+    isAddingDepartment,
+    refetch: refetchUserDepartments
+  } = useUserDepartments(userId);
+  const { data: allDepartments = [] } = useQuery({
+    queryKey: ["departments"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("departments").select("id, name").order("name");
+      if (error) throw error;
+      return data;
+    }
+  });
+  const { data: userRoles = [] } = useQuery({
+    queryKey: ["user-roles", userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      console.log("UserDepartmentsRolesTable: Fetching roles for user:", userId);
+      const { data, error } = await supabase.from("user_profile_roles").select(`
+          *,
+          roles (
+            name
+          )
+        `).eq("user_id", userId).order("is_primary", { ascending: false });
+      console.log("UserDepartmentsRolesTable: Raw roles data:", data);
+      console.log("UserDepartmentsRolesTable: Roles query error:", error);
+      if (error) throw error;
+      const transformedData = (data || []).map((item) => {
+        var _a;
+        return {
+          id: item.id,
+          user_id: item.user_id,
+          role_id: item.role_id,
+          role_name: ((_a = item.roles) == null ? void 0 : _a.name) || "",
+          is_primary: item.is_primary,
+          assigned_at: item.assigned_at,
+          assigned_by: item.assigned_by,
+          pairing_id: item.pairing_id
+        };
+      });
+      transformedData.sort((a, b) => {
+        if (a.is_primary && !b.is_primary) return -1;
+        if (!a.is_primary && b.is_primary) return 1;
+        return (a.role_name || "").localeCompare(b.role_name || "");
+      });
+      console.log("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
+      return transformedData;
+    },
+    enabled: !!userId
+  });
+  const { data: allRoles = [] } = useQuery({
+    queryKey: ["all-roles"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("roles").select("role_id, name, department_id, departments(name)").eq("is_active", true).order("name");
+      if (error) throw error;
+      return data;
+    }
+  });
+  const addRoleMutation = useMutation({
+    mutationFn: async ({ roleId, pairingId }) => {
+      console.log("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
+      const role = allRoles.find((r) => r.role_id === roleId);
+      console.log("UserDepartmentsRolesTable: Found role:", role);
+      if (!role) throw new Error("Role not found");
+      const isPrimary = userRoles.length === 0;
+      console.log("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
+      const insertData = {
+        user_id: userId,
+        role_id: roleId,
+        is_primary: isPrimary,
+        assigned_by: user == null ? void 0 : user.id,
+        pairing_id: pairingId
+      };
+      console.log("UserDepartmentsRolesTable: Inserting role data:", insertData);
+      const { data, error } = await supabase.from("user_profile_roles").insert(insertData).select();
+      console.log("UserDepartmentsRolesTable: Insert result:", data);
+      console.log("UserDepartmentsRolesTable: Insert error:", error);
+      if (error) throw error;
+      return role;
+    },
+    onSuccess: (data) => {
+      console.log("UserDepartmentsRolesTable: Role assignment successful:", data);
+      queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
+      ue.success("Role assigned successfully");
+    },
+    onError: (error) => {
+      console.error("UserDepartmentsRolesTable: Role assignment failed:", error);
+      ue.error("Failed to assign role: " + error.message);
+    }
+  });
+  const removeRoleMutation = useMutation({
+    mutationFn: async (roleId) => {
+      const { error } = await supabase.from("user_profile_roles").delete().eq("id", roleId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
+      ue.success("Role removed successfully");
+    },
+    onError: (error) => {
+      ue.error("Failed to remove role: " + error.message);
+    }
+  });
+  useMutation({
+    mutationFn: async (roleId) => {
+      await supabase.from("user_profile_roles").update({ is_primary: false }).eq("user_id", userId);
+      const { error } = await supabase.from("user_profile_roles").update({ is_primary: true }).eq("id", roleId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
+      ue.success("Primary role updated");
+    }
+  });
+  const createTableData = () => {
+    const pairs = [];
+    const usedPairingIds = /* @__PURE__ */ new Set();
+    userDepartments.forEach((dept) => {
+      if (dept.pairing_id) {
+        const matchingRole = userRoles.find((role) => role.pairing_id === dept.pairing_id);
+        if (matchingRole) {
+          pairs.push({
+            id: `pair-${dept.pairing_id}`,
+            departmentId: dept.department_id,
+            departmentName: dept.department_name,
+            departmentAssignmentId: dept.id,
+            roleName: matchingRole.role_name,
+            roleId: matchingRole.id,
+            isDepartmentPrimary: dept.is_primary,
+            isRolePrimary: matchingRole.is_primary
+          });
+          usedPairingIds.add(dept.pairing_id);
+        }
+      }
+    });
+    userDepartments.forEach((dept) => {
+      if (!dept.pairing_id || !usedPairingIds.has(dept.pairing_id)) {
+        pairs.push({
+          id: `dept-${dept.id}`,
+          departmentId: dept.department_id,
+          departmentName: dept.department_name,
+          departmentAssignmentId: dept.id,
+          isDepartmentPrimary: dept.is_primary
+        });
+      }
+    });
+    userRoles.forEach((role) => {
+      if (!role.pairing_id || !usedPairingIds.has(role.pairing_id)) {
+        pairs.push({
+          id: `role-${role.id}`,
+          roleName: role.role_name,
+          roleId: role.id,
+          isRolePrimary: role.is_primary
+        });
+      }
+    });
+    pairs.sort((a, b) => {
+      const aPrimary = a.isDepartmentPrimary || a.isRolePrimary;
+      const bPrimary = b.isDepartmentPrimary || b.isRolePrimary;
+      if (aPrimary && !bPrimary) return -1;
+      if (!aPrimary && bPrimary) return 1;
+      return 0;
+    });
+    pairs.push(...newRows);
+    return pairs;
+  };
+  const getAvailableRoles = (selectedDepartmentId) => {
+    console.log("getAvailableRoles called with:", selectedDepartmentId);
+    console.log("allRoles:", allRoles);
+    if (!selectedDepartmentId) {
+      const generalRoles = allRoles.filter((role) => !role.department_id);
+      console.log("No department selected, showing general roles:", generalRoles);
+      return generalRoles;
+    }
+    const departmentRoles = allRoles.filter((role) => role.department_id === selectedDepartmentId);
+    console.log(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
+    return departmentRoles;
+  };
+  const handleAddNewRow = () => {
+    setNewRows((prev) => [...prev, { isNewRow: true }]);
+  };
+  useImperativeHandle(ref, () => ({
+    handleAddNewRow
+  }));
+  const handleNewRowDepartmentChange = (index, departmentId) => {
+    if (departmentId === "none") {
+      departmentId = "";
+    }
+    const department = allDepartments.find((d) => d.id === departmentId);
+    const currentRow = newRows[index];
+    const availableRoles = getAvailableRoles(departmentId || void 0);
+    const isCurrentRoleStillValid = currentRow.roleId && availableRoles.some((role) => role.role_id === currentRow.roleId);
+    const updatedRow = {
+      ...currentRow,
+      departmentId: departmentId || void 0,
+      departmentName: department == null ? void 0 : department.name,
+      // Clear role if it's no longer valid for the selected department
+      roleId: isCurrentRoleStillValid ? currentRow.roleId : void 0,
+      roleName: isCurrentRoleStillValid ? currentRow.roleName : void 0
+    };
+    setNewRows((prev) => prev.map((row, i) => i === index ? updatedRow : row));
+  };
+  const handleNewRowRoleChange = (index, roleId) => {
+    if (roleId === "none") {
+      roleId = "";
+    }
+    const role = allRoles.find((r) => r.role_id === roleId);
+    const updatedRow = {
+      ...newRows[index],
+      roleId: roleId || void 0,
+      roleName: role == null ? void 0 : role.name
+    };
+    setNewRows((prev) => prev.map((row, i) => i === index ? updatedRow : row));
+  };
+  const handleSaveNewRow = async (index) => {
+    const row = newRows[index];
+    console.log("UserDepartmentsRolesTable: Saving new row:", row);
+    console.log("UserDepartmentsRolesTable: Current userRoles:", userRoles);
+    console.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+    if (!row.departmentId && !row.roleId) {
+      ue.error("Please select at least a department or role");
+      return;
+    }
+    try {
+      const pairingId = row.departmentId && row.roleId ? crypto.randomUUID() : void 0;
+      console.log("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
+      if (row.departmentId) {
+        const isDepartmentAlreadyAssigned = userDepartments.some((dept) => dept.department_id === row.departmentId);
+        console.log("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
+        console.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+        console.log("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
+        if (!isDepartmentAlreadyAssigned) {
+          const isPrimary = userDepartments.length === 0;
+          console.log("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
+          console.log("UserDepartmentsRolesTable: Department params:", {
+            userId,
+            departmentId: row.departmentId,
+            isPrimary,
+            pairingId,
+            assignedBy: user == null ? void 0 : user.id
+          });
+          await addDepartment({
+            userId,
+            departmentId: row.departmentId,
+            isPrimary,
+            pairingId,
+            assignedBy: user == null ? void 0 : user.id
+          });
+          console.log("UserDepartmentsRolesTable: Department addition completed");
+        } else {
+          console.log("UserDepartmentsRolesTable: Department already assigned, skipping");
+        }
+      }
+      if (row.roleId) {
+        const isRoleAlreadyAssigned = userRoles.some((role) => role.role_id === row.roleId);
+        console.log("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
+        console.log("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
+        if (!isRoleAlreadyAssigned) {
+          console.log("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
+          await addRoleMutation.mutateAsync({
+            roleId: row.roleId,
+            pairingId
+          });
+        }
+      }
+      setNewRows((prev) => prev.filter((_, i) => i !== index));
+      ue.success("Assignment saved successfully");
+    } catch (error) {
+      console.error("Error saving assignment:", error);
+      ue.error("Failed to save assignment");
+    }
+  };
+  const handleDeletePair = async (pair) => {
+    try {
+      if (pair.departmentAssignmentId) {
+        removeDepartment(pair.departmentAssignmentId);
+      }
+      if (pair.roleId) {
+        await removeRoleMutation.mutateAsync(pair.roleId);
+      }
+    } catch (error) {
+      ue.error("Failed to delete assignment");
+    }
+  };
+  const handleCancelNewRow = (index) => {
+    setNewRows((prev) => prev.filter((_, i) => i !== index));
+  };
+  const setPrimaryPairMutation = useMutation({
+    mutationFn: async (pair) => {
+      await supabase.from("user_departments").update({ is_primary: false }).eq("user_id", userId);
+      await supabase.from("user_profile_roles").update({ is_primary: false }).eq("user_id", userId);
+      if (pair.departmentAssignmentId) {
+        const { error: deptError } = await supabase.from("user_departments").update({ is_primary: true }).eq("id", pair.departmentAssignmentId);
+        if (deptError) throw deptError;
+      }
+      if (pair.roleId) {
+        const { error: roleError } = await supabase.from("user_profile_roles").update({ is_primary: true }).eq("id", pair.roleId);
+        if (roleError) throw roleError;
+      }
+    },
+    onSuccess: () => {
+      refetchUserDepartments();
+      queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
+      ue.success("Primary assignment updated successfully");
+    },
+    onError: (error) => {
+      ue.error("Failed to update primary assignment: " + error.message);
+    }
+  });
+  const tableData = createTableData();
+  return /* @__PURE__ */ jsx(Card, { children: /* @__PURE__ */ jsx(CardContent, { className: "pt-6", children: /* @__PURE__ */ jsx("div", { className: "space-y-4", children: /* @__PURE__ */ jsxs(Table, { children: [
+    /* @__PURE__ */ jsx(TableHeader, { children: /* @__PURE__ */ jsxs(TableRow, { children: [
+      /* @__PURE__ */ jsx(TableHead, { children: "Department" }),
+      /* @__PURE__ */ jsx(TableHead, { children: "Role" }),
+      /* @__PURE__ */ jsx(TableHead, { className: "w-[80px]", children: "Actions" })
+    ] }) }),
+    /* @__PURE__ */ jsxs(TableBody, { children: [
+      tableData.map((pair, index) => /* @__PURE__ */ jsxs(TableRow, { children: [
+        /* @__PURE__ */ jsx(TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: pair.departmentId || "",
+            onValueChange: (value) => handleNewRowDepartmentChange(index - (tableData.length - newRows.length), value),
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select department..." }) }),
+              /* @__PURE__ */ jsxs(SelectContent, { className: "bg-background border z-50", children: [
+                allDepartments.map((dept) => /* @__PURE__ */ jsx(SelectItem, { value: dept.id, children: dept.name }, dept.id)),
+                /* @__PURE__ */ jsx(SelectItem, { value: "none", children: /* @__PURE__ */ jsx("span", { className: "text-muted-foreground italic", children: "Skip department" }) })
+              ] })
+            ]
+          }
+        ) : pair.departmentName ? /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(Badge, { variant: pair.isDepartmentPrimary ? "default" : "secondary", children: pair.departmentName }),
+          pair.isDepartmentPrimary && /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" })
+        ] }) : /* @__PURE__ */ jsx("span", { className: "text-muted-foreground italic", children: "No department" }) }),
+        /* @__PURE__ */ jsx(TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: pair.roleId || "",
+            onValueChange: (value) => handleNewRowRoleChange(index - (tableData.length - newRows.length), value),
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select role..." }) }),
+              /* @__PURE__ */ jsxs(SelectContent, { className: "bg-background border z-50", children: [
+                getAvailableRoles(pair.departmentId).map((role) => /* @__PURE__ */ jsxs(SelectItem, { value: role.role_id, children: [
+                  role.name,
+                  role.department_id && /* @__PURE__ */ jsx("span", { className: "text-xs text-muted-foreground ml-1", children: "(Dept. role)" })
+                ] }, role.role_id)),
+                /* @__PURE__ */ jsx(SelectItem, { value: "none", children: /* @__PURE__ */ jsx("span", { className: "text-muted-foreground italic", children: "Skip role" }) })
+              ] })
+            ]
+          }
+        ) : pair.roleName ? /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(Badge, { variant: pair.isRolePrimary ? "default" : "secondary", children: pair.roleName }),
+          pair.isRolePrimary && /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" })
+        ] }) : /* @__PURE__ */ jsx("span", { className: "text-muted-foreground italic", children: "No role" }) }),
+        /* @__PURE__ */ jsx(TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              size: "sm",
+              variant: "ghost",
+              onClick: () => handleSaveNewRow(index - (tableData.length - newRows.length)),
+              className: "h-6 w-6 p-0 hover:bg-primary hover:text-primary-foreground",
+              disabled: !pair.departmentId && !pair.roleId,
+              children: /* @__PURE__ */ jsx(Check, { className: "h-3 w-3" })
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              size: "sm",
+              variant: "ghost",
+              onClick: () => handleCancelNewRow(index - (tableData.length - newRows.length)),
+              className: "h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground",
+              children: /* @__PURE__ */ jsx(X, { className: "h-3 w-3" })
+            }
+          )
+        ] }) : pair.departmentName || pair.roleName ? /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              size: "sm",
+              variant: "ghost",
+              onClick: () => setPrimaryPairMutation.mutate(pair),
+              disabled: setPrimaryPairMutation.isPending || pair.isDepartmentPrimary && pair.isRolePrimary,
+              className: "h-6 w-6 p-0 hover:bg-yellow-500 hover:text-white",
+              title: "Set as primary",
+              children: /* @__PURE__ */ jsx(
+                Star,
+                {
+                  className: `h-3 w-3 ${pair.isDepartmentPrimary || pair.isRolePrimary ? "fill-current text-yellow-500" : "text-muted-foreground"}`
+                }
+              )
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              size: "sm",
+              variant: "ghost",
+              className: "h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground",
+              onClick: () => handleDeletePair(pair),
+              children: /* @__PURE__ */ jsx(X, { className: "h-3 w-3" })
+            }
+          )
+        ] }) : null })
+      ] }, pair.id || `new-${index}`)),
+      tableData.length === 0 && /* @__PURE__ */ jsx(TableRow, { children: /* @__PURE__ */ jsx(TableCell, { colSpan: 3, className: "text-center text-muted-foreground", children: "No department or role assignments" }) })
+    ] })
+  ] }) }) }) });
+});
+const UserDepartmentsRolesManager = forwardRef(
+  ({ userId }, ref) => {
+    const tableRef = useRef(null);
+    useImperativeHandle(ref, () => ({
+      handleAddNewRow: () => {
+        var _a, _b;
+        return (_b = (_a = tableRef.current) == null ? void 0 : _a.handleAddNewRow) == null ? void 0 : _b.call(_a);
+      }
+    }));
+    return /* @__PURE__ */ jsx(UserDepartmentsRolesTable, { userId, ref: tableRef });
+  }
+);
+const DepartmentRolePairsDisplay = ({ pairs, userId }) => {
+  if (!pairs || pairs.length === 0) {
+    return /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "No assignments" });
+  }
+  return /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1", children: pairs.map((pair, index) => /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs", children: [
+    pair.department,
+    " - ",
+    pair.role
+  ] }, index)) });
+};
+const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00c49f", "#ffbb28", "#ff8042"];
+const UserReport = () => {
+  var _a, _b, _c, _d;
+  const printRef = useRef(null);
+  const [filters, setFilters] = useState({
+    timeRange: "30days"
+  });
+  const { data: locations } = useQuery({
+    queryKey: ["locations"],
+    queryFn: async () => {
+      const { data } = await supabase.from("locations").select("id, name").order("name");
+      return data || [];
+    }
+  });
+  const { data: departments } = useQuery({
+    queryKey: ["departments", filters.location],
+    queryFn: async () => {
+      if (filters.location && filters.location !== "all") {
+        const { data: locationUsers } = await supabase.from("profiles").select("id").eq("location", filters.location);
+        if (locationUsers && locationUsers.length > 0) {
+          const userIds = locationUsers.map((u) => u.id);
+          const { data: allUserDepts, error: userDeptsError } = await supabase.from("user_departments").select("department_id, user_id").eq("is_primary", true);
+          if (userDeptsError) {
+            const { data: allDepts } = await supabase.from("departments").select("id, name").order("name");
+            return allDepts || [];
+          }
+          const userDepts = (allUserDepts == null ? void 0 : allUserDepts.filter((dept) => userIds.includes(dept.user_id))) || [];
+          if (userDepts && userDepts.length > 0) {
+            const departmentIds = userDepts.map((d) => d.department_id);
+            const { data: allDeptDetails } = await supabase.from("departments").select("id, name");
+            const deptDetails = (allDeptDetails == null ? void 0 : allDeptDetails.filter((dept) => departmentIds.includes(dept.id))) || [];
+            return deptDetails;
+          }
+          return [];
+        }
+        return [];
+      } else {
+        const { data } = await supabase.from("departments").select("id, name").order("name");
+        return data || [];
+      }
+    }
+  });
+  const { data: userData, isLoading } = useQuery({
+    queryKey: ["userData", filters],
+    queryFn: async () => {
+      let filteredUserIds = [];
+      if (filters.location && filters.location !== "all") {
+        const { data: locationUsers } = await supabase.from("physical_location_access").select("user_id").eq("location_id", filters.location);
+        if (locationUsers) {
+          filteredUserIds = locationUsers.map((u) => u.user_id);
+        }
+      }
+      if (filters.department && filters.department !== "all") {
+        const { data: departmentUsers } = await supabase.from("user_departments").select("user_id").eq("department_id", filters.department);
+        if (departmentUsers) {
+          const deptUserIds = departmentUsers.map((u) => u.user_id);
+          if (filteredUserIds.length > 0) {
+            filteredUserIds = filteredUserIds.filter((id) => deptUserIds.includes(id));
+          } else {
+            filteredUserIds = deptUserIds;
+          }
+        }
+      }
+      const now = /* @__PURE__ */ new Date();
+      const startDate = /* @__PURE__ */ new Date();
+      switch (filters.timeRange) {
+        case "7days":
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case "30days":
+          startDate.setDate(now.getDate() - 30);
+          break;
+        case "90days":
+          startDate.setDate(now.getDate() - 90);
+          break;
+        case "1year":
+          startDate.setFullYear(now.getFullYear() - 1);
+          break;
+        default:
+          startDate.setDate(now.getDate() - 30);
+      }
+      let profilesQuery = supabase.from("profiles").select("*");
+      if (filteredUserIds.length > 0) {
+        profilesQuery = profilesQuery.in("id", filteredUserIds);
+      }
+      const { data: profiles } = await profilesQuery;
+      let userDeptsQuery = supabase.from("user_departments").select(`
+          user_id,
+          departments!inner(name)
+        `).eq("is_primary", true);
+      if (filteredUserIds.length > 0) {
+        userDeptsQuery = userDeptsQuery.in("user_id", filteredUserIds);
+      }
+      const { data: userDepts } = await userDeptsQuery;
+      let userLocationsQuery = supabase.from("physical_location_access").select(`
+          user_id,
+          locations!inner(name)
+        `);
+      if (filteredUserIds.length > 0) {
+        userLocationsQuery = userLocationsQuery.in("user_id", filteredUserIds);
+      }
+      const { data: userLocations } = await userLocationsQuery;
+      let activityQuery = supabase.from("user_behavior_analytics").select(`
+          user_id,
+          created_at
+        `).gte("created_at", startDate.toISOString());
+      if (filteredUserIds.length > 0) {
+        activityQuery = activityQuery.in("user_id", filteredUserIds);
+      }
+      const { data: userActivityData } = await activityQuery;
+      let responsesQuery = supabase.from("user_answer_responses").select(`
+          user_id,
+          total_score,
+          created_at
+        `).gte("created_at", startDate.toISOString());
+      if (filteredUserIds.length > 0) {
+        responsesQuery = responsesQuery.in("user_id", filteredUserIds);
+      }
+      const { data: userResponses } = await responsesQuery;
+      const languageStats = (profiles == null ? void 0 : profiles.reduce((acc, profile) => {
+        const language = profile.language || "English";
+        acc[language] = (acc[language] || 0) + 1;
+        return acc;
+      }, {})) || {};
+      const userDemographics = Object.entries(languageStats).map(([name, value], index) => ({
+        name,
+        value,
+        color: COLORS[index % COLORS.length]
+      }));
+      const activeUsers = new Set((userActivityData == null ? void 0 : userActivityData.map((item) => item.user_id)) || []);
+      const totalUsers = (profiles == null ? void 0 : profiles.length) || 0;
+      const activeCount = activeUsers.size;
+      const inactiveCount = totalUsers - activeCount;
+      const userEngagement = [{
+        name: "User Engagement",
+        active: activeCount,
+        inactive: inactiveCount,
+        total: totalUsers
+      }];
+      const deptStats = (userDepts == null ? void 0 : userDepts.reduce((acc, item) => {
+        var _a2;
+        const deptName = ((_a2 = item.departments) == null ? void 0 : _a2.name) || "Unknown";
+        acc[deptName] = (acc[deptName] || 0) + 1;
+        return acc;
+      }, {})) || {};
+      const departmentDistribution = Object.entries(deptStats).map(([name, users]) => ({
+        name,
+        users,
+        percentage: Math.round(users / totalUsers * 100)
+      }));
+      const locationStats = (userLocations == null ? void 0 : userLocations.reduce((acc, item) => {
+        var _a2;
+        const locationName = ((_a2 = item.locations) == null ? void 0 : _a2.name) || "Unknown";
+        acc[locationName] = (acc[locationName] || 0) + 1;
+        return acc;
+      }, {})) || {};
+      const locationDistribution = Object.entries(locationStats).map(([name, users]) => ({
+        name,
+        users,
+        percentage: Math.round(users / totalUsers * 100)
+      }));
+      const userActivity = Array.from({ length: 7 }, (_, i) => {
+        const date = /* @__PURE__ */ new Date();
+        date.setDate(date.getDate() - (6 - i));
+        return {
+          date: date.toLocaleDateString(),
+          activeUsers: Math.floor(Math.random() * 20) + 10,
+          newUsers: Math.floor(Math.random() * 5) + 1
+        };
+      });
+      const userStats = (profiles == null ? void 0 : profiles.map((profile) => {
+        const profileResponses = (userResponses == null ? void 0 : userResponses.filter((r) => r.user_id === profile.id)) || [];
+        const userBehavior = (userActivityData == null ? void 0 : userActivityData.filter((b) => b.user_id === profile.id)) || [];
+        const lessonsCompleted = profileResponses.length;
+        const averageScore = profileResponses.length > 0 ? Math.round(profileResponses.reduce((sum, r) => sum + (r.total_score || 0), 0) / profileResponses.length) : 0;
+        const lastActive = userBehavior.length > 0 ? new Date(Math.max(...userBehavior.map((b) => new Date(b.created_at).getTime()))).toLocaleDateString() : "Never";
+        return {
+          name: profile.full_name || profile.username || `User ${profile.id.slice(0, 8)}`,
+          lessonsCompleted,
+          averageScore,
+          lastActive
+        };
+      })) || [];
+      const topUsers = userStats.filter((user) => user.lessonsCompleted > 0).sort((a, b) => b.lessonsCompleted - a.lessonsCompleted).slice(0, 10);
+      return {
+        userDemographics,
+        userEngagement,
+        departmentDistribution,
+        locationDistribution,
+        userActivity,
+        topUsers
+      };
+    }
+  });
+  const handlePrint = useReactToPrint({
+    contentRef: printRef
+  });
+  const handleExportExcel = () => {
+    if (!userData) return;
+    const workbook = XLSX.utils.book_new();
+    const demographicsSheet = XLSX.utils.json_to_sheet(userData.userDemographics);
+    XLSX.utils.book_append_sheet(workbook, demographicsSheet, "User Demographics");
+    const deptSheet = XLSX.utils.json_to_sheet(userData.departmentDistribution);
+    XLSX.utils.book_append_sheet(workbook, deptSheet, "Department Distribution");
+    const locationSheet = XLSX.utils.json_to_sheet(userData.locationDistribution);
+    XLSX.utils.book_append_sheet(workbook, locationSheet, "Location Distribution");
+    const topUsersSheet = XLSX.utils.json_to_sheet(userData.topUsers);
+    XLSX.utils.book_append_sheet(workbook, topUsersSheet, "Top Users");
+    XLSX.writeFile(workbook, "user_report.xlsx");
+  };
+  const handleExportPDF = () => {
+    if (!userData) return;
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text("User Report", 20, 20);
+    doc.setFontSize(12);
+    doc.text(`Generated: ${(/* @__PURE__ */ new Date()).toLocaleDateString()}`, 20, 30);
+    autoTable(doc, {
+      head: [["Department", "Users", "Percentage"]],
+      body: userData.departmentDistribution.map((item) => [
+        item.name,
+        item.users.toString(),
+        `${item.percentage}%`
+      ]),
+      startY: 40
+    });
+    doc.save("user_report.pdf");
+  };
+  if (isLoading) {
+    return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsx("div", { className: "text-lg", children: "Loading user data..." }) });
+  }
+  return /* @__PURE__ */ jsxs("div", { ref: printRef, className: "space-y-6", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center", children: [
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx("h2", { className: "text-2xl font-bold text-learning-primary", children: "User Reports" }),
+        /* @__PURE__ */ jsx("p", { className: "text-muted-foreground", children: "User engagement statistics, demographics, and individual progress" })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
+        /* @__PURE__ */ jsxs(Button, { onClick: handlePrint, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsx(Printer, { className: "w-4 h-4 mr-2" }),
+          "Print"
+        ] }),
+        /* @__PURE__ */ jsxs(Button, { onClick: handleExportExcel, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsx(Download, { className: "w-4 h-4 mr-2" }),
+          "Export Excel"
+        ] }),
+        /* @__PURE__ */ jsxs(Button, { onClick: handleExportPDF, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsx(FileText, { className: "w-4 h-4 mr-2" }),
+          "Export PDF"
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs(Card, { children: [
+      /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx(Filter, { className: "w-5 h-5" }),
+        "Filters"
+      ] }) }),
+      /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: filters.timeRange,
+            onValueChange: (value) => setFilters((prev) => ({ ...prev, timeRange: value })),
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Time Range" }) }),
+              /* @__PURE__ */ jsxs(SelectContent, { children: [
+                /* @__PURE__ */ jsx(SelectItem, { value: "7days", children: "Last 7 Days" }),
+                /* @__PURE__ */ jsx(SelectItem, { value: "30days", children: "Last 30 Days" }),
+                /* @__PURE__ */ jsx(SelectItem, { value: "90days", children: "Last 90 Days" }),
+                /* @__PURE__ */ jsx(SelectItem, { value: "1year", children: "Last Year" })
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: filters.location,
+            onValueChange: (value) => setFilters((prev) => ({
+              ...prev,
+              location: value,
+              department: "all"
+              // Reset department when location changes
+            })),
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select Location" }) }),
+              /* @__PURE__ */ jsxs(SelectContent, { children: [
+                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Locations" }),
+                locations == null ? void 0 : locations.map((loc) => /* @__PURE__ */ jsx(SelectItem, { value: loc.name, children: loc.name }, loc.id))
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: filters.department,
+            onValueChange: (value) => setFilters((prev) => ({ ...prev, department: value })),
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select Department" }) }),
+              /* @__PURE__ */ jsxs(SelectContent, { children: [
+                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Departments" }),
+                departments == null ? void 0 : departments.map((dept) => /* @__PURE__ */ jsx(SelectItem, { value: dept.id, children: dept.name }, dept.id))
+              ] })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: filters.userStatus,
+            onValueChange: (value) => setFilters((prev) => ({ ...prev, userStatus: value })),
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "User Status" }) }),
+              /* @__PURE__ */ jsxs(SelectContent, { children: [
+                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Users" }),
+                /* @__PURE__ */ jsx(SelectItem, { value: "active", children: "Active Users" }),
+                /* @__PURE__ */ jsx(SelectItem, { value: "inactive", children: "Inactive Users" }),
+                /* @__PURE__ */ jsx(SelectItem, { value: "new", children: "New Users" })
+              ] })
+            ]
+          }
+        )
+      ] }) })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+          /* @__PURE__ */ jsx(CardTitle, { className: "text-sm font-medium", children: "Total Users" }),
+          /* @__PURE__ */ jsx(Users, { className: "h-4 w-4 text-muted-foreground" })
+        ] }),
+        /* @__PURE__ */ jsxs(CardContent, { children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold", children: ((_a = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _a.total) || 0 }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Across all locations" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+          /* @__PURE__ */ jsx(CardTitle, { className: "text-sm font-medium", children: "Active Users" }),
+          /* @__PURE__ */ jsx(UserCheck, { className: "h-4 w-4 text-muted-foreground" })
+        ] }),
+        /* @__PURE__ */ jsxs(CardContent, { children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold", children: ((_b = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _b.active) || 0 }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "In selected period" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+          /* @__PURE__ */ jsx(CardTitle, { className: "text-sm font-medium", children: "Inactive Users" }),
+          /* @__PURE__ */ jsx(UserX, { className: "h-4 w-4 text-muted-foreground" })
+        ] }),
+        /* @__PURE__ */ jsxs(CardContent, { children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold", children: ((_c = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _c.inactive) || 0 }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "No recent activity" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+          /* @__PURE__ */ jsx(CardTitle, { className: "text-sm font-medium", children: "Engagement Rate" }),
+          /* @__PURE__ */ jsx(Activity, { className: "h-4 w-4 text-muted-foreground" })
+        ] }),
+        /* @__PURE__ */ jsxs(CardContent, { children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold", children: [
+            ((_d = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _d.total) > 0 ? Math.round(userData.userEngagement[0].active / userData.userEngagement[0].total * 100) : 0,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Active users percentage" })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { children: [
+          /* @__PURE__ */ jsx(CardTitle, { children: "User Demographics" }),
+          /* @__PURE__ */ jsx(CardDescription, { children: "Language distribution of users" })
+        ] }),
+        /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx(ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxs(PieChart, { children: [
+          /* @__PURE__ */ jsx(
+            Pie,
+            {
+              data: (userData == null ? void 0 : userData.userDemographics) || [],
+              cx: "50%",
+              cy: "50%",
+              labelLine: false,
+              label: ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`,
+              outerRadius: 80,
+              fill: "#8884d8",
+              dataKey: "value",
+              children: userData == null ? void 0 : userData.userDemographics.map((entry, index) => /* @__PURE__ */ jsx(Cell, { fill: entry.color }, `cell-${index}`))
+            }
+          ),
+          /* @__PURE__ */ jsx(Tooltip, {})
+        ] }) }) })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { children: [
+          /* @__PURE__ */ jsx(CardTitle, { children: "Department Distribution" }),
+          /* @__PURE__ */ jsx(CardDescription, { children: "Users by department" })
+        ] }),
+        /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx(ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxs(BarChart, { data: (userData == null ? void 0 : userData.departmentDistribution) || [], children: [
+          /* @__PURE__ */ jsx(XAxis, { dataKey: "name", angle: -45, textAnchor: "end", height: 80 }),
+          /* @__PURE__ */ jsx(YAxis, {}),
+          /* @__PURE__ */ jsx(Tooltip, {}),
+          /* @__PURE__ */ jsx(Bar, { dataKey: "users", fill: "#82ca9d" })
+        ] }) }) })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { children: [
+          /* @__PURE__ */ jsx(CardTitle, { children: "Location Distribution" }),
+          /* @__PURE__ */ jsx(CardDescription, { children: "Users by location" })
+        ] }),
+        /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx(ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxs(BarChart, { data: (userData == null ? void 0 : userData.locationDistribution) || [], children: [
+          /* @__PURE__ */ jsx(XAxis, { dataKey: "name", angle: -45, textAnchor: "end", height: 80 }),
+          /* @__PURE__ */ jsx(YAxis, {}),
+          /* @__PURE__ */ jsx(Tooltip, {}),
+          /* @__PURE__ */ jsx(Bar, { dataKey: "users", fill: "#ffc658" })
+        ] }) }) })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsxs(CardHeader, { children: [
+          /* @__PURE__ */ jsx(CardTitle, { children: "User Activity Trends" }),
+          /* @__PURE__ */ jsx(CardDescription, { children: "Daily active and new users" })
+        ] }),
+        /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx(ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxs(LineChart, { data: (userData == null ? void 0 : userData.userActivity) || [], children: [
+          /* @__PURE__ */ jsx(XAxis, { dataKey: "date" }),
+          /* @__PURE__ */ jsx(YAxis, {}),
+          /* @__PURE__ */ jsx(Tooltip, {}),
+          /* @__PURE__ */ jsx(Legend, {}),
+          /* @__PURE__ */ jsx(Line, { type: "monotone", dataKey: "activeUsers", stroke: "#8884d8", name: "Active Users" }),
+          /* @__PURE__ */ jsx(Line, { type: "monotone", dataKey: "newUsers", stroke: "#82ca9d", name: "New Users" })
+        ] }) }) })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs(Card, { children: [
+      /* @__PURE__ */ jsxs(CardHeader, { children: [
+        /* @__PURE__ */ jsx(CardTitle, { children: "Top Performing Users" }),
+        /* @__PURE__ */ jsx(CardDescription, { children: "Users with highest lesson completion and scores" })
+      ] }),
+      /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxs("table", { className: "w-full", children: [
+        /* @__PURE__ */ jsx("thead", { children: /* @__PURE__ */ jsxs("tr", { className: "border-b", children: [
+          /* @__PURE__ */ jsx("th", { className: "text-left p-2", children: "User" }),
+          /* @__PURE__ */ jsx("th", { className: "text-left p-2", children: "Lessons Completed" }),
+          /* @__PURE__ */ jsx("th", { className: "text-left p-2", children: "Average Score" }),
+          /* @__PURE__ */ jsx("th", { className: "text-left p-2", children: "Last Active" })
+        ] }) }),
+        /* @__PURE__ */ jsx("tbody", { children: userData == null ? void 0 : userData.topUsers.slice(0, 10).map((user, index) => /* @__PURE__ */ jsxs("tr", { className: "border-b", children: [
+          /* @__PURE__ */ jsx("td", { className: "p-2", children: user.name }),
+          /* @__PURE__ */ jsx("td", { className: "p-2", children: user.lessonsCompleted }),
+          /* @__PURE__ */ jsxs("td", { className: "p-2", children: [
+            user.averageScore,
+            "/100"
+          ] }),
+          /* @__PURE__ */ jsx("td", { className: "p-2", children: user.lastActive })
+        ] }, index)) })
+      ] }) }) })
+    ] })
+  ] });
+};
+const ProfileEditor = () => {
+  const { user } = useAuth$1();
+  const { profile, loading, updateProfile } = useProfile();
+  const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    username: "",
+    full_name: "",
+    bio: ""
+  });
+  o.useEffect(() => {
+    if (profile) {
+      setFormData({
+        username: profile.username || "",
+        full_name: profile.full_name || "",
+        bio: profile.bio || ""
+      });
+    }
+  }, [profile]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await updateProfile(formData);
+      setIsEditing(false);
+      toast({
+        title: "Profile updated",
+        description: "Your profile has been successfully updated."
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+  if (loading) {
+    return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
+  }
+  return /* @__PURE__ */ jsxs("div", { className: "max-w-4xl mx-auto", children: [
+    /* @__PURE__ */ jsxs("div", { className: "mb-8", children: [
+      /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: "Your Profile" }),
+      /* @__PURE__ */ jsx("p", { className: "text-muted-foreground", children: "Manage your personal profile information" })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Profile Information" }) }),
+        /* @__PURE__ */ jsx(CardContent, { children: !isEditing ? /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-muted-foreground", children: "Email" }),
+            /* @__PURE__ */ jsx("p", { className: "text-sm", children: user == null ? void 0 : user.email })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-muted-foreground", children: "Full Name" }),
+            /* @__PURE__ */ jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.full_name) || "Not set" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-muted-foreground", children: "Username" }),
+            /* @__PURE__ */ jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.username) || "Not set" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-muted-foreground", children: "Bio" }),
+            /* @__PURE__ */ jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.bio) || "Not set" })
+          ] }),
+          /* @__PURE__ */ jsx(Button, { onClick: () => setIsEditing(true), children: "Edit Profile" })
+        ] }) : /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "email", children: "Email" }),
+            /* @__PURE__ */ jsx(
+              Input,
+              {
+                id: "email",
+                type: "email",
+                value: (user == null ? void 0 : user.email) || "",
+                disabled: true
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "full_name", children: "Full Name" }),
+            /* @__PURE__ */ jsx(
+              Input,
+              {
+                id: "full_name",
+                type: "text",
+                value: formData.full_name,
+                onChange: (e) => setFormData({ ...formData, full_name: e.target.value })
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "username", children: "Username" }),
+            /* @__PURE__ */ jsx(
+              Input,
+              {
+                id: "username",
+                type: "text",
+                value: formData.username,
+                onChange: (e) => setFormData({ ...formData, username: e.target.value })
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "bio", children: "Bio" }),
+            /* @__PURE__ */ jsx(
+              Textarea,
+              {
+                id: "bio",
+                value: formData.bio,
+                onChange: (e) => setFormData({ ...formData, bio: e.target.value }),
+                rows: 3
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
+            /* @__PURE__ */ jsxs(Button, { type: "submit", disabled: saving, children: [
+              saving && /* @__PURE__ */ jsx(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
+              "Save Changes"
+            ] }),
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                type: "button",
+                variant: "outline",
+                onClick: () => setIsEditing(false),
+                children: "Cancel"
+              }
+            )
+          ] })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { children: [
+        /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Account Status" }) }),
+        /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-muted-foreground", children: "Account Created" }),
+            /* @__PURE__ */ jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.created_at) ? new Date(profile.created_at).toLocaleDateString() : "Unknown" })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsx(Label, { className: "text-sm font-medium text-muted-foreground", children: "Last Updated" }),
+            /* @__PURE__ */ jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.updated_at) ? new Date(profile.updated_at).toLocaleDateString() : "Unknown" })
+          ] }),
+          /* @__PURE__ */ jsx(Alert, { children: /* @__PURE__ */ jsx(AlertDescription, { children: "Your profile is stored securely and you have full control over your data." }) })
+        ] }) })
+      ] })
+    ] })
+  ] });
+};
+const ProfileHeader = ({ profile }) => {
+  const initials = `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`;
+  const { profiles, updateProfile } = useUserProfiles();
+  const [manager, setManager] = useState(profile.manager);
+  const handleReportsToChange = async (value) => {
+    setManager(value);
+    await updateProfile(profile.id, { manager: value });
+  };
+  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col md:flex-row items-start md:items-center gap-6", children: [
+    /* @__PURE__ */ jsxs(Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
+      /* @__PURE__ */ jsx(AvatarImage, { src: profile.avatar, alt: `${profile.firstName} ${profile.lastName}` }),
+      /* @__PURE__ */ jsx(AvatarFallback, { className: "text-2xl", children: initials })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-1.5", children: [
+      /* @__PURE__ */ jsxs("h1", { className: "text-2xl font-bold", children: [
+        profile.firstName,
+        " ",
+        profile.lastName
+      ] }),
+      /* @__PURE__ */ jsx("p", { className: "text-lg text-muted-foreground", children: profile.role }),
+      /* @__PURE__ */ jsxs("p", { className: "text-sm text-muted-foreground", children: [
+        "Department: ",
+        profile.department
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground flex items-center gap-2", children: [
+        /* @__PURE__ */ jsx("span", { children: "Reports to:" }),
+        /* @__PURE__ */ jsxs(Select, { onValueChange: handleReportsToChange, value: manager, children: [
+          /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager" }) }),
+          /* @__PURE__ */ jsx(SelectContent, { children: profiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.full_name || user.username || "Unnamed User", children: user.full_name || user.username || "Unnamed User" }, user.id)) })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "mt-4 md:mt-0 md:ml-auto space-y-2", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(Mail, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx("span", { children: profile.email })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(Phone, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx("span", { children: profile.phone })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx("span", { children: profile.location })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsxs("span", { children: [
+          "Started ",
+          new Date(profile.startDate).toLocaleDateString()
+        ] })
+      ] })
+    ] })
+  ] }) }) });
+};
+const PhysicalLocationTab = ({ profile }) => {
+  const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
+  const { data: locationAccess = [], refetch } = useQuery({
+    queryKey: ["user-physical-location-access", profile.email],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("physical_location_access").select(`
+          id,
+          access_purpose, 
+          status, 
+          date_access_created, 
+          date_access_revoked,
+          location_id,
+          locations!inner(name)
+        `).eq("user_id", profile.id).order("created_at", { ascending: false });
+      if (error) throw error;
+      const transformedData = (data == null ? void 0 : data.map((item, index) => {
+        var _a;
+        return {
+          ...item,
+          location: ((_a = item.locations) == null ? void 0 : _a.name) || "Unknown Location",
+          // Ensure we have a unique key for React
+          uniqueKey: item.id || `temp-${index}-${Date.now()}`
+        };
+      })) || [];
+      return transformedData;
+    }
+  });
+  const columns = [
+    {
+      key: "location",
+      header: "Location",
+      type: "text",
+      editable: false,
+      // Not editable as requested
+      required: true,
+      sortable: true
+    },
+    {
+      key: "access_purpose",
+      header: "Access Purpose",
+      type: "text",
+      editable: false,
+      // Not editable as requested
+      required: true,
+      sortable: true
+    },
+    {
+      key: "date_access_created",
+      header: "Date Created",
+      type: "date",
+      editable: false,
+      // Not editable as requested
+      required: true,
+      sortable: true
+    },
+    {
+      key: "date_access_revoked",
+      header: "Date Revoked",
+      type: "date",
+      editable: true,
+      // Only this field is editable as requested
+      sortable: true
+    },
+    {
+      key: "status",
+      header: "Status",
+      type: "select",
+      options: ["Active", "Inactive", "Revoked"],
+      editable: false,
+      // Not editable as requested
+      sortable: true
+    }
+  ];
+  const handleUpdate = async (id, updates) => {
+    try {
+      const { error } = await supabase.from("physical_location_access").update(updates).eq("id", id);
+      if (error) throw error;
+      toast$1({
+        title: "Access updated",
+        description: "Physical location access has been successfully updated"
+      });
+      refetch();
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating physical location access:", error);
+      toast$1({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive"
+      });
+      return { success: false, error: error.message };
+    }
+  };
+  const handleDelete = async (id) => {
+    try {
+      const { error } = await supabase.from("physical_location_access").delete().eq("id", id);
+      if (error) throw error;
+      toast$1({
+        title: "Access removed",
+        description: "Physical location access has been successfully removed"
+      });
+      refetch();
+      return { success: true };
+    } catch (error) {
+      toast$1({
+        title: "Delete failed",
+        description: error.message,
+        variant: "destructive"
+      });
+      return { success: false, error: error.message };
+    }
+  };
+  return /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center", children: [
+      /* @__PURE__ */ jsxs("p", { className: "text-sm text-muted-foreground", children: [
+        "Manage physical location access for ",
+        profile.firstName,
+        " ",
+        profile.lastName
+      ] }),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          onClick: () => setIsAssignDialogOpen(true),
+          size: "icon",
+          children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsx(
+      EditableTable,
+      {
+        data: locationAccess,
+        columns,
+        onUpdate: handleUpdate,
+        onDelete: handleDelete,
+        allowAdd: false,
+        allowDelete: true
+      }
+    ),
+    /* @__PURE__ */ jsx(
+      AssignPhysicalLocationDialog,
+      {
+        isOpen: isAssignDialogOpen,
+        onOpenChange: setIsAssignDialogOpen,
+        prefilledUser: {
+          full_name: profile.firstName + " " + profile.lastName,
+          email: profile.email,
+          department: profile.department,
+          role: profile.role
+        },
+        onSuccess: () => {
+          refetch();
+          setIsAssignDialogOpen(false);
+        }
+      }
+    )
+  ] });
+};
+const RoleDebugPanel = () => {
+  const {
+    role,
+    isSuperAdmin,
+    isClientAdmin,
+    isModerator,
+    hasAdminAccess,
+    canAccessLessons,
+    canAccessLearningTracks,
+    canAccessTranslation,
+    canAccessAssignments,
+    canAccessAnalytics,
+    canAccessReports,
+    canAccessOrganisation,
+    canAccessNotifications,
+    canAccessTemplates,
+    loading,
+    getRoleDisplayName,
+    getRoleBadgeVariant
+  } = useUserRole();
+  if (loading) {
+    return /* @__PURE__ */ jsx(Card, { className: "w-full max-w-md", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6", children: /* @__PURE__ */ jsxs("div", { className: "animate-pulse space-y-2", children: [
+      /* @__PURE__ */ jsx("div", { className: "h-4 bg-muted rounded w-3/4" }),
+      /* @__PURE__ */ jsx("div", { className: "h-4 bg-muted rounded w-1/2" })
+    ] }) }) });
+  }
+  const getIcon = () => {
+    if (isSuperAdmin) return /* @__PURE__ */ jsx(Crown, { className: "w-5 h-5" });
+    if (isClientAdmin) return /* @__PURE__ */ jsx(Shield, { className: "w-5 h-5" });
+    if (isModerator) return /* @__PURE__ */ jsx(Settings, { className: "w-5 h-5" });
+    return /* @__PURE__ */ jsx(User, { className: "w-5 h-5" });
+  };
+  return /* @__PURE__ */ jsxs(Card, { className: "w-full max-w-md", children: [
+    /* @__PURE__ */ jsx(CardHeader, { className: "pb-3", children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center gap-2", children: [
+      getIcon(),
+      "Role Information"
+    ] }) }),
+    /* @__PURE__ */ jsxs(CardContent, { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Current Role:" }),
+        /* @__PURE__ */ jsx(Badge, { variant: getRoleBadgeVariant(), children: getRoleDisplayName() })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ jsx("span", { children: "Raw Role:" }),
+          /* @__PURE__ */ jsx("code", { className: "text-xs bg-muted px-1 rounded", children: role || "null" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ jsx("span", { children: "Is Admin:" }),
+          /* @__PURE__ */ jsx(Badge, { variant: hasAdminAccess ? "default" : "outline", className: "text-xs", children: hasAdminAccess.toString() })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ jsx("span", { children: "Is Super Admin:" }),
+          /* @__PURE__ */ jsx(Badge, { variant: isSuperAdmin ? "default" : "outline", className: "text-xs", children: isSuperAdmin.toString() })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ jsx("span", { children: "Is Client Admin:" }),
+          /* @__PURE__ */ jsx(Badge, { variant: isClientAdmin ? "secondary" : "outline", className: "text-xs", children: isClientAdmin.toString() })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ jsx("span", { children: "Is Moderator:" }),
+          /* @__PURE__ */ jsx(Badge, { variant: isModerator ? "outline" : "outline", className: "text-xs", children: isModerator.toString() })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+          /* @__PURE__ */ jsx("span", { children: "Has Admin Access:" }),
+          /* @__PURE__ */ jsx(Badge, { variant: hasAdminAccess ? "default" : "outline", className: "text-xs", children: hasAdminAccess.toString() })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t", children: [
+        /* @__PURE__ */ jsx("h4", { className: "text-sm font-medium mb-2", children: "Access Permissions:" }),
+        /* @__PURE__ */ jsx("div", { className: "text-xs space-y-1", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessLessons ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessLessons ? "✅" : "❌",
+            " Lessons"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessLearningTracks ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessLearningTracks ? "✅" : "❌",
+            " Learning Tracks"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessTranslation ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessTranslation ? "✅" : "❌",
+            " Translation"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessAssignments ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessAssignments ? "✅" : "❌",
+            " Assignments"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessAnalytics ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessAnalytics ? "✅" : "❌",
+            " Analytics"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessReports ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessReports ? "✅" : "❌",
+            " Reports"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessOrganisation ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessOrganisation ? "✅" : "❌",
+            " Organisation"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessNotifications ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessNotifications ? "✅" : "❌",
+            " Notifications"
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: `flex items-center gap-1 ${canAccessTemplates ? "text-green-600" : "text-red-500"}`, children: [
+            canAccessTemplates ? "✅" : "❌",
+            " Templates"
+          ] })
+        ] }) })
+      ] })
+    ] })
+  ] });
+};
 export {
+  AddEducationDialog,
   AddOrganisationCertificateDialog,
+  AddPhysicalLocationDialog,
+  AssignPhysicalLocationDialog,
+  CertificateManagement,
+  Certificates,
   CreateUserDialog,
+  DepartmentManagement,
+  DepartmentRolePairsDisplay,
   EditUserDialog,
+  EditableCertificates,
   EditableField,
   EditableProfileHeader,
+  ImportUsersDialog,
+  LocationManagement,
   MultipleRolesField,
+  OrganisationCertificates,
   OrganisationPanel,
+  OrganisationProfile,
   OrganisationProvider,
   OrganisationWrapper,
   PersonaDetailsTabs,
   PersonaProfile,
+  PhysicalLocationTab,
   ProfileAvatar,
   ProfileBasicInfo,
   ProfileContactInfo,
+  ProfileEditor,
+  ProfileHeader,
+  RoleDebugPanel,
+  RoleManagement,
+  SearchableProfileField,
   UserCard,
+  UserDepartmentsManager,
+  UserDepartmentsRolesManager,
+  UserDepartmentsRolesTable,
   UserDetailView,
   UserList,
   UserManagement,
+  UserReport,
   UserRoleField,
   UserTable,
   handleCreateUser,

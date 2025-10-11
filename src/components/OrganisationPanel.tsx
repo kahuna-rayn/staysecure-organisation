@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Users, UserCheck, Building2, MapPin, Settings, Award, User } from 'lucide-react';
 import { useOrganisationContext } from '../context/OrganisationContext';
 import UserManagement from './admin/UserManagement';
-import { RoleManagement } from './knowledge/RoleManagement';
-import { DepartmentManagement } from './knowledge/DepartmentManagement';
-import { LocationManagement } from './knowledge/LocationManagement';
+import { RoleManagement } from './organisational/RoleManagement';
+import { DepartmentManagement } from './organisational/DepartmentManagement';
+import { LocationManagement } from './organisational/LocationManagement';
 import OrganisationCertificates from './OrganisationCertificates';
 import OrganisationProfile from './OrganisationProfile';
 

@@ -23,6 +23,8 @@ export default defineConfig({
         if (id === 'react' || id === 'react-dom' || id === 'react/jsx-runtime') return true;
         if (id === '@supabase/supabase-js' || id === '@tanstack/react-query') return true;
         if (id === 'react-router-dom' || id === 'react-dropzone' || id === 'papaparse') return true;
+        if (id === 'recharts' || id === 'react-to-print' || id === 'xlsx' || id === 'jspdf' || id === 'jspdf-autotable') return true;
+        if (id === 'staysecure-auth') return true;
         
         // External patterns for LEARN-specific imports
         if (id.startsWith('@/hooks/')) return true;
@@ -40,7 +42,8 @@ export default defineConfig({
           'react/jsx-runtime': 'react/jsx-runtime',
           '@supabase/supabase-js': 'Supabase',
           '@tanstack/react-query': 'ReactQuery',
-          'react-router-dom': 'ReactRouterDOM'
+          'react-router-dom': 'ReactRouterDOM',
+          'staysecure-auth': 'StaySecureAuth'
         }
       }
     },

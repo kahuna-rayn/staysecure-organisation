@@ -1,1 +1,0 @@
-{"version":3,"file":"ComplianceDepartmentDetail.d.ts","sourceRoot":"","sources":["../../src/components/ComplianceDepartmentDetail.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAW1B,UAAU,qBAAqB;IAC7B,UAAU,EAAE,MAAM,CAAC;IACnB,MAAM,EAAE,MAAM,IAAI,CAAC;CACpB;AAED,QAAA,MAAM,0BAA0B,EAAE,KAAK,CAAC,EAAE,CAAC,qBAAqB,CAiV/D,CAAC;AAEF,eAAe,0BAA0B,CAAC"}

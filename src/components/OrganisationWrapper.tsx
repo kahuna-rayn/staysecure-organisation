@@ -1,5 +1,6 @@
 import React from 'react';
-import { OrganisationPanel, OrganisationProvider } from '@/modules/organisation';
+import { OrganisationPanel } from './OrganisationPanel';
+import { OrganisationProvider } from '../context/OrganisationContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserRole } from '@/hooks/useUserRole';
 

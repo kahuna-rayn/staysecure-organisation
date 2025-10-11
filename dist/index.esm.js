@@ -32,7 +32,6 @@ import vt from "react-dom";
 import { cn } from "@/lib/utils";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { OrganisationProvider as OrganisationProvider$1, OrganisationPanel as OrganisationPanel$1 } from "@/modules/organisation";
 import { useUserRole } from "@/hooks/useUserRole";
 import HardwareInventory from "@/components/HardwareInventory";
 import SoftwareAccounts from "@/components/SoftwareAccounts";
@@ -48,8 +47,6 @@ import { useUserProfileRoles } from "@/hooks/useUserProfileRoles";
 import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserAssets } from "@/hooks/useUserAssets";
-import EditableProfileHeader$1 from "@/modules/organisation/components/EditableProfileHeader";
-import PersonaDetailsTabs$1 from "@/modules/organisation/components/PersonaDetailsTabs";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
 import { useAuth as useAuth$1 } from "staysecure-auth";
 import { ResponsiveContainer, PieChart, Pie, Cell, Tooltip, BarChart, XAxis, YAxis, Bar, LineChart, Legend, Line } from "recharts";
@@ -4603,8 +4600,8 @@ const OrganisationWrapper = () => {
       canManageProfile: hasAdminAccess
     }
   };
-  return /* @__PURE__ */ jsx(OrganisationProvider$1, { config: organisationConfig, children: /* @__PURE__ */ jsx(
-    OrganisationPanel$1,
+  return /* @__PURE__ */ jsx(OrganisationProvider, { config: organisationConfig, children: /* @__PURE__ */ jsx(
+    OrganisationPanel,
     {
       title: "Organisation",
       description: "Manage users, roles, departments, and locations",
@@ -5336,14 +5333,14 @@ const UserDetailView = () => {
       ] })
     ] }),
     /* @__PURE__ */ jsx(
-      EditableProfileHeader$1,
+      EditableProfileHeader,
       {
         profile: personaData,
         onProfileUpdate: handleProfileUpdate,
         onOptimisticUpdate: handleOptimisticUpdate
       }
     ),
-    /* @__PURE__ */ jsx(PersonaDetailsTabs$1, { profile: personaData, userId, onUpdate: refetch })
+    /* @__PURE__ */ jsx(PersonaDetailsTabs, { profile: personaData, userId, onUpdate: refetch })
   ] });
 };
 const UserRoleField = ({ userId }) => {

@@ -18,23 +18,27 @@ export default defineConfig({
       fileName: (format) => `index.${format === 'es' ? 'esm' : format}.js`
     },
     rollupOptions: {
-      external: (id) => {
-        // External dependencies that should not be bundled
-        if (id === 'react' || id === 'react-dom' || id === 'react/jsx-runtime') return true;
-        if (id === '@supabase/supabase-js' || id === '@tanstack/react-query') return true;
-        if (id === 'react-router-dom' || id === 'react-dropzone' || id === 'papaparse') return true;
-        if (id === 'recharts' || id === 'react-to-print' || id === 'xlsx' || id === 'jspdf' || id === 'jspdf-autotable') return true;
-        if (id === 'staysecure-auth') return true;
-        
-        // External patterns for LEARN-specific imports
-        if (id.startsWith('@/hooks/')) return true;
-        if (id.startsWith('@/components/')) return true;
-        if (id.startsWith('@/integrations/')) return true;
-        if (id.startsWith('@/modules/')) return true;
-        if (id.startsWith('@/lib/')) return true;
-        
-        return false;
-      },
+      external: [
+        'react',
+        'react-dom',
+        'react/jsx-runtime',
+        '@supabase/supabase-js',
+        '@tanstack/react-query',
+        'react-router-dom',
+        'react-dropzone',
+        'papaparse',
+        'recharts',
+        'react-to-print',
+        'xlsx',
+        'jspdf',
+        'jspdf-autotable',
+        'staysecure-auth',
+        /^@\/hooks\//,
+        /^@\/components\//,
+        /^@\/integrations\//,
+        /^@\/modules\//,
+        /^@\/lib\//
+      ],
       output: {
         globals: {
           'react': 'React',

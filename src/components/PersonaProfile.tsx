@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-// import { useAuth } from 'staysecure-auth'; // Will be passed as prop
+import { useAuth } from 'staysecure-auth';
 import { useProfile } from "@/hooks/useProfile";
 import { useUserAssets } from "@/hooks/useUserAssets";
 import { useUserRole } from "@/hooks/useUserRole";

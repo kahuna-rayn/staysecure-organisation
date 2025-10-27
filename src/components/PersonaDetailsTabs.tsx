@@ -11,7 +11,7 @@ import AssignHardwareDialog from "@/components/admin/AssignHardwareDialog";
 import AssignSoftwareDialog from "@/components/admin/AssignSoftwareDialog";
 import AddEducationDialog from "@/components/admin/AddEducationDialog";
 import { Laptop, MonitorSmartphone, GraduationCap, MapPin, Plus, BookOpen, Users, Play } from "lucide-react";
-// MyDocuments removed - was GOVERN-specific
+import MyDocuments from "@/components/knowledge/MyDocuments";
 import { UserDepartmentsRolesManager, UserDepartmentsRolesManagerRef } from "@/components/admin/UserDepartmentsRolesManager";
 import LearningTracksTab from "@/components/LearningTracksTab";
 

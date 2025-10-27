@@ -359,7 +359,7 @@ const OrganisationProfile: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-left">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Organisation Profile</h2>
@@ -386,7 +386,7 @@ const OrganisationProfile: React.FC = () => {
         <CardHeader>
           <CardTitle>General Information</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="org-name">Organisation Name</Label>
@@ -495,7 +495,7 @@ const OrganisationProfile: React.FC = () => {
         <CardHeader>
           <CardTitle>Signatory Information</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 text-left">
           {/* CEM Declaration Signatory */}
           <div className="space-y-4">
             <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">CEM Declaration</h4>

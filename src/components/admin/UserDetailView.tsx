@@ -5,8 +5,8 @@ import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserAssets } from '@/hooks/useUserAssets';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import EditableProfileHeader from '../EditableProfileHeader';
-import PersonaDetailsTabs from '../PersonaDetailsTabs';
+import EditableProfileHeader from '@/modules/organisation/components/EditableProfileHeader';
+import PersonaDetailsTabs from '@/modules/organisation/components/PersonaDetailsTabs';
 
 const UserDetailView: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
@@ -17,8 +17,9 @@ const UserDetailView: React.FC = () => {
   // Build personaData from the latest userProfile
   const buildPersonaData = (profileObj: any) => ({
     id: profileObj.id,
-    firstName: profileObj.full_name?.split(' ')[0] || '',
-    lastName: profileObj.full_name?.split(' ').slice(1).join(' ') || '',
+    full_name: profileObj.full_name || '',  // Add this line
+    firstName: profileObj.first_name || '',  // Use actual first_name from DB
+    lastName: profileObj.last_name || '',    // Use actual last_name from DB
     email: profileObj.email || '',
     phone: profileObj.phone || 'Not provided',
     location: profileObj.location || 'Not specified',

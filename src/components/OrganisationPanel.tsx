@@ -5,9 +5,9 @@ import { Badge } from '@/components/ui/badge';
 import { Users, UserCheck, Building2, MapPin, Settings, Award, User } from 'lucide-react';
 import { useOrganisationContext } from '../context/OrganisationContext';
 import UserManagement from './admin/UserManagement';
-import { RoleManagement } from './organisational/RoleManagement';
-import { DepartmentManagement } from './organisational/DepartmentManagement';
-import { LocationManagement } from './organisational/LocationManagement';
+import { RoleManagement } from './knowledge/RoleManagement';
+import { DepartmentManagement } from './knowledge/DepartmentManagement';
+import { LocationManagement } from './knowledge/LocationManagement';
 import OrganisationCertificates from './OrganisationCertificates';
 import OrganisationProfile from './OrganisationProfile';
 
@@ -50,7 +50,7 @@ export const OrganisationPanel: React.FC<OrganisationPanelProps> = ({
   return (
     <div className={`w-full px-4 space-y-6 ${className}`}>
       <div className="flex items-center justify-between">
-        <div>
+        <div className="text-left">
           <h1 className="text-3xl font-bold">{title}</h1>
           <p className="text-muted-foreground">{description}</p>
         </div>

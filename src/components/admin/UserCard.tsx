@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Edit, Trash2, Phone, MapPin, IdCard, Mail, Eye, Settings } from 'lucide-react';
-import EditableField from '../organisational/EditableField';
+import EditableField from '@/modules/organisation/components/profile/EditableField';
 import { toast } from '@/components/ui/use-toast';
 import { DepartmentRolePairsDisplay } from '@/components/admin/DepartmentRolePairsDisplay';
 import type { UserProfile } from '@/hooks/useUserProfiles';

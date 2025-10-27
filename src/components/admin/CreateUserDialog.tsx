@@ -60,6 +60,7 @@ const isSuperAdmin = currentUserRole === 'super_admin';
       newUser.first_name?.trim(),
       newUser.last_name?.trim(),
       newUser.email?.trim(),
+      newUser.access_level,
       newUser.location_id
     ];
     
@@ -211,9 +212,9 @@ const handleFullNameChange = (value: string) => {
                 onChange={(e) => handleFullNameChange(e.target.value)}
                 placeholder="Enter full name"
                 className="flex-1"
+                required
               />
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="email">Email Address <span className="text-red-500">*</span></Label>
               <Input
@@ -228,15 +229,55 @@ const handleFullNameChange = (value: string) => {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              value={newUser.phone}
-              onChange={(e) => updateField('phone', e.target.value)}
-              placeholder="Enter phone number"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="access_level">Access Level <span className="text-red-500">*</span></Label>
+              <Select 
+                value={newUser.access_level} 
+                onValueChange={(value) => {
+                  // Map display values to backend values
+                  const backendValue = value === 'Admin' ? 'client_admin' : value.toLowerCase();
+                  updateField('access_level', backendValue);
+                }}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select access level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="client_admin">Admin</SelectItem>
+                  {isSuperAdmin && <SelectItem value="author">Author</SelectItem>}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
+              <Select value={newUser.location_id || ''} onValueChange={handleLocationChange} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locations?.map((location) => (
+                    <SelectItem key={location.id} value={location.id}>
+                      {location.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                value={newUser.phone}
+                onChange={(e) => updateField('phone', e.target.value)}
+                placeholder="Enter phone number"
+              />
+            </div>
             <div className="space-y-2">
               <Label htmlFor="employee_id">Employee ID</Label>
               <Input
@@ -248,45 +289,6 @@ const handleFullNameChange = (value: string) => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-            <Label htmlFor="access_level">Access Level</Label>
-            <Select 
-              value={newUser.access_level} 
-              onValueChange={(value) => {
-                // Map display values to backend values
-                const backendValue = value === 'Admin' ? 'client_admin' : value.toLowerCase();
-                updateField('access_level', backendValue);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">User</SelectItem>
-                <SelectItem value="manager">Manager</SelectItem>
-                <SelectItem value="client_admin">Admin</SelectItem>
-                {isSuperAdmin && <SelectItem value="author">Author</SelectItem>}
-              </SelectContent>
-            </Select>
-          </div>
-
-            <div className="space-y-2">
-            <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>
-            <Select value={newUser.location_id || ''} onValueChange={handleLocationChange}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select a location" />
-              </SelectTrigger>
-              <SelectContent>
-                {locations?.map((location) => (
-                  <SelectItem key={location.id} value={location.id}>
-                    {location.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          </div>
           <div className="space-y-2">
             <Label htmlFor="bio">Bio</Label>
             <Textarea

@@ -75,7 +75,7 @@ export const handleCreateUser = async (
         full_name: newUser.full_name,
         first_name: newUser.first_name,
         last_name: newUser.last_name,
-        username: newUser.username,
+        username: newUser.email, // Store email as username
         phone: newUser.phone,
         location: newUser.location,
         location_id: newUser.location_id,

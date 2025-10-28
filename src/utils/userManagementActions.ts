@@ -49,7 +49,20 @@ export const handleCreateUser = async (
   try {
     // Create user via Supabase Edge Function
     const { data, error } = await supabase.functions.invoke('create-user', {
-      body: newUser
+      body: {
+        email: newUser.email,
+        full_name: newUser.full_name,
+        first_name: newUser.first_name || '',
+        last_name: newUser.last_name || '',
+        username: '',
+        phone: newUser.phone || '',
+        location: newUser.location || '',
+        location_id: newUser.location_id || '',
+        status: 'Pending',
+        access_level: newUser.access_level || 'User',
+        bio: newUser.bio || '',
+        employee_id: newUser.employee_id || ''
+      }
     });
 
     if (error) {
@@ -75,7 +88,7 @@ export const handleCreateUser = async (
         full_name: newUser.full_name,
         first_name: newUser.first_name,
         last_name: newUser.last_name,
-        username: newUser.email, // Store email as username
+        // username: newUser.username, // Removed - this was overwriting the email with empty string
         phone: newUser.phone,
         location: newUser.location,
         location_id: newUser.location_id,

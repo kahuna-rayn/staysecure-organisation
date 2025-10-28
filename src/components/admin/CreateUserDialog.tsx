@@ -248,6 +248,7 @@ const handleFullNameChange = (value: string) => {
                   <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="client_admin">Admin</SelectItem>
                   {isSuperAdmin && <SelectItem value="author">Author</SelectItem>}
+                  {isSuperAdmin && <SelectItem value="super_admin">Super Admin</SelectItem>}
                 </SelectContent>
               </Select>
             </div>

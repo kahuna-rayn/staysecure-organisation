@@ -88,7 +88,7 @@ export const handleCreateUser = async (
         full_name: newUser.full_name,
         first_name: newUser.first_name,
         last_name: newUser.last_name,
-        // username: newUser.username, // Removed - this was overwriting the email with empty string
+        username: newUser.email, 
         phone: newUser.phone,
         location: newUser.location,
         location_id: newUser.location_id,

@@ -47,6 +47,17 @@ export const handleCreateUser = async (
   onSuccess: () => void
 ) => {
   try {
+    // Extract client path from current URL
+    const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean) : [];
+    const clientPath = pathParts[0] ? `/${pathParts[0]}` : '';
+    
+    console.log('[handleCreateUser] Extracting clientPath:', {
+      pathname: typeof window !== 'undefined' ? window.location.pathname : 'N/A',
+      pathParts,
+      clientPath,
+      fullPath: typeof window !== 'undefined' ? window.location.href : 'N/A'
+    });
+    
     // Create user via Supabase Edge Function
     const { data, error } = await supabase.functions.invoke('create-user', {
       body: {
@@ -61,7 +72,8 @@ export const handleCreateUser = async (
         status: 'Pending',
         access_level: newUser.access_level || 'User',
         bio: newUser.bio || '',
-        employee_id: newUser.employee_id || ''
+        employee_id: newUser.employee_id || '',
+        clientPath // Pass client path explicitly
       }
     });
 

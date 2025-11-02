@@ -257,6 +257,10 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const accessLevelValue = row['Access Level'] || row['access_level'] || '';
     const accessLevelValidation = validateAccessLevel(accessLevelValue);
 
+    // Extract client path from current URL
+    const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean) : [];
+    const clientPath = pathParts[0] ? `/${pathParts[0]}` : '';
+    
     // Use our create-user edge function instead of direct signUp
     const { data: authData, error: authError } = await supabase.functions.invoke('create-user', {
       body: {
@@ -268,7 +272,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         phone: row['Phone'] || row['phone'] || '',
         status: 'Pending',
         employee_id: row['Employee ID'] || row['employee_id'] || '',
-        access_level: accessLevelValidation.isValid ? accessLevelValidation.value : 'user'
+        access_level: accessLevelValidation.isValid ? accessLevelValidation.value : 'user',
+        clientPath // Pass client path explicitly
       }
     });
 

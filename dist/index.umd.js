@@ -1,24 +1,7 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/components/ui/input"), require("@/components/ui/select"), require("@/components/admin/DepartmentRolePairsDisplay"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/textarea"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/hooks/useUserRole"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/components/EditableCertificates"), require("@/components/PhysicalLocationTab"), require("@/components/admin/AssignHardwareDialog"), require("@/components/admin/AssignSoftwareDialog"), require("@/components/admin/AddEducationDialog"), require("@/components/admin/UserDepartmentsRolesManager"), require("@/components/LearningTracksTab"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/hooks/useProfile"), require("@/hooks/useUserAssets"), require("@/hooks/useUserRoleById"), require("staysecure-auth"), require("recharts"), require("react-to-print"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("@/components/ui/alert")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/components/ui/input", "@/components/ui/select", "@/components/admin/DepartmentRolePairsDisplay", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/textarea", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/hooks/useUserRole", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/components/EditableCertificates", "@/components/PhysicalLocationTab", "@/components/admin/AssignHardwareDialog", "@/components/admin/AssignSoftwareDialog", "@/components/admin/AddEducationDialog", "@/components/admin/UserDepartmentsRolesManager", "@/components/LearningTracksTab", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/hooks/useProfile", "@/hooks/useUserAssets", "@/hooks/useUserRoleById", "staysecure-auth", "recharts", "react-to-print", "xlsx", "jspdf", "jspdf-autotable", "@/components/ui/alert"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.input, global.select, global.DepartmentRolePairsDisplay$1, global.editableTable, global.dialog, global.label, global.textarea, global.reactDropzone, global.Papa, global.ImportErrorReport, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.useUserRole, global.HardwareInventory, global.SoftwareAccounts, global.EditableCertificates$1, global.PhysicalLocationTab$1, global.AssignHardwareDialog, global.AssignSoftwareDialog, global.AddEducationDialog$1, global.UserDepartmentsRolesManager$1, global.LearningTracksTab, global.useUserDepartments, global.useUserProfileRoles, global.useUserPhysicalLocations, global.useProfile, global.useUserAssets, global.useUserRoleById, global.StaySecureAuth, global.recharts, global.reactToPrint, global.XLSX, global.jsPDF, global.autoTable, global.alert));
-})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, input, select, DepartmentRolePairsDisplay$1, editableTable, dialog, label, textarea, reactDropzone, Papa, ImportErrorReport, table, _switch, separator, vt, utils, command, popover, useUserRole, HardwareInventory, SoftwareAccounts, EditableCertificates$1, PhysicalLocationTab$1, AssignHardwareDialog, AssignSoftwareDialog, AddEducationDialog$1, UserDepartmentsRolesManager$1, LearningTracksTab, useUserDepartments, useUserProfileRoles, useUserPhysicalLocations, useProfile, useUserAssets, useUserRoleById, staysecureAuth, recharts, reactToPrint, XLSX, jsPDF, autoTable, alert) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/modules/organisation/components/profile/EditableField"), require("@/components/admin/DepartmentRolePairsDisplay"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/modules/organisation"), require("@/hooks/useUserRole"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/components/EditableCertificates"), require("@/components/PhysicalLocationTab"), require("@/components/admin/AssignHardwareDialog"), require("@/components/admin/AssignSoftwareDialog"), require("@/components/admin/AddEducationDialog"), require("@/components/knowledge/MyDocuments"), require("@/components/admin/UserDepartmentsRolesManager"), require("@/components/LearningTracksTab"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/modules/organisation/components/profile/ProfileAvatar"), require("@/modules/organisation/components/profile/ProfileContactInfo"), require("@/hooks/useProfile"), require("@/hooks/useUserAssets"), require("@/modules/organisation/components/EditableProfileHeader"), require("@/modules/organisation/components/PersonaDetailsTabs"), require("@/hooks/useUserRoleById"), require("@/modules/organisation/components/profile/UserRoleField")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/modules/organisation/components/profile/EditableField", "@/components/admin/DepartmentRolePairsDisplay", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/modules/organisation", "@/hooks/useUserRole", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/components/EditableCertificates", "@/components/PhysicalLocationTab", "@/components/admin/AssignHardwareDialog", "@/components/admin/AssignSoftwareDialog", "@/components/admin/AddEducationDialog", "@/components/knowledge/MyDocuments", "@/components/admin/UserDepartmentsRolesManager", "@/components/LearningTracksTab", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/modules/organisation/components/profile/ProfileAvatar", "@/modules/organisation/components/profile/ProfileContactInfo", "@/hooks/useProfile", "@/hooks/useUserAssets", "@/modules/organisation/components/EditableProfileHeader", "@/modules/organisation/components/PersonaDetailsTabs", "@/hooks/useUserRoleById", "@/modules/organisation/components/profile/UserRoleField"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.EditableField$1, global.DepartmentRolePairsDisplay, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.organisation, global.useUserRole, global.HardwareInventory, global.SoftwareAccounts, global.EditableCertificates, global.PhysicalLocationTab, global.AssignHardwareDialog, global.AssignSoftwareDialog, global.AddEducationDialog, global.MyDocuments, global.UserDepartmentsRolesManager, global.LearningTracksTab, global.useUserDepartments, global.useUserProfileRoles, global.useUserPhysicalLocations, global.ProfileAvatar$1, global.ProfileContactInfo$1, global.useProfile, global.useUserAssets, global.EditableProfileHeader$1, global.PersonaDetailsTabs$1, global.useUserRoleById, global.UserRoleField$1));
+})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, EditableField$1, DepartmentRolePairsDisplay, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport, table, _switch, separator, vt, utils, command, popover, organisation, useUserRole, HardwareInventory, SoftwareAccounts, EditableCertificates, PhysicalLocationTab, AssignHardwareDialog, AssignSoftwareDialog, AddEducationDialog, MyDocuments, UserDepartmentsRolesManager, LearningTracksTab, useUserDepartments, useUserProfileRoles, useUserPhysicalLocations, ProfileAvatar$1, ProfileContactInfo$1, useProfile, useUserAssets, EditableProfileHeader$1, PersonaDetailsTabs$1, useUserRoleById, UserRoleField$1) {
   "use strict";
-  function _interopNamespaceDefault(e) {
-    const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
-    if (e) {
-      for (const k in e) {
-        if (k !== "default") {
-          const d = Object.getOwnPropertyDescriptor(e, k);
-          Object.defineProperty(n, k, d.get ? d : {
-            enumerable: true,
-            get: () => e[k]
-          });
-        }
-      }
-    }
-    n.default = e;
-    return Object.freeze(n);
-  }
-  const XLSX__namespace = /* @__PURE__ */ _interopNamespaceDefault(XLSX);
   /**
    * @license lucide-react v0.462.0 - ISC
    *
@@ -100,21 +83,6 @@
     Component.displayName = `${iconName}`;
     return Component;
   };
-  /**
-   * @license lucide-react v0.462.0 - ISC
-   *
-   * This source code is licensed under the ISC license.
-   * See the LICENSE file in the root directory of this source tree.
-   */
-  const Activity = createLucideIcon("Activity", [
-    [
-      "path",
-      {
-        d: "M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2",
-        key: "169zse"
-      }
-    ]
-  ]);
   /**
    * @license lucide-react v0.462.0 - ISC
    *
@@ -236,33 +204,6 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
-  const Crown = createLucideIcon("Crown", [
-    [
-      "path",
-      {
-        d: "M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z",
-        key: "1vdc57"
-      }
-    ],
-    ["path", { d: "M5 21h14", key: "11awu3" }]
-  ]);
-  /**
-   * @license lucide-react v0.462.0 - ISC
-   *
-   * This source code is licensed under the ISC license.
-   * See the LICENSE file in the root directory of this source tree.
-   */
-  const Download = createLucideIcon("Download", [
-    ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
-    ["polyline", { points: "7 10 12 15 17 10", key: "2ggqvy" }],
-    ["line", { x1: "12", x2: "12", y1: "15", y2: "3", key: "1vk2je" }]
-  ]);
-  /**
-   * @license lucide-react v0.462.0 - ISC
-   *
-   * This source code is licensed under the ISC license.
-   * See the LICENSE file in the root directory of this source tree.
-   */
   const Eye = createLucideIcon("Eye", [
     [
       "path",
@@ -285,15 +226,6 @@
     ["path", { d: "M10 9H8", key: "b1mrlr" }],
     ["path", { d: "M16 13H8", key: "t4e002" }],
     ["path", { d: "M16 17H8", key: "z1uh3a" }]
-  ]);
-  /**
-   * @license lucide-react v0.462.0 - ISC
-   *
-   * This source code is licensed under the ISC license.
-   * See the LICENSE file in the root directory of this source tree.
-   */
-  const Filter = createLucideIcon("Filter", [
-    ["polygon", { points: "22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3", key: "1yg77f" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -489,23 +421,6 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
-  const Printer = createLucideIcon("Printer", [
-    [
-      "path",
-      {
-        d: "M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2",
-        key: "143wyd"
-      }
-    ],
-    ["path", { d: "M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6", key: "1itne7" }],
-    ["rect", { x: "6", y: "14", width: "12", height: "8", rx: "1", key: "1ue0tg" }]
-  ]);
-  /**
-   * @license lucide-react v0.462.0 - ISC
-   *
-   * This source code is licensed under the ISC license.
-   * See the LICENSE file in the root directory of this source tree.
-   */
   const Save = createLucideIcon("Save", [
     [
       "path",
@@ -620,18 +535,6 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
-  const UserX = createLucideIcon("UserX", [
-    ["path", { d: "M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2", key: "1yyitq" }],
-    ["circle", { cx: "9", cy: "7", r: "4", key: "nufk8" }],
-    ["line", { x1: "17", x2: "22", y1: "8", y2: "13", key: "3nzzx3" }],
-    ["line", { x1: "22", x2: "17", y1: "8", y2: "13", key: "1swrse" }]
-  ]);
-  /**
-   * @license lucide-react v0.462.0 - ISC
-   *
-   * This source code is licensed under the ISC license.
-   * See the LICENSE file in the root directory of this source tree.
-   */
   const User = createLucideIcon("User", [
     ["path", { d: "M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2", key: "975kel" }],
     ["circle", { cx: "12", cy: "7", r: "4", key: "17ys0d" }]
@@ -711,30 +614,54 @@
   };
   const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
     try {
-      const supabaseUrl = "https://ufvingocbzegpgjknzhm.supabase.co";
-      const response = await fetch(`${supabaseUrl}/functions/v1/create-user`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmdmluZ29jYnplZ3BnamtuemhtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDgzNjQ2MTUsImV4cCI6MjA2Mzk0MDYxNX0.lEUYYYZnZcWtJLdcDk4qUm2M_zL5Xv58N0FheSHgGp0"}`
-        },
-        body: JSON.stringify(newUser)
+      const pathParts = typeof window !== "undefined" ? window.location.pathname.split("/").filter(Boolean) : [];
+      const clientPath = pathParts[0] ? `/${pathParts[0]}` : "";
+      console.log("[handleCreateUser] Extracting clientPath:", {
+        pathname: typeof window !== "undefined" ? window.location.pathname : "N/A",
+        pathParts,
+        clientPath,
+        fullPath: typeof window !== "undefined" ? window.location.href : "N/A"
       });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create user");
+      const { data, error } = await client.supabase.functions.invoke("create-user", {
+        body: {
+          email: newUser.email,
+          full_name: newUser.full_name,
+          first_name: newUser.first_name || "",
+          last_name: newUser.last_name || "",
+          username: "",
+          phone: newUser.phone || "",
+          location: newUser.location || "",
+          location_id: newUser.location_id || "",
+          status: "Pending",
+          access_level: newUser.access_level || "User",
+          bio: newUser.bio || "",
+          employee_id: newUser.employee_id || "",
+          clientPath
+          // Pass client path explicitly
+        }
+      });
+      if (error) {
+        throw new Error(error.message || "Failed to create user");
       }
-      const { user } = await response.json();
+      if (data == null ? void 0 : data.error) {
+        console.error("Edge Function returned error:", data.error);
+        console.error("Full Edge Function response:", data);
+        throw new Error(data.error);
+      }
+      if (!data || !data.user) {
+        throw new Error("No user data returned from create-user function");
+      }
+      const { user } = data;
       if (user == null ? void 0 : user.id) {
         await updateProfile(user.id, {
           full_name: newUser.full_name,
           first_name: newUser.first_name,
           last_name: newUser.last_name,
-          username: newUser.username,
+          username: newUser.email,
           phone: newUser.phone,
           location: newUser.location,
           location_id: newUser.location_id,
-          status: newUser.status,
+          // Don't update status - Edge Function sets it to 'Pending' for activation
           bio: newUser.bio,
           employee_id: newUser.employee_id
         });
@@ -808,105 +735,6 @@
       return { success: false, error: "Failed to delete user" };
     }
   };
-  const EditableField = ({
-    value,
-    fieldKey,
-    label: label2,
-    placeholder,
-    className,
-    inputClassName,
-    locationId,
-    isEditing,
-    onEdit,
-    onSave,
-    onCancel,
-    type = "text",
-    options,
-    asyncOptions,
-    isLoading,
-    onSelectChange
-  }) => {
-    const [editValue, setEditValue] = o.useState(value);
-    o.useEffect(() => {
-      setEditValue(value);
-    }, [value, isEditing]);
-    const validatePhoneInput = (input2) => {
-      return input2.replace(/[^0-9+\s\-\(\)]/g, "");
-    };
-    const handleSave = async () => {
-      if (fieldKey) {
-        await onSave(fieldKey, editValue);
-      }
-    };
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
-        handleSave();
-      } else if (e.key === "Escape") {
-        onCancel();
-      }
-    };
-    const handleInputChange = (e) => {
-      const newValue = e.target.value;
-      if (fieldKey === "phone") {
-        const validatedValue = validatePhoneInput(newValue);
-        setEditValue(validatedValue);
-      } else {
-        setEditValue(newValue);
-      }
-    };
-    if (isEditing) {
-      if (type === "select" && (options || asyncOptions)) {
-        const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
-        return /* @__PURE__ */ jsxRuntime.jsxs(
-          select.Select,
-          {
-            value: editValue,
-            onValueChange: (newValue) => {
-              setEditValue(newValue);
-              const selectedOption = selectOptions.find((opt) => opt.value === newValue);
-              if (onSelectChange && selectedOption) {
-                onSelectChange(newValue, selectedOption);
-              } else {
-                handleSave();
-              }
-            },
-            disabled: isLoading,
-            children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
-                selectOptions.map((option) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: option.value, children: option.label }, option.value))
-              ] })
-            ]
-          }
-        );
-      }
-      return /* @__PURE__ */ jsxRuntime.jsx(
-        input.Input,
-        {
-          type,
-          value: editValue,
-          placeholder,
-          onChange: handleInputChange,
-          onBlur: handleSave,
-          onKeyDown: handleKeyDown,
-          className: inputClassName || "h-6 text-sm w-32",
-          autoFocus: true
-        }
-      );
-    }
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className, children: [
-      label2 && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label2 }),
-      /* @__PURE__ */ jsxRuntime.jsx(
-        "span",
-        {
-          className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
-          onClick: () => fieldKey && onEdit(fieldKey),
-          children: value || placeholder
-        }
-      )
-    ] });
-  };
   const UserCard = ({ user, onEdit, onDelete }) => {
     var _a;
     const navigate = reactRouterDom.useNavigate();
@@ -973,7 +801,7 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-medium", children: user.full_name || "No name" }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-muted-foreground", children: /* @__PURE__ */ jsxRuntime.jsx(DepartmentRolePairsDisplay$1.DepartmentRolePairsDisplay, { userId: user.id }) })
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-muted-foreground", children: /* @__PURE__ */ jsxRuntime.jsx(DepartmentRolePairsDisplay.DepartmentRolePairsDisplay, { userId: user.id }) })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getStatusColor(user.status || "Active")} text-white`, children: user.status || "Active" })
@@ -982,7 +810,7 @@
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-3 w-3 text-muted-foreground" }),
           /* @__PURE__ */ jsxRuntime.jsx(
-            EditableField,
+            EditableField$1,
             {
               value: user.email || "No email",
               fieldKey: "email",
@@ -1134,12 +962,24 @@
     const [saving, setSaving] = o.useState(false);
     const { supabaseClient } = useOrganisationContext();
     const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = o.useState(false);
+    const { user } = staysecureAuth.useAuth();
+    const { data: currentUserRole } = reactQuery.useQuery({
+      queryKey: ["user-role", user == null ? void 0 : user.id],
+      queryFn: async () => {
+        if (!(user == null ? void 0 : user.id)) return null;
+        const { data } = await supabaseClient.from("user_roles").select("role").eq("user_id", user.id).single();
+        return data == null ? void 0 : data.role;
+      },
+      enabled: !!(user == null ? void 0 : user.id)
+    });
+    const isSuperAdmin = currentUserRole === "super_admin";
     const isFormValid = () => {
       var _a, _b, _c, _d;
       const requiredFields = [
         (_a = newUser.first_name) == null ? void 0 : _a.trim(),
         (_b = newUser.last_name) == null ? void 0 : _b.trim(),
         (_c = newUser.email) == null ? void 0 : _c.trim(),
+        newUser.access_level,
         newUser.location_id
       ];
       const allFieldsFilled = requiredFields.every((field) => field && field.length > 0);
@@ -1181,7 +1021,6 @@
         const lastName = field === "last_name" ? value : updatedUser.last_name || "";
         updatedUser.full_name = `${firstName} ${lastName}`.trim();
       }
-      console.log("Final updatedUser:", updatedUser);
       onUserChange(updatedUser);
     };
     const handleFullNameChange = (value) => {
@@ -1254,35 +1093,77 @@
               )
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "full_name", children: "Full Name (Auto-generated, editable)" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "full_name",
-                value: newUser.full_name || `${newUser.first_name} ${newUser.last_name}`.trim(),
-                onChange: (e) => handleFullNameChange(e.target.value),
-                placeholder: "Enter full name",
-                className: "flex-1"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs(label.Label, { htmlFor: "email", children: [
-              "Email Address ",
-              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" })
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "full_name", children: "Full Name (Auto-generated, editable)" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  id: "full_name",
+                  value: newUser.full_name || `${newUser.first_name} ${newUser.last_name}`.trim(),
+                  onChange: (e) => handleFullNameChange(e.target.value),
+                  placeholder: "Enter full name",
+                  className: "flex-1",
+                  required: true
+                }
+              )
             ] }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "email",
-                type: "email",
-                value: newUser.email,
-                onChange: (e) => updateField("email", e.target.value),
-                placeholder: "Enter email address",
-                required: true
-              }
-            )
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(label.Label, { htmlFor: "email", children: [
+                "Email Address ",
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  id: "email",
+                  type: "email",
+                  value: newUser.email,
+                  onChange: (e) => updateField("email", e.target.value),
+                  placeholder: "Enter email address",
+                  required: true
+                }
+              )
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(label.Label, { htmlFor: "access_level", children: [
+                "Access Level ",
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs(
+                select.Select,
+                {
+                  value: newUser.access_level,
+                  onValueChange: (value) => {
+                    const backendValue = value === "Admin" ? "client_admin" : value.toLowerCase();
+                    updateField("access_level", backendValue);
+                  },
+                  required: true,
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select access level" }) }),
+                    /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "user", children: "User" }),
+                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "manager", children: "Manager" }),
+                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "client_admin", children: "Admin" }),
+                      isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "author", children: "Author" }),
+                      isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "super_admin", children: "Super Admin" })
+                    ] })
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(label.Label, { htmlFor: "location", children: [
+                "Location ",
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: newUser.location_id || "", onValueChange: handleLocationChange, required: true, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select a location" }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: locations == null ? void 0 : locations.map((location) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: location.id, children: location.name }, location.id)) })
+              ] })
+            ] })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
@@ -1308,40 +1189,6 @@
                   placeholder: "Enter employee ID"
                 }
               )
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "status", children: "Status" }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: newUser.status, onValueChange: (value) => updateField("status", value), children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Active", children: "Active" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Inactive", children: "Inactive" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Pending", children: "Pending" })
-                ] })
-              ] })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "access_level", children: "Access Level" }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: newUser.access_level, onValueChange: (value) => updateField("access_level", value), children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "User", children: "User" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Manager", children: "Manager" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Admin", children: "Admin" })
-                ] })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs(label.Label, { htmlFor: "location", children: [
-              "Location ",
-              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: newUser.location_id || "", onValueChange: handleLocationChange, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select a location" }) }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: locations == null ? void 0 : locations.map((location) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: location.id, children: location.name }, location.id)) })
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
@@ -1621,10 +1468,10 @@
       multiple: false
     });
     const generateSampleCSV = () => {
-      const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Location", "Bio", "Employee ID"];
+      const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level"];
       const sampleData = [
-        ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "New York Office", "Software Engineer with 5 years experience", "EMP-2024-001"],
-        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "London Office", "Marketing Manager", "EMP-2024-002"]
+        ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "EMP-2024-001", "User"],
+        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Manager"]
       ];
       const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -1637,27 +1484,21 @@
       link.click();
       document.body.removeChild(link);
     };
-    const validateLocation = (locationName) => {
-      if (!locationName || !validLocations) {
-        console.log("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
+    const validateAccessLevel = (accessLevel) => {
+      if (!accessLevel) {
         return { isValid: false };
       }
-      const trimmedLocation = locationName.trim();
-      console.log("Location validation: Checking location", {
-        providedLocation: trimmedLocation,
-        availableLocations: validLocations.map((l) => l.name)
-      });
-      const validLocation = validLocations.find(
-        (loc) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
-      );
-      console.log("Location validation result:", {
-        location: trimmedLocation,
-        found: !!validLocation,
-        validLocation
-      });
+      const trimmedLevel = accessLevel.trim().toLowerCase();
+      const validLevels = ["user", "manager", "client_admin", "admin", "author"];
+      const levelMapping = {
+        "admin": "client_admin",
+        "client admin": "client_admin"
+      };
+      const backendValue = levelMapping[trimmedLevel] || trimmedLevel;
+      const isValid = validLevels.includes(backendValue);
       return {
-        isValid: !!validLocation,
-        locationId: validLocation == null ? void 0 : validLocation.id
+        isValid,
+        value: isValid ? backendValue : void 0
       };
     };
     const translateError = (error) => {
@@ -1722,8 +1563,10 @@
         throw new Error("Email address is required for all users.");
       }
       console.log("Processing user:", email);
-      const locationName = row["Location"] || row["location"] || "";
-      const locationValidation = validateLocation(locationName);
+      const accessLevelValue = row["Access Level"] || row["access_level"] || "";
+      const accessLevelValidation = validateAccessLevel(accessLevelValue);
+      const pathParts = typeof window !== "undefined" ? window.location.pathname.split("/").filter(Boolean) : [];
+      const clientPath = pathParts[0] ? `/${pathParts[0]}` : "";
       const { data: authData, error: authError } = await client.supabase.functions.invoke("create-user", {
         body: {
           email,
@@ -1732,12 +1575,11 @@
           last_name: row["Last Name"] || row["last_name"] || "",
           username: row["Username"] || row["username"] || "",
           phone: row["Phone"] || row["phone"] || "",
-          location: locationValidation.isValid ? locationName : "",
-          location_id: locationValidation.locationId || null,
           status: "Pending",
-          bio: row["Bio"] || row["bio"] || "",
           employee_id: row["Employee ID"] || row["employee_id"] || "",
-          access_level: "User"
+          access_level: accessLevelValidation.isValid ? accessLevelValidation.value : "user",
+          clientPath
+          // Pass client path explicitly
         }
       });
       if (authError) {
@@ -1752,13 +1594,18 @@
         const friendlyError = translateError(authData.error);
         throw new Error(friendlyError);
       }
+      const warnings = [];
+      if (!accessLevelValidation.isValid && accessLevelValue) {
+        warnings.push({
+          field: "Access Level",
+          value: accessLevelValue,
+          message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
+        });
+      }
       return {
         email,
         success: true,
-        locationWarning: !locationValidation.isValid && locationName ? {
-          location: locationName,
-          message: `Location "${locationName}" not found in system - user created without location assignment`
-        } : null
+        warnings: warnings.length > 0 ? warnings : null
       };
     };
     const handleImport = async () => {
@@ -1789,7 +1636,7 @@
             console.log("Processing", data.length, "rows");
             let successCount = 0;
             const errors = [];
-            const locationWarnings = [];
+            const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
@@ -1802,19 +1649,17 @@
                 const result = await processUserImport(row);
                 successCount++;
                 console.log(`Successfully processed user ${i + 1}`);
-                if (result.locationWarning) {
-                  console.log("Adding location warning:", result.locationWarning);
-                  locationWarnings.push({
-                    rowNumber: i + 2,
-                    // +2 because row 1 is headers, and i is 0-indexed
-                    identifier: email,
-                    field: "Location",
-                    error: result.locationWarning.message,
-                    rawData: row
+                if (result.warnings) {
+                  result.warnings.forEach((warning) => {
+                    warnings.push({
+                      rowNumber: i + 2,
+                      // +2 because row 1 is headers, and i is 0-indexed
+                      identifier: email,
+                      field: warning.field,
+                      error: warning.message,
+                      rawData: row
+                    });
                   });
-                } else {
-                  const locationName = row["Location"] || row["location"] || "";
-                  console.log("No location warning for user:", email, "location:", locationName);
                 }
               } catch (error) {
                 console.error(`Error importing user ${i + 1}:`, error);
@@ -1832,18 +1677,18 @@
                 await new Promise((resolve) => setTimeout(resolve, 500));
               }
             }
-            console.log("Import completed. Success:", successCount, "Errors:", errors.length, "Location Warnings:", locationWarnings.length);
+            console.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
-            if ((errors.length > 0 || locationWarnings.length > 0) && onImportError) {
+            if ((errors.length > 0 || warnings.length > 0) && onImportError) {
               setTimeout(() => {
-                onImportError(errors, locationWarnings, { success: successCount, total: data.length });
+                onImportError(errors, warnings, { success: successCount, total: data.length });
               }, 300);
-              if (errors.length > 0 && locationWarnings.length > 0) {
+              if (errors.length > 0 && warnings.length > 0) {
                 useToast$1.toast({
                   title: "Import completed with errors and warnings",
-                  description: `${successCount} users imported successfully. ${errors.length} failed, ${locationWarnings.length} have location warnings.`,
+                  description: `${successCount} users imported successfully. ${errors.length} failed, ${warnings.length} have validation warnings.`,
                   variant: "destructive"
                 });
               } else if (errors.length > 0) {
@@ -1852,10 +1697,10 @@
                   description: `${successCount} users imported successfully. ${errors.length} failed. Opening error report...`,
                   variant: "destructive"
                 });
-              } else if (locationWarnings.length > 0) {
+              } else if (warnings.length > 0) {
                 useToast$1.toast({
-                  title: "Import completed with location warnings",
-                  description: `${successCount} users imported successfully. ${locationWarnings.length} users have invalid locations. Opening warning report...`,
+                  title: "Import completed with warnings",
+                  description: `${successCount} users imported successfully. ${warnings.length} users have validation warnings. Opening warning report...`,
                   variant: "default"
                 });
               }
@@ -1957,16 +1802,15 @@
             ] }) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Required Columns" }),
+            /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: [
               "Email",
               "Full Name",
               "First Name",
               "Last Name",
               "Phone",
-              "Location",
-              "Bio",
-              "Employee ID"
+              "Employee ID",
+              "Access Level"
             ].map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
@@ -4120,7 +3964,7 @@
     if (loading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center p-8", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-8 w-8 border-b-2 border-primary" }) });
     }
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6 text-left", children: [
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
         /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-2xl font-bold", children: "Organisation Profile" }),
@@ -4133,7 +3977,7 @@
       ] }),
       /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
         /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "General Information" }) }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-4 text-left", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "org-name", children: "Organisation Name" }),
@@ -4265,7 +4109,7 @@
       ] }),
       /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
         /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Signatory Information" }) }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-6 text-left", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "CEM Declaration" }),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
@@ -4530,7 +4374,7 @@
     const enabledTabs = tabConfig.filter((tab) => isTabEnabled(tab.id));
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `w-full px-4 space-y-6 ${className}`, children: [
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-left", children: [
           /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: title }),
           /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: description })
         ] }),
@@ -4564,8 +4408,8 @@
         canManageProfile: hasAdminAccess
       }
     };
-    return /* @__PURE__ */ jsxRuntime.jsx(OrganisationProvider, { config: organisationConfig, children: /* @__PURE__ */ jsxRuntime.jsx(
-      OrganisationPanel,
+    return /* @__PURE__ */ jsxRuntime.jsx(organisation.OrganisationProvider, { config: organisationConfig, children: /* @__PURE__ */ jsxRuntime.jsx(
+      organisation.OrganisationPanel,
       {
         title: "Organisation",
         description: "Manage users, roles, departments, and locations",
@@ -4636,7 +4480,7 @@
               children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" })
             }
           ) }),
-          /* @__PURE__ */ jsxRuntime.jsx(UserDepartmentsRolesManager$1.UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
+          /* @__PURE__ */ jsxRuntime.jsx(UserDepartmentsRolesManager.UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
           /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "hardware", className: "space-y-4 animate-fade-in", children: [
@@ -4663,7 +4507,7 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments, { userId: profile.id }) })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab$1, { profile }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile }) }),
         /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
           /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(
             button.Button,
@@ -4674,7 +4518,7 @@
             }
           ) }),
           /* @__PURE__ */ jsxRuntime.jsx(
-            EditableCertificates$1,
+            EditableCertificates,
             {
               profile,
               onUpdate: handleCertificateUpdate,
@@ -4711,7 +4555,7 @@
         )
       ] }),
       /* @__PURE__ */ jsxRuntime.jsx(
-        AddEducationDialog$1,
+        AddEducationDialog,
         {
           isOpen: isAddEducationOpen,
           onOpenChange: setIsAddEducationOpen,
@@ -4723,75 +4567,6 @@
         }
       )
     ] }) });
-  };
-  const ProfileAvatar = ({ avatarUrl, firstName, lastName }) => {
-    const initials = firstName && lastName ? firstName.charAt(0) + lastName.charAt(0) : (firstName == null ? void 0 : firstName.slice(0, 2)) || "U";
-    const handleAvatarUpload = () => {
-      useToast.toast({
-        title: "Avatar Upload",
-        description: "Avatar upload functionality will be implemented with Supabase Storage."
-      });
-    };
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "relative", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(avatar.Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }),
-        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarFallback, { className: "text-2xl", children: initials })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsx(
-        button.Button,
-        {
-          size: "sm",
-          variant: "outline",
-          className: "absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0",
-          onClick: handleAvatarUpload,
-          children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-3 w-3" })
-        }
-      )
-    ] });
-  };
-  const ProfileContactInfo = ({
-    startDate,
-    status,
-    accessLevel,
-    lastLogin,
-    passwordLastChanged,
-    twoFactorEnabled
-  }) => {
-    const formatDate = (dateString) => {
-      if (!dateString) return "Not set";
-      return new Date(dateString).toLocaleDateString();
-    };
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: status === "Active" ? "default" : "secondary", children: status || "Active" })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Key, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsx("span", { children: accessLevel || "User" })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: twoFactorEnabled ? "default" : "secondary", children: [
-          "2FA ",
-          twoFactorEnabled ? "Enabled" : "Disabled"
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
-          "Started ",
-          formatDate(startDate)
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
-          "Last login: ",
-          lastLogin ? formatDate(lastLogin) : "Never"
-        ] })
-      ] })
-    ] });
   };
   const EditableProfileHeader = ({
     profile,
@@ -4934,7 +4709,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col lg:flex-row lg:items-start gap-6", children: [
       /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-center lg:justify-start", children: /* @__PURE__ */ jsxRuntime.jsx(
-        ProfileAvatar,
+        ProfileAvatar$1,
         {
           avatarUrl: profile.avatar,
           firstName: profile.firstName,
@@ -4946,7 +4721,7 @@
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-center sm:text-left space-y-2", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(
-                EditableField,
+                EditableField$1,
                 {
                   value: profile.firstName || "",
                   fieldKey: "firstName",
@@ -4960,7 +4735,7 @@
                 }
               ),
               /* @__PURE__ */ jsxRuntime.jsx(
-                EditableField,
+                EditableField$1,
                 {
                   value: profile.lastName || "",
                   fieldKey: "lastName",
@@ -4975,7 +4750,7 @@
               )
             ] }),
             /* @__PURE__ */ jsxRuntime.jsx(
-              EditableField,
+              EditableField$1,
               {
                 value: profile.full_name || `${profile.firstName} ${profile.lastName}`.trim(),
                 fieldKey: "full_name",
@@ -5001,7 +4776,7 @@
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
             /* @__PURE__ */ jsxRuntime.jsx(Phone, { className: "h-4 w-4 text-muted-foreground" }),
             /* @__PURE__ */ jsxRuntime.jsx(
-              EditableField,
+              EditableField$1,
               {
                 value: profile.phone || "Not provided",
                 fieldKey: "phone",
@@ -5030,7 +4805,7 @@
                 ]
               }
             ) : /* @__PURE__ */ jsxRuntime.jsx(
-              EditableField,
+              EditableField$1,
               {
                 value: managerName,
                 fieldKey: "manager",
@@ -5046,7 +4821,7 @@
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
             /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
             /* @__PURE__ */ jsxRuntime.jsx(
-              EditableField,
+              EditableField$1,
               {
                 value: profile.location || "Not specified",
                 fieldKey: "location",
@@ -5074,7 +4849,7 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxRuntime.jsx(
-          ProfileContactInfo,
+          ProfileContactInfo$1,
           {
             startDate: profile.startDate,
             userId: profile.id,
@@ -5089,7 +4864,7 @@
     ] }) }) });
   };
   const PersonaProfile = () => {
-    const { user, signOut } = useAuth();
+    const { user, signOut } = staysecureAuth.useAuth();
     const { hasAdminAccess } = useUserRole.useUserRole();
     const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile.useProfile();
     const { hardware, software, certificates, loading: assetsLoading, refetch: refetchAssets } = useUserAssets.useUserAssets(user == null ? void 0 : user.id);
@@ -5297,14 +5072,113 @@
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntime.jsx(
-        EditableProfileHeader,
+        EditableProfileHeader$1,
         {
           profile: personaData,
           onProfileUpdate: handleProfileUpdate,
           onOptimisticUpdate: handleOptimisticUpdate
         }
       ),
-      /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: personaData, userId, onUpdate: refetch })
+      /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs$1, { profile: personaData, userId, onUpdate: refetch })
+    ] });
+  };
+  const EditableField = ({
+    value,
+    fieldKey,
+    label: label2,
+    placeholder,
+    className,
+    inputClassName,
+    locationId,
+    isEditing,
+    onEdit,
+    onSave,
+    onCancel,
+    type = "text",
+    options,
+    asyncOptions,
+    isLoading,
+    onSelectChange
+  }) => {
+    const [editValue, setEditValue] = o.useState(value);
+    o.useEffect(() => {
+      setEditValue(value);
+    }, [value, isEditing]);
+    const validatePhoneInput = (input2) => {
+      return input2.replace(/[^0-9+\s\-\(\)]/g, "");
+    };
+    const handleSave = async () => {
+      if (fieldKey) {
+        await onSave(fieldKey, editValue);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        handleSave();
+      } else if (e.key === "Escape") {
+        onCancel();
+      }
+    };
+    const handleInputChange = (e) => {
+      const newValue = e.target.value;
+      if (fieldKey === "phone") {
+        const validatedValue = validatePhoneInput(newValue);
+        setEditValue(validatedValue);
+      } else {
+        setEditValue(newValue);
+      }
+    };
+    if (isEditing) {
+      if (type === "select" && (options || asyncOptions)) {
+        const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
+        return /* @__PURE__ */ jsxRuntime.jsxs(
+          select.Select,
+          {
+            value: editValue,
+            onValueChange: (newValue) => {
+              setEditValue(newValue);
+              const selectedOption = selectOptions.find((opt) => opt.value === newValue);
+              if (onSelectChange && selectedOption) {
+                onSelectChange(newValue, selectedOption);
+              } else {
+                handleSave();
+              }
+            },
+            disabled: isLoading,
+            children: [
+              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
+                selectOptions.map((option) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: option.value, children: option.label }, option.value))
+              ] })
+            ]
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        input.Input,
+        {
+          type,
+          value: editValue,
+          placeholder,
+          onChange: handleInputChange,
+          onBlur: handleSave,
+          onKeyDown: handleKeyDown,
+          className: inputClassName || "h-6 text-sm w-32",
+          autoFocus: true
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className, children: [
+      label2 && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label2 }),
+      /* @__PURE__ */ jsxRuntime.jsx(
+        "span",
+        {
+          className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
+          onClick: () => fieldKey && onEdit(fieldKey),
+          children: value || placeholder
+        }
+      )
     ] });
   };
   const UserRoleField = ({ userId }) => {
@@ -5516,6 +5390,70 @@
       ] })
     ] });
   };
+  const ProfileAvatar = ({ avatarUrl, firstName, lastName }) => {
+    const initials = firstName && lastName ? firstName.charAt(0) + lastName.charAt(0) : (firstName == null ? void 0 : firstName.slice(0, 2)) || "U";
+    const handleAvatarUpload = () => {
+      useToast.toast({
+        title: "Avatar Upload",
+        description: "Avatar upload functionality will be implemented with Supabase Storage."
+      });
+    };
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "relative", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(avatar.Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }),
+        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarFallback, { className: "text-2xl", children: initials })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx(
+        button.Button,
+        {
+          size: "sm",
+          variant: "outline",
+          className: "absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0",
+          onClick: handleAvatarUpload,
+          children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-3 w-3" })
+        }
+      )
+    ] });
+  };
+  const ProfileContactInfo = ({
+    startDate,
+    userId,
+    status,
+    accessLevel,
+    lastLogin,
+    passwordLastChanged,
+    twoFactorEnabled
+  }) => {
+    const formatDate = (dateString) => {
+      if (!dateString) return "Not set";
+      return new Date(dateString).toLocaleDateString();
+    };
+    const formatDateAndTime = (dateString) => {
+      if (!dateString) return "Never";
+      return new Date(dateString).toLocaleString();
+    };
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: status === "Active" ? "default" : "secondary", children: status || "Active" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end gap-2 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(UserRoleField$1.UserRoleField, { userId }) }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+          "Started ",
+          formatDate(startDate)
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+          "Last login: ",
+          lastLogin ? formatDateAndTime(lastLogin) : "Never"
+        ] })
+      ] })
+    ] });
+  };
   const MultipleRolesField = ({
     userId,
     departmentValue,
@@ -5716,2513 +5654,52 @@
       ] }) })
     ] });
   };
-  const CreateCertificateDialog = ({
-    isOpen,
-    onOpenChange,
-    isOrganisationCertificate = false,
-    onSuccess
-  }) => {
-    const { profiles } = useUserProfiles.useUserProfiles();
-    const [formData, setFormData] = o.useState({
-      user_id: "",
-      name: "",
-      issued_by: "",
-      date_acquired: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-      expiry_date: "",
-      credential_id: "",
-      status: "Valid"
-    });
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-        const { data: { user }, error: userError } = await client.supabase.auth.getUser();
-        if (userError || !user) {
-          throw new Error("User not authenticated");
-        }
-        const certificateData = {
-          ...formData,
-          user_id: isOrganisationCertificate ? user.id : formData.user_id,
-          // Use current user for org certs
-          date_acquired: new Date(formData.date_acquired).toISOString(),
-          expiry_date: formData.expiry_date ? new Date(formData.expiry_date).toISOString() : null,
-          credential_id: formData.credential_id || null,
-          org_cert: isOrganisationCertificate
-          // Set org_cert flag
-        };
-        const { error } = await client.supabase.from("certificates").insert([certificateData]);
-        if (error) throw error;
-        useToast.toast({
-          title: "Certificate added",
-          description: isOrganisationCertificate ? "Organisation certificate has been successfully added." : "Certificate has been successfully added to the user's profile."
-        });
-        onOpenChange(false);
-        setFormData({
-          user_id: "",
-          name: "",
-          issued_by: "",
-          date_acquired: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-          expiry_date: "",
-          credential_id: "",
-          status: "Valid"
-        });
-        onSuccess == null ? void 0 : onSuccess();
-      } catch (error) {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-      }
-    };
-    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
-      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: isOrganisationCertificate ? "Add Organisation Certificate" : "Add Certificate to User" }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-        !isOrganisationCertificate && /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "user", children: "Assign to User" }),
-          /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: formData.user_id, onValueChange: (value) => setFormData({ ...formData, user_id: value }), children: [
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select a user" }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: profiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "name", children: "Certificate Name" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "name",
-              value: formData.name,
-              onChange: (e) => setFormData({ ...formData, name: e.target.value }),
-              placeholder: "e.g., AWS Certified Developer, PMP",
-              required: true
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "issued_by", children: "Issued By" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "issued_by",
-              value: formData.issued_by,
-              onChange: (e) => setFormData({ ...formData, issued_by: e.target.value }),
-              placeholder: "e.g., Amazon Web Services, PMI",
-              required: true
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "date_acquired", children: "Date Acquired" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "date_acquired",
-              type: "date",
-              value: formData.date_acquired,
-              onChange: (e) => setFormData({ ...formData, date_acquired: e.target.value }),
-              required: true
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "expiry_date", children: "Expiry Date (Optional)" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "expiry_date",
-              type: "date",
-              value: formData.expiry_date,
-              onChange: (e) => setFormData({ ...formData, expiry_date: e.target.value })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "credential_id", children: "Credential ID (Optional)" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "credential_id",
-              value: formData.credential_id,
-              onChange: (e) => setFormData({ ...formData, credential_id: e.target.value }),
-              placeholder: "Certificate credential ID"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "status", children: "Status" }),
-          /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Valid", children: "Valid" }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Expired", children: "Expired" }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Pending", children: "Pending" })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", children: "Add Certificate" })
-        ] })
-      ] })
-    ] }) });
-  };
-  const CertificateManagement = () => {
-    const [isDialogOpen, setIsDialogOpen] = o.useState(false);
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
-        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-medium", children: "User Certificates" }),
-        /* @__PURE__ */ jsxRuntime.jsxs(
-          button.Button,
-          {
-            className: "flex items-center gap-2",
-            onClick: () => setIsDialogOpen(true),
-            children: [
-              /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }),
-              "Add Certificate"
-            ]
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsx(
-        CreateCertificateDialog,
-        {
-          isOpen: isDialogOpen,
-          onOpenChange: setIsDialogOpen,
-          isOrganisationCertificate: false
-        }
-      ),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-center py-8 text-muted-foreground", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-12 w-12 mx-auto mb-4 opacity-50" }),
-        /* @__PURE__ */ jsxRuntime.jsx("p", { children: "Certificate management interface coming soon..." }),
-        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm", children: 'Use the "Add Certificate" button to add new certificates.' })
-      ] })
-    ] });
-  };
-  const Certificates = ({ profile }) => {
-    const { certificates } = profile;
-    const formatDate = (dateString) => {
-      if (!dateString) return "No expiry";
-      return new Date(dateString).toLocaleDateString();
-    };
-    const getStatusColor = (status) => {
-      switch (status) {
-        case "Valid":
-          return "bg-green-500";
-        case "Expired":
-          return "bg-red-500";
-        case "Pending":
-          return "bg-yellow-500";
-        default:
-          return "bg-blue-500";
-      }
-    };
-    const getTypeIcon = (type) => {
-      return type === "Document" ? /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-5 w-5 text-primary flex-shrink-0" }) : /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5 text-primary flex-shrink-0" });
-    };
-    const getTypeColor = (type) => {
-      return type === "Document" ? "bg-blue-500" : "bg-purple-500";
-    };
-    const filteredCertificates = certificates.filter(
-      (cert) => cert.org_cert === false
-    );
-    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: filteredCertificates.map((cert, index) => /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "border rounded-lg p-4", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between gap-3 mb-3", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
-          getTypeIcon(cert.type),
-          /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-base font-medium text-foreground", children: cert.issuedBy })
-          ] }),
-          cert.credentialId && /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-base font-medium text-muted-foreground", children: [
-            "ID: ",
-            cert.credentialId
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1 flex-shrink-0`, children: cert.type || "Certificate" })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-3 gap-4 text-sm ml-8", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }) })
-      ] })
-    ] }, index)) }) });
-  };
-  const EditableCertificates = ({ profile }) => {
-    const { certificates } = profile;
-    const formatDate = (dateString) => {
-      if (!dateString) return "No expiry";
-      return new Date(dateString).toLocaleDateString();
-    };
-    const getTypeIcon = (type) => {
-      return type === "Document" ? /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-5 w-5 text-primary flex-shrink-0" }) : /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5 text-primary flex-shrink-0" });
-    };
-    const getTypeColor = (type) => {
-      return type === "Document" ? "bg-blue-500" : "bg-purple-500";
-    };
-    const getValidityStatus = (expiryDate) => {
-      if (!expiryDate) return "Valid";
-      const expiry = new Date(expiryDate);
-      const today = /* @__PURE__ */ new Date();
-      today.setHours(0, 0, 0, 0);
-      if (expiry < today) {
-        return "Expired";
-      } else if (expiry <= new Date(today.getTime() + 30 * 24 * 60 * 60 * 1e3)) {
-        return "Expiring Soon";
-      } else {
-        return "Valid";
-      }
-    };
-    const getValidityStatusColor = (status) => {
-      switch (status) {
-        case "Valid":
-          return "bg-green-500";
-        case "Expired":
-          return "bg-red-500";
-        case "Expiring Soon":
-          return "bg-yellow-500";
-        default:
-          return "bg-blue-500";
-      }
-    };
-    const filteredCertificates = certificates.filter(
-      (cert) => cert.org_cert === false
-    );
-    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: filteredCertificates.map((cert, index) => {
-      const validityStatus = getValidityStatus(cert.expiryDate);
-      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "border rounded-lg p-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between mb-3", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
-            getTypeIcon(cert.type),
-            /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-4 gap-4 text-sm ml-8", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium text-foreground", children: cert.issuedBy })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }) })
-        ] }),
-        cert.credentialId && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm ml-8 mt-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "ID: " }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: cert.credentialId })
-        ] })
-      ] }, index);
-    }) }) });
-  };
-  const AssignPhysicalLocationDialog = ({
-    isOpen,
-    onOpenChange,
-    prefilledUser,
-    onSuccess
-  }) => {
-    const [loading, setLoading] = o.useState(false);
-    const [selectedUserId, setSelectedUserId] = o.useState("");
-    const { profiles } = useUserProfiles.useUserProfiles();
-    const [formData, setFormData] = o.useState({
-      full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
-      email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
-      department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
-      role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
-      location: "",
-      access_purpose: "",
-      status: "Active"
-    });
-    const handleUserSelection = (userId) => {
-      setSelectedUserId(userId);
-      if (userId === "none") {
-        setFormData((prev) => ({
-          ...prev,
-          full_name: "",
-          email: "",
-          department: "",
-          role_account_type: ""
-        }));
-      } else {
-        const selectedUser = profiles.find((profile) => profile.id === userId);
-        if (selectedUser) {
-          setFormData((prev) => ({
-            ...prev,
-            full_name: selectedUser.full_name || "",
-            email: selectedUser.email || "",
-            department: selectedUser.department || "",
-            role_account_type: selectedUser.role || ""
-          }));
-        }
-      }
-    };
-    const resetForm = () => {
-      setSelectedUserId("");
-      setFormData({
-        full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
-        email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
-        department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
-        role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
-        location: "",
-        access_purpose: "",
-        status: "Active"
-      });
-    };
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      try {
-        if (!formData.location || !formData.access_purpose) {
-          throw new Error("Location and Access Purpose are required");
-        }
-        const insertData = {
-          full_name: formData.full_name || "Unassigned",
-          user_id: selectedUserId || "ae5c8c73-e0c3-4a86-9c0d-123456789abc",
-          // Use selectedUserId or placeholder
-          location_id: formData.location,
-          // Assuming this is already a UUID
-          access_purpose: formData.access_purpose,
-          date_access_created: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-          date_access_revoked: null,
-          status: formData.status
-        };
-        const { error } = await client.supabase.from("physical_location_access").insert([insertData]);
-        if (error) throw error;
-        useToast.toast({
-          title: "Physical location access added",
-          description: formData.full_name === "Unassigned" ? "Location access record created without user assignment." : "Physical location access has been successfully added."
-        });
-        onOpenChange(false);
-        resetForm();
-        onSuccess == null ? void 0 : onSuccess();
-      } catch (error) {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl max-h-[80vh] overflow-y-auto", children: [
-      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Add Physical Location Access" }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          !prefilledUser && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "col-span-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "user_select", children: "Assign to User (Optional)" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: selectedUserId, onValueChange: handleUserSelection, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select a user or create without assignment" }) }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", children: "Create without user assignment" }),
-                profiles.map((profile) => /* @__PURE__ */ jsxRuntime.jsxs(select.SelectItem, { value: profile.id, children: [
-                  profile.full_name || "No name",
-                  " (",
-                  profile.email || profile.username || "No email",
-                  ")"
-                ] }, profile.id))
-              ] })
-            ] })
-          ] }),
-          selectedUserId && selectedUserId !== "none" && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "col-span-2 p-3 bg-gray-50 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-medium mb-2", children: "Selected User Details:" }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Name:" }),
-              " ",
-              formData.full_name
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Email:" }),
-              " ",
-              formData.email
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Department:" }),
-              " ",
-              formData.department || "Not specified"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role:" }),
-              " ",
-              formData.role_account_type || "Not specified"
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "full_name", children: "Full Name" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "full_name",
-                value: formData.full_name,
-                onChange: (e) => setFormData({ ...formData, full_name: e.target.value }),
-                placeholder: "Leave empty for unassigned",
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "email", children: "Email" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "email",
-                value: formData.email,
-                onChange: (e) => setFormData({ ...formData, email: e.target.value }),
-                placeholder: "Leave empty for unassigned",
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "department", children: "Department" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "department",
-                value: formData.department,
-                onChange: (e) => setFormData({ ...formData, department: e.target.value }),
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "role_account_type", children: "Role/Account Type" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "role_account_type",
-                value: formData.role_account_type,
-                onChange: (e) => setFormData({ ...formData, role_account_type: e.target.value }),
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "location", children: "Location *" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "location",
-                value: formData.location,
-                onChange: (e) => setFormData({ ...formData, location: e.target.value }),
-                placeholder: "e.g., Building A - Floor 3, Server Room",
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "access_purpose", children: "Access Purpose *" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "access_purpose",
-                value: formData.access_purpose,
-                onChange: (e) => setFormData({ ...formData, access_purpose: e.target.value }),
-                placeholder: "e.g., Maintenance, Security, Operations",
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "col-span-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "status", children: "Status" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Active", children: "Active" }),
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Inactive", children: "Inactive" }),
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Revoked", children: "Revoked" })
-              ] })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
-        ] })
-      ] })
-    ] }) });
-  };
-  const AddPhysicalLocationDialog = ({
-    isOpen,
-    onOpenChange,
-    prefilledUser,
-    onSuccess
-  }) => {
-    const [loading, setLoading] = o.useState(false);
-    const [selectedUserId, setSelectedUserId] = o.useState("");
-    const { profiles } = useUserProfiles.useUserProfiles();
-    const [formData, setFormData] = o.useState({
-      full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
-      email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
-      department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
-      role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
-      location: "",
-      access_purpose: "",
-      date_access_created: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-      date_access_revoked: "",
-      status: "Active"
-    });
-    const handleUserSelection = (userId) => {
-      setSelectedUserId(userId);
-      if (userId === "none") {
-        setFormData((prev) => ({
-          ...prev,
-          full_name: "",
-          email: "",
-          department: "",
-          role_account_type: ""
-        }));
-      } else {
-        const selectedUser = profiles.find((profile) => profile.id === userId);
-        if (selectedUser) {
-          setFormData((prev) => ({
-            ...prev,
-            full_name: selectedUser.full_name || "",
-            email: selectedUser.email || "",
-            department: selectedUser.department || "",
-            role_account_type: selectedUser.role || ""
-          }));
-        }
-      }
-    };
-    const resetForm = () => {
-      setSelectedUserId("");
-      setFormData({
-        full_name: (prefilledUser == null ? void 0 : prefilledUser.full_name) || "",
-        email: (prefilledUser == null ? void 0 : prefilledUser.email) || "",
-        department: (prefilledUser == null ? void 0 : prefilledUser.department) || "",
-        role_account_type: (prefilledUser == null ? void 0 : prefilledUser.role) || "",
-        location: "",
-        access_purpose: "",
-        date_access_created: (/* @__PURE__ */ new Date()).toISOString().split("T")[0],
-        date_access_revoked: "",
-        status: "Active"
-      });
-    };
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      try {
-        if (!formData.location || !formData.access_purpose) {
-          throw new Error("Location and Access Purpose are required");
-        }
-        const insertData = {
-          full_name: formData.full_name || "Unassigned",
-          user_id: "ae5c8c73-e0c3-4a86-9c0d-123456789abc",
-          // Placeholder user ID - should be dynamic
-          location_id: formData.location,
-          // Assuming this is already a UUID
-          access_purpose: formData.access_purpose,
-          date_access_created: formData.date_access_created,
-          date_access_revoked: formData.date_access_revoked || null,
-          status: formData.status
-        };
-        const { error } = await client.supabase.from("physical_location_access").insert([insertData]);
-        if (error) throw error;
-        useToast.toast({
-          title: "Physical location access added",
-          description: formData.full_name === "Unassigned" ? "Location access record created without user assignment." : "Physical location access has been successfully added."
-        });
-        onOpenChange(false);
-        resetForm();
-        onSuccess == null ? void 0 : onSuccess();
-      } catch (error) {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl max-h-[80vh] overflow-y-auto", children: [
-      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Add Physical Location Access" }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          !prefilledUser && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "col-span-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "user_select", children: "Assign to User (Optional)" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: selectedUserId, onValueChange: handleUserSelection, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select a user or create without assignment" }) }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", children: "Create without user assignment" }),
-                profiles.map((profile) => /* @__PURE__ */ jsxRuntime.jsxs(select.SelectItem, { value: profile.id, children: [
-                  profile.full_name || "No name",
-                  " (",
-                  profile.email || profile.username || "No email",
-                  ")"
-                ] }, profile.id))
-              ] })
-            ] })
-          ] }),
-          selectedUserId && selectedUserId !== "none" && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "col-span-2 p-3 bg-gray-50 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-medium mb-2", children: "Selected User Details:" }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Name:" }),
-              " ",
-              formData.full_name
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Email:" }),
-              " ",
-              formData.email
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Department:" }),
-              " ",
-              formData.department || "Not specified"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role:" }),
-              " ",
-              formData.role_account_type || "Not specified"
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "full_name", children: "Full Name" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "full_name",
-                value: formData.full_name,
-                onChange: (e) => setFormData({ ...formData, full_name: e.target.value }),
-                placeholder: "Leave empty for unassigned",
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "email", children: "Email" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "email",
-                value: formData.email,
-                onChange: (e) => setFormData({ ...formData, email: e.target.value }),
-                placeholder: "Leave empty for unassigned",
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "department", children: "Department" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "department",
-                value: formData.department,
-                onChange: (e) => setFormData({ ...formData, department: e.target.value }),
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "role_account_type", children: "Role/Account Type" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "role_account_type",
-                value: formData.role_account_type,
-                onChange: (e) => setFormData({ ...formData, role_account_type: e.target.value }),
-                disabled: !!prefilledUser || selectedUserId && selectedUserId !== "none"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "location", children: "Location *" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "location",
-                value: formData.location,
-                onChange: (e) => setFormData({ ...formData, location: e.target.value }),
-                placeholder: "e.g., Building A - Floor 3, Server Room",
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "access_purpose", children: "Access Purpose *" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "access_purpose",
-                value: formData.access_purpose,
-                onChange: (e) => setFormData({ ...formData, access_purpose: e.target.value }),
-                placeholder: "e.g., Maintenance, Security, Operations",
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "date_access_created", children: "Date Access Created *" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "date_access_created",
-                type: "date",
-                value: formData.date_access_created,
-                onChange: (e) => setFormData({ ...formData, date_access_created: e.target.value }),
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "date_access_revoked", children: "Date Access Revoked" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "date_access_revoked",
-                type: "date",
-                value: formData.date_access_revoked,
-                onChange: (e) => setFormData({ ...formData, date_access_revoked: e.target.value })
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "col-span-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "status", children: "Status" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Active", children: "Active" }),
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Inactive", children: "Inactive" }),
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Revoked", children: "Revoked" })
-              ] })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
-        ] })
-      ] })
-    ] }) });
-  };
-  const AddEducationDialog = ({
-    isOpen,
-    onOpenChange,
-    userId,
-    onSuccess
-  }) => {
-    const [loading, setLoading] = o.useState(false);
-    const [formData, setFormData] = o.useState({
-      type: "Certificate",
-      name: "",
-      issued_by: "",
-      date_acquired: "",
-      expiry_date: "",
-      credential_id: "",
-      status: "Valid"
-    });
-    const { addCertificate } = useUserAssets.useUserAssets();
-    const { data: userProfile } = reactQuery.useQuery({
-      queryKey: ["user-profile", userId],
-      queryFn: async () => {
-        const { data, error } = await client.supabase.from("profiles").select("id").eq("id", userId).single();
-        if (error) throw error;
-        return data;
-      }
-    });
-    const resetForm = () => {
-      setFormData({
-        type: "Certificate",
-        name: "",
-        issued_by: "",
-        date_acquired: "",
-        expiry_date: "",
-        credential_id: "",
-        status: "Valid"
-      });
-    };
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (!userProfile) {
-        useToast$1.toast({
-          title: "Error",
-          description: "User profile not found.",
-          variant: "destructive"
-        });
-        return;
-      }
-      setLoading(true);
-      try {
-        const certificateData = {
-          user_id: userProfile.id,
-          type: formData.type,
-          name: formData.name,
-          issued_by: formData.issued_by,
-          date_acquired: formData.date_acquired,
-          expiry_date: formData.expiry_date || null,
-          credential_id: formData.credential_id || null,
-          status: formData.status
-        };
-        await addCertificate(certificateData);
-        useToast$1.toast({
-          title: "Education record added",
-          description: "Education record has been successfully added."
-        });
-        onOpenChange(false);
-        resetForm();
-        onSuccess == null ? void 0 : onSuccess();
-      } catch (error) {
-        useToast$1.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
-    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
-      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Add Education Record" }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "type", children: "Type *" }),
-          /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: formData.type, onValueChange: (value) => setFormData({ ...formData, type: value }), children: [
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Certificate", children: "Certificate" }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Document", children: "Document" })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "name", children: "Name *" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "name",
-              value: formData.name,
-              onChange: (e) => setFormData({ ...formData, name: e.target.value }),
-              placeholder: "e.g., Cybersecurity Certificate, PDPC e-Learning, ISP, IRP",
-              required: true
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "issued_by", children: "Issued By *" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "issued_by",
-              value: formData.issued_by,
-              onChange: (e) => setFormData({ ...formData, issued_by: e.target.value }),
-              placeholder: "e.g., RAYN, PDPC,",
-              required: true
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "date_acquired", children: "Date Acquired *" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "date_acquired",
-                type: "date",
-                value: formData.date_acquired,
-                onChange: (e) => setFormData({ ...formData, date_acquired: e.target.value }),
-                required: true
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "expiry_date", children: "Expiry Date" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "expiry_date",
-                type: "date",
-                value: formData.expiry_date,
-                onChange: (e) => setFormData({ ...formData, expiry_date: e.target.value })
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "credential_id", children: "Credential ID" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            input.Input,
-            {
-              id: "credential_id",
-              value: formData.credential_id,
-              onChange: (e) => setFormData({ ...formData, credential_id: e.target.value }),
-              placeholder: "Certificate or credential identifier"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "status", children: "Status" }),
-          /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: formData.status, onValueChange: (value) => setFormData({ ...formData, status: value }), children: [
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Valid", children: "Valid" }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Expired", children: "Expired" }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Pending", children: "Pending" }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Revoked", children: "Revoked" })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Education Record" })
-        ] })
-      ] })
-    ] }) });
-  };
-  const UserDepartmentsManager = ({ userId }) => {
-    const [selectedDepartmentId, setSelectedDepartmentId] = o.useState("");
-    const {
-      userDepartments,
-      addDepartment,
-      removeDepartment,
-      setPrimaryDepartment,
-      isLoading,
-      isAddingDepartment
-    } = useUserDepartments.useUserDepartments(userId);
-    const { data: allDepartments = [] } = reactQuery.useQuery({
-      queryKey: ["departments"],
-      queryFn: async () => {
-        const { data, error } = await client.supabase.from("departments").select("id, name").order("name");
-        if (error) throw error;
-        return data;
-      }
-    });
-    const availableDepartments = allDepartments.filter(
-      (dept) => !userDepartments.some((ud) => ud.department_id === dept.id)
-    );
-    const handleAddDepartment = () => {
-      if (selectedDepartmentId) {
-        const isPrimary = userDepartments.length === 0;
-        addDepartment({
-          userId,
-          departmentId: selectedDepartmentId,
-          isPrimary
-        });
-        setSelectedDepartmentId("");
-      }
-    };
-    const handleRemoveDepartment = (assignmentId) => {
-      if (confirm("Are you sure you want to remove this department assignment?")) {
-        removeDepartment(assignmentId);
-      }
-    };
-    const handleSetPrimary = (departmentId) => {
-      setPrimaryDepartment({ userId, departmentId });
-    };
-    if (isLoading) {
-      return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Department Assignments" }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-4", children: "Loading..." }) })
-      ] });
-    }
-    return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-      /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Department Assignments" }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "text-sm font-medium", children: "Current Departments:" }),
-          userDepartments.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2", children: userDepartments.map((userDept) => /* @__PURE__ */ jsxRuntime.jsxs(
-            badge.Badge,
-            {
-              variant: "secondary",
-              className: "flex items-center gap-2 px-3 py-1",
-              children: [
-                userDept.is_primary && /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }),
-                /* @__PURE__ */ jsxRuntime.jsx("span", { children: userDept.department_name }),
-                /* @__PURE__ */ jsxRuntime.jsx(
-                  button.Button,
-                  {
-                    size: "sm",
-                    variant: "ghost",
-                    className: "h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground ml-1",
-                    onClick: () => handleRemoveDepartment(userDept.id),
-                    children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-3 w-3" })
-                  }
-                ),
-                !userDept.is_primary && userDepartments.length > 1 && /* @__PURE__ */ jsxRuntime.jsx(
-                  button.Button,
-                  {
-                    size: "sm",
-                    variant: "ghost",
-                    className: "h-4 w-4 p-0 ml-1 hover:bg-accent",
-                    onClick: () => handleSetPrimary(userDept.department_id),
-                    title: "Set as primary department",
-                    children: /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3" })
-                  }
-                )
-              ]
-            },
-            userDept.id
-          )) }) : /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-muted-foreground", children: "No departments assigned" })
-        ] }),
-        availableDepartments.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "text-sm font-medium", children: "Add Department:" }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 items-center", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              select.Select,
-              {
-                value: selectedDepartmentId,
-                onValueChange: setSelectedDepartmentId,
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "flex-1", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select department to add..." }) }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: availableDepartments.map((dept) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: dept.id, children: dept.name }, dept.id)) })
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              button.Button,
-              {
-                onClick: handleAddDepartment,
-                disabled: !selectedDepartmentId || isAddingDepartment,
-                size: "sm",
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }),
-                  "Add"
-                ]
-              }
-            )
-          ] })
-        ] }),
-        userDepartments.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-xs text-muted-foreground mt-4 p-2 bg-muted/50 rounded", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Note:" }),
-          " The user can see roles from all assigned departments plus roles without specific departments (designations)."
-        ] })
-      ] })
-    ] });
-  };
-  const UserDepartmentsRolesTable = o.forwardRef(({ userId }, ref) => {
-    const [newRows, setNewRows] = o.useState([]);
-    const queryClient = reactQuery.useQueryClient();
-    const { user } = staysecureAuth.useAuth();
-    const {
-      userDepartments,
-      addDepartment,
-      removeDepartment,
-      setPrimaryDepartment,
-      isAddingDepartment,
-      refetch: refetchUserDepartments
-    } = useUserDepartments.useUserDepartments(userId);
-    const { data: allDepartments = [] } = reactQuery.useQuery({
-      queryKey: ["departments"],
-      queryFn: async () => {
-        const { data, error } = await client.supabase.from("departments").select("id, name").order("name");
-        if (error) throw error;
-        return data;
-      }
-    });
-    const { data: userRoles = [] } = reactQuery.useQuery({
-      queryKey: ["user-roles", userId],
-      queryFn: async () => {
-        if (!userId) return [];
-        console.log("UserDepartmentsRolesTable: Fetching roles for user:", userId);
-        const { data, error } = await client.supabase.from("user_profile_roles").select(`
-          *,
-          roles (
-            name
-          )
-        `).eq("user_id", userId).order("is_primary", { ascending: false });
-        console.log("UserDepartmentsRolesTable: Raw roles data:", data);
-        console.log("UserDepartmentsRolesTable: Roles query error:", error);
-        if (error) throw error;
-        const transformedData = (data || []).map((item) => {
-          var _a;
-          return {
-            id: item.id,
-            user_id: item.user_id,
-            role_id: item.role_id,
-            role_name: ((_a = item.roles) == null ? void 0 : _a.name) || "",
-            is_primary: item.is_primary,
-            assigned_at: item.assigned_at,
-            assigned_by: item.assigned_by,
-            pairing_id: item.pairing_id
-          };
-        });
-        transformedData.sort((a, b) => {
-          if (a.is_primary && !b.is_primary) return -1;
-          if (!a.is_primary && b.is_primary) return 1;
-          return (a.role_name || "").localeCompare(b.role_name || "");
-        });
-        console.log("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
-        return transformedData;
-      },
-      enabled: !!userId
-    });
-    const { data: allRoles = [] } = reactQuery.useQuery({
-      queryKey: ["all-roles"],
-      queryFn: async () => {
-        const { data, error } = await client.supabase.from("roles").select("role_id, name, department_id, departments(name)").eq("is_active", true).order("name");
-        if (error) throw error;
-        return data;
-      }
-    });
-    const addRoleMutation = reactQuery.useMutation({
-      mutationFn: async ({ roleId, pairingId }) => {
-        console.log("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
-        const role = allRoles.find((r) => r.role_id === roleId);
-        console.log("UserDepartmentsRolesTable: Found role:", role);
-        if (!role) throw new Error("Role not found");
-        const isPrimary = userRoles.length === 0;
-        console.log("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
-        const insertData = {
-          user_id: userId,
-          role_id: roleId,
-          is_primary: isPrimary,
-          assigned_by: user == null ? void 0 : user.id,
-          pairing_id: pairingId
-        };
-        console.log("UserDepartmentsRolesTable: Inserting role data:", insertData);
-        const { data, error } = await client.supabase.from("user_profile_roles").insert(insertData).select();
-        console.log("UserDepartmentsRolesTable: Insert result:", data);
-        console.log("UserDepartmentsRolesTable: Insert error:", error);
-        if (error) throw error;
-        return role;
-      },
-      onSuccess: (data) => {
-        console.log("UserDepartmentsRolesTable: Role assignment successful:", data);
-        queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
-        ue.success("Role assigned successfully");
-      },
-      onError: (error) => {
-        console.error("UserDepartmentsRolesTable: Role assignment failed:", error);
-        ue.error("Failed to assign role: " + error.message);
-      }
-    });
-    const removeRoleMutation = reactQuery.useMutation({
-      mutationFn: async (roleId) => {
-        const { error } = await client.supabase.from("user_profile_roles").delete().eq("id", roleId);
-        if (error) throw error;
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
-        ue.success("Role removed successfully");
-      },
-      onError: (error) => {
-        ue.error("Failed to remove role: " + error.message);
-      }
-    });
-    reactQuery.useMutation({
-      mutationFn: async (roleId) => {
-        await client.supabase.from("user_profile_roles").update({ is_primary: false }).eq("user_id", userId);
-        const { error } = await client.supabase.from("user_profile_roles").update({ is_primary: true }).eq("id", roleId);
-        if (error) throw error;
-      },
-      onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
-        ue.success("Primary role updated");
-      }
-    });
-    const createTableData = () => {
-      const pairs = [];
-      const usedPairingIds = /* @__PURE__ */ new Set();
-      userDepartments.forEach((dept) => {
-        if (dept.pairing_id) {
-          const matchingRole = userRoles.find((role) => role.pairing_id === dept.pairing_id);
-          if (matchingRole) {
-            pairs.push({
-              id: `pair-${dept.pairing_id}`,
-              departmentId: dept.department_id,
-              departmentName: dept.department_name,
-              departmentAssignmentId: dept.id,
-              roleName: matchingRole.role_name,
-              roleId: matchingRole.id,
-              isDepartmentPrimary: dept.is_primary,
-              isRolePrimary: matchingRole.is_primary
-            });
-            usedPairingIds.add(dept.pairing_id);
-          }
-        }
-      });
-      userDepartments.forEach((dept) => {
-        if (!dept.pairing_id || !usedPairingIds.has(dept.pairing_id)) {
-          pairs.push({
-            id: `dept-${dept.id}`,
-            departmentId: dept.department_id,
-            departmentName: dept.department_name,
-            departmentAssignmentId: dept.id,
-            isDepartmentPrimary: dept.is_primary
-          });
-        }
-      });
-      userRoles.forEach((role) => {
-        if (!role.pairing_id || !usedPairingIds.has(role.pairing_id)) {
-          pairs.push({
-            id: `role-${role.id}`,
-            roleName: role.role_name,
-            roleId: role.id,
-            isRolePrimary: role.is_primary
-          });
-        }
-      });
-      pairs.sort((a, b) => {
-        const aPrimary = a.isDepartmentPrimary || a.isRolePrimary;
-        const bPrimary = b.isDepartmentPrimary || b.isRolePrimary;
-        if (aPrimary && !bPrimary) return -1;
-        if (!aPrimary && bPrimary) return 1;
-        return 0;
-      });
-      pairs.push(...newRows);
-      return pairs;
-    };
-    const getAvailableRoles = (selectedDepartmentId) => {
-      console.log("getAvailableRoles called with:", selectedDepartmentId);
-      console.log("allRoles:", allRoles);
-      if (!selectedDepartmentId) {
-        const generalRoles = allRoles.filter((role) => !role.department_id);
-        console.log("No department selected, showing general roles:", generalRoles);
-        return generalRoles;
-      }
-      const departmentRoles = allRoles.filter((role) => role.department_id === selectedDepartmentId);
-      console.log(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
-      return departmentRoles;
-    };
-    const handleAddNewRow = () => {
-      setNewRows((prev) => [...prev, { isNewRow: true }]);
-    };
-    o.useImperativeHandle(ref, () => ({
-      handleAddNewRow
-    }));
-    const handleNewRowDepartmentChange = (index, departmentId) => {
-      if (departmentId === "none") {
-        departmentId = "";
-      }
-      const department = allDepartments.find((d) => d.id === departmentId);
-      const currentRow = newRows[index];
-      const availableRoles = getAvailableRoles(departmentId || void 0);
-      const isCurrentRoleStillValid = currentRow.roleId && availableRoles.some((role) => role.role_id === currentRow.roleId);
-      const updatedRow = {
-        ...currentRow,
-        departmentId: departmentId || void 0,
-        departmentName: department == null ? void 0 : department.name,
-        // Clear role if it's no longer valid for the selected department
-        roleId: isCurrentRoleStillValid ? currentRow.roleId : void 0,
-        roleName: isCurrentRoleStillValid ? currentRow.roleName : void 0
-      };
-      setNewRows((prev) => prev.map((row, i) => i === index ? updatedRow : row));
-    };
-    const handleNewRowRoleChange = (index, roleId) => {
-      if (roleId === "none") {
-        roleId = "";
-      }
-      const role = allRoles.find((r) => r.role_id === roleId);
-      const updatedRow = {
-        ...newRows[index],
-        roleId: roleId || void 0,
-        roleName: role == null ? void 0 : role.name
-      };
-      setNewRows((prev) => prev.map((row, i) => i === index ? updatedRow : row));
-    };
-    const handleSaveNewRow = async (index) => {
-      const row = newRows[index];
-      console.log("UserDepartmentsRolesTable: Saving new row:", row);
-      console.log("UserDepartmentsRolesTable: Current userRoles:", userRoles);
-      console.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
-      if (!row.departmentId && !row.roleId) {
-        ue.error("Please select at least a department or role");
-        return;
-      }
-      try {
-        const pairingId = row.departmentId && row.roleId ? crypto.randomUUID() : void 0;
-        console.log("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
-        if (row.departmentId) {
-          const isDepartmentAlreadyAssigned = userDepartments.some((dept) => dept.department_id === row.departmentId);
-          console.log("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
-          console.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
-          console.log("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
-          if (!isDepartmentAlreadyAssigned) {
-            const isPrimary = userDepartments.length === 0;
-            console.log("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
-            console.log("UserDepartmentsRolesTable: Department params:", {
-              userId,
-              departmentId: row.departmentId,
-              isPrimary,
-              pairingId,
-              assignedBy: user == null ? void 0 : user.id
-            });
-            await addDepartment({
-              userId,
-              departmentId: row.departmentId,
-              isPrimary,
-              pairingId,
-              assignedBy: user == null ? void 0 : user.id
-            });
-            console.log("UserDepartmentsRolesTable: Department addition completed");
-          } else {
-            console.log("UserDepartmentsRolesTable: Department already assigned, skipping");
-          }
-        }
-        if (row.roleId) {
-          const isRoleAlreadyAssigned = userRoles.some((role) => role.role_id === row.roleId);
-          console.log("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
-          console.log("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
-          if (!isRoleAlreadyAssigned) {
-            console.log("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
-            await addRoleMutation.mutateAsync({
-              roleId: row.roleId,
-              pairingId
-            });
-          }
-        }
-        setNewRows((prev) => prev.filter((_, i) => i !== index));
-        ue.success("Assignment saved successfully");
-      } catch (error) {
-        console.error("Error saving assignment:", error);
-        ue.error("Failed to save assignment");
-      }
-    };
-    const handleDeletePair = async (pair) => {
-      try {
-        if (pair.departmentAssignmentId) {
-          removeDepartment(pair.departmentAssignmentId);
-        }
-        if (pair.roleId) {
-          await removeRoleMutation.mutateAsync(pair.roleId);
-        }
-      } catch (error) {
-        ue.error("Failed to delete assignment");
-      }
-    };
-    const handleCancelNewRow = (index) => {
-      setNewRows((prev) => prev.filter((_, i) => i !== index));
-    };
-    const setPrimaryPairMutation = reactQuery.useMutation({
-      mutationFn: async (pair) => {
-        await client.supabase.from("user_departments").update({ is_primary: false }).eq("user_id", userId);
-        await client.supabase.from("user_profile_roles").update({ is_primary: false }).eq("user_id", userId);
-        if (pair.departmentAssignmentId) {
-          const { error: deptError } = await client.supabase.from("user_departments").update({ is_primary: true }).eq("id", pair.departmentAssignmentId);
-          if (deptError) throw deptError;
-        }
-        if (pair.roleId) {
-          const { error: roleError } = await client.supabase.from("user_profile_roles").update({ is_primary: true }).eq("id", pair.roleId);
-          if (roleError) throw roleError;
-        }
-      },
-      onSuccess: () => {
-        refetchUserDepartments();
-        queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
-        ue.success("Primary assignment updated successfully");
-      },
-      onError: (error) => {
-        ue.error("Failed to update primary assignment: " + error.message);
-      }
-    });
-    const tableData = createTableData();
-    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "pt-6", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
-      /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
-        /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Department" }),
-        /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Role" }),
-        /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { className: "w-[80px]", children: "Actions" })
-      ] }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(table.TableBody, { children: [
-        tableData.map((pair, index) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxRuntime.jsxs(
-            select.Select,
-            {
-              value: pair.departmentId || "",
-              onValueChange: (value) => handleNewRowDepartmentChange(index - (tableData.length - newRows.length), value),
-              children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select department..." }) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { className: "bg-background border z-50", children: [
-                  allDepartments.map((dept) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: dept.id, children: dept.name }, dept.id)),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", children: /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground italic", children: "Skip department" }) })
-                ] })
-              ]
-            }
-          ) : pair.departmentName ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: pair.isDepartmentPrimary ? "default" : "secondary", children: pair.departmentName }),
-            pair.isDepartmentPrimary && /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" })
-          ] }) : /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground italic", children: "No department" }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxRuntime.jsxs(
-            select.Select,
-            {
-              value: pair.roleId || "",
-              onValueChange: (value) => handleNewRowRoleChange(index - (tableData.length - newRows.length), value),
-              children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select role..." }) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { className: "bg-background border z-50", children: [
-                  getAvailableRoles(pair.departmentId).map((role) => /* @__PURE__ */ jsxRuntime.jsxs(select.SelectItem, { value: role.role_id, children: [
-                    role.name,
-                    role.department_id && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-xs text-muted-foreground ml-1", children: "(Dept. role)" })
-                  ] }, role.role_id)),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", children: /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground italic", children: "Skip role" }) })
-                ] })
-              ]
-            }
-          ) : pair.roleName ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: pair.isRolePrimary ? "default" : "secondary", children: pair.roleName }),
-            pair.isRolePrimary && /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" })
-          ] }) : /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground italic", children: "No role" }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(
-              button.Button,
-              {
-                size: "sm",
-                variant: "ghost",
-                onClick: () => handleSaveNewRow(index - (tableData.length - newRows.length)),
-                className: "h-6 w-6 p-0 hover:bg-primary hover:text-primary-foreground",
-                disabled: !pair.departmentId && !pair.roleId,
-                children: /* @__PURE__ */ jsxRuntime.jsx(Check, { className: "h-3 w-3" })
-              }
-            ),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              button.Button,
-              {
-                size: "sm",
-                variant: "ghost",
-                onClick: () => handleCancelNewRow(index - (tableData.length - newRows.length)),
-                className: "h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground",
-                children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-3 w-3" })
-              }
-            )
-          ] }) : pair.departmentName || pair.roleName ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(
-              button.Button,
-              {
-                size: "sm",
-                variant: "ghost",
-                onClick: () => setPrimaryPairMutation.mutate(pair),
-                disabled: setPrimaryPairMutation.isPending || pair.isDepartmentPrimary && pair.isRolePrimary,
-                className: "h-6 w-6 p-0 hover:bg-yellow-500 hover:text-white",
-                title: "Set as primary",
-                children: /* @__PURE__ */ jsxRuntime.jsx(
-                  Star,
-                  {
-                    className: `h-3 w-3 ${pair.isDepartmentPrimary || pair.isRolePrimary ? "fill-current text-yellow-500" : "text-muted-foreground"}`
-                  }
-                )
-              }
-            ),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              button.Button,
-              {
-                size: "sm",
-                variant: "ghost",
-                className: "h-6 w-6 p-0 hover:bg-destructive hover:text-destructive-foreground",
-                onClick: () => handleDeletePair(pair),
-                children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-3 w-3" })
-              }
-            )
-          ] }) : null })
-        ] }, pair.id || `new-${index}`)),
-        tableData.length === 0 && /* @__PURE__ */ jsxRuntime.jsx(table.TableRow, { children: /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { colSpan: 3, className: "text-center text-muted-foreground", children: "No department or role assignments" }) })
-      ] })
-    ] }) }) }) });
+  Object.defineProperty(exports2, "useUserProfiles", {
+    enumerable: true,
+    get: () => useUserProfiles.useUserProfiles
   });
-  const UserDepartmentsRolesManager = o.forwardRef(
-    ({ userId }, ref) => {
-      const tableRef = o.useRef(null);
-      o.useImperativeHandle(ref, () => ({
-        handleAddNewRow: () => {
-          var _a, _b;
-          return (_b = (_a = tableRef.current) == null ? void 0 : _a.handleAddNewRow) == null ? void 0 : _b.call(_a);
-        }
-      }));
-      return /* @__PURE__ */ jsxRuntime.jsx(UserDepartmentsRolesTable, { userId, ref: tableRef });
-    }
-  );
-  const DepartmentRolePairsDisplay = ({ pairs, userId }) => {
-    if (!pairs || pairs.length === 0) {
-      return /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "No assignments" });
-    }
-    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-1", children: pairs.map((pair, index) => /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs", children: [
-      pair.department,
-      " - ",
-      pair.role
-    ] }, index)) });
-  };
-  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff7300", "#00c49f", "#ffbb28", "#ff8042"];
-  const UserReport = () => {
-    var _a, _b, _c, _d;
-    const printRef = o.useRef(null);
-    const [filters, setFilters] = o.useState({
-      timeRange: "30days"
-    });
-    const { data: locations } = reactQuery.useQuery({
-      queryKey: ["locations"],
-      queryFn: async () => {
-        const { data } = await client.supabase.from("locations").select("id, name").order("name");
-        return data || [];
-      }
-    });
-    const { data: departments } = reactQuery.useQuery({
-      queryKey: ["departments", filters.location],
-      queryFn: async () => {
-        if (filters.location && filters.location !== "all") {
-          const { data: locationUsers } = await client.supabase.from("profiles").select("id").eq("location", filters.location);
-          if (locationUsers && locationUsers.length > 0) {
-            const userIds = locationUsers.map((u) => u.id);
-            const { data: allUserDepts, error: userDeptsError } = await client.supabase.from("user_departments").select("department_id, user_id").eq("is_primary", true);
-            if (userDeptsError) {
-              const { data: allDepts } = await client.supabase.from("departments").select("id, name").order("name");
-              return allDepts || [];
-            }
-            const userDepts = (allUserDepts == null ? void 0 : allUserDepts.filter((dept) => userIds.includes(dept.user_id))) || [];
-            if (userDepts && userDepts.length > 0) {
-              const departmentIds = userDepts.map((d) => d.department_id);
-              const { data: allDeptDetails } = await client.supabase.from("departments").select("id, name");
-              const deptDetails = (allDeptDetails == null ? void 0 : allDeptDetails.filter((dept) => departmentIds.includes(dept.id))) || [];
-              return deptDetails;
-            }
-            return [];
-          }
-          return [];
-        } else {
-          const { data } = await client.supabase.from("departments").select("id, name").order("name");
-          return data || [];
-        }
-      }
-    });
-    const { data: userData, isLoading } = reactQuery.useQuery({
-      queryKey: ["userData", filters],
-      queryFn: async () => {
-        let filteredUserIds = [];
-        if (filters.location && filters.location !== "all") {
-          const { data: locationUsers } = await client.supabase.from("physical_location_access").select("user_id").eq("location_id", filters.location);
-          if (locationUsers) {
-            filteredUserIds = locationUsers.map((u) => u.user_id);
-          }
-        }
-        if (filters.department && filters.department !== "all") {
-          const { data: departmentUsers } = await client.supabase.from("user_departments").select("user_id").eq("department_id", filters.department);
-          if (departmentUsers) {
-            const deptUserIds = departmentUsers.map((u) => u.user_id);
-            if (filteredUserIds.length > 0) {
-              filteredUserIds = filteredUserIds.filter((id) => deptUserIds.includes(id));
-            } else {
-              filteredUserIds = deptUserIds;
-            }
-          }
-        }
-        const now = /* @__PURE__ */ new Date();
-        const startDate = /* @__PURE__ */ new Date();
-        switch (filters.timeRange) {
-          case "7days":
-            startDate.setDate(now.getDate() - 7);
-            break;
-          case "30days":
-            startDate.setDate(now.getDate() - 30);
-            break;
-          case "90days":
-            startDate.setDate(now.getDate() - 90);
-            break;
-          case "1year":
-            startDate.setFullYear(now.getFullYear() - 1);
-            break;
-          default:
-            startDate.setDate(now.getDate() - 30);
-        }
-        let profilesQuery = client.supabase.from("profiles").select("*");
-        if (filteredUserIds.length > 0) {
-          profilesQuery = profilesQuery.in("id", filteredUserIds);
-        }
-        const { data: profiles } = await profilesQuery;
-        let userDeptsQuery = client.supabase.from("user_departments").select(`
-          user_id,
-          departments!inner(name)
-        `).eq("is_primary", true);
-        if (filteredUserIds.length > 0) {
-          userDeptsQuery = userDeptsQuery.in("user_id", filteredUserIds);
-        }
-        const { data: userDepts } = await userDeptsQuery;
-        let userLocationsQuery = client.supabase.from("physical_location_access").select(`
-          user_id,
-          locations!inner(name)
-        `);
-        if (filteredUserIds.length > 0) {
-          userLocationsQuery = userLocationsQuery.in("user_id", filteredUserIds);
-        }
-        const { data: userLocations } = await userLocationsQuery;
-        let activityQuery = client.supabase.from("user_behavior_analytics").select(`
-          user_id,
-          created_at
-        `).gte("created_at", startDate.toISOString());
-        if (filteredUserIds.length > 0) {
-          activityQuery = activityQuery.in("user_id", filteredUserIds);
-        }
-        const { data: userActivityData } = await activityQuery;
-        let responsesQuery = client.supabase.from("user_answer_responses").select(`
-          user_id,
-          total_score,
-          created_at
-        `).gte("created_at", startDate.toISOString());
-        if (filteredUserIds.length > 0) {
-          responsesQuery = responsesQuery.in("user_id", filteredUserIds);
-        }
-        const { data: userResponses } = await responsesQuery;
-        const languageStats = (profiles == null ? void 0 : profiles.reduce((acc, profile) => {
-          const language = profile.language || "English";
-          acc[language] = (acc[language] || 0) + 1;
-          return acc;
-        }, {})) || {};
-        const userDemographics = Object.entries(languageStats).map(([name, value], index) => ({
-          name,
-          value,
-          color: COLORS[index % COLORS.length]
-        }));
-        const activeUsers = new Set((userActivityData == null ? void 0 : userActivityData.map((item) => item.user_id)) || []);
-        const totalUsers = (profiles == null ? void 0 : profiles.length) || 0;
-        const activeCount = activeUsers.size;
-        const inactiveCount = totalUsers - activeCount;
-        const userEngagement = [{
-          name: "User Engagement",
-          active: activeCount,
-          inactive: inactiveCount,
-          total: totalUsers
-        }];
-        const deptStats = (userDepts == null ? void 0 : userDepts.reduce((acc, item) => {
-          var _a2;
-          const deptName = ((_a2 = item.departments) == null ? void 0 : _a2.name) || "Unknown";
-          acc[deptName] = (acc[deptName] || 0) + 1;
-          return acc;
-        }, {})) || {};
-        const departmentDistribution = Object.entries(deptStats).map(([name, users]) => ({
-          name,
-          users,
-          percentage: Math.round(users / totalUsers * 100)
-        }));
-        const locationStats = (userLocations == null ? void 0 : userLocations.reduce((acc, item) => {
-          var _a2;
-          const locationName = ((_a2 = item.locations) == null ? void 0 : _a2.name) || "Unknown";
-          acc[locationName] = (acc[locationName] || 0) + 1;
-          return acc;
-        }, {})) || {};
-        const locationDistribution = Object.entries(locationStats).map(([name, users]) => ({
-          name,
-          users,
-          percentage: Math.round(users / totalUsers * 100)
-        }));
-        const userActivity = Array.from({ length: 7 }, (_, i) => {
-          const date = /* @__PURE__ */ new Date();
-          date.setDate(date.getDate() - (6 - i));
-          return {
-            date: date.toLocaleDateString(),
-            activeUsers: Math.floor(Math.random() * 20) + 10,
-            newUsers: Math.floor(Math.random() * 5) + 1
-          };
-        });
-        const userStats = (profiles == null ? void 0 : profiles.map((profile) => {
-          const profileResponses = (userResponses == null ? void 0 : userResponses.filter((r) => r.user_id === profile.id)) || [];
-          const userBehavior = (userActivityData == null ? void 0 : userActivityData.filter((b) => b.user_id === profile.id)) || [];
-          const lessonsCompleted = profileResponses.length;
-          const averageScore = profileResponses.length > 0 ? Math.round(profileResponses.reduce((sum, r) => sum + (r.total_score || 0), 0) / profileResponses.length) : 0;
-          const lastActive = userBehavior.length > 0 ? new Date(Math.max(...userBehavior.map((b) => new Date(b.created_at).getTime()))).toLocaleDateString() : "Never";
-          return {
-            name: profile.full_name || profile.username || `User ${profile.id.slice(0, 8)}`,
-            lessonsCompleted,
-            averageScore,
-            lastActive
-          };
-        })) || [];
-        const topUsers = userStats.filter((user) => user.lessonsCompleted > 0).sort((a, b) => b.lessonsCompleted - a.lessonsCompleted).slice(0, 10);
-        return {
-          userDemographics,
-          userEngagement,
-          departmentDistribution,
-          locationDistribution,
-          userActivity,
-          topUsers
-        };
-      }
-    });
-    const handlePrint = reactToPrint.useReactToPrint({
-      contentRef: printRef
-    });
-    const handleExportExcel = () => {
-      if (!userData) return;
-      const workbook = XLSX__namespace.utils.book_new();
-      const demographicsSheet = XLSX__namespace.utils.json_to_sheet(userData.userDemographics);
-      XLSX__namespace.utils.book_append_sheet(workbook, demographicsSheet, "User Demographics");
-      const deptSheet = XLSX__namespace.utils.json_to_sheet(userData.departmentDistribution);
-      XLSX__namespace.utils.book_append_sheet(workbook, deptSheet, "Department Distribution");
-      const locationSheet = XLSX__namespace.utils.json_to_sheet(userData.locationDistribution);
-      XLSX__namespace.utils.book_append_sheet(workbook, locationSheet, "Location Distribution");
-      const topUsersSheet = XLSX__namespace.utils.json_to_sheet(userData.topUsers);
-      XLSX__namespace.utils.book_append_sheet(workbook, topUsersSheet, "Top Users");
-      XLSX__namespace.writeFile(workbook, "user_report.xlsx");
-    };
-    const handleExportPDF = () => {
-      if (!userData) return;
-      const doc = new jsPDF();
-      doc.setFontSize(20);
-      doc.text("User Report", 20, 20);
-      doc.setFontSize(12);
-      doc.text(`Generated: ${(/* @__PURE__ */ new Date()).toLocaleDateString()}`, 20, 30);
-      autoTable(doc, {
-        head: [["Department", "Users", "Percentage"]],
-        body: userData.departmentDistribution.map((item) => [
-          item.name,
-          item.users.toString(),
-          `${item.percentage}%`
-        ]),
-        startY: 40
-      });
-      doc.save("user_report.pdf");
-    };
-    if (isLoading) {
-      return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-lg", children: "Loading user data..." }) });
-    }
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { ref: printRef, className: "space-y-6", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between items-center", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-2xl font-bold text-learning-primary", children: "User Reports" }),
-          /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "User engagement statistics, demographics, and individual progress" })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handlePrint, variant: "outline", size: "sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Printer, { className: "w-4 h-4 mr-2" }),
-            "Print"
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportExcel, variant: "outline", size: "sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "w-4 h-4 mr-2" }),
-            "Export Excel"
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportPDF, variant: "outline", size: "sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "w-4 h-4 mr-2" }),
-            "Export PDF"
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Filter, { className: "w-5 h-5" }),
-          "Filters"
-        ] }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(
-            select.Select,
-            {
-              value: filters.timeRange,
-              onValueChange: (value) => setFilters((prev) => ({ ...prev, timeRange: value })),
-              children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Time Range" }) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "7days", children: "Last 7 Days" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "30days", children: "Last 30 Days" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "90days", children: "Last 90 Days" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "1year", children: "Last Year" })
-                ] })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntime.jsxs(
-            select.Select,
-            {
-              value: filters.location,
-              onValueChange: (value) => setFilters((prev) => ({
-                ...prev,
-                location: value,
-                department: "all"
-                // Reset department when location changes
-              })),
-              children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select Location" }) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Locations" }),
-                  locations == null ? void 0 : locations.map((loc) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: loc.name, children: loc.name }, loc.id))
-                ] })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntime.jsxs(
-            select.Select,
-            {
-              value: filters.department,
-              onValueChange: (value) => setFilters((prev) => ({ ...prev, department: value })),
-              children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select Department" }) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Departments" }),
-                  departments == null ? void 0 : departments.map((dept) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: dept.id, children: dept.name }, dept.id))
-                ] })
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxRuntime.jsxs(
-            select.Select,
-            {
-              value: filters.userStatus,
-              onValueChange: (value) => setFilters((prev) => ({ ...prev, userStatus: value })),
-              children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "User Status" }) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Users" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "active", children: "Active Users" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "inactive", children: "Inactive Users" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "new", children: "New Users" })
-                ] })
-              ]
-            }
-          )
-        ] }) })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Total Users" }),
-            /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 text-muted-foreground" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: ((_a = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _a.total) || 0 }),
-            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Across all locations" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Active Users" }),
-            /* @__PURE__ */ jsxRuntime.jsx(UserCheck, { className: "h-4 w-4 text-muted-foreground" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: ((_b = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _b.active) || 0 }),
-            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "In selected period" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Inactive Users" }),
-            /* @__PURE__ */ jsxRuntime.jsx(UserX, { className: "h-4 w-4 text-muted-foreground" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: ((_c = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _c.inactive) || 0 }),
-            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "No recent activity" })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Engagement Rate" }),
-            /* @__PURE__ */ jsxRuntime.jsx(Activity, { className: "h-4 w-4 text-muted-foreground" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-2xl font-bold", children: [
-              ((_d = userData == null ? void 0 : userData.userEngagement[0]) == null ? void 0 : _d.total) > 0 ? Math.round(userData.userEngagement[0].active / userData.userEngagement[0].total * 100) : 0,
-              "%"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Active users percentage" })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "User Demographics" }),
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Language distribution of users" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.PieChart, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(
-              recharts.Pie,
-              {
-                data: (userData == null ? void 0 : userData.userDemographics) || [],
-                cx: "50%",
-                cy: "50%",
-                labelLine: false,
-                label: ({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`,
-                outerRadius: 80,
-                fill: "#8884d8",
-                dataKey: "value",
-                children: userData == null ? void 0 : userData.userDemographics.map((entry, index) => /* @__PURE__ */ jsxRuntime.jsx(recharts.Cell, { fill: entry.color }, `cell-${index}`))
-              }
-            ),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {})
-          ] }) }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Department Distribution" }),
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Users by department" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.BarChart, { data: (userData == null ? void 0 : userData.departmentDistribution) || [], children: [
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "name", angle: -45, textAnchor: "end", height: 80 }),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Bar, { dataKey: "users", fill: "#82ca9d" })
-          ] }) }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Location Distribution" }),
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Users by location" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.BarChart, { data: (userData == null ? void 0 : userData.locationDistribution) || [], children: [
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "name", angle: -45, textAnchor: "end", height: 80 }),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Bar, { dataKey: "users", fill: "#ffc658" })
-          ] }) }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "User Activity Trends" }),
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Daily active and new users" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx(recharts.ResponsiveContainer, { width: "100%", height: 300, children: /* @__PURE__ */ jsxRuntime.jsxs(recharts.LineChart, { data: (userData == null ? void 0 : userData.userActivity) || [], children: [
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.XAxis, { dataKey: "date" }),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.YAxis, {}),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Tooltip, {}),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Legend, {}),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Line, { type: "monotone", dataKey: "activeUsers", stroke: "#8884d8", name: "Active Users" }),
-            /* @__PURE__ */ jsxRuntime.jsx(recharts.Line, { type: "monotone", dataKey: "newUsers", stroke: "#82ca9d", name: "New Users" })
-          ] }) }) })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Top Performing Users" }),
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Users with highest lesson completion and scores" })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntime.jsxs("table", { className: "w-full", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("thead", { children: /* @__PURE__ */ jsxRuntime.jsxs("tr", { className: "border-b", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2", children: "User" }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2", children: "Lessons Completed" }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2", children: "Average Score" }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2", children: "Last Active" })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntime.jsx("tbody", { children: userData == null ? void 0 : userData.topUsers.slice(0, 10).map((user, index) => /* @__PURE__ */ jsxRuntime.jsxs("tr", { className: "border-b", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("td", { className: "p-2", children: user.name }),
-            /* @__PURE__ */ jsxRuntime.jsx("td", { className: "p-2", children: user.lessonsCompleted }),
-            /* @__PURE__ */ jsxRuntime.jsxs("td", { className: "p-2", children: [
-              user.averageScore,
-              "/100"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsx("td", { className: "p-2", children: user.lastActive })
-          ] }, index)) })
-        ] }) }) })
-      ] })
-    ] });
-  };
-  const ProfileEditor = () => {
-    const { user } = staysecureAuth.useAuth();
-    const { profile, loading, updateProfile } = useProfile.useProfile();
-    const [isEditing, setIsEditing] = o.useState(false);
-    const [saving, setSaving] = o.useState(false);
-    const [formData, setFormData] = o.useState({
-      username: "",
-      full_name: "",
-      bio: ""
-    });
-    o.useEffect(() => {
-      if (profile) {
-        setFormData({
-          username: profile.username || "",
-          full_name: profile.full_name || "",
-          bio: profile.bio || ""
-        });
-      }
-    }, [profile]);
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setSaving(true);
-      try {
-        await updateProfile(formData);
-        setIsEditing(false);
-        useToast.toast({
-          title: "Profile updated",
-          description: "Your profile has been successfully updated."
-        });
-      } catch (error) {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-      } finally {
-        setSaving(false);
-      }
-    };
-    if (loading) {
-      return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
-    }
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "max-w-4xl mx-auto", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "mb-8", children: [
-        /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "Your Profile" }),
-        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Manage your personal profile information" })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Profile Information" }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: !isEditing ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { className: "text-sm font-medium text-muted-foreground", children: "Email" }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm", children: user == null ? void 0 : user.email })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { className: "text-sm font-medium text-muted-foreground", children: "Full Name" }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.full_name) || "Not set" })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { className: "text-sm font-medium text-muted-foreground", children: "Username" }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.username) || "Not set" })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { className: "text-sm font-medium text-muted-foreground", children: "Bio" }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.bio) || "Not set" })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: () => setIsEditing(true), children: "Edit Profile" })
-          ] }) : /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "email", children: "Email" }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                input.Input,
-                {
-                  id: "email",
-                  type: "email",
-                  value: (user == null ? void 0 : user.email) || "",
-                  disabled: true
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "full_name", children: "Full Name" }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                input.Input,
-                {
-                  id: "full_name",
-                  type: "text",
-                  value: formData.full_name,
-                  onChange: (e) => setFormData({ ...formData, full_name: e.target.value })
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "username", children: "Username" }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                input.Input,
-                {
-                  id: "username",
-                  type: "text",
-                  value: formData.username,
-                  onChange: (e) => setFormData({ ...formData, username: e.target.value })
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "bio", children: "Bio" }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                textarea.Textarea,
-                {
-                  id: "bio",
-                  value: formData.bio,
-                  onChange: (e) => setFormData({ ...formData, bio: e.target.value }),
-                  rows: 3
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2", children: [
-              /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { type: "submit", disabled: saving, children: [
-                saving && /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
-                "Save Changes"
-              ] }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                button.Button,
-                {
-                  type: "button",
-                  variant: "outline",
-                  onClick: () => setIsEditing(false),
-                  children: "Cancel"
-                }
-              )
-            ] })
-          ] }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Account Status" }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { className: "text-sm font-medium text-muted-foreground", children: "Account Created" }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.created_at) ? new Date(profile.created_at).toLocaleDateString() : "Unknown" })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { className: "text-sm font-medium text-muted-foreground", children: "Last Updated" }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm", children: (profile == null ? void 0 : profile.updated_at) ? new Date(profile.updated_at).toLocaleDateString() : "Unknown" })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsx(alert.Alert, { children: /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: "Your profile is stored securely and you have full control over your data." }) })
-          ] }) })
-        ] })
-      ] })
-    ] });
-  };
-  const ProfileHeader = ({ profile }) => {
-    const initials = `${profile.firstName.charAt(0)}${profile.lastName.charAt(0)}`;
-    const { profiles, updateProfile } = useUserProfiles.useUserProfiles();
-    const [manager, setManager] = o.useState(profile.manager);
-    const handleReportsToChange = async (value) => {
-      setManager(value);
-      await updateProfile(profile.id, { manager: value });
-    };
-    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col md:flex-row items-start md:items-center gap-6", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(avatar.Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarImage, { src: profile.avatar, alt: `${profile.firstName} ${profile.lastName}` }),
-        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarFallback, { className: "text-2xl", children: initials })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1.5", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("h1", { className: "text-2xl font-bold", children: [
-          profile.firstName,
-          " ",
-          profile.lastName
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-lg text-muted-foreground", children: profile.role }),
-        /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-sm text-muted-foreground", children: [
-          "Department: ",
-          profile.department
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Reports to:" }),
-          /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { onValueChange: handleReportsToChange, value: manager, children: [
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager" }) }),
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: profiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.full_name || user.username || "Unnamed User", children: user.full_name || user.username || "Unnamed User" }, user.id)) })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "mt-4 md:mt-0 md:ml-auto space-y-2", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { children: profile.email })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Phone, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { children: profile.phone })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { children: profile.location })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
-            "Started ",
-            new Date(profile.startDate).toLocaleDateString()
-          ] })
-        ] })
-      ] })
-    ] }) }) });
-  };
-  const PhysicalLocationTab = ({ profile }) => {
-    const [isAssignDialogOpen, setIsAssignDialogOpen] = o.useState(false);
-    const { data: locationAccess = [], refetch } = reactQuery.useQuery({
-      queryKey: ["user-physical-location-access", profile.email],
-      queryFn: async () => {
-        const { data, error } = await client.supabase.from("physical_location_access").select(`
-          id,
-          access_purpose, 
-          status, 
-          date_access_created, 
-          date_access_revoked,
-          location_id,
-          locations!inner(name)
-        `).eq("user_id", profile.id).order("created_at", { ascending: false });
-        if (error) throw error;
-        const transformedData = (data == null ? void 0 : data.map((item, index) => {
-          var _a;
-          return {
-            ...item,
-            location: ((_a = item.locations) == null ? void 0 : _a.name) || "Unknown Location",
-            // Ensure we have a unique key for React
-            uniqueKey: item.id || `temp-${index}-${Date.now()}`
-          };
-        })) || [];
-        return transformedData;
-      }
-    });
-    const columns = [
-      {
-        key: "location",
-        header: "Location",
-        type: "text",
-        editable: false,
-        // Not editable as requested
-        required: true,
-        sortable: true
-      },
-      {
-        key: "access_purpose",
-        header: "Access Purpose",
-        type: "text",
-        editable: false,
-        // Not editable as requested
-        required: true,
-        sortable: true
-      },
-      {
-        key: "date_access_created",
-        header: "Date Created",
-        type: "date",
-        editable: false,
-        // Not editable as requested
-        required: true,
-        sortable: true
-      },
-      {
-        key: "date_access_revoked",
-        header: "Date Revoked",
-        type: "date",
-        editable: true,
-        // Only this field is editable as requested
-        sortable: true
-      },
-      {
-        key: "status",
-        header: "Status",
-        type: "select",
-        options: ["Active", "Inactive", "Revoked"],
-        editable: false,
-        // Not editable as requested
-        sortable: true
-      }
-    ];
-    const handleUpdate = async (id, updates) => {
-      try {
-        const { error } = await client.supabase.from("physical_location_access").update(updates).eq("id", id);
-        if (error) throw error;
-        useToast$1.toast({
-          title: "Access updated",
-          description: "Physical location access has been successfully updated"
-        });
-        refetch();
-        return { success: true };
-      } catch (error) {
-        console.error("Error updating physical location access:", error);
-        useToast$1.toast({
-          title: "Update failed",
-          description: error.message,
-          variant: "destructive"
-        });
-        return { success: false, error: error.message };
-      }
-    };
-    const handleDelete = async (id) => {
-      try {
-        const { error } = await client.supabase.from("physical_location_access").delete().eq("id", id);
-        if (error) throw error;
-        useToast$1.toast({
-          title: "Access removed",
-          description: "Physical location access has been successfully removed"
-        });
-        refetch();
-        return { success: true };
-      } catch (error) {
-        useToast$1.toast({
-          title: "Delete failed",
-          description: error.message,
-          variant: "destructive"
-        });
-        return { success: false, error: error.message };
-      }
-    };
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between items-center", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-sm text-muted-foreground", children: [
-          "Manage physical location access for ",
-          profile.firstName,
-          " ",
-          profile.lastName
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(
-          button.Button,
-          {
-            onClick: () => setIsAssignDialogOpen(true),
-            size: "icon",
-            children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" })
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsx(
-        editableTable.EditableTable,
-        {
-          data: locationAccess,
-          columns,
-          onUpdate: handleUpdate,
-          onDelete: handleDelete,
-          allowAdd: false,
-          allowDelete: true
-        }
-      ),
-      /* @__PURE__ */ jsxRuntime.jsx(
-        AssignPhysicalLocationDialog,
-        {
-          isOpen: isAssignDialogOpen,
-          onOpenChange: setIsAssignDialogOpen,
-          prefilledUser: {
-            full_name: profile.firstName + " " + profile.lastName,
-            email: profile.email,
-            department: profile.department,
-            role: profile.role
-          },
-          onSuccess: () => {
-            refetch();
-            setIsAssignDialogOpen(false);
-          }
-        }
-      )
-    ] });
-  };
-  const RoleDebugPanel = () => {
-    const {
-      role,
-      isSuperAdmin,
-      isClientAdmin,
-      isModerator,
-      hasAdminAccess,
-      canAccessLessons,
-      canAccessLearningTracks,
-      canAccessTranslation,
-      canAccessAssignments,
-      canAccessAnalytics,
-      canAccessReports,
-      canAccessOrganisation,
-      canAccessNotifications,
-      canAccessTemplates,
-      loading,
-      getRoleDisplayName,
-      getRoleBadgeVariant
-    } = useUserRole.useUserRole();
-    if (loading) {
-      return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full max-w-md", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "animate-pulse space-y-2", children: [
-        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-4 bg-muted rounded w-3/4" }),
-        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-4 bg-muted rounded w-1/2" })
-      ] }) }) });
-    }
-    const getIcon = () => {
-      if (isSuperAdmin) return /* @__PURE__ */ jsxRuntime.jsx(Crown, { className: "w-5 h-5" });
-      if (isClientAdmin) return /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "w-5 h-5" });
-      if (isModerator) return /* @__PURE__ */ jsxRuntime.jsx(Settings, { className: "w-5 h-5" });
-      return /* @__PURE__ */ jsxRuntime.jsx(User, { className: "w-5 h-5" });
-    };
-    return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { className: "w-full max-w-md", children: [
-      /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-3", children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
-        getIcon(),
-        "Role Information"
-      ] }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm font-medium", children: "Current Role:" }),
-          /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: getRoleBadgeVariant(), children: getRoleDisplayName() })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Raw Role:" }),
-            /* @__PURE__ */ jsxRuntime.jsx("code", { className: "text-xs bg-muted px-1 rounded", children: role || "null" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Is Admin:" }),
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: hasAdminAccess ? "default" : "outline", className: "text-xs", children: hasAdminAccess.toString() })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Is Super Admin:" }),
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: isSuperAdmin ? "default" : "outline", className: "text-xs", children: isSuperAdmin.toString() })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Is Client Admin:" }),
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: isClientAdmin ? "secondary" : "outline", className: "text-xs", children: isClientAdmin.toString() })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Is Moderator:" }),
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: isModerator ? "outline" : "outline", className: "text-xs", children: isModerator.toString() })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Has Admin Access:" }),
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: hasAdminAccess ? "default" : "outline", className: "text-xs", children: hasAdminAccess.toString() })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "pt-2 border-t", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "text-sm font-medium mb-2", children: "Access Permissions:" }),
-          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-xs space-y-1", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessLessons ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessLessons ? "✅" : "❌",
-              " Lessons"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessLearningTracks ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessLearningTracks ? "✅" : "❌",
-              " Learning Tracks"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessTranslation ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessTranslation ? "✅" : "❌",
-              " Translation"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessAssignments ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessAssignments ? "✅" : "❌",
-              " Assignments"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessAnalytics ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessAnalytics ? "✅" : "❌",
-              " Analytics"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessReports ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessReports ? "✅" : "❌",
-              " Reports"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessOrganisation ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessOrganisation ? "✅" : "❌",
-              " Organisation"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessNotifications ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessNotifications ? "✅" : "❌",
-              " Notifications"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `flex items-center gap-1 ${canAccessTemplates ? "text-green-600" : "text-red-500"}`, children: [
-              canAccessTemplates ? "✅" : "❌",
-              " Templates"
-            ] })
-          ] }) })
-        ] })
-      ] })
-    ] });
-  };
-  exports2.AddEducationDialog = AddEducationDialog;
+  Object.defineProperty(exports2, "useUserManagement", {
+    enumerable: true,
+    get: () => useUserManagement.useUserManagement
+  });
+  Object.defineProperty(exports2, "useViewPreference", {
+    enumerable: true,
+    get: () => useViewPreference.useViewPreference
+  });
+  Object.defineProperty(exports2, "useUserRole", {
+    enumerable: true,
+    get: () => useUserRole.useUserRole
+  });
+  Object.defineProperty(exports2, "useUserDepartments", {
+    enumerable: true,
+    get: () => useUserDepartments.useUserDepartments
+  });
+  Object.defineProperty(exports2, "useUserProfileRoles", {
+    enumerable: true,
+    get: () => useUserProfileRoles.useUserProfileRoles
+  });
+  Object.defineProperty(exports2, "useUserAssets", {
+    enumerable: true,
+    get: () => useUserAssets.useUserAssets
+  });
   exports2.AddOrganisationCertificateDialog = AddOrganisationCertificateDialog;
-  exports2.AddPhysicalLocationDialog = AddPhysicalLocationDialog;
-  exports2.AssignPhysicalLocationDialog = AssignPhysicalLocationDialog;
-  exports2.CertificateManagement = CertificateManagement;
-  exports2.Certificates = Certificates;
   exports2.CreateUserDialog = CreateUserDialog;
-  exports2.DepartmentManagement = DepartmentManagement;
-  exports2.DepartmentRolePairsDisplay = DepartmentRolePairsDisplay;
   exports2.EditUserDialog = EditUserDialog;
-  exports2.EditableCertificates = EditableCertificates;
   exports2.EditableField = EditableField;
   exports2.EditableProfileHeader = EditableProfileHeader;
-  exports2.ImportUsersDialog = ImportUsersDialog;
-  exports2.LocationManagement = LocationManagement;
   exports2.MultipleRolesField = MultipleRolesField;
-  exports2.OrganisationCertificates = OrganisationCertificates;
   exports2.OrganisationPanel = OrganisationPanel;
-  exports2.OrganisationProfile = OrganisationProfile;
   exports2.OrganisationProvider = OrganisationProvider;
   exports2.OrganisationWrapper = OrganisationWrapper;
   exports2.PersonaDetailsTabs = PersonaDetailsTabs;
   exports2.PersonaProfile = PersonaProfile;
-  exports2.PhysicalLocationTab = PhysicalLocationTab;
   exports2.ProfileAvatar = ProfileAvatar;
   exports2.ProfileBasicInfo = ProfileBasicInfo;
   exports2.ProfileContactInfo = ProfileContactInfo;
-  exports2.ProfileEditor = ProfileEditor;
-  exports2.ProfileHeader = ProfileHeader;
-  exports2.RoleDebugPanel = RoleDebugPanel;
-  exports2.RoleManagement = RoleManagement;
-  exports2.SearchableProfileField = SearchableProfileField;
   exports2.UserCard = UserCard;
-  exports2.UserDepartmentsManager = UserDepartmentsManager;
-  exports2.UserDepartmentsRolesManager = UserDepartmentsRolesManager;
-  exports2.UserDepartmentsRolesTable = UserDepartmentsRolesTable;
   exports2.UserDetailView = UserDetailView;
   exports2.UserList = UserList;
   exports2.UserManagement = UserManagement;
-  exports2.UserReport = UserReport;
-  exports2.UserRoleField = UserRoleField;
   exports2.UserTable = UserTable;
   exports2.handleCreateUser = handleCreateUser;
   exports2.handleDeleteUser = handleDeleteUser;

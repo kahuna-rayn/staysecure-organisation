@@ -18,7 +18,7 @@ export const UserRoleField: React.FC<UserRoleFieldProps> = ({ userId }) => {
     { value: 'user', label: 'User' },
     { value: 'author', label: 'Author' },
     { value: 'manager', label: 'Manager' },
-    { value: 'client_admin', label: 'Client Administrator' },
+    { value: 'client_admin', label: 'Administrator' },
     { value: 'super_admin', label: 'Super Administrator' },
   ];
 

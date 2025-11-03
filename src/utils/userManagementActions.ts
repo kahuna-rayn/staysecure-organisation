@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 import type { UserProfile } from '@/hooks/useUserProfiles';
 
@@ -47,13 +47,13 @@ export const handleCreateUser = async (
   onSuccess: () => void
 ) => {
   try {
-    // Extract client path from current URL
-    const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean) : [];
-    const clientPath = pathParts[0] ? `/${pathParts[0]}` : '';
+    // Extract client path using the same logic as client.ts
+    const clientId = getCurrentClientId();
+    const clientPath = clientId ? `/${clientId}` : '';
     
     console.log('[handleCreateUser] Extracting clientPath:', {
       pathname: typeof window !== 'undefined' ? window.location.pathname : 'N/A',
-      pathParts,
+      clientId,
       clientPath,
       fullPath: typeof window !== 'undefined' ? window.location.href : 'N/A'
     });

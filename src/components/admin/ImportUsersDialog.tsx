@@ -6,7 +6,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileText } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
-import { supabase } from '@/integrations/supabase/client';
+import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
 import Papa from 'papaparse';
 import { ImportError } from '@/components/import/ImportErrorReport';
 import { useQuery } from '@tanstack/react-query';
@@ -257,9 +257,9 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const accessLevelValue = row['Access Level'] || row['access_level'] || '';
     const accessLevelValidation = validateAccessLevel(accessLevelValue);
 
-    // Extract client path from current URL
-    const pathParts = typeof window !== 'undefined' ? window.location.pathname.split('/').filter(Boolean) : [];
-    const clientPath = pathParts[0] ? `/${pathParts[0]}` : '';
+    // Extract client path using the same logic as client.ts
+    const clientId = getCurrentClientId();
+    const clientPath = clientId ? `/${clientId}` : '';
     
     // Use our create-user edge function instead of direct signUp
     const { data: authData, error: authError } = await supabase.functions.invoke('create-user', {

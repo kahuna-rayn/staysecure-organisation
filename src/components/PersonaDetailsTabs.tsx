@@ -1,5 +1,6 @@
 
 import React, { useState, useRef } from "react";
+import { useUserRole } from '@/hooks/useUserRole';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +10,7 @@ import EditableCertificates from "@/components/EditableCertificates";
 import PhysicalLocationTab from "@/components/PhysicalLocationTab";
 import AssignHardwareDialog from "@/components/admin/AssignHardwareDialog";
 import AssignSoftwareDialog from "@/components/admin/AssignSoftwareDialog";
-import AddEducationDialog from "@/components/admin/AddEducationDialog";
+import AddEducationDialog from "./admin/AddEducationDialog";
 import { Laptop, MonitorSmartphone, GraduationCap, MapPin, Plus, BookOpen, Users, Play } from "lucide-react";
 import MyDocuments from "@/components/knowledge/MyDocuments";
 import { UserDepartmentsRolesManager, UserDepartmentsRolesManagerRef } from "@/components/admin/UserDepartmentsRolesManager";
@@ -28,7 +29,9 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   const departmentRolesRef = useRef<UserDepartmentsRolesManagerRef>(null);
 
   // Detect if we're in Learn mode (root path) or Govern mode (admin path)
-  const isLearnMode = import.meta.env.VITE_APP_MODE === 'LEARN';
+  // This is the LEARN app, so default to LEARN mode unless explicitly set to GOVERN
+  const isLearnMode = import.meta.env.VITE_APP_MODE !== 'GOVERN';
+  const { hasAdminAccess } = useUserRole();
 
   const handleCertificateUpdate = (certificateId: string, updates: any) => {
     console.log('Certificate update requested:', certificateId, updates);
@@ -46,7 +49,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   // Get the appropriate grid class based on mode
   const getGridClass = () => {
     if (isLearnMode) {
-      return "grid-cols-3"; // Only Departments & Roles and Certificates in Learn mode
+      return "grid-cols-3"; // Only Departments & Roles, Physical Location and Certificates in Learn mode
     }
     
     if (profile?.enrolled_in_learn) {
@@ -104,14 +107,16 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           
 
           <TabsContent value="departments" className="space-y-4 animate-fade-in">
-            <div className="flex justify-end">
-              <Button 
-                onClick={() => departmentRolesRef.current?.handleAddNewRow?.()}
-                size="icon"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
+            {hasAdminAccess && (
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => departmentRolesRef.current?.handleAddNewRow?.()}
+                  size="icon"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
             <UserDepartmentsRolesManager userId={userId} ref={departmentRolesRef} />
           </TabsContent>
           
@@ -149,7 +154,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           )}
                         
           <TabsContent value="location" className="space-y-4 animate-fade-in">
-            <PhysicalLocationTab profile={profile} />
+            <PhysicalLocationTab profile={profile} canAdd={hasAdminAccess} />
           </TabsContent>
               
           <TabsContent value="certification" className="space-y-4 animate-fade-in">

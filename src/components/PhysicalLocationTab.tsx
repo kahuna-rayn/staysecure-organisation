@@ -131,6 +131,38 @@ const PhysicalLocationTab: React.FC<PhysicalLocationTabProps> = ({ profile }) =>
 
   const handleDelete = async (id: string) => {
     try {
+      // First, get the location_id from the physical_location_access record
+      const { data: accessRecord, error: fetchError } = await supabase
+        .from('physical_location_access')
+        .select('location_id')
+        .eq('id', id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // If this location_id matches the user's primary location_id in profiles,
+      // update the profiles table to set location and location_id to null
+      if (accessRecord?.location_id) {
+        const { data: userProfile } = await supabase
+          .from('profiles')
+          .select('location_id')
+          .eq('id', profile.id)
+          .single();
+
+        // If the location being deleted is the user's primary location, clear it
+        if (userProfile?.location_id === accessRecord.location_id) {
+          const { error: profileUpdateError } = await supabase
+            .from('profiles')
+            .update({ location: null, location_id: null })
+            .eq('id', profile.id);
+
+          if (profileUpdateError) {
+            throw new Error(`Failed to update profile: ${profileUpdateError.message}`);
+          }
+        }
+      }
+
+      // Then delete from physical_location_access
       const { error } = await supabase
         .from('physical_location_access')
         .delete()
@@ -182,6 +214,7 @@ const PhysicalLocationTab: React.FC<PhysicalLocationTabProps> = ({ profile }) =>
         isOpen={isAssignDialogOpen}
         onOpenChange={setIsAssignDialogOpen}
         prefilledUser={{
+          user_id: profile.id,
           full_name: profile.firstName + ' ' + profile.lastName,
           email: profile.email,
           department: profile.department,

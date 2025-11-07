@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +15,7 @@ interface AssignPhysicalLocationDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   prefilledUser?: {
+    user_id?: string;
     full_name: string;
     email: string;
     department: string;
@@ -31,6 +33,19 @@ const AssignPhysicalLocationDialog: React.FC<AssignPhysicalLocationDialogProps> 
   const [loading, setLoading] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState('');
   const { profiles } = useUserProfiles();
+  
+  // Fetch locations for dropdown
+  const { data: locations } = useQuery({
+    queryKey: ['locations'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('locations')
+        .select('id, name')
+        .eq('status', 'Active')
+        .order('name');
+      return data || [];
+    },
+  });
   
   const [formData, setFormData] = useState({
     full_name: prefilledUser?.full_name || '',
@@ -90,9 +105,41 @@ const AssignPhysicalLocationDialog: React.FC<AssignPhysicalLocationDialogProps> 
         throw new Error('Location and Access Purpose are required');
       }
 
+      // Determine the user_id to use
+      const userId = prefilledUser?.user_id || selectedUserId;
+      
+      // If we have a user_id, update the profiles table with location and location_id
+      if (userId && userId !== 'none') {
+        // Get the location name from the location_id
+        const { data: locationData, error: locationError } = await supabase
+          .from('locations')
+          .select('id, name')
+          .eq('id', formData.location)
+          .single();
+
+        if (locationError) {
+          throw new Error(`Failed to fetch location: ${locationError.message}`);
+        }
+
+        if (locationData) {
+          // Update the profiles table with location name and location_id
+          const { error: profileUpdateError } = await supabase
+            .from('profiles')
+            .update({ 
+              location: locationData.name, 
+              location_id: formData.location 
+            })
+            .eq('id', userId);
+
+          if (profileUpdateError) {
+            throw new Error(`Failed to update profile: ${profileUpdateError.message}`);
+          }
+        }
+      }
+
       const insertData = {
         full_name: formData.full_name || 'Unassigned',
-        user_id: selectedUserId || 'ae5c8c73-e0c3-4a86-9c0d-123456789abc', // Use selectedUserId or placeholder
+        user_id: userId, // Use userId
         location_id: formData.location, // Assuming this is already a UUID
         access_purpose: formData.access_purpose,
         date_access_created: new Date().toISOString().split('T')[0],
@@ -160,8 +207,6 @@ const AssignPhysicalLocationDialog: React.FC<AssignPhysicalLocationDialogProps> 
                 <h4 className="font-medium mb-2">Selected User Details:</h4>
                 <p><strong>Name:</strong> {formData.full_name}</p>
                 <p><strong>Email:</strong> {formData.email}</p>
-                <p><strong>Department:</strong> {formData.department || 'Not specified'}</p>
-                <p><strong>Role:</strong> {formData.role_account_type || 'Not specified'}</p>
               </div>
             )}
 
@@ -186,32 +231,23 @@ const AssignPhysicalLocationDialog: React.FC<AssignPhysicalLocationDialogProps> 
               />
             </div>
             <div>
-              <Label htmlFor="department">Department</Label>
-              <Input
-                id="department"
-                value={formData.department}
-                onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                disabled={!!prefilledUser || (selectedUserId && selectedUserId !== 'none')}
-              />
-            </div>
-            <div>
-              <Label htmlFor="role_account_type">Role/Account Type</Label>
-              <Input
-                id="role_account_type"
-                value={formData.role_account_type}
-                onChange={(e) => setFormData({ ...formData, role_account_type: e.target.value })}
-                disabled={!!prefilledUser || (selectedUserId && selectedUserId !== 'none')}
-              />
-            </div>
-            <div>
               <Label htmlFor="location">Location *</Label>
-              <Input
-                id="location"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                placeholder="e.g., Building A - Floor 3, Server Room"
+              <Select 
+                value={formData.location} 
+                onValueChange={(value) => setFormData({ ...formData, location: value })}
                 required
-              />
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a location" />
+                </SelectTrigger>
+                <SelectContent>
+                  {locations?.map((location) => (
+                    <SelectItem key={location.id} value={location.id}>
+                      {location.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label htmlFor="access_purpose">Access Purpose *</Label>

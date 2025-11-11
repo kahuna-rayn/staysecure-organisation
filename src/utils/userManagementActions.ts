@@ -1,4 +1,5 @@
 import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
+import { CLIENT_CONFIGS } from '@/config/clients';
 import { toast } from '@/components/ui/use-toast';
 import type { UserProfile } from '@/hooks/useUserProfiles';
 
@@ -51,16 +52,46 @@ export const handleCreateUser = async (
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : '';
     
-    console.log('[handleCreateUser] Extracting clientPath:', {
-      pathname: typeof window !== 'undefined' ? window.location.pathname : 'N/A',
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData?.session?.access_token) {
+      throw new Error('Unable to determine current session. Please refresh and try again.');
+    }
+
+    const accessToken = sessionData.session.access_token;
+
+    const clientConfig =
+      (clientId && CLIENT_CONFIGS[clientId]) ||
+      CLIENT_CONFIGS['default'];
+
+    const anonKey =
+      clientConfig?.supabaseAnonKey ||
+      import.meta.env.VITE_SUPABASE_ANON_KEY ||
+      import.meta.env.VITE_SUPABASE_PUB_KEY ||
+      import.meta.env.VITE_SB_PUB_KEY;
+
+    // Build Edge Function URL using the project URL
+    const baseUrl = import.meta.env.VITE_SUPABASE_URL?.replace(/\/$/, '');
+    if (!baseUrl) {
+      throw new Error('Supabase base URL is not configured.');
+    }
+
+    const createUserUrl = `${baseUrl}/functions/v1/create-user`;
+
+    console.log('[handleCreateUser] Invoking create-user Edge Function', {
+      createUserUrl,
+      hasAnonKey: !!anonKey,
+      hasAccessToken: !!accessToken,
       clientId,
-      clientPath,
-      fullPath: typeof window !== 'undefined' ? window.location.href : 'N/A'
     });
-    
-    // Create user via Supabase Edge Function
-    const { data, error } = await supabase.functions.invoke('create-user', {
-      body: {
+
+    const response = await fetch(createUserUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(anonKey ? { apikey: anonKey } : {}),
+        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
+      },
+      body: JSON.stringify({
         email: newUser.email,
         full_name: newUser.full_name,
         first_name: newUser.first_name || '',
@@ -68,14 +99,36 @@ export const handleCreateUser = async (
         username: '',
         phone: newUser.phone || '',
         location: newUser.location || '',
-        location_id: newUser.location_id || '',
+        location_id: newUser.location_id || null,
         status: 'Pending',
         access_level: newUser.access_level || 'User',
         bio: newUser.bio || '',
         employee_id: newUser.employee_id || '',
         clientPath // Pass client path explicitly
-      }
+      })
     });
+
+    const rawText = await response.text();
+    let data: any = null;
+    try {
+      data = rawText ? JSON.parse(rawText) : null;
+    } catch (parseError) {
+      console.warn('[handleCreateUser] Failed to parse Edge Function response as JSON', {
+        parseError,
+        rawText,
+        status: response.status,
+      });
+    }
+
+    console.log('[handleCreateUser] Edge Function response summary', {
+      status: response.status,
+      ok: response.ok,
+      dataPreview: data ? JSON.stringify(data).slice(0, 200) : rawText?.slice(0, 200),
+    });
+
+    const error = !response.ok
+      ? { message: data?.error || rawText || response.statusText || `Request failed with status ${response.status}` }
+      : null;
 
     if (error) {
       throw new Error(error.message || 'Failed to create user');
@@ -103,7 +156,7 @@ export const handleCreateUser = async (
         username: newUser.email, 
         phone: newUser.phone,
         location: newUser.location,
-        location_id: newUser.location_id,
+        location_id: newUser.location_id || null,
         // Don't update status - Edge Function sets it to 'Pending' for activation
         bio: newUser.bio,
         employee_id: newUser.employee_id,

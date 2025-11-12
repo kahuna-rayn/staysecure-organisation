@@ -6,8 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import HardwareInventory from "@/components/HardwareInventory";
 import SoftwareAccounts from "@/components/SoftwareAccounts";
-import EditableCertificates from "@/components/EditableCertificates";
-import PhysicalLocationTab from "@/components/PhysicalLocationTab";
+import EditableCertificates from "./EditableCertificates";
+import PhysicalLocationTab from "./PhysicalLocationTab";
 import AssignHardwareDialog from "./admin/AssignHardwareDialog";
 import AssignSoftwareDialog from "./admin/AssignSoftwareDialog";
 import AddEducationDialog from "./admin/AddEducationDialog";
@@ -29,8 +29,8 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   const departmentRolesRef = useRef<UserDepartmentsRolesManagerRef>(null);
 
   // Detect if we're in Learn mode (root path) or Govern mode (admin path)
-  // This is the LEARN app, so default to LEARN mode unless explicitly set to GOVERN
-  const isLearnMode = import.meta.env.VITE_APP_MODE !== 'GOVERN';
+  // This is the GOVERN app, so default to GOVERN mode unless explicitly set to LEARN
+  const isLearnMode = import.meta.env.VITE_APP_MODE === 'LEARN';
   const { hasAdminAccess } = useUserRole();
 
   const handleCertificateUpdate = (certificateId: string, updates: any) => {
@@ -80,10 +80,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                   <MonitorSmartphone className="h-4 w-4" />
                   <span className="hidden sm:inline">Accounts</span>
                 </TabsTrigger>
-                <TabsTrigger value="knowledge" className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">Knowledge</span>
-                </TabsTrigger>
               </>
             )}
             
@@ -91,6 +87,14 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                   <MapPin className="h-4 w-4" />
                   <span className="hidden sm:inline">Physical Location</span>
             </TabsTrigger>
+            
+            {/* Only show Knowledge tab in Govern mode */}
+            {!isLearnMode && (
+              <TabsTrigger value="knowledge" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Knowledge</span>
+              </TabsTrigger>
+            )}
             <TabsTrigger value="certification" className="flex items-center gap-2">
               <GraduationCap className="h-4 w-4" />
               <span className="hidden sm:inline">Certificates</span>
@@ -147,15 +151,19 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                 <SoftwareAccounts profile={profile} />
               </TabsContent>
 
-              <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
-                <MyDocuments userId={profile.id} />
-              </TabsContent>
             </>
           )}
                         
           <TabsContent value="location" className="space-y-4 animate-fade-in">
             <PhysicalLocationTab profile={profile} canAdd={hasAdminAccess} />
           </TabsContent>
+          
+          {/* Only show Knowledge tab content in Govern mode */}
+          {!isLearnMode && (
+            <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
+              <MyDocuments userId={profile.id} />
+            </TabsContent>
+          )}
               
           <TabsContent value="certification" className="space-y-4 animate-fade-in">
             <div className="flex justify-end">

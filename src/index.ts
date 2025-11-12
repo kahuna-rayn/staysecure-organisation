@@ -19,6 +19,9 @@ export { default as EditUserDialog } from './components/admin/EditUserDialog';
 export { default as AddOrganisationCertificateDialog } from './components/admin/AddOrganisationCertificateDialog';
 export { default as AssignHardwareDialog } from './components/admin/AssignHardwareDialog';
 export { default as AssignSoftwareDialog } from './components/admin/AssignSoftwareDialog';
+export { default as AddEducationDialog } from './components/admin/AddEducationDialog';
+export { default as AddPhysicalLocationDialog } from './components/admin/AddPhysicalLocationDialog';
+export { default as AssignPhysicalLocationDialog } from './components/admin/AssignPhysicalLocationDialog';
 
 // Profile component exports
 export { default as ProfileBasicInfo } from './components/profile/ProfileBasicInfo';

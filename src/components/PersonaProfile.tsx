@@ -57,6 +57,8 @@ export interface PersonProfile {
     expiryDate: string;
     credentialId: string;
     status: string;
+    org_cert?: boolean;
+    type?: string;
   }>;
 }
 
@@ -118,14 +120,25 @@ const PersonaProfile: React.FC = () => {
       console.log('buildPersonaData - mapped software item:', mapped);
       return mapped;
     }),
-    certificates: (certificates || []).map(c => ({
-      name: c.name,
-      issuedBy: c.issued_by,
-      dateAcquired: c.date_acquired,
-      expiryDate: c.expiry_date,
-      credentialId: c.credential_id,
-      status: c.status,
-    })),
+    certificates: (certificates || []).map(c => {
+      const mapped = {
+        name: c.name,
+        issuedBy: c.issued_by,
+        dateAcquired: c.date_acquired,
+        expiryDate: c.expiry_date,
+        credentialId: c.credential_id,
+        status: c.status,
+        org_cert: c.org_cert !== undefined ? c.org_cert : false, // Preserve false, default to false if undefined
+        type: c.type, // Include type for display
+      };
+      console.log('🔍 PersonaProfile - Mapping certificate:', {
+        name: c.name,
+        originalOrgCert: c.org_cert,
+        mappedOrgCert: mapped.org_cert,
+        orgCertType: typeof c.org_cert
+      });
+      return mapped;
+    }),
   }), [profile, hardware, software, certificates, userEmail]);
 
   const handleProfileUpdate = () => {

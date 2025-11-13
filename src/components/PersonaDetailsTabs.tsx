@@ -13,7 +13,7 @@ import AssignSoftwareDialog from "./admin/AssignSoftwareDialog";
 import AddEducationDialog from "./admin/AddEducationDialog";
 import { Laptop, MonitorSmartphone, GraduationCap, MapPin, Plus, BookOpen, Users, Play } from "lucide-react";
 import MyDocuments from "@/components/knowledge/MyDocuments";
-import { UserDepartmentsRolesManager, UserDepartmentsRolesManagerRef } from "@/components/admin/UserDepartmentsRolesManager";
+import { UserDepartmentsRolesManager, UserDepartmentsRolesManagerRef } from "./UserDepartmentsRolesManager";
 import LearningTracksTab from "@/components/LearningTracksTab";
 
 interface PersonaDetailsTabsProps {

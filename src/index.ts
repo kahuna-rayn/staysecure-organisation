@@ -6,8 +6,10 @@ export { OrganisationProvider, useOrganisationContext } from './context/Organisa
 export { OrganisationWrapper } from './components/OrganisationWrapper';
 export { default as PersonaDetailsTabs } from './components/profile/PersonaDetailsTabs';
 export { default as EditableProfileHeader } from './components/profile/EditableProfileHeader';
-export { default as PersonaProfile } from './components/profile/PersonaProfile';
+export { default as PersonaProfile, type PersonProfile } from './components/profile/PersonaProfile';
 export { default as UserDetailView } from './components/admin/UserDetailView';
+export { default as Certificates } from './components/certificates/Certificates';
+export { default as PhysicalLocationTab } from './components/profile/PhysicalLocationTab';
 
 // Admin component exports
 export { default as UserManagement } from './components/admin/UserManagement';
@@ -29,6 +31,9 @@ export { default as ProfileAvatar } from './components/profile/ProfileAvatar';
 export { default as ProfileContactInfo } from './components/profile/ProfileContactInfo';
 export { default as EditableField } from './components/profile/EditableField';
 export { default as MultipleRolesField } from './components/profile/MultipleRolesField';
+
+// Organisational component exports
+export { DepartmentRolePairsDisplay } from './components/organisational/DepartmentRolePairsDisplay';
 
 // Hook exports (re-exported from main hooks directory)
 export { useUserManagement } from '@/hooks/useUserManagement';

@@ -4,10 +4,10 @@ export { OrganisationProvider, useOrganisationContext } from './context/Organisa
 
 // Core component exports
 export { OrganisationWrapper } from './components/OrganisationWrapper';
-export { default as PersonaDetailsTabs } from './components/PersonaDetailsTabs';
-export { default as EditableProfileHeader } from './components/EditableProfileHeader';
-export { default as PersonaProfile } from './components/PersonaProfile';
-export { default as UserDetailView } from './components/UserDetailView';
+export { default as PersonaDetailsTabs } from './components/profile/PersonaDetailsTabs';
+export { default as EditableProfileHeader } from './components/profile/EditableProfileHeader';
+export { default as PersonaProfile } from './components/profile/PersonaProfile';
+export { default as UserDetailView } from './components/admin/UserDetailView';
 
 // Admin component exports
 export { default as UserManagement } from './components/admin/UserManagement';
@@ -16,10 +16,10 @@ export { default as UserCard } from './components/admin/UserCard';
 export { default as UserTable } from './components/admin/UserTable';
 export { default as CreateUserDialog } from './components/admin/CreateUserDialog';
 export { default as EditUserDialog } from './components/admin/EditUserDialog';
-export { default as AddOrganisationCertificateDialog } from './components/admin/AddOrganisationCertificateDialog';
+export { default as AddOrganisationCertificateDialog } from './components/certificates/AddOrganisationCertificateDialog';
 export { default as AssignHardwareDialog } from './components/admin/AssignHardwareDialog';
 export { default as AssignSoftwareDialog } from './components/admin/AssignSoftwareDialog';
-export { default as AddEducationDialog } from './components/admin/AddEducationDialog';
+export { default as AddCertificatesDialog } from './components/certificates/AddCertificatesDialog';
 export { default as AddPhysicalLocationDialog } from './components/admin/AddPhysicalLocationDialog';
 export { default as AssignPhysicalLocationDialog } from './components/admin/AssignPhysicalLocationDialog';
 

@@ -6,14 +6,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import HardwareInventory from "@/components/HardwareInventory";
 import SoftwareAccounts from "@/components/SoftwareAccounts";
-import EditableCertificates from "./EditableCertificates";
+import EditableCertificates from "../certificates/EditableCertificates";
 import PhysicalLocationTab from "./PhysicalLocationTab";
-import AssignHardwareDialog from "./admin/AssignHardwareDialog";
-import AssignSoftwareDialog from "./admin/AssignSoftwareDialog";
-import AddEducationDialog from "./admin/AddEducationDialog";
+import AssignHardwareDialog from "../admin/AssignHardwareDialog";
+import AssignSoftwareDialog from "../admin/AssignSoftwareDialog";
+import AddCertificatesDialog from "../certificates/AddCertificatesDialog";
 import { Laptop, MonitorSmartphone, GraduationCap, MapPin, Plus, BookOpen, Users, Play } from "lucide-react";
 import MyDocuments from "@/components/knowledge/MyDocuments";
-import { UserDepartmentsRolesManager, UserDepartmentsRolesManagerRef } from "./UserDepartmentsRolesManager";
+import { UserDepartmentsRolesManager, UserDepartmentsRolesManagerRef } from "../organisational/UserDepartmentsRolesManager";
 import LearningTracksTab from "@/components/LearningTracksTab";
 
 interface PersonaDetailsTabsProps {
@@ -214,7 +214,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           </>
         )}
 
-        <AddEducationDialog
+        <AddCertificatesDialog
           isOpen={isAddEducationOpen}
           onOpenChange={setIsAddEducationOpen}
           userId={profile.id}

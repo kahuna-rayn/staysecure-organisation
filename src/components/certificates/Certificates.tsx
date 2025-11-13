@@ -1,6 +1,6 @@
 
 import React from "react";
-import { PersonProfile } from "./PersonaProfile";
+import { PersonProfile } from "../profile/PersonaProfile";
 import { Award, Calendar, Building, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 

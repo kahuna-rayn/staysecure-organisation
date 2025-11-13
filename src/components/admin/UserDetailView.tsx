@@ -5,8 +5,8 @@ import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserAssets } from '@/hooks/useUserAssets';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import EditableProfileHeader from '@/modules/organisation/components/EditableProfileHeader';
-import PersonaDetailsTabs from '@/modules/organisation/components/PersonaDetailsTabs';
+import EditableProfileHeader from '@/modules/organisation/components/profile/EditableProfileHeader';
+import PersonaDetailsTabs from '@/modules/organisation/components/profile/PersonaDetailsTabs';
 
 const UserDetailView: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();

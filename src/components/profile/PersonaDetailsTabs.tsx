@@ -34,9 +34,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   const { hasAdminAccess } = useUserRole();
 
   const handleCertificateUpdate = (certificateId: string, updates: any) => {
-    console.log('Certificate update requested:', certificateId, updates);
     // This would typically update the certificate in the database
-    // For now, we'll just log it
   };
 
   const handleDataChange = () => {

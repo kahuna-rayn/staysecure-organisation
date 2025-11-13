@@ -27,7 +27,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   isReadOnly = false,
   onOptimisticUpdate
 }) => {
-  console.log('EditableProfileHeader props:', { profile, onOptimisticUpdate });
   const { profiles, updateProfile } = useUserProfiles();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -38,7 +37,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   };
 
   const handleFieldSave = async (field: string, value: string) => {
-    console.log('handleFieldSave called', field, value);
     try {
       setSaving(true);
       let updateData: any = {};
@@ -58,11 +56,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
         updateData.manager = value;
       }
       
-      console.log('Updating profile:', profile.id, updateData);
-      
       if (!profile.id) {
         console.error('Profile ID is undefined. Profile object:', profile);
-        console.log('Early return: profile.id is undefined');
         toast({
           title: "Error",
           description: "Profile ID is missing. Cannot update profile.",
@@ -71,23 +66,19 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
         return;
       }
       
-      const result = await updateProfile(profile.id, updateData);
-      console.log('Update result:', result);
+      await updateProfile(profile.id, updateData);
       
       toast({
         title: "Profile updated",
         description: "Your profile has been successfully updated.",
       });
       setEditingField(null);
-      console.log('onOptimisticUpdate', onOptimisticUpdate);
       if (onOptimisticUpdate) {
-        console.log('Calling onOptimisticUpdate', field, value);
         onOptimisticUpdate(field, value);
       }
       onProfileUpdate();
     } catch (error: any) {
       console.error('Save error:', error);
-      console.log('Early return: error in save');
       toast({
         title: "Error",
         description: error.message || "Failed to update profile",
@@ -105,23 +96,17 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const handleNameChange = async (field: 'firstName' | 'lastName', value: string) => {
     try {
       setSaving(true);
-    // Debug: Log the current profile object
-    console.log('Current profile object:', profile);
-    console.log('profile.full_name:', profile.full_name);
 
       // Update the specific name field
       const updateData: any = {};
       if (field === 'firstName') {
         updateData.first_name = value;
-        console.log('updateData.first_name', updateData.first_name);
       } else {
         updateData.last_name = value;
-        console.log('updateData.last_name', updateData.last_name);
       }
       
       // Only auto-generate full_name if it's currently empty
       if (profile.full_name === '' || profile.full_name?.trim() === '') {
-        console.log('profile.full_name is empty', profile.full_name);
         const firstName = field === 'firstName' ? value : profile.firstName || '';
         const lastName = field === 'lastName' ? value : profile.lastName || '';
         updateData.full_name = `${firstName} ${lastName}`.trim();

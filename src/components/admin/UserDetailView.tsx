@@ -86,14 +86,12 @@ const UserDetailView: React.FC = () => {
       } else if (updated.account && field in updated.account) {
         updated.account = { ...updated.account, [field]: value };
       }
-      console.log('UserDetailView handleOptimisticUpdate:', field, value, updated);
       return updated;
     });
   };
 
   const handleProfileUpdate = () => {
     // For admin view, we might want to refresh the data but not allow editing
-    console.log('Profile update requested for user:', userId);
   };
 
   const handleBackToUsers = () => {

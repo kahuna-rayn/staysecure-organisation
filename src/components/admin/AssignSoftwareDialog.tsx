@@ -61,19 +61,8 @@ const AssignSoftwareDialog: React.FC<AssignSoftwareDialogProps> = ({
     enabled: !!userId && isOpen,
   });
 
-  console.log('AssignSoftwareDialog - userId:', userId);
-  console.log('AssignSoftwareDialog - userProfile:', userProfile);
-  console.log('AssignSoftwareDialog - profileLoading:', profileLoading);
-  console.log('AssignSoftwareDialog - profileError:', profileError);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    console.log('Form submission - selectedSoftwareId:', selectedSoftwareId);
-    console.log('Form submission - roleAccountType:', roleAccountType);
-    console.log('Form submission - selectedSoftwareItem:', selectedSoftwareItem);
-    console.log('Form submission - userProfile:', userProfile);
-    console.log('Form submission - userId from props:', userId);
     
     if (!selectedSoftwareId || !roleAccountType) {
       toast({
@@ -113,8 +102,6 @@ const AssignSoftwareDialog: React.FC<AssignSoftwareDialogProps> = ({
         role_account_type: roleAccountType,
         status: 'Active',
       };
-      
-      console.log('Submitting software data:', softwareData);
       
       await addSoftware(softwareData);
       

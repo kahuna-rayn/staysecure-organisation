@@ -108,18 +108,13 @@ const PersonaProfile: React.FC = () => {
       osEdition: h.os_edition || '',
       osVersion: h.os_version || '',
     })),
-    software: (software || []).map(s => {
-      console.log('buildPersonaData - input software item:', s);
-      const mapped = {
-        id: s.id,
-        name: s.name,
-        role_account_type: s.role_account_type,
-        expiryDate: s.expiryDate,
-        lastUsed: s.lastUsed,
-      };
-      console.log('buildPersonaData - mapped software item:', mapped);
-      return mapped;
-    }),
+    software: (software || []).map(s => ({
+      id: s.id,
+      name: s.name,
+      role_account_type: s.role_account_type,
+      expiryDate: s.expiryDate,
+      lastUsed: s.lastUsed,
+    })),
     certificates: (certificates || []).map(c => {
       const mapped = {
         name: c.name,
@@ -131,12 +126,6 @@ const PersonaProfile: React.FC = () => {
         org_cert: c.org_cert !== undefined ? c.org_cert : false, // Preserve false, default to false if undefined
         type: c.type, // Include type for display
       };
-      console.log('🔍 PersonaProfile - Mapping certificate:', {
-        name: c.name,
-        originalOrgCert: c.org_cert,
-        mappedOrgCert: mapped.org_cert,
-        orgCertType: typeof c.org_cert
-      });
       return mapped;
     }),
   }), [profile, hardware, software, certificates, userEmail]);
@@ -192,9 +181,6 @@ const PersonaProfile: React.FC = () => {
       });
     }
   };
-
-  console.log('PersonaProfile rendering with personaData:', personaData);
-  console.log('PersonaProfile personaData.software:', personaData.software);
 
   const displayData = optimisticData || personaData;
 

@@ -1,0 +1,1 @@
+{"version":3,"file":"Certificates.d.ts","sourceRoot":"","sources":["../../../src/components/certificates/Certificates.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,MAAM,OAAO,CAAC;AAC1B,OAAO,EAAE,aAAa,EAAE,MAAM,2BAA2B,CAAC;AAI1D,UAAU,iBAAiB;IACzB,OAAO,EAAE,aAAa,CAAC;CACxB;AAED,QAAA,MAAM,YAAY,EAAE,KAAK,CAAC,EAAE,CAAC,iBAAiB,CAoF7C,CAAC;AAEF,eAAe,YAAY,CAAC"}

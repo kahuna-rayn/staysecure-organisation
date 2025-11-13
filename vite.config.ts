@@ -8,6 +8,7 @@ export default defineConfig({
     react(),
     dts({
       insertTypesEntry: true,
+      skipDiagnostics: true, // Skip type checking during build - external deps will be provided by consuming app
     }),
   ],
   build: {

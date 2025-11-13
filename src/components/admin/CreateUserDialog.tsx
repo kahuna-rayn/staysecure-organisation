@@ -10,7 +10,7 @@ import { Plus } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { NewUser } from '../../types';
-import EditableField from '@/modules/organisation/components/profile/EditableField';
+import EditableField from '../profile/EditableField';
 import { useAuth } from 'staysecure-auth';
 
 interface CreateUserDialogProps {

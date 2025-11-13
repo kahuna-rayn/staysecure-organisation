@@ -9,10 +9,10 @@ import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
 import { useUserPhysicalLocations } from '@/hooks/useUserPhysicalLocations';
 import { toast } from '@/components/ui/use-toast';
-import ProfileAvatar from '@/modules/organisation/components/profile/ProfileAvatar';
-import ProfileContactInfo from '@/modules/organisation/components/profile/ProfileContactInfo';
-import EditableField from '@/modules/organisation/components/profile/EditableField';
-import { UserRoleField } from '@/modules/organisation/components/profile/UserRoleField';
+import ProfileAvatar from './ProfileAvatar';
+import ProfileContactInfo from './ProfileContactInfo';
+import EditableField from './EditableField';
+import { UserRoleField } from './UserRoleField';
 
 interface EditableProfileHeaderProps {
   profile: any;

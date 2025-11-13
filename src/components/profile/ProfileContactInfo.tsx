@@ -2,7 +2,7 @@
 import React from "react";
 import { Calendar, Shield, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { UserRoleField } from '@/modules/organisation/components/profile/UserRoleField';
+import { UserRoleField } from './UserRoleField';
 
 interface ProfileContactInfoProps {
   startDate: string;

@@ -27,15 +27,15 @@ const AssignHardwareDialog: React.FC<AssignHardwareDialogProps> = ({
   const [selectedHardwareId, setSelectedHardwareId] = useState('');
   const { hardwareInventory, refetch } = useInventory();
 
-  // Get unassigned hardware items
+  // Get unassigned hardware items - check user_id IS NULL (primary) or status/asset_owner (fallback for legacy)
   const unassignedHardware = hardwareInventory.filter(item => {
+    const hasNoUserId = !item.user_id;
     const isUnassigned = item.status === 'Unassigned';
     const hasNoAssignedUser = !item.asset_owner || 
       item.asset_owner.trim() === '' || 
       item.asset_owner === 'no-owner' || 
-      item.asset_owner === 'Unassigned' ||
-      item.asset_owner === null;
-    return isUnassigned && hasNoAssignedUser;
+      item.asset_owner === 'Unassigned';
+    return hasNoUserId && (isUnassigned || hasNoAssignedUser);
   });
 
   const selectedHardwareItem = selectedHardwareId ? 
@@ -74,29 +74,17 @@ const AssignHardwareDialog: React.FC<AssignHardwareDialogProps> = ({
       const userName = userProfile.full_name || userProfile.username || 'Assigned User';
       
       // Update the hardware inventory item to assign it to the user
+      // Set user_id (UUID foreign key) and keep asset_owner (name) for backward compatibility
       const { error: inventoryError } = await supabase
         .from('hardware_inventory')
         .update({ 
+          user_id: userId,
           asset_owner: userName,
           status: 'Assigned'
         })
         .eq('id', selectedHardwareId);
 
       if (inventoryError) throw inventoryError;
-
-      // Also create/update entry in hardware table for the user
-      const { error: hardwareError } = await supabase
-        .from('hardware')
-        .upsert({
-          user_id: userId,
-          type: selectedHardwareItem.asset_type,
-          model: selectedHardwareItem.device_name,
-          serial_number: selectedHardwareItem.serial_number,
-          status: 'Active',
-          assigned_date: new Date().toISOString()
-        });
-
-      if (hardwareError) throw hardwareError;
 
       toast({
         title: "Hardware assigned",

@@ -1,1 +1,0 @@
-{"version":3,"file":"PersonaDetailsTabs.d.ts","sourceRoot":"","sources":["../../src/components/PersonaDetailsTabs.tsx"],"names":[],"mappings":"AACA,OAAO,KAA2B,MAAM,OAAO,CAAC;AAgBhD,UAAU,uBAAuB;IAC/B,OAAO,EAAE,GAAG,CAAC;IACb,MAAM,EAAE,MAAM,CAAC;IACf,QAAQ,CAAC,EAAE,MAAM,IAAI,CAAC;CACvB;AAED,QAAA,MAAM,kBAAkB,EAAE,KAAK,CAAC,EAAE,CAAC,uBAAuB,CAgMzD,CAAC;AAEF,eAAe,kBAAkB,CAAC"}

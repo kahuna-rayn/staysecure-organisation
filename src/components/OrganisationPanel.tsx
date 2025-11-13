@@ -8,7 +8,7 @@ import UserManagement from './admin/UserManagement';
 import { RoleManagement } from './organisational/RoleManagement';
 import { DepartmentManagement } from './organisational/DepartmentManagement';
 import { LocationManagement } from './organisational/LocationManagement';
-import OrganisationCertificates from './OrganisationCertificates';
+import OrganisationCertificates from './certificates/OrganisationCertificates';
 import OrganisationProfile from './OrganisationProfile';
 
 interface OrganisationPanelProps {

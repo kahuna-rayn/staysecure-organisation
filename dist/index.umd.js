@@ -5038,9 +5038,10 @@
     const [selectedHardwareId, setSelectedHardwareId] = o.useState("");
     const { hardwareInventory, refetch } = useInventory.useInventory();
     const unassignedHardware = hardwareInventory.filter((item) => {
+      const hasNoUserId = !item.user_id;
       const isUnassigned = item.status === "Unassigned";
-      const hasNoAssignedUser = !item.asset_owner || item.asset_owner.trim() === "" || item.asset_owner === "no-owner" || item.asset_owner === "Unassigned" || item.asset_owner === null;
-      return isUnassigned && hasNoAssignedUser;
+      const hasNoAssignedUser = !item.asset_owner || item.asset_owner.trim() === "" || item.asset_owner === "no-owner" || item.asset_owner === "Unassigned";
+      return hasNoUserId && (isUnassigned || hasNoAssignedUser);
     });
     const selectedHardwareItem = selectedHardwareId ? hardwareInventory.find((item) => item.id === selectedHardwareId) : null;
     const { data: userProfile } = reactQuery.useQuery({
@@ -5065,19 +5066,11 @@
       try {
         const userName = userProfile.full_name || userProfile.username || "Assigned User";
         const { error: inventoryError } = await client.supabase.from("hardware_inventory").update({
+          user_id: userId,
           asset_owner: userName,
           status: "Assigned"
         }).eq("id", selectedHardwareId);
         if (inventoryError) throw inventoryError;
-        const { error: hardwareError } = await client.supabase.from("hardware").upsert({
-          user_id: userId,
-          type: selectedHardwareItem.asset_type,
-          model: selectedHardwareItem.device_name,
-          serial_number: selectedHardwareItem.serial_number,
-          status: "Active",
-          assigned_date: (/* @__PURE__ */ new Date()).toISOString()
-        });
-        if (hardwareError) throw hardwareError;
         useToast$1.toast({
           title: "Hardware assigned",
           description: `${selectedHardwareItem.device_name} has been successfully assigned to ${userName}`
@@ -5180,17 +5173,8 @@
       },
       enabled: !!userId && isOpen
     });
-    console.log("AssignSoftwareDialog - userId:", userId);
-    console.log("AssignSoftwareDialog - userProfile:", userProfile);
-    console.log("AssignSoftwareDialog - profileLoading:", profileLoading);
-    console.log("AssignSoftwareDialog - profileError:", profileError);
     const handleSubmit = async (e) => {
       e.preventDefault();
-      console.log("Form submission - selectedSoftwareId:", selectedSoftwareId);
-      console.log("Form submission - roleAccountType:", roleAccountType);
-      console.log("Form submission - selectedSoftwareItem:", selectedSoftwareItem);
-      console.log("Form submission - userProfile:", userProfile);
-      console.log("Form submission - userId from props:", userId);
       if (!selectedSoftwareId || !roleAccountType) {
         useToast$1.toast({
           title: "Error",
@@ -5225,7 +5209,6 @@
           role_account_type: roleAccountType,
           status: "Active"
         };
-        console.log("Submitting software data:", softwareData);
         await addSoftware(softwareData);
         useToast$1.toast({
           title: "Software assigned",
@@ -5943,7 +5926,6 @@
     const departmentRolesRef = o.useRef(null);
     const { hasAdminAccess } = useUserRole.useUserRole();
     const handleCertificateUpdate = (certificateId, updates) => {
-      console.log("Certificate update requested:", certificateId, updates);
     };
     const handleDataChange = () => {
       onUpdate == null ? void 0 : onUpdate();
@@ -6213,7 +6195,6 @@
     onOptimisticUpdate
   }) => {
     var _a, _b, _c, _d, _e, _f, _g;
-    console.log("EditableProfileHeader props:", { profile, onOptimisticUpdate });
     const { profiles, updateProfile } = useUserProfiles.useUserProfiles();
     const [editingField, setEditingField] = o.useState(null);
     const [saving, setSaving] = o.useState(false);
@@ -6222,7 +6203,6 @@
       setEditingField(field);
     };
     const handleFieldSave = async (field, value) => {
-      console.log("handleFieldSave called", field, value);
       try {
         setSaving(true);
         let updateData = {};
@@ -6241,10 +6221,8 @@
         } else if (field === "manager") {
           updateData.manager = value;
         }
-        console.log("Updating profile:", profile.id, updateData);
         if (!profile.id) {
           console.error("Profile ID is undefined. Profile object:", profile);
-          console.log("Early return: profile.id is undefined");
           useToast.toast({
             title: "Error",
             description: "Profile ID is missing. Cannot update profile.",
@@ -6252,22 +6230,18 @@
           });
           return;
         }
-        const result = await updateProfile(profile.id, updateData);
-        console.log("Update result:", result);
+        await updateProfile(profile.id, updateData);
         useToast.toast({
           title: "Profile updated",
           description: "Your profile has been successfully updated."
         });
         setEditingField(null);
-        console.log("onOptimisticUpdate", onOptimisticUpdate);
         if (onOptimisticUpdate) {
-          console.log("Calling onOptimisticUpdate", field, value);
           onOptimisticUpdate(field, value);
         }
         onProfileUpdate();
       } catch (error) {
         console.error("Save error:", error);
-        console.log("Early return: error in save");
         useToast.toast({
           title: "Error",
           description: error.message || "Failed to update profile",
@@ -6284,18 +6258,13 @@
       var _a2;
       try {
         setSaving(true);
-        console.log("Current profile object:", profile);
-        console.log("profile.full_name:", profile.full_name);
         const updateData = {};
         if (field === "firstName") {
           updateData.first_name = value;
-          console.log("updateData.first_name", updateData.first_name);
         } else {
           updateData.last_name = value;
-          console.log("updateData.last_name", updateData.last_name);
         }
         if (profile.full_name === "" || ((_a2 = profile.full_name) == null ? void 0 : _a2.trim()) === "") {
-          console.log("profile.full_name is empty", profile.full_name);
           const firstName = field === "firstName" ? value : profile.firstName || "";
           const lastName = field === "lastName" ? value : profile.lastName || "";
           updateData.full_name = `${firstName} ${lastName}`.trim();
@@ -6543,18 +6512,13 @@
         osEdition: h.os_edition || "",
         osVersion: h.os_version || ""
       })),
-      software: (software || []).map((s) => {
-        console.log("buildPersonaData - input software item:", s);
-        const mapped = {
-          id: s.id,
-          name: s.name,
-          role_account_type: s.role_account_type,
-          expiryDate: s.expiryDate,
-          lastUsed: s.lastUsed
-        };
-        console.log("buildPersonaData - mapped software item:", mapped);
-        return mapped;
-      }),
+      software: (software || []).map((s) => ({
+        id: s.id,
+        name: s.name,
+        role_account_type: s.role_account_type,
+        expiryDate: s.expiryDate,
+        lastUsed: s.lastUsed
+      })),
       certificates: (certificates || []).map((c) => {
         const mapped = {
           name: c.name,
@@ -6568,12 +6532,6 @@
           type: c.type
           // Include type for display
         };
-        console.log("🔍 PersonaProfile - Mapping certificate:", {
-          name: c.name,
-          originalOrgCert: c.org_cert,
-          mappedOrgCert: mapped.org_cert,
-          orgCertType: typeof c.org_cert
-        });
         return mapped;
       })
     }), [profile, hardware, software, certificates, userEmail]);
@@ -6599,8 +6557,6 @@
         return updated;
       });
     };
-    console.log("PersonaProfile rendering with personaData:", personaData);
-    console.log("PersonaProfile personaData.software:", personaData.software);
     const displayData = optimisticData || personaData;
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
@@ -6682,12 +6638,10 @@
         } else if (updated.account && field in updated.account) {
           updated.account = { ...updated.account, [field]: value };
         }
-        console.log("UserDetailView handleOptimisticUpdate:", field, value, updated);
         return updated;
       });
     };
     const handleProfileUpdate = () => {
-      console.log("Profile update requested for user:", userId);
     };
     const handleBackToUsers = () => {
       navigate("/admin", { state: { activeTab: "organisation" } });
@@ -6729,6 +6683,66 @@
       ),
       /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: personaData, userId })
     ] });
+  };
+  const Certificates = ({ profile }) => {
+    const { certificates } = profile;
+    const formatDate = (dateString) => {
+      if (!dateString) return "No expiry";
+      return new Date(dateString).toLocaleDateString();
+    };
+    const getStatusColor = (status) => {
+      switch (status) {
+        case "Valid":
+          return "bg-green-500";
+        case "Expired":
+          return "bg-red-500";
+        case "Pending":
+          return "bg-yellow-500";
+        default:
+          return "bg-blue-500";
+      }
+    };
+    const getTypeIcon = (type) => {
+      return type === "Document" ? /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-5 w-5 text-primary flex-shrink-0" }) : /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5 text-primary flex-shrink-0" });
+    };
+    const getTypeColor = (type) => {
+      return type === "Document" ? "bg-blue-500" : "bg-purple-500";
+    };
+    const filteredCertificates = certificates.filter(
+      (cert) => cert.org_cert === false
+    );
+    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: filteredCertificates.map((cert, index) => /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "border rounded-lg p-4", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between gap-3 mb-3", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
+          getTypeIcon(cert.type),
+          /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-base font-medium text-foreground", children: cert.issuedBy })
+          ] }),
+          cert.credentialId && /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-base font-medium text-muted-foreground", children: [
+            "ID: ",
+            cert.credentialId
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1 flex-shrink-0`, children: cert.type || "Certificate" })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-3 gap-4 text-sm ml-8", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
+          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
+          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }) })
+      ] })
+    ] }, index)) }) });
   };
   const AddPhysicalLocationDialog = ({
     isOpen,
@@ -7375,7 +7389,9 @@
   exports2.AssignHardwareDialog = AssignHardwareDialog;
   exports2.AssignPhysicalLocationDialog = AssignPhysicalLocationDialog;
   exports2.AssignSoftwareDialog = AssignSoftwareDialog;
+  exports2.Certificates = Certificates;
   exports2.CreateUserDialog = CreateUserDialog;
+  exports2.DepartmentRolePairsDisplay = DepartmentRolePairsDisplay;
   exports2.EditUserDialog = EditUserDialog;
   exports2.EditableField = EditableField;
   exports2.EditableProfileHeader = EditableProfileHeader;
@@ -7385,6 +7401,7 @@
   exports2.OrganisationWrapper = OrganisationWrapper;
   exports2.PersonaDetailsTabs = PersonaDetailsTabs;
   exports2.PersonaProfile = PersonaProfile;
+  exports2.PhysicalLocationTab = PhysicalLocationTab;
   exports2.ProfileAvatar = ProfileAvatar;
   exports2.ProfileBasicInfo = ProfileBasicInfo;
   exports2.ProfileContactInfo = ProfileContactInfo;

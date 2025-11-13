@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { EditableTable } from '@/components/ui/editable-table';
 import { Plus } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import AssignPhysicalLocationDialog from './admin/AssignPhysicalLocationDialog';
+import AssignPhysicalLocationDialog from '../admin/AssignPhysicalLocationDialog';
 
 interface PhysicalLocationTabProps {
   profile: any;

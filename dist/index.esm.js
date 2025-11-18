@@ -3919,8 +3919,10 @@ const OrganisationProfile = () => {
   const [saving, setSaving] = useState(false);
   const [organisationData, setOrganisationData] = useState({});
   const [signatoryData, setSignatoryData] = useState({});
+  const { isSuperAdmin } = useUserRole();
+  const { supabaseClient } = useOrganisationContext();
   const validatePhoneInput = (input) => {
-    return input.replace(/[^0-9+\s\-\(\)]/g, "");
+    return input.replace(/[^0-9+\s\-()]/g, "");
   };
   const handleTelephoneChange = (e) => {
     const validatedValue = validatePhoneInput(e.target.value);
@@ -3928,18 +3930,18 @@ const OrganisationProfile = () => {
   };
   useEffect(() => {
     fetchOrganisationData();
-  }, []);
+  }, [supabaseClient]);
   const fetchOrganisationData = async () => {
     try {
       setLoading(true);
-      const { data: orgProfile, error: orgError } = await supabase.from("org_profile").select("*").maybeSingle();
+      const { data: orgProfile, error: orgError } = await supabaseClient.from("org_profile").select("*").maybeSingle();
       if (orgError) {
         throw orgError;
       }
       if (orgProfile) {
         setOrganisationData(orgProfile);
       }
-      const { data: sigRoles, error: sigError } = await supabase.from("org_sig_roles").select("*");
+      const { data: sigRoles, error: sigError } = await supabaseClient.from("org_sig_roles").select("*");
       if (sigError) {
         throw sigError;
       }
@@ -3992,7 +3994,7 @@ const OrganisationProfile = () => {
   const handleSave = async () => {
     try {
       setSaving(true);
-      const { error: orgError } = await supabase.from("org_profile").upsert(organisationData);
+      const { error: orgError } = await supabaseClient.from("org_profile").upsert(organisationData);
       if (orgError) throw orgError;
       const updates = [
         { role_type: "cem", signatory_name: signatoryData.name_signatory_cem, signatory_title: signatoryData.title_signatory_cem, signatory_email: signatoryData.email_signatory_cem },
@@ -4004,7 +4006,7 @@ const OrganisationProfile = () => {
         { role_type: "it_manager", signatory_name: signatoryData.it_manager_name, signatory_title: "", signatory_email: signatoryData.it_manager_email }
       ];
       for (const update of updates) {
-        const { error: sigError } = await supabase.from("org_sig_roles").upsert(update, { onConflict: "role_type" });
+        const { error: sigError } = await supabaseClient.from("org_sig_roles").upsert(update, { onConflict: "role_type" });
         if (sigError) throw sigError;
       }
       ue.success("Organisation profile updated successfully");
@@ -4019,12 +4021,12 @@ const OrganisationProfile = () => {
   const fetchUserEmailAndRole = async (userId) => {
     var _a;
     try {
-      const { data: emailData, error: emailError } = await supabase.rpc("get_user_email_by_id", { user_id: userId });
+      const { data: emailData, error: emailError } = await supabaseClient.rpc("get_user_email_by_id", { user_id: userId });
       if (emailError) {
         console.error("Error fetching user email:", emailError);
         return { email: "", title: "" };
       }
-      const { data: roleData, error: roleError } = await supabase.from("user_profile_roles").select(`
+      const { data: roleData, error: roleError } = await supabaseClient.from("user_profile_roles").select(`
           roles(name)
         `).eq("user_id", userId).eq("is_primary", true).maybeSingle();
       if (roleError) {
@@ -4182,8 +4184,8 @@ const OrganisationProfile = () => {
               Input,
               {
                 id: "org-name",
-                value: organisationData.organisation_name || "",
-                onChange: (e) => setOrganisationData((prev) => ({ ...prev, organisation_name: e.target.value })),
+                value: organisationData.org_name || "",
+                onChange: (e) => setOrganisationData((prev) => ({ ...prev, org_name: e.target.value })),
                 disabled: !isEditing
               }
             )
@@ -4194,9 +4196,9 @@ const OrganisationProfile = () => {
               Input,
               {
                 id: "org-name-short",
-                value: organisationData.organisation_name_short || "",
-                onChange: (e) => setOrganisationData((prev) => ({ ...prev, organisation_name_short: e.target.value })),
-                disabled: !isEditing
+                value: organisationData.org_short_name || "",
+                onChange: (e) => setOrganisationData((prev) => ({ ...prev, org_short_name: e.target.value })),
+                disabled: !isEditing || !isSuperAdmin
               }
             )
           ] }),

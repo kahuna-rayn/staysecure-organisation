@@ -6,11 +6,11 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Edit, Save, X } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
 import type { Database } from '@/integrations/supabase/types';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useOrganisationContext } from '../context/OrganisationContext';
 
 type OrgSigRole = Database['public']['Tables']['org_sig_roles']['Row'];
 
@@ -70,6 +70,7 @@ const OrganisationProfile: React.FC = () => {
   const [organisationData, setOrganisationData] = useState<OrganisationData>({});
   const [signatoryData, setSignatoryData] = useState<SignatoryData>({});
   const { isSuperAdmin } = useUserRole();
+  const { supabaseClient } = useOrganisationContext();
   
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
@@ -82,14 +83,14 @@ const OrganisationProfile: React.FC = () => {
   };
   useEffect(() => {
     fetchOrganisationData();
-  }, []);
+  }, [supabaseClient]);
 
   const fetchOrganisationData = async () => {
     try {
       setLoading(true);
       
       // Fetch organisation profile data
-      const { data: orgProfile, error: orgError } = await supabase
+      const { data: orgProfile, error: orgError } = await supabaseClient
         .from('org_profile')
         .select('*')
         .maybeSingle();
@@ -103,7 +104,7 @@ const OrganisationProfile: React.FC = () => {
       }
 
       // Fetch signatory roles data
-      const { data: sigRoles, error: sigError } = await supabase
+      const { data: sigRoles, error: sigError } = await supabaseClient
         .from('org_sig_roles')
         .select('*');
 
@@ -166,7 +167,7 @@ const OrganisationProfile: React.FC = () => {
       setSaving(true);
       
       // Save organisation profile data
-      const { error: orgError } = await supabase
+      const { error: orgError } = await supabaseClient
         .from('org_profile')
         .upsert(organisationData);
 
@@ -184,7 +185,7 @@ const OrganisationProfile: React.FC = () => {
       ];
 
       for (const update of updates) {
-        const { error: sigError } = await supabase
+        const { error: sigError } = await supabaseClient
           .from('org_sig_roles')
           .upsert(update, { onConflict: 'role_type' });
 
@@ -204,7 +205,7 @@ const OrganisationProfile: React.FC = () => {
   const fetchUserEmailAndRole = async (userId: string) => {
     try {
       // Get email using the database function
-      const { data: emailData, error: emailError } = await supabase
+      const { data: emailData, error: emailError } = await supabaseClient
         .rpc('get_user_email_by_id', { user_id: userId });
       
       if (emailError) {
@@ -213,7 +214,7 @@ const OrganisationProfile: React.FC = () => {
       }
       
       // Get primary role from user_profile_roles + roles
-      const { data: roleData, error: roleError } = await supabase
+      const { data: roleData, error: roleError } = await supabaseClient
         .from('user_profile_roles')
         .select(`
           roles(name)
@@ -229,7 +230,7 @@ const OrganisationProfile: React.FC = () => {
       
       return {
         email: emailData || '',
-        title: roleData?.roles?.name || ''
+        title: (roleData?.roles as any)?.name || ''
       };
       
     } catch (error) {

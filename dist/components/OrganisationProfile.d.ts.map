@@ -1,1 +1,1 @@
-{"version":3,"file":"OrganisationProfile.d.ts","sourceRoot":"","sources":["../../src/components/OrganisationProfile.tsx"],"names":[],"mappings":"AAAA,OAAO,KAA8B,MAAM,OAAO,CAAC;AAsDnD,QAAA,MAAM,mBAAmB,EAAE,KAAK,CAAC,EAioBhC,CAAC;AAEF,eAAe,mBAAmB,CAAC"}
+{"version":3,"file":"OrganisationProfile.d.ts","sourceRoot":"","sources":["../../src/components/OrganisationProfile.tsx"],"names":[],"mappings":"AAAA,OAAO,KAA8B,MAAM,OAAO,CAAC;AAiEnD,QAAA,MAAM,mBAAmB,EAAE,KAAK,CAAC,EAmoBhC,CAAC;AAEF,eAAe,mBAAmB,CAAC"}

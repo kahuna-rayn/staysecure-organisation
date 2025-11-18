@@ -9,12 +9,22 @@ import { Edit, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
+import type { Database } from '@/integrations/supabase/types';
 import { useUserRole } from '@/hooks/useUserRole';
+
+type OrgSigRole = Database['public']['Tables']['org_sig_roles']['Row'];
+
+interface Profile {
+  id: string;
+  full_name: string;
+  username: string;
+  email?: string;
+}
 
 interface OrganisationData {
   id?: string;
-  organisation_name?: string;
-  organisation_name_short?: string;
+  org_name?: string;
+  org_short_name?: string;
   acra_uen_number?: string;
   charity_registration_number?: string;
   address?: string;
@@ -63,7 +73,7 @@ const OrganisationProfile: React.FC = () => {
   
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
-    return input.replace(/[^0-9+\s\-\(\)]/g, '');
+    return input.replace(/[^0-9+\s\-()]/g, '');
   };
 
   const handleTelephoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +114,7 @@ const OrganisationProfile: React.FC = () => {
       if (sigRoles && sigRoles.length > 0) {
         const sigData: SignatoryData = {};
         
-        sigRoles.forEach((role: any) => {
+        sigRoles.forEach((role: OrgSigRole) => {
           switch (role.role_type) {
             case 'cem':
               sigData.name_signatory_cem = role.signatory_name;
@@ -228,7 +238,7 @@ const OrganisationProfile: React.FC = () => {
     }
   };
 
-  const handleProfileSelect = async (role: string, profile: any) => {
+  const handleProfileSelect = async (role: string, profile: Profile | null) => {
     if (!profile) {
       // Clear the selection
       switch (role) {
@@ -394,8 +404,8 @@ const OrganisationProfile: React.FC = () => {
               <Label htmlFor="org-name">Organisation Name</Label>
               <Input
                 id="org-name"
-                value={organisationData.organisation_name || ''}
-                onChange={(e) => setOrganisationData(prev => ({ ...prev, organisation_name: e.target.value }))}
+                value={organisationData.org_name || ''}
+                onChange={(e) => setOrganisationData(prev => ({ ...prev, org_name: e.target.value }))}
                 disabled={!isEditing}
               />
             </div>
@@ -403,8 +413,8 @@ const OrganisationProfile: React.FC = () => {
               <Label htmlFor="org-name-short">Organisation Name (Short)</Label>
               <Input
                 id="org-name-short"
-                value={organisationData.organisation_name_short || ''}
-                onChange={(e) => setOrganisationData(prev => ({ ...prev, organisation_name_short: e.target.value }))}
+                value={organisationData.org_short_name || ''}
+                onChange={(e) => setOrganisationData(prev => ({ ...prev, org_short_name: e.target.value }))}
                 disabled={!isEditing || !isSuperAdmin}
               />
             </div>

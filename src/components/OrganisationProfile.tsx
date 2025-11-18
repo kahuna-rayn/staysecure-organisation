@@ -9,6 +9,7 @@ import { Edit, Save, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface OrganisationData {
   id?: string;
@@ -58,6 +59,7 @@ const OrganisationProfile: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [organisationData, setOrganisationData] = useState<OrganisationData>({});
   const [signatoryData, setSignatoryData] = useState<SignatoryData>({});
+  const { isSuperAdmin } = useUserRole();
   
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
@@ -403,7 +405,7 @@ const OrganisationProfile: React.FC = () => {
                 id="org-name-short"
                 value={organisationData.organisation_name_short || ''}
                 onChange={(e) => setOrganisationData(prev => ({ ...prev, organisation_name_short: e.target.value }))}
-                disabled={!isEditing}
+                disabled={!isEditing || !isSuperAdmin}
               />
             </div>
             <div className="space-y-2">

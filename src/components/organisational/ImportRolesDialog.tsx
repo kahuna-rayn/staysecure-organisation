@@ -23,16 +23,10 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
-      const validTypes = [
-        'text/csv',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      ];
-      
-      if (!validTypes.includes(file.type) && !file.name.endsWith('.csv') && !file.name.endsWith('.xlsx') && !file.name.endsWith('.xls')) {
+      if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
         toast({
           title: "Invalid file type",
-          description: "Please upload a CSV or Excel file (.csv, .xlsx, .xls)",
+          description: "Please upload a CSV file (.csv)",
           variant: "destructive",
         });
         return;
@@ -49,9 +43,7 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'text/csv': ['.csv'],
-      'application/vnd.ms-excel': ['.xls'],
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']
+      'text/csv': ['.csv']
     },
     multiple: false
   });
@@ -355,7 +347,7 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
               ) : (
                 <div>
                   <p className="text-lg font-medium">Drag and drop your role file here, or browse</p>
-                  <p className="text-sm text-gray-500 mt-1">Supports CSV and Excel files (.xlsx, .xls)</p>
+                        <p className="text-sm text-gray-500 mt-1">Supports CSV files (.csv)</p>
                 </div>
               )}
             </div>

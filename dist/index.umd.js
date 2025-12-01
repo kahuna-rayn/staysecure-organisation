@@ -1622,15 +1622,10 @@
     const onDrop = o.useCallback((acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
-        const validTypes = [
-          "text/csv",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ];
-        if (!validTypes.includes(file.type) && !file.name.endsWith(".csv") && !file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        if (!file.name.endsWith(".csv") && file.type !== "text/csv") {
           useToast$1.toast({
             title: "Invalid file type",
-            description: "Please upload a CSV or Excel file (.csv, .xlsx, .xls)",
+            description: "Please upload a CSV file (.csv)",
             variant: "destructive"
           });
           return;
@@ -1645,9 +1640,7 @@
     const { getRootProps, getInputProps, isDragActive } = reactDropzone.useDropzone({
       onDrop,
       accept: {
-        "text/csv": [".csv"],
-        "application/vnd.ms-excel": [".xls"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"]
+        "text/csv": [".csv"]
       },
       multiple: false
     });
@@ -1926,7 +1919,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
       /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4 mr-2" }) }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Users" }),
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV or Excel file to import users in bulk. Users will be created with authentication accounts and will need to activate via email. Roles and departments can be assigned after import." })
@@ -1947,7 +1940,7 @@
                     /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-gray-500 mt-2", children: "Click to select a different file or drop a new one here" })
                   ] }) : isDragActive ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-lg font-medium text-blue-700", children: "Drop your user file here" }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
                     /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-lg font-medium", children: "Drag and drop your user file here, or browse" }),
-                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV and Excel files (.xlsx, .xls)" })
+                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV files (.csv)" })
                   ] })
                 ]
               }
@@ -2193,15 +2186,10 @@
     const onDrop = o.useCallback((acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
-        const validTypes = [
-          "text/csv",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ];
-        if (!validTypes.includes(file.type) && !file.name.endsWith(".csv") && !file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        if (!file.name.endsWith(".csv") && file.type !== "text/csv") {
           useToast.toast({
             title: "Invalid file type",
-            description: "Please upload a CSV or Excel file (.csv, .xlsx, .xls)",
+            description: "Please upload a CSV file (.csv)",
             variant: "destructive"
           });
           return;
@@ -2216,9 +2204,7 @@
     const { getRootProps, getInputProps, isDragActive } = reactDropzone.useDropzone({
       onDrop,
       accept: {
-        "text/csv": [".csv"],
-        "application/vnd.ms-excel": [".xls"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"]
+        "text/csv": [".csv"]
       },
       multiple: false
     });
@@ -2423,7 +2409,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
       /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Roles" }),
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV or Excel file to import roles in bulk. Departments can be assigned by name." })
@@ -2444,7 +2430,7 @@
                     /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-gray-500 mt-2", children: "Click to select a different file or drop a new one here" })
                   ] }) : isDragActive ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-lg font-medium text-blue-700", children: "Drop your role file here" }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
                     /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-lg font-medium", children: "Drag and drop your role file here, or browse" }),
-                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV and Excel files (.xlsx, .xls)" })
+                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV files (.csv)" })
                   ] })
                 ]
               }
@@ -2879,15 +2865,10 @@
     const onDrop = o.useCallback((acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
-        const validTypes = [
-          "text/csv",
-          "application/vnd.ms-excel",
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        ];
-        if (!validTypes.includes(file.type) && !file.name.endsWith(".csv") && !file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        if (!file.name.endsWith(".csv") && file.type !== "text/csv") {
           useToast.toast({
             title: "Invalid file type",
-            description: "Please upload a CSV or Excel file (.csv, .xlsx, .xls)",
+            description: "Please upload a CSV file (.csv)",
             variant: "destructive"
           });
           return;
@@ -2902,9 +2883,7 @@
     const { getRootProps, getInputProps, isDragActive } = reactDropzone.useDropzone({
       onDrop,
       accept: {
-        "text/csv": [".csv"],
-        "application/vnd.ms-excel": [".xls"],
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"]
+        "text/csv": [".csv"]
       },
       multiple: false
     });
@@ -3111,7 +3090,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
       /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Departments" }),
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV or Excel file to import departments in bulk. Managers can be assigned by name or email." })
@@ -3132,7 +3111,7 @@
                     /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-gray-500 mt-2", children: "Click to select a different file or drop a new one here" })
                   ] }) : isDragActive ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-lg font-medium text-blue-700", children: "Drop your department file here" }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
                     /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-lg font-medium", children: "Drag and drop your department file here, or browse" }),
-                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV and Excel files (.xlsx, .xls)" })
+                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV files (.csv)" })
                   ] })
                 ]
               }

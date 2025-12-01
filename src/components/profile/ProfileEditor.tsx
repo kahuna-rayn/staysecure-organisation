@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Edit, Save, X } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
 const ProfileEditor: React.FC = () => {
@@ -94,8 +94,8 @@ const ProfileEditor: React.FC = () => {
                   <Label className="text-sm font-medium text-muted-foreground">Bio</Label>
                   <p className="text-sm">{profile?.bio || 'Not set'}</p>
                 </div>
-                <Button onClick={() => setIsEditing(true)}>
-                  Edit Profile
+                <Button onClick={() => setIsEditing(true)} size="icon">
+                  <Edit className="h-4 w-4" />
                 </Button>
               </div>
             ) : (
@@ -141,16 +141,16 @@ const ProfileEditor: React.FC = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button type="submit" disabled={saving}>
-                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Save Changes
+                  <Button type="submit" disabled={saving} size="icon">
+                    {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                   </Button>
                   <Button 
                     type="button" 
                     variant="outline" 
                     onClick={() => setIsEditing(false)}
+                    size="icon"
                   >
-                    Cancel
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               </form>

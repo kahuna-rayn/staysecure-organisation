@@ -133,9 +133,8 @@ const UserDetailView: React.FC = () => {
   return (
     <div className="max-w-6xl mx-auto py-6 px-4 space-y-6">
       <div className="flex items-center gap-4 mb-6">
-        <Button onClick={handleBackToUsers} variant="outline" size="sm">
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Back to Users
+        <Button onClick={handleBackToUsers} variant="outline" size="icon">
+          <ArrowLeft className="h-4 w-4" />
         </Button>
         <h1 className="text-2xl font-bold">User Profile: {userProfile.full_name || 'Unnamed User'}</h1>
       </div>

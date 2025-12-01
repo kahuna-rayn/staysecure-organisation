@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Building2, Plus, Edit, Trash2 } from 'lucide-react';
+import { Building2, Plus, Edit, Trash2, X, Save } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
@@ -279,11 +279,11 @@ export const DepartmentManagement: React.FC = () => {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                      Cancel
+                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} size="icon">
+                      <X className="h-4 w-4" />
                     </Button>
-                    <Button onClick={handleSubmit} disabled={!formData.name.trim()}>
-                      Create Department
+                    <Button onClick={handleSubmit} disabled={!formData.name.trim()} size="icon">
+                      <Save className="h-4 w-4" />
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -405,11 +405,11 @@ export const DepartmentManagement: React.FC = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setEditingDepartment(null)}>
-                Cancel
+              <Button variant="outline" onClick={() => setEditingDepartment(null)} size="icon">
+                <X className="h-4 w-4" />
               </Button>
-              <Button onClick={handleSubmit} disabled={!formData.name.trim()}>
-                Update Department
+              <Button onClick={handleSubmit} disabled={!formData.name.trim()} size="icon">
+                <Save className="h-4 w-4" />
               </Button>
             </DialogFooter>
           </DialogContent>

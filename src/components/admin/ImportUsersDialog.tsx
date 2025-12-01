@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText } from 'lucide-react';
+import { Upload, FileText, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
@@ -550,7 +550,9 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                   <span className="text-sm font-medium">Users Template (CSV)</span>
                   <Badge variant="secondary" className="text-xs">Ready to use template</Badge>
                 </div>
-                <Button size="sm" variant="outline" onClick={generateSampleCSV}>Download</Button>
+                <Button size="sm" variant="outline" onClick={generateSampleCSV} className="gap-2">
+                  <Download className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           </div>

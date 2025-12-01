@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Award } from 'lucide-react';
+import { Plus, Award, X, Save } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -183,11 +183,11 @@ export const CreateCertificateDialog: React.FC<CreateCertificateDialogProps> = (
           </div>
 
           <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} size="icon">
+              <X className="h-4 w-4" />
             </Button>
-            <Button type="submit">
-              Add Certificate
+            <Button type="submit" size="icon">
+              <Save className="h-4 w-4" />
             </Button>
           </div>
         </form>
@@ -208,7 +208,6 @@ const CertificateManagement: React.FC = () => {
           onClick={() => setIsDialogOpen(true)}
         >
           <Plus className="h-4 w-4" />
-          Add Certificate
         </Button>
       </div>
 
@@ -221,7 +220,7 @@ const CertificateManagement: React.FC = () => {
       <div className="text-center py-8 text-muted-foreground">
         <Award className="h-12 w-12 mx-auto mb-4 opacity-50" />
         <p>Certificate management interface coming soon...</p>
-        <p className="text-sm">Use the "Add Certificate" button to add new certificates.</p>
+        <p className="text-sm">Use the "Plus" button to add new certificates.</p>
       </div>
     </div>
   );

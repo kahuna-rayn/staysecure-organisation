@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { UserCheck, Plus, Edit, Trash2 } from 'lucide-react';
+import { UserCheck, Plus, Edit, Trash2, X, Save } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
@@ -288,11 +288,11 @@ export const RoleManagement: React.FC = () => {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                      Cancel
+                    <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} size="icon">
+                      <X className="h-4 w-4" />
                     </Button>
-                    <Button onClick={handleSubmit} disabled={!formData.name.trim()}>
-                      Create Role
+                    <Button onClick={handleSubmit} disabled={!formData.name.trim()} size="icon">
+                      <Save className="h-4 w-4" />
                     </Button>
                   </DialogFooter>
                 </DialogContent>
@@ -428,11 +428,11 @@ export const RoleManagement: React.FC = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setEditingRole(null)}>
-                Cancel
+              <Button variant="outline" onClick={() => setEditingRole(null)} size="icon">
+                <X className="h-4 w-4" />
               </Button>
-              <Button onClick={handleSubmit} disabled={!formData.name.trim()}>
-                Update Role
+              <Button onClick={handleSubmit} disabled={!formData.name.trim()} size="icon">
+                <Save className="h-4 w-4" />
               </Button>
             </DialogFooter>
           </DialogContent>

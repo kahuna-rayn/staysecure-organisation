@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText } from 'lucide-react';
+import { Upload, FileText, Download, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import Papa from 'papaparse';
@@ -322,9 +322,8 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
   return (
     <Dialog open={isOpen} onOpenChange={handleDialogClose}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Upload className="h-4 w-4 mr-2" />
-          Import
+        <Button variant="outline" size="icon">
+          <Upload className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -373,26 +372,21 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
                 <Button
                   onClick={handleImport}
                   disabled={isProcessing}
-                  className="flex items-center gap-2"
+                  size="icon"
                 >
                   {isProcessing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      Processing...
-                    </>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   ) : (
-                    <>
-                      <Upload className="h-4 w-4" />
-                      Import Roles
-                    </>
+                    <Upload className="h-4 w-4" />
                   )}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => setUploadedFile(null)}
                   disabled={isProcessing}
+                  size="icon"
                 >
-                  Remove File
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             )}
@@ -409,7 +403,9 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
                   <span className="text-sm font-medium">Roles Template (CSV)</span>
                   <Badge variant="secondary" className="text-xs">Ready to use template</Badge>
                 </div>
-                <Button size="sm" variant="outline" onClick={generateSampleCSV}>Download</Button>
+                <Button size="sm" variant="outline" onClick={generateSampleCSV} className="gap-2">
+                  <Download className="h-4 w-4" />
+                </Button>
               </div>
             </div>
           </div>

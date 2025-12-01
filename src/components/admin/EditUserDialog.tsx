@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { X, Save } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { UserProfile } from '../../types';
@@ -216,10 +217,12 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} size="icon">
+              <X className="h-4 w-4" />
             </Button>
-            <Button type="submit">Update User</Button>
+            <Button type="submit" size="icon">
+              <Save className="h-4 w-4" />
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

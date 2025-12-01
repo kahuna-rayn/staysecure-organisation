@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
+import { Plus, X, Save } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { NewUser } from '../../types';
@@ -306,17 +306,14 @@ const handleFullNameChange = (value: string) => {
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => handleDialogClose(false)} disabled={loading}>
-              Cancel
+            <Button type="button" variant="outline" onClick={() => handleDialogClose(false)} disabled={loading} size="icon">
+              <X className="h-4 w-4" />
             </Button>
-            <Button type="submit" disabled={loading || !isFormValid()}>
+            <Button type="submit" disabled={loading || !isFormValid()} size="icon">
               {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Creating...
-                </>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                "Create User"
+                <Save className="h-4 w-4" />
               )}
             </Button>
           </DialogFooter>

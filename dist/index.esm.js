@@ -3690,10 +3690,7 @@ const LocationManagement = () => {
           /* @__PURE__ */ jsx(CardDescription, { children: "Manage organizational locations and facilities" })
         ] }),
         hasPermission("canManageLocations") && /* @__PURE__ */ jsxs(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-          /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(Button, { children: [
-            /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }),
-            "Add Location"
-          ] }) }),
+          /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { size: "icon", children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) }) }),
           /* @__PURE__ */ jsxs(DialogContent, { children: [
             /* @__PURE__ */ jsxs(DialogHeader, { children: [
               /* @__PURE__ */ jsx(DialogTitle, { children: "Create Location" }),
@@ -4179,10 +4176,7 @@ const OrganisationCertificates = () => {
         /* @__PURE__ */ jsx(Award, { className: "h-5 w-5" }),
         "Organisation Certificates"
       ] }),
-      /* @__PURE__ */ jsxs(Button, { onClick: () => setIsAddDialogOpen(true), size: "sm", children: [
-        /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }),
-        "Add Certificate"
-      ] })
+      /* @__PURE__ */ jsx(Button, { onClick: () => setIsAddDialogOpen(true), size: "icon", children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) })
     ] }) }),
     /* @__PURE__ */ jsxs(CardContent, { children: [
       /* @__PURE__ */ jsx("div", { className: "space-y-4", children: certificates.length === 0 ? /* @__PURE__ */ jsx("p", { className: "text-muted-foreground text-center py-8", children: "No organisation certificates found" }) : certificates.map((cert) => {
@@ -5623,8 +5617,8 @@ const AssignPhysicalLocationDialog = ({
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, size: "icon", children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) })
       ] })
     ] })
   ] }) });
@@ -7763,8 +7757,8 @@ const AddPhysicalLocationDialog = ({
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, size: "icon", children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) })
       ] })
     ] })
   ] }) });

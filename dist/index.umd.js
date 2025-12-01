@@ -3641,10 +3641,7 @@
             /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Manage organizational locations and facilities" })
           ] }),
           hasPermission("canManageLocations") && /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-            /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4 mr-2" }),
-              "Add Location"
-            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
             /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
               /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
                 /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Location" }),
@@ -4130,10 +4127,7 @@
           /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5" }),
           "Organisation Certificates"
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: () => setIsAddDialogOpen(true), size: "sm", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4 mr-2" }),
-          "Add Certificate"
-        ] })
+        /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: () => setIsAddDialogOpen(true), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) })
       ] }) }),
       /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
         /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: certificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No organisation certificates found" }) : certificates.map((cert) => {
@@ -5574,8 +5568,8 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading, size: "icon", children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) })
         ] })
       ] })
     ] }) });
@@ -7714,8 +7708,8 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Location Access" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading, size: "icon", children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) })
         ] })
       ] })
     ] }) });

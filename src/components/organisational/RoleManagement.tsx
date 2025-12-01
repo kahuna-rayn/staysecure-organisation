@@ -14,12 +14,18 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { Role, Department } from '../../types';
+import ImportRolesDialog from './ImportRolesDialog';
+import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
 
 export const RoleManagement: React.FC = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [showImportErrorReport, setShowImportErrorReport] = useState(false);
+  const [importErrors, setImportErrors] = useState<ImportError[]>([]);
+  const [importWarnings, setImportWarnings] = useState<ImportError[]>([]);
+  const [importStats, setImportStats] = useState({ success: 0, total: 0 });
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -187,6 +193,15 @@ export const RoleManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <ImportErrorReport
+        errors={importErrors}
+        warnings={importWarnings}
+        successCount={importStats.success}
+        totalCount={importStats.total}
+        isOpen={showImportErrorReport}
+        onClose={() => setShowImportErrorReport(false)}
+        importType="Roles"
+      />
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -200,13 +215,24 @@ export const RoleManagement: React.FC = () => {
               </CardDescription>
             </div>
             {hasPermission('canManageRoles') && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Role
-                  </Button>
-                </DialogTrigger>
+              <div className="flex items-center gap-2">
+                <ImportRolesDialog
+                  onImportComplete={async () => {
+                    await queryClient.invalidateQueries({ queryKey: ['roles'] });
+                  }}
+                  onImportError={(errors, warnings, stats) => {
+                    setImportErrors(errors);
+                    setImportWarnings(warnings);
+                    setImportStats(stats);
+                    setShowImportErrorReport(true);
+                  }}
+                />
+                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Create Role</DialogTitle>
@@ -271,6 +297,7 @@ export const RoleManagement: React.FC = () => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              </div>
             )}
           </div>
         </CardHeader>

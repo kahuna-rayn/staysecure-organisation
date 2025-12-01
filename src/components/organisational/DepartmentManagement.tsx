@@ -12,6 +12,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { Department } from '../../types';
+import ImportDepartmentsDialog from './ImportDepartmentsDialog';
+import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
 
 interface Profile {
   id: string;
@@ -23,6 +25,10 @@ export const DepartmentManagement: React.FC = () => {
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
+  const [showImportErrorReport, setShowImportErrorReport] = useState(false);
+  const [importErrors, setImportErrors] = useState<ImportError[]>([]);
+  const [importWarnings, setImportWarnings] = useState<ImportError[]>([]);
+  const [importStats, setImportStats] = useState({ success: 0, total: 0 });
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -186,6 +192,15 @@ export const DepartmentManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <ImportErrorReport
+        errors={importErrors}
+        warnings={importWarnings}
+        successCount={importStats.success}
+        totalCount={importStats.total}
+        isOpen={showImportErrorReport}
+        onClose={() => setShowImportErrorReport(false)}
+        importType="Departments"
+      />
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -199,13 +214,24 @@ export const DepartmentManagement: React.FC = () => {
               </CardDescription>
             </div>
             {hasPermission('canManageDepartments') && (
-              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Department
-                  </Button>
-                </DialogTrigger>
+              <div className="flex items-center gap-2">
+                <ImportDepartmentsDialog
+                  onImportComplete={async () => {
+                    await queryClient.invalidateQueries({ queryKey: ['departments'] });
+                  }}
+                  onImportError={(errors, warnings, stats) => {
+                    setImportErrors(errors);
+                    setImportWarnings(warnings);
+                    setImportStats(stats);
+                    setShowImportErrorReport(true);
+                  }}
+                />
+                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
                     <DialogTitle>Create Department</DialogTitle>
@@ -262,6 +288,7 @@ export const DepartmentManagement: React.FC = () => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
+              </div>
             )}
           </div>
         </CardHeader>

@@ -2198,11 +2198,352 @@ const UserManagement = () => {
     ] })
   ] });
 };
+const ImportRolesDialog = ({ onImportComplete, onImportError }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { supabaseClient } = useOrganisationContext();
+  const onDrop = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const validTypes = [
+        "text/csv",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ];
+      if (!validTypes.includes(file.type) && !file.name.endsWith(".csv") && !file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a CSV or Excel file (.csv, .xlsx, .xls)",
+          variant: "destructive"
+        });
+        return;
+      }
+      setUploadedFile(file);
+      toast({
+        title: "File uploaded",
+        description: `${file.name} is ready for import`
+      });
+    }
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "text/csv": [".csv"],
+      "application/vnd.ms-excel": [".xls"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"]
+    },
+    multiple: false
+  });
+  const generateSampleCSV = () => {
+    const headers = ["Name", "Description", "Department"];
+    const sampleData = [
+      ["Senior Developer", "Senior software developer role", "Engineering"],
+      ["Sales Manager", "Manages sales team and customer relations", "Sales"],
+      ["HR Coordinator", "Human resources coordination", "HR"],
+      ["Intern", "Internship role", ""]
+    ];
+    const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "role_import_template.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const validateDepartment = async (departmentName) => {
+    if (!departmentName || !departmentName.trim()) {
+      return { isValid: false };
+    }
+    const trimmedName = departmentName.trim();
+    const { data: department } = await supabaseClient.from("departments").select("id").ilike("name", trimmedName).maybeSingle();
+    if (department) {
+      return { isValid: true, departmentId: department.id };
+    }
+    return { isValid: false };
+  };
+  const processRoleImport = async (row) => {
+    const name = row["Name"] || row["name"];
+    if (!name || !name.trim()) {
+      throw new Error("Role name is required");
+    }
+    const description = row["Description"] || row["description"] || "";
+    const departmentName = row["Department"] || row["department"] || "";
+    const warnings = [];
+    let departmentId = null;
+    if (departmentName) {
+      const departmentValidation = await validateDepartment(departmentName);
+      if (departmentValidation.isValid) {
+        departmentId = departmentValidation.departmentId || null;
+      } else {
+        warnings.push({
+          field: "Department",
+          value: departmentName,
+          message: `Department "${departmentName}" not found - role created without department`
+        });
+      }
+    }
+    const { data: existingRole } = await supabaseClient.from("roles").select("role_id").ilike("name", name.trim()).maybeSingle();
+    if (existingRole) {
+      throw new Error(`Role "${name}" already exists`);
+    }
+    const { error } = await supabaseClient.from("roles").insert([{
+      name: name.trim(),
+      description: description.trim() || null,
+      department_id: departmentId,
+      is_active: true
+    }]);
+    if (error) {
+      throw new Error(error.message || "Failed to create role");
+    }
+    return {
+      name,
+      success: true,
+      warnings: warnings.length > 0 ? warnings : null
+    };
+  };
+  const handleImport = async () => {
+    if (!uploadedFile) {
+      toast({
+        title: "No file selected",
+        description: "Please upload a file first",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      const text = await uploadedFile.text();
+      Papa.parse(text, {
+        header: true,
+        complete: async (results) => {
+          const data = results.data;
+          if (data.length === 0) {
+            toast({
+              title: "Empty file",
+              description: "The uploaded file contains no data",
+              variant: "destructive"
+            });
+            setIsProcessing(false);
+            return;
+          }
+          console.log("Processing", data.length, "roles");
+          let successCount = 0;
+          const errors = [];
+          const warnings = [];
+          for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            if (!row["Name"] && !row["name"]) {
+              console.log("Skipping empty row at index", i);
+              continue;
+            }
+            const name = row["Name"] || row["name"] || "Unknown";
+            try {
+              console.log(`Processing role ${i + 1} of ${data.length}:`, name);
+              const result = await processRoleImport(row);
+              successCount++;
+              console.log(`Successfully processed role ${i + 1}`);
+              if (result.warnings) {
+                result.warnings.forEach((warning) => {
+                  warnings.push({
+                    rowNumber: i + 2,
+                    identifier: name,
+                    field: warning.field,
+                    error: warning.message,
+                    rawData: row
+                  });
+                });
+              }
+            } catch (error) {
+              console.error(`Error importing role ${i + 1}:`, error);
+              errors.push({
+                rowNumber: i + 2,
+                identifier: name,
+                field: !row["Name"] && !row["name"] ? "Name" : void 0,
+                error: error.message || "Unknown error",
+                rawData: row
+              });
+            }
+            if (i < data.length - 1) {
+              await new Promise((resolve) => setTimeout(resolve, 300));
+            }
+          }
+          console.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+          setUploadedFile(null);
+          setIsProcessing(false);
+          setIsOpen(false);
+          if ((errors.length > 0 || warnings.length > 0) && onImportError) {
+            setTimeout(() => {
+              onImportError(errors, warnings, { success: successCount, total: data.length });
+            }, 300);
+            if (errors.length > 0 && warnings.length > 0) {
+              toast({
+                title: "Import completed with errors and warnings",
+                description: `${successCount} roles imported successfully. ${errors.length} failed, ${warnings.length} have validation warnings.`,
+                variant: "destructive"
+              });
+            } else if (errors.length > 0) {
+              toast({
+                title: "Import completed with errors",
+                description: `${successCount} roles imported successfully. ${errors.length} failed.`,
+                variant: "destructive"
+              });
+            } else if (warnings.length > 0) {
+              toast({
+                title: "Import completed with warnings",
+                description: `${successCount} roles imported successfully. ${warnings.length} have validation warnings.`,
+                variant: "default"
+              });
+            }
+          } else {
+            toast({
+              title: "Import completed successfully",
+              description: `All ${successCount} roles imported successfully.`
+            });
+          }
+          if (onImportComplete) {
+            await onImportComplete();
+          }
+        },
+        error: (error) => {
+          console.error("Parse error:", error);
+          toast({
+            title: "Parse error",
+            description: "Failed to parse the CSV file",
+            variant: "destructive"
+          });
+          setIsProcessing(false);
+        }
+      });
+    } catch (error) {
+      console.error("Import error:", error);
+      toast({
+        title: "Import failed",
+        description: "An error occurred while importing the file",
+        variant: "destructive"
+      });
+      setIsProcessing(false);
+    }
+  };
+  const handleDialogClose = (open) => {
+    if (!open && !isProcessing) {
+      setUploadedFile(null);
+    }
+    setIsOpen(open);
+  };
+  return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
+    /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(Button, { variant: "outline", children: [
+      /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 mr-2" }),
+      "Import"
+    ] }) }),
+    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxs(DialogHeader, { children: [
+        /* @__PURE__ */ jsx(DialogTitle, { children: "Import Roles" }),
+        /* @__PURE__ */ jsx(DialogDescription, { children: "Upload a CSV or Excel file to import roles in bulk. Departments can be assigned by name." })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxs(
+            "div",
+            {
+              ...getRootProps(),
+              className: `border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-blue-400 bg-blue-50" : uploadedFile ? "border-green-400 bg-green-50" : "border-gray-300 hover:border-gray-400"}`,
+              children: [
+                /* @__PURE__ */ jsx("input", { ...getInputProps() }),
+                /* @__PURE__ */ jsx(Upload, { className: "h-12 w-12 mx-auto mb-4 text-gray-400" }),
+                uploadedFile ? /* @__PURE__ */ jsxs("div", { children: [
+                  /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-green-700", children: "File Ready for Import" }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm text-green-600 mt-1", children: uploadedFile.name }),
+                  /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-2", children: "Click to select a different file or drop a new one here" })
+                ] }) : isDragActive ? /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-blue-700", children: "Drop your role file here" }) : /* @__PURE__ */ jsxs("div", { children: [
+                  /* @__PURE__ */ jsx("p", { className: "text-lg font-medium", children: "Drag and drop your role file here, or browse" }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV and Excel files (.xlsx, .xls)" })
+                ] })
+              ]
+            }
+          ),
+          uploadedFile && /* @__PURE__ */ jsxs("div", { className: "flex gap-3", children: [
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                onClick: handleImport,
+                disabled: isProcessing,
+                className: "flex items-center gap-2",
+                children: isProcessing ? /* @__PURE__ */ jsxs(Fragment, { children: [
+                  /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }),
+                  "Processing..."
+                ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+                  /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }),
+                  "Import Roles"
+                ] })
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                variant: "outline",
+                onClick: () => setUploadedFile(null),
+                disabled: isProcessing,
+                children: "Remove File"
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsx("h4", { className: "text-sm font-medium text-yellow-800 mb-2", children: "Role Import Template" }),
+          /* @__PURE__ */ jsx("p", { className: "text-sm text-yellow-700 mb-3", children: "Download a template for importing roles with sample data." }),
+          /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-2 bg-white rounded border", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4" }),
+              /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Roles Template (CSV)" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
+            ] }),
+            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+          ] }) })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: ["Name", "Description", "Department"].map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+          /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Name" }),
+              " is required for each role"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Description" }),
+              " is optional"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Department" }),
+              " is optional - must match an existing department name"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• All imported roles will be created as ",
+              /* @__PURE__ */ jsx("strong", { children: "active" }),
+              " by default"
+            ] }),
+            /* @__PURE__ */ jsx("p", { children: "• Duplicate role names will be rejected" })
+          ] })
+        ] })
+      ] })
+    ] })
+  ] });
+};
 const RoleManagement = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
+  const [showImportErrorReport, setShowImportErrorReport] = useState(false);
+  const [importErrors, setImportErrors] = useState([]);
+  const [importWarnings, setImportWarnings] = useState([]);
+  const [importStats, setImportStats] = useState({ success: 0, total: 0 });
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -2335,6 +2676,18 @@ const RoleManagement = () => {
     return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-32 w-32 border-b-2 border-primary" }) });
   }
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsx(
+      ImportErrorReport,
+      {
+        errors: importErrors,
+        warnings: importWarnings,
+        successCount: importStats.success,
+        totalCount: importStats.total,
+        isOpen: showImportErrorReport,
+        onClose: () => setShowImportErrorReport(false),
+        importType: "Roles"
+      }
+    ),
     /* @__PURE__ */ jsxs(Card, { children: [
       /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
         /* @__PURE__ */ jsxs("div", { children: [
@@ -2344,73 +2697,86 @@ const RoleManagement = () => {
           ] }),
           /* @__PURE__ */ jsx(CardDescription, { children: "Manage organizational roles and their department associations" })
         ] }),
-        hasPermission("canManageRoles") && /* @__PURE__ */ jsxs(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-          /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(Button, { children: [
-            /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }),
-            "Add Role"
-          ] }) }),
-          /* @__PURE__ */ jsxs(DialogContent, { children: [
-            /* @__PURE__ */ jsxs(DialogHeader, { children: [
-              /* @__PURE__ */ jsx(DialogTitle, { children: "Create Role" }),
-              /* @__PURE__ */ jsx(DialogDescription, { children: "Add a new role to your organization" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "grid gap-4 py-4", children: [
-              /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsx(Label, { htmlFor: "name", children: "Role Name" }),
-                /* @__PURE__ */ jsx(
-                  Input,
-                  {
-                    id: "name",
-                    value: formData.name,
-                    onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
-                    placeholder: "Enter role name"
-                  }
-                )
+        hasPermission("canManageRoles") && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(
+            ImportRolesDialog,
+            {
+              onImportComplete: async () => {
+                await queryClient.invalidateQueries({ queryKey: ["roles"] });
+              },
+              onImportError: (errors, warnings, stats) => {
+                setImportErrors(errors);
+                setImportWarnings(warnings);
+                setImportStats(stats);
+                setShowImportErrorReport(true);
+              }
+            }
+          ),
+          /* @__PURE__ */ jsxs(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
+            /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }) }) }),
+            /* @__PURE__ */ jsxs(DialogContent, { children: [
+              /* @__PURE__ */ jsxs(DialogHeader, { children: [
+                /* @__PURE__ */ jsx(DialogTitle, { children: "Create Role" }),
+                /* @__PURE__ */ jsx(DialogDescription, { children: "Add a new role to your organization" })
               ] }),
-              /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsx(Label, { htmlFor: "description", children: "Description" }),
-                /* @__PURE__ */ jsx(
-                  Textarea,
-                  {
-                    id: "description",
-                    value: formData.description,
-                    onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
-                    placeholder: "Enter role description (optional)"
-                  }
-                )
+              /* @__PURE__ */ jsxs("div", { className: "grid gap-4 py-4", children: [
+                /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "name", children: "Role Name" }),
+                  /* @__PURE__ */ jsx(
+                    Input,
+                    {
+                      id: "name",
+                      value: formData.name,
+                      onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
+                      placeholder: "Enter role name"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "description", children: "Description" }),
+                  /* @__PURE__ */ jsx(
+                    Textarea,
+                    {
+                      id: "description",
+                      value: formData.description,
+                      onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
+                      placeholder: "Enter role description (optional)"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "department", children: "Department" }),
+                  /* @__PURE__ */ jsxs(
+                    Select,
+                    {
+                      value: formData.department_id,
+                      onValueChange: (value) => setFormData((prev) => ({ ...prev, department_id: value })),
+                      children: [
+                        /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select department (optional)" }) }),
+                        /* @__PURE__ */ jsxs(SelectContent, { children: [
+                          /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "No department" }),
+                          departments == null ? void 0 : departments.map((department) => /* @__PURE__ */ jsx(SelectItem, { value: department.id, children: department.name }, department.id))
+                        ] })
+                      ]
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
+                  /* @__PURE__ */ jsx(
+                    Switch,
+                    {
+                      id: "is_active",
+                      checked: formData.is_active,
+                      onCheckedChange: (checked) => setFormData((prev) => ({ ...prev, is_active: checked }))
+                    }
+                  ),
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "is_active", children: "Active Role" })
+                ] })
               ] }),
-              /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsx(Label, { htmlFor: "department", children: "Department" }),
-                /* @__PURE__ */ jsxs(
-                  Select,
-                  {
-                    value: formData.department_id,
-                    onValueChange: (value) => setFormData((prev) => ({ ...prev, department_id: value })),
-                    children: [
-                      /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select department (optional)" }) }),
-                      /* @__PURE__ */ jsxs(SelectContent, { children: [
-                        /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "No department" }),
-                        departments == null ? void 0 : departments.map((department) => /* @__PURE__ */ jsx(SelectItem, { value: department.id, children: department.name }, department.id))
-                      ] })
-                    ]
-                  }
-                )
-              ] }),
-              /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
-                /* @__PURE__ */ jsx(
-                  Switch,
-                  {
-                    id: "is_active",
-                    checked: formData.is_active,
-                    onCheckedChange: (checked) => setFormData((prev) => ({ ...prev, is_active: checked }))
-                  }
-                ),
-                /* @__PURE__ */ jsx(Label, { htmlFor: "is_active", children: "Active Role" })
+              /* @__PURE__ */ jsxs(DialogFooter, { children: [
+                /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
+                /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Role" })
               ] })
-            ] }),
-            /* @__PURE__ */ jsxs(DialogFooter, { children: [
-              /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-              /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Role" })
             ] })
           ] })
         ] })
@@ -2526,11 +2892,349 @@ const RoleManagement = () => {
     ] }) })
   ] });
 };
+const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const { supabaseClient } = useOrganisationContext();
+  const onDrop = useCallback((acceptedFiles) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      const validTypes = [
+        "text/csv",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+      ];
+      if (!validTypes.includes(file.type) && !file.name.endsWith(".csv") && !file.name.endsWith(".xlsx") && !file.name.endsWith(".xls")) {
+        toast({
+          title: "Invalid file type",
+          description: "Please upload a CSV or Excel file (.csv, .xlsx, .xls)",
+          variant: "destructive"
+        });
+        return;
+      }
+      setUploadedFile(file);
+      toast({
+        title: "File uploaded",
+        description: `${file.name} is ready for import`
+      });
+    }
+  }, []);
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "text/csv": [".csv"],
+      "application/vnd.ms-excel": [".xls"],
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"]
+    },
+    multiple: false
+  });
+  const generateSampleCSV = () => {
+    const headers = ["Name", "Description", "Manager"];
+    const sampleData = [
+      ["Engineering", "Software development and technical operations", "John Lim"],
+      ["Sales", "Sales and customer relations", "Jane Tan"],
+      ["HR", "Human resources and recruitment", ""]
+    ];
+    const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", "department_import_template.csv");
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const validateManager = async (managerName) => {
+    if (!managerName || !managerName.trim()) {
+      return { isValid: false };
+    }
+    const trimmedName = managerName.trim();
+    const { data: profileByName } = await supabaseClient.from("profiles").select("id").ilike("full_name", trimmedName).maybeSingle();
+    if (profileByName) {
+      return { isValid: true, managerId: profileByName.id };
+    }
+    const { data: profileByEmail } = await supabaseClient.from("profiles").select("id").ilike("email", trimmedName).maybeSingle();
+    if (profileByEmail) {
+      return { isValid: true, managerId: profileByEmail.id };
+    }
+    return { isValid: false };
+  };
+  const processDepartmentImport = async (row) => {
+    const name = row["Name"] || row["name"];
+    if (!name || !name.trim()) {
+      throw new Error("Department name is required");
+    }
+    const description = row["Description"] || row["description"] || "";
+    const managerName = row["Manager"] || row["manager"] || "";
+    const warnings = [];
+    let managerId = null;
+    if (managerName) {
+      const managerValidation = await validateManager(managerName);
+      if (managerValidation.isValid) {
+        managerId = managerValidation.managerId || null;
+      } else {
+        warnings.push({
+          field: "Manager",
+          value: managerName,
+          message: `Manager "${managerName}" not found - department created without manager`
+        });
+      }
+    }
+    const { data: existingDept } = await supabaseClient.from("departments").select("id").ilike("name", name.trim()).maybeSingle();
+    if (existingDept) {
+      throw new Error(`Department "${name}" already exists`);
+    }
+    const { error } = await supabaseClient.from("departments").insert([{
+      name: name.trim(),
+      description: description.trim() || null,
+      manager_id: managerId
+    }]);
+    if (error) {
+      throw new Error(error.message || "Failed to create department");
+    }
+    return {
+      name,
+      success: true,
+      warnings: warnings.length > 0 ? warnings : null
+    };
+  };
+  const handleImport = async () => {
+    if (!uploadedFile) {
+      toast({
+        title: "No file selected",
+        description: "Please upload a file first",
+        variant: "destructive"
+      });
+      return;
+    }
+    setIsProcessing(true);
+    try {
+      const text = await uploadedFile.text();
+      Papa.parse(text, {
+        header: true,
+        complete: async (results) => {
+          const data = results.data;
+          if (data.length === 0) {
+            toast({
+              title: "Empty file",
+              description: "The uploaded file contains no data",
+              variant: "destructive"
+            });
+            setIsProcessing(false);
+            return;
+          }
+          console.log("Processing", data.length, "departments");
+          let successCount = 0;
+          const errors = [];
+          const warnings = [];
+          for (let i = 0; i < data.length; i++) {
+            const row = data[i];
+            if (!row["Name"] && !row["name"]) {
+              console.log("Skipping empty row at index", i);
+              continue;
+            }
+            const name = row["Name"] || row["name"] || "Unknown";
+            try {
+              console.log(`Processing department ${i + 1} of ${data.length}:`, name);
+              const result = await processDepartmentImport(row);
+              successCount++;
+              console.log(`Successfully processed department ${i + 1}`);
+              if (result.warnings) {
+                result.warnings.forEach((warning) => {
+                  warnings.push({
+                    rowNumber: i + 2,
+                    identifier: name,
+                    field: warning.field,
+                    error: warning.message,
+                    rawData: row
+                  });
+                });
+              }
+            } catch (error) {
+              console.error(`Error importing department ${i + 1}:`, error);
+              errors.push({
+                rowNumber: i + 2,
+                identifier: name,
+                field: !row["Name"] && !row["name"] ? "Name" : void 0,
+                error: error.message || "Unknown error",
+                rawData: row
+              });
+            }
+            if (i < data.length - 1) {
+              await new Promise((resolve) => setTimeout(resolve, 300));
+            }
+          }
+          console.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+          setUploadedFile(null);
+          setIsProcessing(false);
+          setIsOpen(false);
+          if ((errors.length > 0 || warnings.length > 0) && onImportError) {
+            setTimeout(() => {
+              onImportError(errors, warnings, { success: successCount, total: data.length });
+            }, 300);
+            if (errors.length > 0 && warnings.length > 0) {
+              toast({
+                title: "Import completed with errors and warnings",
+                description: `${successCount} departments imported successfully. ${errors.length} failed, ${warnings.length} have validation warnings.`,
+                variant: "destructive"
+              });
+            } else if (errors.length > 0) {
+              toast({
+                title: "Import completed with errors",
+                description: `${successCount} departments imported successfully. ${errors.length} failed.`,
+                variant: "destructive"
+              });
+            } else if (warnings.length > 0) {
+              toast({
+                title: "Import completed with warnings",
+                description: `${successCount} departments imported successfully. ${warnings.length} have validation warnings.`,
+                variant: "default"
+              });
+            }
+          } else {
+            toast({
+              title: "Import completed successfully",
+              description: `All ${successCount} departments imported successfully.`
+            });
+          }
+          if (onImportComplete) {
+            await onImportComplete();
+          }
+        },
+        error: (error) => {
+          console.error("Parse error:", error);
+          toast({
+            title: "Parse error",
+            description: "Failed to parse the CSV file",
+            variant: "destructive"
+          });
+          setIsProcessing(false);
+        }
+      });
+    } catch (error) {
+      console.error("Import error:", error);
+      toast({
+        title: "Import failed",
+        description: "An error occurred while importing the file",
+        variant: "destructive"
+      });
+      setIsProcessing(false);
+    }
+  };
+  const handleDialogClose = (open) => {
+    if (!open && !isProcessing) {
+      setUploadedFile(null);
+    }
+    setIsOpen(open);
+  };
+  return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
+    /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(Button, { variant: "outline", children: [
+      /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 mr-2" }),
+      "Import"
+    ] }) }),
+    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxs(DialogHeader, { children: [
+        /* @__PURE__ */ jsx(DialogTitle, { children: "Import Departments" }),
+        /* @__PURE__ */ jsx(DialogDescription, { children: "Upload a CSV or Excel file to import departments in bulk. Managers can be assigned by name or email." })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxs(
+            "div",
+            {
+              ...getRootProps(),
+              className: `border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-blue-400 bg-blue-50" : uploadedFile ? "border-green-400 bg-green-50" : "border-gray-300 hover:border-gray-400"}`,
+              children: [
+                /* @__PURE__ */ jsx("input", { ...getInputProps() }),
+                /* @__PURE__ */ jsx(Upload, { className: "h-12 w-12 mx-auto mb-4 text-gray-400" }),
+                uploadedFile ? /* @__PURE__ */ jsxs("div", { children: [
+                  /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-green-700", children: "File Ready for Import" }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm text-green-600 mt-1", children: uploadedFile.name }),
+                  /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-2", children: "Click to select a different file or drop a new one here" })
+                ] }) : isDragActive ? /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-blue-700", children: "Drop your department file here" }) : /* @__PURE__ */ jsxs("div", { children: [
+                  /* @__PURE__ */ jsx("p", { className: "text-lg font-medium", children: "Drag and drop your department file here, or browse" }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV and Excel files (.xlsx, .xls)" })
+                ] })
+              ]
+            }
+          ),
+          uploadedFile && /* @__PURE__ */ jsxs("div", { className: "flex gap-3", children: [
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                onClick: handleImport,
+                disabled: isProcessing,
+                className: "flex items-center gap-2",
+                children: isProcessing ? /* @__PURE__ */ jsxs(Fragment, { children: [
+                  /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }),
+                  "Processing..."
+                ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+                  /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }),
+                  "Import Departments"
+                ] })
+              }
+            ),
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                variant: "outline",
+                onClick: () => setUploadedFile(null),
+                disabled: isProcessing,
+                children: "Remove File"
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsx("h4", { className: "text-sm font-medium text-yellow-800 mb-2", children: "Department Import Template" }),
+          /* @__PURE__ */ jsx("p", { className: "text-sm text-yellow-700 mb-3", children: "Download a template for importing departments with sample data." }),
+          /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-2 bg-white rounded border", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4" }),
+              /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Departments Template (CSV)" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
+            ] }),
+            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+          ] }) })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: ["Name", "Description", "Manager"].map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+          /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Name" }),
+              " is required for each department"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Description" }),
+              " is optional"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Manager" }),
+              " is optional - can be full name or email (must exist in system)"
+            ] }),
+            /* @__PURE__ */ jsx("p", { children: "• Duplicate department names will be rejected" })
+          ] })
+        ] })
+      ] })
+    ] })
+  ] });
+};
 const DepartmentManagement = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState(null);
+  const [showImportErrorReport, setShowImportErrorReport] = useState(false);
+  const [importErrors, setImportErrors] = useState([]);
+  const [importWarnings, setImportWarnings] = useState([]);
+  const [importStats, setImportStats] = useState({ success: 0, total: 0 });
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -2658,6 +3362,18 @@ const DepartmentManagement = () => {
     return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-32 w-32 border-b-2 border-primary" }) });
   }
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+    /* @__PURE__ */ jsx(
+      ImportErrorReport,
+      {
+        errors: importErrors,
+        warnings: importWarnings,
+        successCount: importStats.success,
+        totalCount: importStats.total,
+        isOpen: showImportErrorReport,
+        onClose: () => setShowImportErrorReport(false),
+        importType: "Departments"
+      }
+    ),
     /* @__PURE__ */ jsxs(Card, { children: [
       /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
         /* @__PURE__ */ jsxs("div", { children: [
@@ -2667,62 +3383,75 @@ const DepartmentManagement = () => {
           ] }),
           /* @__PURE__ */ jsx(CardDescription, { children: "Manage organizational departments and assign managers" })
         ] }),
-        hasPermission("canManageDepartments") && /* @__PURE__ */ jsxs(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-          /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(Button, { children: [
-            /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }),
-            "Add Department"
-          ] }) }),
-          /* @__PURE__ */ jsxs(DialogContent, { children: [
-            /* @__PURE__ */ jsxs(DialogHeader, { children: [
-              /* @__PURE__ */ jsx(DialogTitle, { children: "Create Department" }),
-              /* @__PURE__ */ jsx(DialogDescription, { children: "Add a new department to your organization" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "grid gap-4 py-4", children: [
-              /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsx(Label, { htmlFor: "name", children: "Department Name" }),
-                /* @__PURE__ */ jsx(
-                  Input,
-                  {
-                    id: "name",
-                    value: formData.name,
-                    onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
-                    placeholder: "Enter department name"
-                  }
-                )
+        hasPermission("canManageDepartments") && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsx(
+            ImportDepartmentsDialog,
+            {
+              onImportComplete: async () => {
+                await queryClient.invalidateQueries({ queryKey: ["departments"] });
+              },
+              onImportError: (errors, warnings, stats) => {
+                setImportErrors(errors);
+                setImportWarnings(warnings);
+                setImportStats(stats);
+                setShowImportErrorReport(true);
+              }
+            }
+          ),
+          /* @__PURE__ */ jsxs(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
+            /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }) }) }),
+            /* @__PURE__ */ jsxs(DialogContent, { children: [
+              /* @__PURE__ */ jsxs(DialogHeader, { children: [
+                /* @__PURE__ */ jsx(DialogTitle, { children: "Create Department" }),
+                /* @__PURE__ */ jsx(DialogDescription, { children: "Add a new department to your organization" })
               ] }),
-              /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsx(Label, { htmlFor: "description", children: "Description" }),
-                /* @__PURE__ */ jsx(
-                  Textarea,
-                  {
-                    id: "description",
-                    value: formData.description,
-                    onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
-                    placeholder: "Enter department description (optional)"
-                  }
-                )
+              /* @__PURE__ */ jsxs("div", { className: "grid gap-4 py-4", children: [
+                /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "name", children: "Department Name" }),
+                  /* @__PURE__ */ jsx(
+                    Input,
+                    {
+                      id: "name",
+                      value: formData.name,
+                      onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
+                      placeholder: "Enter department name"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "description", children: "Description" }),
+                  /* @__PURE__ */ jsx(
+                    Textarea,
+                    {
+                      id: "description",
+                      value: formData.description,
+                      onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
+                      placeholder: "Enter department description (optional)"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "manager", children: "Manager" }),
+                  /* @__PURE__ */ jsxs(
+                    Select,
+                    {
+                      value: formData.manager_id,
+                      onValueChange: (value) => setFormData((prev) => ({ ...prev, manager_id: value })),
+                      children: [
+                        /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager (optional)" }) }),
+                        /* @__PURE__ */ jsxs(SelectContent, { children: [
+                          /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "No manager" }),
+                          profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsx(SelectItem, { value: profile.id, children: profile.full_name }, profile.id))
+                        ] })
+                      ]
+                    }
+                  )
+                ] })
               ] }),
-              /* @__PURE__ */ jsxs("div", { className: "grid gap-2", children: [
-                /* @__PURE__ */ jsx(Label, { htmlFor: "manager", children: "Manager" }),
-                /* @__PURE__ */ jsxs(
-                  Select,
-                  {
-                    value: formData.manager_id,
-                    onValueChange: (value) => setFormData((prev) => ({ ...prev, manager_id: value })),
-                    children: [
-                      /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager (optional)" }) }),
-                      /* @__PURE__ */ jsxs(SelectContent, { children: [
-                        /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "No manager" }),
-                        profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsx(SelectItem, { value: profile.id, children: profile.full_name }, profile.id))
-                      ] })
-                    ]
-                  }
-                )
+              /* @__PURE__ */ jsxs(DialogFooter, { children: [
+                /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
+                /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Department" })
               ] })
-            ] }),
-            /* @__PURE__ */ jsxs(DialogFooter, { children: [
-              /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-              /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Department" })
             ] })
           ] })
         ] })

@@ -253,6 +253,17 @@ const Clock = createLucideIcon("Clock", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const Download = createLucideIcon("Download", [
+  ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+  ["polyline", { points: "7 10 12 15 17 10", key: "2ggqvy" }],
+  ["line", { x1: "12", x2: "12", y1: "15", y2: "3", key: "1vk2je" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const Eye = createLucideIcon("Eye", [
   [
     "path",
@@ -1406,11 +1417,8 @@ const CreateUserDialog = ({
           " Required fields"
         ] }),
         /* @__PURE__ */ jsxs(DialogFooter, { children: [
-          /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => handleDialogClose(false), disabled: loading, children: "Cancel" }),
-          /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !isFormValid(), children: loading ? /* @__PURE__ */ jsxs(Fragment, { children: [
-            /* @__PURE__ */ jsx("div", { className: "w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" }),
-            "Creating..."
-          ] }) : "Create User" })
+          /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => handleDialogClose(false), disabled: loading, size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !isFormValid(), size: "icon", children: loading ? /* @__PURE__ */ jsx("div", { className: "w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" }) : /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
         ] })
       ] })
     ] })
@@ -1613,8 +1621,8 @@ const EditUserDialog = ({
         )
       ] }),
       /* @__PURE__ */ jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", children: "Update User" })
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
       ] })
     ] })
   ] }) });
@@ -1995,7 +2003,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
               /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" }),
               /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
             ] }),
-            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
           ] }) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
@@ -2435,10 +2443,7 @@ const ImportRolesDialog = ({ onImportComplete, onImportError }) => {
     setIsOpen(open);
   };
   return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
-    /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(Button, { variant: "outline", children: [
-      /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 mr-2" }),
-      "Import"
-    ] }) }),
+    /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) }) }),
     /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsx(DialogTitle, { children: "Import Roles" }),
@@ -2471,14 +2476,8 @@ const ImportRolesDialog = ({ onImportComplete, onImportError }) => {
               {
                 onClick: handleImport,
                 disabled: isProcessing,
-                className: "flex items-center gap-2",
-                children: isProcessing ? /* @__PURE__ */ jsxs(Fragment, { children: [
-                  /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }),
-                  "Processing..."
-                ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
-                  /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }),
-                  "Import Roles"
-                ] })
+                size: "icon",
+                children: isProcessing ? /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" })
               }
             ),
             /* @__PURE__ */ jsx(
@@ -2487,7 +2486,8 @@ const ImportRolesDialog = ({ onImportComplete, onImportError }) => {
                 variant: "outline",
                 onClick: () => setUploadedFile(null),
                 disabled: isProcessing,
-                children: "Remove File"
+                size: "icon",
+                children: /* @__PURE__ */ jsx(Trash2, { className: "h-4 w-4" })
               }
             )
           ] })
@@ -2501,7 +2501,7 @@ const ImportRolesDialog = ({ onImportComplete, onImportError }) => {
               /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Roles Template (CSV)" }),
               /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
             ] }),
-            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
           ] }) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
@@ -2774,8 +2774,8 @@ const RoleManagement = () => {
                 ] })
               ] }),
               /* @__PURE__ */ jsxs(DialogFooter, { children: [
-                /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-                /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Role" })
+                /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+                /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
               ] })
             ] })
           ] })
@@ -2886,8 +2886,8 @@ const RoleManagement = () => {
         ] })
       ] }),
       /* @__PURE__ */ jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setEditingRole(null), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Update Role" })
+        /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setEditingRole(null), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
       ] })
     ] }) })
   ] });
@@ -3131,10 +3131,7 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
     setIsOpen(open);
   };
   return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
-    /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxs(Button, { variant: "outline", children: [
-      /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 mr-2" }),
-      "Import"
-    ] }) }),
+    /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) }) }),
     /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsx(DialogTitle, { children: "Import Departments" }),
@@ -3167,14 +3164,8 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
               {
                 onClick: handleImport,
                 disabled: isProcessing,
-                className: "flex items-center gap-2",
-                children: isProcessing ? /* @__PURE__ */ jsxs(Fragment, { children: [
-                  /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }),
-                  "Processing..."
-                ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
-                  /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }),
-                  "Import Departments"
-                ] })
+                size: "icon",
+                children: isProcessing ? /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" })
               }
             ),
             /* @__PURE__ */ jsx(
@@ -3183,7 +3174,8 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
                 variant: "outline",
                 onClick: () => setUploadedFile(null),
                 disabled: isProcessing,
-                children: "Remove File"
+                size: "icon",
+                children: /* @__PURE__ */ jsx(Trash2, { className: "h-4 w-4" })
               }
             )
           ] })
@@ -3197,7 +3189,7 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
               /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Departments Template (CSV)" }),
               /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
             ] }),
-            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
           ] }) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
@@ -3449,8 +3441,8 @@ const DepartmentManagement = () => {
                 ] })
               ] }),
               /* @__PURE__ */ jsxs(DialogFooter, { children: [
-                /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-                /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Department" })
+                /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+                /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
               ] })
             ] })
           ] })
@@ -3548,8 +3540,8 @@ const DepartmentManagement = () => {
         ] })
       ] }),
       /* @__PURE__ */ jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setEditingDepartment(null), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Update Department" })
+        /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setEditingDepartment(null), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
       ] })
     ] }) })
   ] });
@@ -3783,8 +3775,8 @@ const LocationManagement = () => {
               ] })
             ] }),
             /* @__PURE__ */ jsxs(DialogFooter, { children: [
-              /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-              /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Location" })
+              /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+              /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
             ] })
           ] })
         ] })
@@ -3920,8 +3912,8 @@ const LocationManagement = () => {
         ] })
       ] }),
       /* @__PURE__ */ jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setEditingLocation(null), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Update Location" })
+        /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setEditingLocation(null), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
       ] })
     ] }) })
   ] });
@@ -4082,8 +4074,8 @@ const AddOrganisationCertificateDialog = ({
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Certificate" })
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, size: "icon", children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) })
       ] })
     ] })
   ] }) });
@@ -6173,7 +6165,7 @@ const AddEducationDialog = ({
     }
   };
   return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxs(DialogContent, { children: [
-    /* @__PURE__ */ jsx(DialogHeader, { children: /* @__PURE__ */ jsx(DialogTitle, { children: "Add Education Record" }) }),
+    /* @__PURE__ */ jsx(DialogHeader, { children: /* @__PURE__ */ jsx(DialogTitle, { children: "Add Certificate" }) }),
     /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
       /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx(Label, { htmlFor: "type", children: "Type *" }),
@@ -6263,8 +6255,8 @@ const AddEducationDialog = ({
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Education Record" })
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, size: "icon", children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) })
       ] })
     ] })
   ] }) });
@@ -7444,10 +7436,7 @@ const UserDetailView = () => {
   }
   return /* @__PURE__ */ jsxs("div", { className: "max-w-6xl mx-auto py-6 px-4 space-y-6", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 mb-6", children: [
-      /* @__PURE__ */ jsxs(Button, { onClick: handleBackToUsers, variant: "outline", size: "sm", children: [
-        /* @__PURE__ */ jsx(ArrowLeft, { className: "h-4 w-4 mr-2" }),
-        "Back to Users"
-      ] }),
+      /* @__PURE__ */ jsx(Button, { onClick: handleBackToUsers, variant: "outline", size: "icon", children: /* @__PURE__ */ jsx(ArrowLeft, { className: "h-4 w-4" }) }),
       /* @__PURE__ */ jsxs("h1", { className: "text-2xl font-bold", children: [
         "User Profile: ",
         userProfile.full_name || "Unnamed User"

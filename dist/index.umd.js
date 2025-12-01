@@ -204,6 +204,17 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const Download = createLucideIcon("Download", [
+    ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
+    ["polyline", { points: "7 10 12 15 17 10", key: "2ggqvy" }],
+    ["line", { x1: "12", x2: "12", y1: "15", y2: "3", key: "1vk2je" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const Eye = createLucideIcon("Eye", [
     [
       "path",
@@ -1357,11 +1368,8 @@
             " Required fields"
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => handleDialogClose(false), disabled: loading, children: "Cancel" }),
-            /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !isFormValid(), children: loading ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" }),
-              "Creating..."
-            ] }) : "Create User" })
+            /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => handleDialogClose(false), disabled: loading, size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !isFormValid(), size: "icon", children: loading ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
           ] })
         ] })
       ] })
@@ -1564,8 +1572,8 @@
           )
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", children: "Update User" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
         ] })
       ] })
     ] }) });
@@ -1946,7 +1954,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" }),
                 /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+              /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) })
             ] }) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
@@ -2386,10 +2394,7 @@
       setIsOpen(open);
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
-      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "outline", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4 mr-2" }),
-        "Import"
-      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) }) }),
       /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Roles" }),
@@ -2422,14 +2427,8 @@
                 {
                   onClick: handleImport,
                   disabled: isProcessing,
-                  className: "flex items-center gap-2",
-                  children: isProcessing ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }),
-                    "Processing..."
-                  ] }) : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }),
-                    "Import Roles"
-                  ] })
+                  size: "icon",
+                  children: isProcessing ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" })
                 }
               ),
               /* @__PURE__ */ jsxRuntime.jsx(
@@ -2438,7 +2437,8 @@
                   variant: "outline",
                   onClick: () => setUploadedFile(null),
                   disabled: isProcessing,
-                  children: "Remove File"
+                  size: "icon",
+                  children: /* @__PURE__ */ jsxRuntime.jsx(Trash2, { className: "h-4 w-4" })
                 }
               )
             ] })
@@ -2452,7 +2452,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm font-medium", children: "Roles Template (CSV)" }),
                 /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+              /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) })
             ] }) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
@@ -2725,8 +2725,8 @@
                   ] })
                 ] }),
                 /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Role" })
+                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
                 ] })
               ] })
             ] })
@@ -2837,8 +2837,8 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setEditingRole(null), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Update Role" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setEditingRole(null), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
         ] })
       ] }) })
     ] });
@@ -3082,10 +3082,7 @@
       setIsOpen(open);
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
-      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "outline", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4 mr-2" }),
-        "Import"
-      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) }) }),
       /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Departments" }),
@@ -3118,14 +3115,8 @@
                 {
                   onClick: handleImport,
                   disabled: isProcessing,
-                  className: "flex items-center gap-2",
-                  children: isProcessing ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }),
-                    "Processing..."
-                  ] }) : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }),
-                    "Import Departments"
-                  ] })
+                  size: "icon",
+                  children: isProcessing ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" })
                 }
               ),
               /* @__PURE__ */ jsxRuntime.jsx(
@@ -3134,7 +3125,8 @@
                   variant: "outline",
                   onClick: () => setUploadedFile(null),
                   disabled: isProcessing,
-                  children: "Remove File"
+                  size: "icon",
+                  children: /* @__PURE__ */ jsxRuntime.jsx(Trash2, { className: "h-4 w-4" })
                 }
               )
             ] })
@@ -3148,7 +3140,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm font-medium", children: "Departments Template (CSV)" }),
                 /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, children: "Download" })
+              /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) })
             ] }) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
@@ -3400,8 +3392,8 @@
                   ] })
                 ] }),
                 /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Department" })
+                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
                 ] })
               ] })
             ] })
@@ -3499,8 +3491,8 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setEditingDepartment(null), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Update Department" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setEditingDepartment(null), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
         ] })
       ] }) })
     ] });
@@ -3734,8 +3726,8 @@
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), children: "Cancel" }),
-                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Create Location" })
+                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
               ] })
             ] })
           ] })
@@ -3871,8 +3863,8 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setEditingLocation(null), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), children: "Update Location" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setEditingLocation(null), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
         ] })
       ] }) })
     ] });
@@ -4033,8 +4025,8 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Certificate" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, size: "icon", children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) })
         ] })
       ] })
     ] }) });
@@ -6124,7 +6116,7 @@
       }
     };
     return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
-      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Add Education Record" }) }),
+      /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Add Certificate" }) }),
       /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "type", children: "Type *" }),
@@ -6214,8 +6206,8 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Add Education Record" })
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !formData.name || !formData.issued_by || !formData.date_acquired, size: "icon", children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) })
         ] })
       ] })
     ] }) });
@@ -7395,10 +7387,7 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "max-w-6xl mx-auto py-6 px-4 space-y-6", children: [
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 mb-6", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleBackToUsers, variant: "outline", size: "sm", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4 mr-2" }),
-          "Back to Users"
-        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleBackToUsers, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
         /* @__PURE__ */ jsxRuntime.jsxs("h1", { className: "text-2xl font-bold", children: [
           "User Profile: ",
           userProfile.full_name || "Unnamed User"

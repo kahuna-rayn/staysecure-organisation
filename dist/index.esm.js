@@ -2737,7 +2737,7 @@ const RoleManagement = () => {
             }
           ),
           /* @__PURE__ */ jsxs(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-            /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }) }) }),
+            /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { size: "icon", children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) }) }),
             /* @__PURE__ */ jsxs(DialogContent, { children: [
               /* @__PURE__ */ jsxs(DialogHeader, { children: [
                 /* @__PURE__ */ jsx(DialogTitle, { children: "Create Role" }),
@@ -3408,7 +3408,7 @@ const DepartmentManagement = () => {
             }
           ),
           /* @__PURE__ */ jsxs(Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-            /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4 mr-2" }) }) }),
+            /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { size: "icon", children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" }) }) }),
             /* @__PURE__ */ jsxs(DialogContent, { children: [
               /* @__PURE__ */ jsxs(DialogHeader, { children: [
                 /* @__PURE__ */ jsx(DialogTitle, { children: "Create Department" }),

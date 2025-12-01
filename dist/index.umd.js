@@ -2686,7 +2686,7 @@
               }
             ),
             /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4 mr-2" }) }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
               /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
                 /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
                   /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Role" }),
@@ -3357,7 +3357,7 @@
               }
             ),
             /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4 mr-2" }) }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
               /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
                 /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
                   /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Department" }),

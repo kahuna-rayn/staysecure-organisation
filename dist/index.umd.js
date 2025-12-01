@@ -2099,62 +2099,70 @@
         }
       ),
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-xl font-semibold", children: "User Management" }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              toggleGroup.ToggleGroup,
-              {
-                type: "single",
-                value: viewMode,
-                onValueChange: (value) => value && setViewMode(value),
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(toggleGroup.ToggleGroupItem, { value: "cards", "aria-label": "Card view", children: /* @__PURE__ */ jsxRuntime.jsx(LayoutGrid, { className: "h-4 w-4" }) }),
-                  /* @__PURE__ */ jsxRuntime.jsx(toggleGroup.ToggleGroupItem, { value: "list", "aria-label": "List view", children: /* @__PURE__ */ jsxRuntime.jsx(List, { className: "h-4 w-4" }) })
-                ]
-              }
-            ),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              ImportUsersDialog,
-              {
-                onImportComplete: refetch,
-                onImportError: (errors, warnings, stats) => {
-                  setImportErrors(errors);
-                  setImportWarnings(warnings);
-                  setImportStats(stats);
-                  setShowImportErrorReport(true);
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-5 w-5" }),
+                "User Management"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Manage user accounts, roles, and permissions" })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(
+                toggleGroup.ToggleGroup,
+                {
+                  type: "single",
+                  value: viewMode,
+                  onValueChange: (value) => value && setViewMode(value),
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(toggleGroup.ToggleGroupItem, { value: "cards", "aria-label": "Card view", children: /* @__PURE__ */ jsxRuntime.jsx(LayoutGrid, { className: "h-4 w-4" }) }),
+                    /* @__PURE__ */ jsxRuntime.jsx(toggleGroup.ToggleGroupItem, { value: "list", "aria-label": "List view", children: /* @__PURE__ */ jsxRuntime.jsx(List, { className: "h-4 w-4" }) })
+                  ]
                 }
-              }
-            ),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              CreateUserDialog,
-              {
-                isOpen: isCreateDialogOpen,
-                onOpenChange: setIsCreateDialogOpen,
-                newUser,
-                onUserChange: setNewUser,
-                onSubmit: onCreateUser,
-                loading: isCreatingUser
-              }
-            )
-          ] })
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                ImportUsersDialog,
+                {
+                  onImportComplete: refetch,
+                  onImportError: (errors, warnings, stats) => {
+                    setImportErrors(errors);
+                    setImportWarnings(warnings);
+                    setImportStats(stats);
+                    setShowImportErrorReport(true);
+                  }
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                CreateUserDialog,
+                {
+                  isOpen: isCreateDialogOpen,
+                  onOpenChange: setIsCreateDialogOpen,
+                  newUser,
+                  onUserChange: setNewUser,
+                  onSubmit: onCreateUser,
+                  loading: isCreatingUser
+                }
+              )
+            ] })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: viewMode === "cards" ? /* @__PURE__ */ jsxRuntime.jsx(
+            UserList,
+            {
+              profiles,
+              onEdit: openEditDialog,
+              onDelete: onDeleteUser
+            }
+          ) : /* @__PURE__ */ jsxRuntime.jsx(
+            UserTable,
+            {
+              profiles,
+              onEdit: openEditDialog,
+              onDelete: onDeleteUser,
+              onUpdate: onUpdateProfile
+            }
+          ) })
         ] }),
-        viewMode === "cards" ? /* @__PURE__ */ jsxRuntime.jsx(
-          UserList,
-          {
-            profiles,
-            onEdit: openEditDialog,
-            onDelete: onDeleteUser
-          }
-        ) : /* @__PURE__ */ jsxRuntime.jsx(
-          UserTable,
-          {
-            profiles,
-            onEdit: openEditDialog,
-            onDelete: onDeleteUser,
-            onUpdate: onUpdateProfile
-          }
-        ),
         /* @__PURE__ */ jsxRuntime.jsx(
           EditUserDialog,
           {
@@ -4113,7 +4121,7 @@
       return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
         /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5" }),
-          "Organisation Certificates"
+          "Certificates"
         ] }) }),
         /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center py-8", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-8 w-8 border-b-2 border-primary" }) }) })
       ] });
@@ -4122,7 +4130,7 @@
       return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
         /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5" }),
-          "Organisation Certificates"
+          "Certificates"
         ] }) }),
         /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-red-500", children: [
           "Error loading certificates: ",
@@ -4134,8 +4142,9 @@
       /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5" }),
-          "Organisation Certificates"
+          "Certificates"
         ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Manage organization certificates" }),
         /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: () => setIsAddDialogOpen(true), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) })
       ] }) }),
       /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [

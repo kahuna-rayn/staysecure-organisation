@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Award, Calendar, Building, FileText, User, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useOrganisationContext } from "../../context/OrganisationContext";
 import AddOrganisationCertificateDialog from "./AddOrganisationCertificateDialog";
 
@@ -131,7 +131,7 @@ const OrganisationCertificates: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Award className="h-5 w-5" />
-            Organisation Certificates
+            Certificates
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -149,7 +149,7 @@ const OrganisationCertificates: React.FC = () => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Award className="h-5 w-5" />
-            Organisation Certificates
+            Certificates
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -165,8 +165,11 @@ const OrganisationCertificates: React.FC = () => {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Award className="h-5 w-5" />
-            Organisation Certificates
+            Certificates
           </CardTitle>
+          <CardDescription>
+            Manage organization certificates
+          </CardDescription>
           <Button onClick={() => setIsAddDialogOpen(true)} size="icon">
             <Plus className="h-4 w-4" />
           </Button>

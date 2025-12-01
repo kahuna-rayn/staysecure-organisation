@@ -5,8 +5,9 @@ import { useUserManagement } from '@/hooks/useUserManagement';
 import { useViewPreference } from '@/hooks/useViewPreference';
 import { handleSaveUser, handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { LayoutGrid, List } from 'lucide-react';
+import { LayoutGrid, List, Users } from 'lucide-react';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { DeleteUserDialog } from '@/components/ui/delete-user-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -131,55 +132,68 @@ const UserManagement: React.FC = () => {
       />
       
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h2 className="text-xl font-semibold">User Management</h2>
-          <div className="flex items-center gap-4">
-            <ToggleGroup 
-              type="single" 
-              value={viewMode} 
-              onValueChange={(value) => value && setViewMode(value as 'cards' | 'list')}
-            >
-              <ToggleGroupItem value="cards" aria-label="Card view">
-                <LayoutGrid className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="list" aria-label="List view">
-                <List className="h-4 w-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
-            <ImportUsersDialog 
-              onImportComplete={refetch}
-              onImportError={(errors, warnings, stats) => {
-                setImportErrors(errors);
-                setImportWarnings(warnings);
-                setImportStats(stats);
-                setShowImportErrorReport(true);
-              }}
-            />
-            <CreateUserDialog
-              isOpen={isCreateDialogOpen}
-              onOpenChange={setIsCreateDialogOpen}
-              newUser={newUser}
-              onUserChange={setNewUser}
-              onSubmit={onCreateUser}
-              loading={isCreatingUser}
-            />
-          </div>
-        </div>
-
-      {viewMode === 'cards' ? (
-        <UserList
-          profiles={profiles}
-          onEdit={openEditDialog}
-          onDelete={onDeleteUser}
-        />
-      ) : (
-        <UserTable
-          profiles={profiles}
-          onEdit={openEditDialog}
-          onDelete={onDeleteUser}
-          onUpdate={onUpdateProfile}
-        />
-      )}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  User Management
+                </CardTitle>
+                <CardDescription>
+                  Manage user accounts, roles, and permissions
+                </CardDescription>
+              </div>
+              <div className="flex items-center gap-4">
+                <ToggleGroup 
+                  type="single" 
+                  value={viewMode} 
+                  onValueChange={(value) => value && setViewMode(value as 'cards' | 'list')}
+                >
+                  <ToggleGroupItem value="cards" aria-label="Card view">
+                    <LayoutGrid className="h-4 w-4" />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem value="list" aria-label="List view">
+                    <List className="h-4 w-4" />
+                  </ToggleGroupItem>
+                </ToggleGroup>
+                <ImportUsersDialog 
+                  onImportComplete={refetch}
+                  onImportError={(errors, warnings, stats) => {
+                    setImportErrors(errors);
+                    setImportWarnings(warnings);
+                    setImportStats(stats);
+                    setShowImportErrorReport(true);
+                  }}
+                />
+                <CreateUserDialog
+                  isOpen={isCreateDialogOpen}
+                  onOpenChange={setIsCreateDialogOpen}
+                  newUser={newUser}
+                  onUserChange={setNewUser}
+                  onSubmit={onCreateUser}
+                  loading={isCreatingUser}
+                />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {viewMode === 'cards' ? (
+              <UserList
+                profiles={profiles}
+                onEdit={openEditDialog}
+                onDelete={onDeleteUser}
+              />
+            ) : (
+              <UserTable
+                profiles={profiles}
+                onEdit={openEditDialog}
+                onDelete={onDeleteUser}
+                onUpdate={onUpdateProfile}
+              />
+            )}
+          </CardContent>
+        </Card>
 
       <EditUserDialog
         isOpen={isEditDialogOpen}

@@ -319,7 +319,7 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
           <Upload className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Roles</DialogTitle>
           <DialogDescription>

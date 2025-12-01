@@ -470,7 +470,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           <Upload className="h-4 w-4 mr-2" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Import Users</DialogTitle>
           <DialogDescription>

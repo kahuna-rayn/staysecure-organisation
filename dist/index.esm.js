@@ -1977,7 +1977,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   };
   return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
     /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { variant: "outline", children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 mr-2" }) }) }),
-    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsx(DialogTitle, { children: "Import Users" }),
         /* @__PURE__ */ jsx(DialogDescription, { children: "Upload a CSV or Excel file to import users in bulk. Users will be created with authentication accounts and will need to activate via email. Roles and departments can be assigned after import." })
@@ -2474,7 +2474,7 @@ const ImportRolesDialog = ({ onImportComplete, onImportError }) => {
   };
   return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
     /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) }) }),
-    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsx(DialogTitle, { children: "Import Roles" }),
         /* @__PURE__ */ jsx(DialogDescription, { children: "Upload a CSV or Excel file to import roles in bulk. Departments can be assigned by name." })
@@ -3162,7 +3162,7 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
   };
   return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
     /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) }) }),
-    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsx(DialogTitle, { children: "Import Departments" }),
         /* @__PURE__ */ jsx(DialogDescription, { children: "Upload a CSV or Excel file to import departments in bulk. Managers can be assigned by name or email." })

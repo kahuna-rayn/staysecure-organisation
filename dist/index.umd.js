@@ -1926,7 +1926,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
       /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4 mr-2" }) }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Users" }),
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV or Excel file to import users in bulk. Users will be created with authentication accounts and will need to activate via email. Roles and departments can be assigned after import." })
@@ -2423,7 +2423,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
       /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Roles" }),
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV or Excel file to import roles in bulk. Departments can be assigned by name." })
@@ -3111,7 +3111,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
       /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl w-full max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Departments" }),
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV or Excel file to import departments in bulk. Managers can be assigned by name or email." })

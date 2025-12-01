@@ -1,1 +1,1 @@
-{"version":3,"file":"LocationManagement.d.ts","sourceRoot":"","sources":["../../../src/components/organisational/LocationManagement.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAmB,MAAM,OAAO,CAAC;AAexC,eAAO,MAAM,kBAAkB,EAAE,KAAK,CAAC,EA+ZtC,CAAC"}
+{"version":3,"file":"LocationManagement.d.ts","sourceRoot":"","sources":["../../../src/components/organisational/LocationManagement.tsx"],"names":[],"mappings":"AAAA,OAAO,KAA4B,MAAM,OAAO,CAAC;AAejD,eAAO,MAAM,kBAAkB,EAAE,KAAK,CAAC,EA2ftC,CAAC"}

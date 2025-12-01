@@ -89,9 +89,29 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const ArrowDown = createLucideIcon("ArrowDown", [
+    ["path", { d: "M12 5v14", key: "s699le" }],
+    ["path", { d: "m19 12-7 7-7-7", key: "1idqje" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const ArrowLeft = createLucideIcon("ArrowLeft", [
     ["path", { d: "m12 19-7-7 7-7", key: "1l729n" }],
     ["path", { d: "M19 12H5", key: "x3x0zl" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const ArrowUp = createLucideIcon("ArrowUp", [
+    ["path", { d: "m5 12 7-7 7 7", key: "hav0vg" }],
+    ["path", { d: "M12 19V5", key: "x0mq9r" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -2779,14 +2799,44 @@
       department_id: "none",
       is_active: true
     });
-    const { data: roles, isLoading: rolesLoading } = reactQuery.useQuery({
+    const [sortField2, setSortField2] = o.useState("name");
+    const [sortDirection2, setSortDirection2] = o.useState("asc");
+    const { data: rolesData, isLoading: rolesLoading } = reactQuery.useQuery({
       queryKey: ["roles"],
       queryFn: async () => {
-        const { data, error } = await supabaseClient.from("roles").select("*").order("name");
+        const { data, error } = await supabaseClient.from("roles").select("*");
         if (error) throw error;
         return data;
       }
     });
+    const roles = o.useMemo(() => {
+      if (!rolesData) return [];
+      return [...rolesData].sort((a, b) => {
+        let aValue;
+        let bValue;
+        if (sortField2 === "name") {
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+        } else if (sortField2 === "description") {
+          aValue = (a.description || "").toLowerCase();
+          bValue = (b.description || "").toLowerCase();
+        } else {
+          aValue = new Date(a.created_at);
+          bValue = new Date(b.created_at);
+        }
+        if (aValue < bValue) return sortDirection2 === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortDirection2 === "asc" ? 1 : -1;
+        return 0;
+      });
+    }, [rolesData, sortField2, sortDirection2]);
+    const handleSort = (field) => {
+      if (sortField2 === field) {
+        setSortDirection2(sortDirection2 === "asc" ? "desc" : "asc");
+      } else {
+        setSortField2(field);
+        setSortDirection2("asc");
+      }
+    };
     const { data: departments } = reactQuery.useQuery({
       queryKey: ["departments-for-roles"],
       queryFn: async () => {
@@ -3012,12 +3062,42 @@
         ] }) }),
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
           /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Name" }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Description" }),
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { className: "bg-muted/50", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("name"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Name",
+                    sortField2 === "name" && (sortDirection2 === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("description"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Description",
+                    sortField2 === "description" && (sortDirection2 === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Department" }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Created" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("created_at"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Created",
+                    sortField2 === "created_at" && (sortDirection2 === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
               hasPermission("canManageRoles") && /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { className: "text-right", children: "Actions" })
             ] }) }),
             /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: roles == null ? void 0 : roles.map((role) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
@@ -3454,14 +3534,42 @@
       description: "",
       manager_id: "none"
     });
-    const { data: departments, isLoading: departmentsLoading } = reactQuery.useQuery({
+    const { data: departmentsData, isLoading: departmentsLoading } = reactQuery.useQuery({
       queryKey: ["departments"],
       queryFn: async () => {
-        const { data, error } = await supabaseClient.from("departments").select("*").order("name");
+        const { data, error } = await supabaseClient.from("departments").select("*");
         if (error) throw error;
         return data;
       }
     });
+    const departments = o.useMemo(() => {
+      if (!departmentsData) return [];
+      return [...departmentsData].sort((a, b) => {
+        let aValue;
+        let bValue;
+        if (sortField === "name") {
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+        } else if (sortField === "description") {
+          aValue = (a.description || "").toLowerCase();
+          bValue = (b.description || "").toLowerCase();
+        } else {
+          aValue = new Date(a.created_at);
+          bValue = new Date(b.created_at);
+        }
+        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+        return 0;
+      });
+    }, [departmentsData, sortField, sortDirection]);
+    const handleSort = (field) => {
+      if (sortField === field) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setSortField(field);
+        setSortDirection("asc");
+      }
+    };
     const { data: profiles } = reactQuery.useQuery({
       queryKey: ["profiles-for-managers"],
       queryFn: async () => {
@@ -3672,11 +3780,41 @@
         ] }) }),
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
           /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Name" }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Description" }),
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { className: "bg-muted/50", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("name"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Name",
+                    sortField === "name" && (sortDirection === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("description"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Description",
+                    sortField === "description" && (sortDirection === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Manager" }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Created" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("created_at"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Created",
+                    sortField === "created_at" && (sortDirection === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
               hasPermission("canManageDepartments") && /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { className: "text-right", children: "Actions" })
             ] }) }),
             /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: departments == null ? void 0 : departments.map((department) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
@@ -3781,14 +3919,45 @@
       room: "",
       status: "Active"
     });
-    const { data: locations, isLoading: locationsLoading } = reactQuery.useQuery({
+    const { data: locationsData, isLoading: locationsLoading } = reactQuery.useQuery({
       queryKey: ["locations"],
       queryFn: async () => {
-        const { data, error } = await supabaseClient.from("locations").select("*").order("name");
+        const { data, error } = await supabaseClient.from("locations").select("*");
         if (error) throw error;
         return data;
       }
     });
+    const locations = o.useMemo(() => {
+      if (!locationsData) return [];
+      return [...locationsData].sort((a, b) => {
+        let aValue;
+        let bValue;
+        if (sortField === "name") {
+          aValue = a.name.toLowerCase();
+          bValue = b.name.toLowerCase();
+        } else if (sortField === "building") {
+          aValue = (a.building || "").toLowerCase();
+          bValue = (b.building || "").toLowerCase();
+        } else if (sortField === "status") {
+          aValue = a.status.toLowerCase();
+          bValue = b.status.toLowerCase();
+        } else {
+          aValue = new Date(a.created_at);
+          bValue = new Date(b.created_at);
+        }
+        if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
+        return 0;
+      });
+    }, [locationsData, sortField, sortDirection]);
+    const handleSort = (field) => {
+      if (sortField === field) {
+        setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+      } else {
+        setSortField(field);
+        setSortDirection("asc");
+      }
+    };
     const createLocationMutation = reactQuery.useMutation({
       mutationFn: async (locationData) => {
         const { error } = await supabaseClient.from("locations").insert([{
@@ -4002,13 +4171,53 @@
         ] }) }),
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
           /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Name" }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Building" }),
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { className: "bg-muted/50", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("name"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Name",
+                    sortField === "name" && (sortDirection === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("building"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Building",
+                    sortField === "building" && (sortDirection === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Floor" }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Room" }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Created" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("status"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Status",
+                    sortField === "status" && (sortDirection === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                table.TableHead,
+                {
+                  className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                  onClick: () => handleSort("created_at"),
+                  children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                    "Created",
+                    sortField === "created_at" && (sortDirection === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsxRuntime.jsx(ArrowDown, { className: "h-4 w-4" }))
+                  ] })
+                }
+              ),
               hasPermission("canManageLocations") && /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { className: "text-right", children: "Actions" })
             ] }) }),
             /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: locations == null ? void 0 : locations.map((location) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
@@ -4396,11 +4605,13 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
       /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5" }),
-          "Certificates"
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Award, { className: "h-5 w-5" }),
+            "Certificates"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Manage organisation certificates" })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Manage organization certificates" }),
         /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: () => setIsAddDialogOpen(true), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) })
       ] }) }),
       /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [

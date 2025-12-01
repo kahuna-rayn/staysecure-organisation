@@ -166,8 +166,8 @@ const OrganisationCertificates: React.FC = () => {
             <Award className="h-5 w-5" />
             Organisation Certificates
           </CardTitle>
-          <Button onClick={() => setIsAddDialogOpen(true)} size="sm">
-            <Plus className="h-4 w-4 mr-2" />
+          <Button onClick={() => setIsAddDialogOpen(true)} size="icon">
+            <Plus className="h-4 w-4" />
           </Button>
         </div>
       </CardHeader>

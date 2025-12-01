@@ -191,8 +191,8 @@ export const LocationManagement: React.FC = () => {
             {hasPermission('canManageLocations') && (
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="h-4 w-4 mr-2" />
+                  <Button size="icon">
+                    <Plus className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent>

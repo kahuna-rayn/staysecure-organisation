@@ -193,7 +193,6 @@ export const LocationManagement: React.FC = () => {
                 <DialogTrigger asChild>
                   <Button>
                     <Plus className="h-4 w-4 mr-2" />
-                    Add Location
                   </Button>
                 </DialogTrigger>
                 <DialogContent>

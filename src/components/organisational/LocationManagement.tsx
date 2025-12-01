@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { MapPin, Plus, Edit, Trash2, X, Save } from 'lucide-react';
+import { MapPin, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
@@ -27,18 +27,54 @@ export const LocationManagement: React.FC = () => {
     status: 'Active',
   });
 
-  const { data: locations, isLoading: locationsLoading } = useQuery({
+  const { data: locationsData, isLoading: locationsLoading } = useQuery({
     queryKey: ['locations'],
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from('locations')
-        .select('*')
-        .order('name');
+        .select('*');
       
       if (error) throw error;
       return data as Location[];
     },
   });
+
+  // Sort locations based on current sort configuration
+  const locations = useMemo(() => {
+    if (!locationsData) return [];
+    
+    return [...locationsData].sort((a, b) => {
+      let aValue: string | Date;
+      let bValue: string | Date;
+      
+      if (sortField === 'name') {
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+      } else if (sortField === 'building') {
+        aValue = (a.building || '').toLowerCase();
+        bValue = (b.building || '').toLowerCase();
+      } else if (sortField === 'status') {
+        aValue = a.status.toLowerCase();
+        bValue = b.status.toLowerCase();
+      } else {
+        aValue = new Date(a.created_at);
+        bValue = new Date(b.created_at);
+      }
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [locationsData, sortField, sortDirection]);
+
+  const handleSort = (field: 'name' | 'building' | 'status' | 'created_at') => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const createLocationMutation = useMutation({
     mutationFn: async (locationData: typeof formData) => {
@@ -275,13 +311,69 @@ export const LocationManagement: React.FC = () => {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Building</TableHead>
+              <TableRow className="bg-muted/50">
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('name')}
+                >
+                  <div className="flex items-center gap-2">
+                    Name
+                    {sortField === 'name' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('building')}
+                >
+                  <div className="flex items-center gap-2">
+                    Building
+                    {sortField === 'building' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
                 <TableHead>Floor</TableHead>
                 <TableHead>Room</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created</TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('status')}
+                >
+                  <div className="flex items-center gap-2">
+                    Status
+                    {sortField === 'status' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('created_at')}
+                >
+                  <div className="flex items-center gap-2">
+                    Created
+                    {sortField === 'created_at' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
                 {hasPermission('canManageLocations') && (
                   <TableHead className="text-right">Actions</TableHead>
                 )}

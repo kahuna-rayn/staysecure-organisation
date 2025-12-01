@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Building2, Plus, Edit, Trash2, X, Save } from 'lucide-react';
+import { Building2, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
@@ -35,18 +35,51 @@ export const DepartmentManagement: React.FC = () => {
     manager_id: 'none',
   });
 
-  const { data: departments, isLoading: departmentsLoading } = useQuery({
+  const { data: departmentsData, isLoading: departmentsLoading } = useQuery({
     queryKey: ['departments'],
     queryFn: async () => {
       const { data, error } = await supabaseClient
         .from('departments')
-        .select('*')
-        .order('name');
+        .select('*');
       
       if (error) throw error;
       return data as Department[];
     },
   });
+
+  // Sort departments based on current sort configuration
+  const departments = useMemo(() => {
+    if (!departmentsData) return [];
+    
+    return [...departmentsData].sort((a, b) => {
+      let aValue: string | Date;
+      let bValue: string | Date;
+      
+      if (sortField === 'name') {
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+      } else if (sortField === 'description') {
+        aValue = (a.description || '').toLowerCase();
+        bValue = (b.description || '').toLowerCase();
+      } else {
+        aValue = new Date(a.created_at);
+        bValue = new Date(b.created_at);
+      }
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [departmentsData, sortField, sortDirection]);
+
+  const handleSort = (field: 'name' | 'description' | 'created_at') => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const { data: profiles } = useQuery({
     queryKey: ['profiles-for-managers'],
@@ -295,11 +328,53 @@ export const DepartmentManagement: React.FC = () => {
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
+              <TableRow className="bg-muted/50">
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('name')}
+                >
+                  <div className="flex items-center gap-2">
+                    Name
+                    {sortField === 'name' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('description')}
+                >
+                  <div className="flex items-center gap-2">
+                    Description
+                    {sortField === 'description' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
                 <TableHead>Manager</TableHead>
-                <TableHead>Created</TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('created_at')}
+                >
+                  <div className="flex items-center gap-2">
+                    Created
+                    {sortField === 'created_at' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
                 {hasPermission('canManageDepartments') && (
                   <TableHead className="text-right">Actions</TableHead>
                 )}

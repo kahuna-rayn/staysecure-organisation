@@ -163,13 +163,15 @@ const OrganisationCertificates: React.FC = () => {
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5" />
-            Certificates
-          </CardTitle>
-          <CardDescription>
-            Manage organization certificates
-          </CardDescription>
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <Award className="h-5 w-5" />
+              Certificates
+            </CardTitle>
+            <CardDescription>
+              Manage organisation certificates
+            </CardDescription>
+          </div>
           <Button onClick={() => setIsAddDialogOpen(true)} size="icon">
             <Plus className="h-4 w-4" />
           </Button>

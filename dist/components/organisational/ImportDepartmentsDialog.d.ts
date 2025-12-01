@@ -1,12 +1,6 @@
 import { default as React } from 'react';
+import { ImportError } from '../import/ImportErrorReport';
 
-interface ImportError {
-    rowNumber: number;
-    identifier: string;
-    field?: string;
-    error: string;
-    rawData: any;
-}
 interface ImportDepartmentsDialogProps {
     onImportComplete?: () => Promise<void>;
     onImportError?: (errors: ImportError[], warnings: ImportError[], stats: {

@@ -3,7 +3,7 @@ import { Award, Calendar, Building, FileText, User, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { useOrganisationContext } from "../../context/OrganisationContext";
 import AddOrganisationCertificateDialog from "./AddOrganisationCertificateDialog";
 
 interface OrgCertificate {
@@ -28,6 +28,7 @@ interface UserProfile {
 }
 
 const OrganisationCertificates: React.FC = () => {
+  const { supabaseClient } = useOrganisationContext();
   const [certificates, setCertificates] = useState<OrgCertificate[]>([]);
   const [userProfiles, setUserProfiles] = useState<{ [key: string]: UserProfile }>({});
   const [loading, setLoading] = useState(true);
@@ -83,7 +84,7 @@ const OrganisationCertificates: React.FC = () => {
       setError(null);
 
       // Fetch certificates where org_cert is TRUE
-      const { data: certificatesData, error: certificatesError } = await supabase
+      const { data: certificatesData, error: certificatesError } = await supabaseClient
         .from('certificates')
         .select('*')
         .eq('org_cert', true)
@@ -95,7 +96,7 @@ const OrganisationCertificates: React.FC = () => {
       const userIds = [...new Set(certificatesData?.map(cert => cert.user_id) || [])];
       
       if (userIds.length > 0) {
-        const { data: profilesData, error: profilesError } = await supabase
+        const { data: profilesData, error: profilesError } = await supabaseClient
           .from('profiles')
           .select('id, full_name, username')
           .in('id', userIds);
@@ -122,7 +123,7 @@ const OrganisationCertificates: React.FC = () => {
 
   useEffect(() => {
     fetchOrganisationCertificates();
-  }, []);
+  }, [supabaseClient]);
 
   if (loading) {
     return (

@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/components/ui/input"), require("@/components/ui/select"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/hooks/useUserRole"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/hooks/useUserDepartments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/components/ui/input", "@/components/ui/select", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/hooks/useUserRole", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/hooks/useUserDepartments", "@/components/LearningTracksTab", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/hooks/useUserRoleById", "@/hooks/useProfile"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.input, global.select, global.editableTable, global.dialog, global.label, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.useUserRole, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.useUserDepartments, global.LearningTracksTab, global.useUserProfileRoles, global.useUserPhysicalLocations, global.useUserRoleById, global.useProfile));
-})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, input, select, editableTable, dialog, label, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport, table, _switch, separator, vt, utils, command, popover, useUserRole, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, useUserDepartments, LearningTracksTab, useUserProfileRoles, useUserPhysicalLocations, useUserRoleById, useProfile) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/components/ui/input"), require("@/components/ui/select"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/hooks/useUserRole"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/hooks/useUserDepartments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/components/ui/input", "@/components/ui/select", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/hooks/useUserRole", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/hooks/useUserDepartments", "@/components/LearningTracksTab", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.input, global.select, global.editableTable, global.dialog, global.label, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.useUserRole, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.useUserDepartments, global.LearningTracksTab, global.useUserProfileRoles, global.useUserPhysicalLocations, global.useUserRoleById, global.useProfile, global.alert, global.scrollArea));
+})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, input, select, editableTable, dialog, label, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, separator, vt, utils, command, popover, useUserRole, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, useUserDepartments, LearningTracksTab, useUserProfileRoles, useUserPhysicalLocations, useUserRoleById, useProfile, alert, scrollArea) {
   "use strict";
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -187,6 +187,17 @@
   const ChevronsUpDown = createLucideIcon("ChevronsUpDown", [
     ["path", { d: "m7 15 5 5 5-5", key: "1hf1tw" }],
     ["path", { d: "m7 9 5-5 5 5", key: "sgt6xg" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const CircleAlert = createLucideIcon("CircleAlert", [
+    ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+    ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
+    ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -517,6 +528,23 @@
     ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
     ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
     ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const TriangleAlert = createLucideIcon("TriangleAlert", [
+    [
+      "path",
+      {
+        d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
+        key: "wmoenq"
+      }
+    ],
+    ["path", { d: "M12 9v4", key: "juzpu7" }],
+    ["path", { d: "M12 17h.01", key: "p32p05" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -2066,7 +2094,7 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
       /* @__PURE__ */ jsxRuntime.jsx(
-        ImportErrorReport.ImportErrorReport,
+        ImportErrorReport$1.ImportErrorReport,
         {
           errors: importErrors,
           warnings: importWarnings,
@@ -2628,7 +2656,7 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       /* @__PURE__ */ jsxRuntime.jsx(
-        ImportErrorReport.ImportErrorReport,
+        ImportErrorReport$1.ImportErrorReport,
         {
           errors: importErrors,
           warnings: importWarnings,
@@ -3306,7 +3334,7 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       /* @__PURE__ */ jsxRuntime.jsx(
-        ImportErrorReport.ImportErrorReport,
+        ImportErrorReport$1.ImportErrorReport,
         {
           errors: importErrors,
           warnings: importWarnings,
@@ -3871,6 +3899,7 @@
     onOpenChange,
     onSuccess
   }) => {
+    const { supabaseClient } = useOrganisationContext();
     const [loading, setLoading] = o.useState(false);
     const [formData, setFormData] = o.useState({
       type: "Certificate",
@@ -3896,7 +3925,7 @@
       e.preventDefault();
       setLoading(true);
       try {
-        const { data: { user }, error: userError } = await client.supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
         if (userError || !user) {
           throw new Error("User not authenticated");
         }
@@ -3912,9 +3941,9 @@
           org_cert: true
           // This is an organisation certificate
         };
-        const { error } = await client.supabase.from("certificates").insert([certificateData]);
+        const { error } = await supabaseClient.from("certificates").insert([certificateData]);
         if (error) throw error;
-        useToast$1.toast({
+        useToast.toast({
           title: "Organisation certificate added",
           description: "Certificate has been successfully added to the organisation."
         });
@@ -3922,7 +3951,7 @@
         resetForm();
         onSuccess == null ? void 0 : onSuccess();
       } catch (error) {
-        useToast$1.toast({
+        useToast.toast({
           title: "Error",
           description: error.message,
           variant: "destructive"
@@ -4029,6 +4058,7 @@
     ] }) });
   };
   const OrganisationCertificates = () => {
+    const { supabaseClient } = useOrganisationContext();
     const [certificates, setCertificates] = o.useState([]);
     const [userProfiles, setUserProfiles] = o.useState({});
     const [loading, setLoading] = o.useState(true);
@@ -4077,11 +4107,11 @@
       try {
         setLoading(true);
         setError(null);
-        const { data: certificatesData, error: certificatesError } = await client.supabase.from("certificates").select("*").eq("org_cert", true).order("created_at", { ascending: false });
+        const { data: certificatesData, error: certificatesError } = await supabaseClient.from("certificates").select("*").eq("org_cert", true).order("created_at", { ascending: false });
         if (certificatesError) throw certificatesError;
         const userIds = [...new Set((certificatesData == null ? void 0 : certificatesData.map((cert) => cert.user_id)) || [])];
         if (userIds.length > 0) {
-          const { data: profilesData, error: profilesError } = await client.supabase.from("profiles").select("id, full_name, username").in("id", userIds);
+          const { data: profilesData, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username").in("id", userIds);
           if (profilesError) throw profilesError;
           const profilesMap = (profilesData || []).reduce((acc, profile) => {
             acc[profile.id] = profile;
@@ -4099,7 +4129,7 @@
     };
     o.useEffect(() => {
       fetchOrganisationCertificates();
-    }, []);
+    }, [supabaseClient]);
     if (loading) {
       return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
         /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
@@ -8069,6 +8099,156 @@
       ] }) })
     ] });
   };
+  const ImportErrorReport = ({
+    errors,
+    warnings = [],
+    successCount,
+    totalCount,
+    isOpen,
+    onClose,
+    importType
+  }) => {
+    const downloadErrorReport = () => {
+      const headers = ["Row Number", "Identifier", "Field", "Type", "Message"];
+      const allIssues = [
+        ...errors.map((err) => [err.rowNumber, err.identifier, err.field || "N/A", "Error", err.error]),
+        ...warnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error])
+      ];
+      const csvContent = [headers, ...allIssues].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `import_report_${(/* @__PURE__ */ new Date()).toISOString()}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    const errorRate = totalCount > 0 ? (errors.length / totalCount * 100).toFixed(1) : "0";
+    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-4xl max-h-[90vh]", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogTitle, { className: "flex items-center gap-2", children: [
+          errors.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }) : warnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-5 w-5 text-yellow-600" }) : /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }),
+          "Import Report: ",
+          importType
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Review the import results and download detailed error and warning information" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4 overflow-y-auto", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-4 gap-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-green-50 border border-green-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-700", children: successCount }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-green-600", children: "Successful" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-red-50 border border-red-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-700", children: errors.length }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-red-600", children: "Failed" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-yellow-50 border border-yellow-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-yellow-700", children: warnings.length }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-yellow-600", children: "Warnings" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-blue-50 border border-blue-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-2xl font-bold text-blue-700", children: [
+              errorRate,
+              "%"
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-blue-600", children: "Error Rate" })
+          ] })
+        ] }),
+        (errors.length > 0 || warnings.length > 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: downloadErrorReport, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) }) }),
+        errors.length > 0 || warnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm", children: [
+            "Issues (",
+            errors.length + warnings.length,
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: "h-[400px] border rounded-lg p-4", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
+            errors.map((error, index) => /* @__PURE__ */ jsxRuntime.jsxs(
+              alert.Alert,
+              {
+                variant: "destructive",
+                className: "relative",
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Error" }),
+                      /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
+                        "Row ",
+                        error.rowNumber
+                      ] }),
+                      /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm", children: error.identifier }),
+                      error.field && /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs", children: [
+                        "Field: ",
+                        error.field
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm mt-1 text-destructive", children: error.error }),
+                    error.rawData && /* @__PURE__ */ jsxRuntime.jsxs("details", { className: "mt-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
+                      /* @__PURE__ */ jsxRuntime.jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(error.rawData, null, 2) })
+                    ] })
+                  ] }) })
+                ]
+              },
+              `error-${index}`
+            )),
+            warnings.map((warning, index) => /* @__PURE__ */ jsxRuntime.jsxs(
+              alert.Alert,
+              {
+                variant: "default",
+                className: "relative bg-yellow-50 border-yellow-200 text-yellow-900",
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-4 w-4" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "secondary", className: "text-xs bg-yellow-200 text-yellow-800", children: "Warning" }),
+                      /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
+                        "Row ",
+                        warning.rowNumber
+                      ] }),
+                      /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm", children: warning.identifier }),
+                      warning.field && /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs", children: [
+                        "Field: ",
+                        warning.field
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm mt-1 text-yellow-800", children: warning.error }),
+                    warning.rawData && /* @__PURE__ */ jsxRuntime.jsxs("details", { className: "mt-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
+                      /* @__PURE__ */ jsxRuntime.jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(warning.rawData, null, 2) })
+                    ] })
+                  ] }) })
+                ]
+              },
+              `warning-${index}`
+            ))
+          ] }) })
+        ] }) : /* @__PURE__ */ jsxRuntime.jsx(alert.Alert, { className: "bg-green-50 border-green-200", children: /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { className: "text-green-800", children: "All rows imported successfully! No errors or warnings to report." }) }),
+        (errors.length > 0 || warnings.length > 0) && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-sm text-yellow-900 mb-2", children: "Troubleshooting Tips" }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "max-h-32 overflow-y-auto", children: /* @__PURE__ */ jsxRuntime.jsxs("ul", { className: "text-sm text-yellow-800 space-y-1 list-disc list-inside pr-2", children: [
+            errors.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Verify that all required fields are present in your CSV" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Check for special characters or formatting issues" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Ensure email addresses are valid and not duplicates" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Review the error messages for specific guidance" })
+            ] }),
+            warnings.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Users with invalid locations were still created successfully" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "You can assign locations manually after import using the user management interface" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Check the locations table to see available valid location names" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Consider updating your import template with correct location names" })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Download the report to fix issues in bulk" })
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: onClose, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }) })
+    ] }) });
+  };
   Object.defineProperty(exports2, "useUserProfiles", {
     enumerable: true,
     get: () => useUserProfiles.useUserProfiles
@@ -8105,10 +8285,13 @@
   exports2.AssignSoftwareDialog = AssignSoftwareDialog;
   exports2.Certificates = Certificates;
   exports2.CreateUserDialog = CreateUserDialog;
+  exports2.DepartmentManagement = DepartmentManagement;
   exports2.DepartmentRolePairsDisplay = DepartmentRolePairsDisplay;
   exports2.EditUserDialog = EditUserDialog;
   exports2.EditableField = EditableField;
   exports2.EditableProfileHeader = EditableProfileHeader;
+  exports2.ImportErrorReport = ImportErrorReport;
+  exports2.LocationManagement = LocationManagement;
   exports2.MultipleRolesField = MultipleRolesField;
   exports2.OrganisationPanel = OrganisationPanel;
   exports2.OrganisationProvider = OrganisationProvider;
@@ -8119,6 +8302,7 @@
   exports2.ProfileAvatar = ProfileAvatar;
   exports2.ProfileBasicInfo = ProfileBasicInfo;
   exports2.ProfileContactInfo = ProfileContactInfo;
+  exports2.RoleManagement = RoleManagement;
   exports2.UserCard = UserCard;
   exports2.UserDetailView = UserDetailView;
   exports2.UserList = UserList;

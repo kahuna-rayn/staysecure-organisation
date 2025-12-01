@@ -27,7 +27,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "staysecure-auth";
 import { useDropzone } from "react-dropzone";
 import Papa from "papaparse";
-import { ImportErrorReport } from "@/components/import/ImportErrorReport";
+import { ImportErrorReport as ImportErrorReport$1 } from "@/components/import/ImportErrorReport";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
@@ -51,6 +51,8 @@ import { useUserProfileRoles as useUserProfileRoles2 } from "@/hooks/useUserProf
 import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
 import { useProfile } from "@/hooks/useProfile";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ScrollArea } from "@/components/ui/scroll-area";
 /**
  * @license lucide-react v0.462.0 - ISC
  *
@@ -236,6 +238,17 @@ const Check = createLucideIcon("Check", [["path", { d: "M20 6 9 17l-5-5", key: "
 const ChevronsUpDown = createLucideIcon("ChevronsUpDown", [
   ["path", { d: "m7 15 5 5 5-5", key: "1hf1tw" }],
   ["path", { d: "m7 9 5-5 5 5", key: "sgt6xg" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const CircleAlert = createLucideIcon("CircleAlert", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["line", { x1: "12", x2: "12", y1: "8", y2: "12", key: "1pkeuh" }],
+  ["line", { x1: "12", x2: "12.01", y1: "16", y2: "16", key: "4dfq90" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -566,6 +579,23 @@ const Trash2 = createLucideIcon("Trash2", [
   ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
   ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
   ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const TriangleAlert = createLucideIcon("TriangleAlert", [
+  [
+    "path",
+    {
+      d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3",
+      key: "wmoenq"
+    }
+  ],
+  ["path", { d: "M12 9v4", key: "juzpu7" }],
+  ["path", { d: "M12 17h.01", key: "p32p05" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -2115,7 +2145,7 @@ const UserManagement = () => {
   }
   return /* @__PURE__ */ jsxs(Fragment, { children: [
     /* @__PURE__ */ jsx(
-      ImportErrorReport,
+      ImportErrorReport$1,
       {
         errors: importErrors,
         warnings: importWarnings,
@@ -2677,7 +2707,7 @@ const RoleManagement = () => {
   }
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsx(
-      ImportErrorReport,
+      ImportErrorReport$1,
       {
         errors: importErrors,
         warnings: importWarnings,
@@ -3355,7 +3385,7 @@ const DepartmentManagement = () => {
   }
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     /* @__PURE__ */ jsx(
-      ImportErrorReport,
+      ImportErrorReport$1,
       {
         errors: importErrors,
         warnings: importWarnings,
@@ -3920,6 +3950,7 @@ const AddOrganisationCertificateDialog = ({
   onOpenChange,
   onSuccess
 }) => {
+  const { supabaseClient } = useOrganisationContext();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: "Certificate",
@@ -3945,7 +3976,7 @@ const AddOrganisationCertificateDialog = ({
     e.preventDefault();
     setLoading(true);
     try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
       if (userError || !user) {
         throw new Error("User not authenticated");
       }
@@ -3961,9 +3992,9 @@ const AddOrganisationCertificateDialog = ({
         org_cert: true
         // This is an organisation certificate
       };
-      const { error } = await supabase.from("certificates").insert([certificateData]);
+      const { error } = await supabaseClient.from("certificates").insert([certificateData]);
       if (error) throw error;
-      toast$1({
+      toast({
         title: "Organisation certificate added",
         description: "Certificate has been successfully added to the organisation."
       });
@@ -3971,7 +4002,7 @@ const AddOrganisationCertificateDialog = ({
       resetForm();
       onSuccess == null ? void 0 : onSuccess();
     } catch (error) {
-      toast$1({
+      toast({
         title: "Error",
         description: error.message,
         variant: "destructive"
@@ -4078,6 +4109,7 @@ const AddOrganisationCertificateDialog = ({
   ] }) });
 };
 const OrganisationCertificates = () => {
+  const { supabaseClient } = useOrganisationContext();
   const [certificates, setCertificates] = useState([]);
   const [userProfiles, setUserProfiles] = useState({});
   const [loading, setLoading] = useState(true);
@@ -4126,11 +4158,11 @@ const OrganisationCertificates = () => {
     try {
       setLoading(true);
       setError(null);
-      const { data: certificatesData, error: certificatesError } = await supabase.from("certificates").select("*").eq("org_cert", true).order("created_at", { ascending: false });
+      const { data: certificatesData, error: certificatesError } = await supabaseClient.from("certificates").select("*").eq("org_cert", true).order("created_at", { ascending: false });
       if (certificatesError) throw certificatesError;
       const userIds = [...new Set((certificatesData == null ? void 0 : certificatesData.map((cert) => cert.user_id)) || [])];
       if (userIds.length > 0) {
-        const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("id, full_name, username").in("id", userIds);
+        const { data: profilesData, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username").in("id", userIds);
         if (profilesError) throw profilesError;
         const profilesMap = (profilesData || []).reduce((acc, profile) => {
           acc[profile.id] = profile;
@@ -4148,7 +4180,7 @@ const OrganisationCertificates = () => {
   };
   useEffect(() => {
     fetchOrganisationCertificates();
-  }, []);
+  }, [supabaseClient]);
   if (loading) {
     return /* @__PURE__ */ jsxs(Card, { children: [
       /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center gap-2", children: [
@@ -8118,6 +8150,156 @@ const MultipleRolesField = ({
     ] }) })
   ] });
 };
+const ImportErrorReport = ({
+  errors,
+  warnings = [],
+  successCount,
+  totalCount,
+  isOpen,
+  onClose,
+  importType
+}) => {
+  const downloadErrorReport = () => {
+    const headers = ["Row Number", "Identifier", "Field", "Type", "Message"];
+    const allIssues = [
+      ...errors.map((err) => [err.rowNumber, err.identifier, err.field || "N/A", "Error", err.error]),
+      ...warnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error])
+    ];
+    const csvContent = [headers, ...allIssues].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `import_report_${(/* @__PURE__ */ new Date()).toISOString()}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  const errorRate = totalCount > 0 ? (errors.length / totalCount * 100).toFixed(1) : "0";
+  return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-4xl max-h-[90vh]", children: [
+    /* @__PURE__ */ jsxs(DialogHeader, { children: [
+      /* @__PURE__ */ jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
+        errors.length > 0 ? /* @__PURE__ */ jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }) : warnings.length > 0 ? /* @__PURE__ */ jsx(TriangleAlert, { className: "h-5 w-5 text-yellow-600" }) : /* @__PURE__ */ jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }),
+        "Import Report: ",
+        importType
+      ] }),
+      /* @__PURE__ */ jsx(DialogDescription, { children: "Review the import results and download detailed error and warning information" })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-4 overflow-y-auto", children: [
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "p-4 bg-green-50 border border-green-200 rounded-lg", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-green-700", children: successCount }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-green-600", children: "Successful" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "p-4 bg-red-50 border border-red-200 rounded-lg", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-red-700", children: errors.length }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-red-600", children: "Failed" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "p-4 bg-yellow-50 border border-yellow-200 rounded-lg", children: [
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-yellow-700", children: warnings.length }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-yellow-600", children: "Warnings" })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "p-4 bg-blue-50 border border-blue-200 rounded-lg", children: [
+          /* @__PURE__ */ jsxs("div", { className: "text-2xl font-bold text-blue-700", children: [
+            errorRate,
+            "%"
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-sm text-blue-600", children: "Error Rate" })
+        ] })
+      ] }),
+      (errors.length > 0 || warnings.length > 0) && /* @__PURE__ */ jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsx(Button, { onClick: downloadErrorReport, variant: "outline", size: "icon", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) }) }),
+      errors.length > 0 || warnings.length > 0 ? /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxs("h4", { className: "font-semibold text-sm", children: [
+          "Issues (",
+          errors.length + warnings.length,
+          ")"
+        ] }),
+        /* @__PURE__ */ jsx(ScrollArea, { className: "h-[400px] border rounded-lg p-4", children: /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+          errors.map((error, index) => /* @__PURE__ */ jsxs(
+            Alert,
+            {
+              variant: "destructive",
+              className: "relative",
+              children: [
+                /* @__PURE__ */ jsx(CircleAlert, { className: "h-4 w-4" }),
+                /* @__PURE__ */ jsx(AlertDescription, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
+                  /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                    /* @__PURE__ */ jsx(Badge, { variant: "destructive", className: "text-xs", children: "Error" }),
+                    /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "text-xs", children: [
+                      "Row ",
+                      error.rowNumber
+                    ] }),
+                    /* @__PURE__ */ jsx("span", { className: "font-semibold text-sm", children: error.identifier }),
+                    error.field && /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs", children: [
+                      "Field: ",
+                      error.field
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm mt-1 text-destructive", children: error.error }),
+                  error.rawData && /* @__PURE__ */ jsxs("details", { className: "mt-2", children: [
+                    /* @__PURE__ */ jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
+                    /* @__PURE__ */ jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(error.rawData, null, 2) })
+                  ] })
+                ] }) })
+              ]
+            },
+            `error-${index}`
+          )),
+          warnings.map((warning, index) => /* @__PURE__ */ jsxs(
+            Alert,
+            {
+              variant: "default",
+              className: "relative bg-yellow-50 border-yellow-200 text-yellow-900",
+              children: [
+                /* @__PURE__ */ jsx(TriangleAlert, { className: "h-4 w-4" }),
+                /* @__PURE__ */ jsx(AlertDescription, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
+                  /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                    /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs bg-yellow-200 text-yellow-800", children: "Warning" }),
+                    /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "text-xs", children: [
+                      "Row ",
+                      warning.rowNumber
+                    ] }),
+                    /* @__PURE__ */ jsx("span", { className: "font-semibold text-sm", children: warning.identifier }),
+                    warning.field && /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs", children: [
+                      "Field: ",
+                      warning.field
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm mt-1 text-yellow-800", children: warning.error }),
+                  warning.rawData && /* @__PURE__ */ jsxs("details", { className: "mt-2", children: [
+                    /* @__PURE__ */ jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
+                    /* @__PURE__ */ jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(warning.rawData, null, 2) })
+                  ] })
+                ] }) })
+              ]
+            },
+            `warning-${index}`
+          ))
+        ] }) })
+      ] }) : /* @__PURE__ */ jsx(Alert, { className: "bg-green-50 border-green-200", children: /* @__PURE__ */ jsx(AlertDescription, { className: "text-green-800", children: "All rows imported successfully! No errors or warnings to report." }) }),
+      (errors.length > 0 || warnings.length > 0) && /* @__PURE__ */ jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
+        /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-yellow-900 mb-2", children: "Troubleshooting Tips" }),
+        /* @__PURE__ */ jsx("div", { className: "max-h-32 overflow-y-auto", children: /* @__PURE__ */ jsxs("ul", { className: "text-sm text-yellow-800 space-y-1 list-disc list-inside pr-2", children: [
+          errors.length > 0 && /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx("li", { children: "Verify that all required fields are present in your CSV" }),
+            /* @__PURE__ */ jsx("li", { children: "Check for special characters or formatting issues" }),
+            /* @__PURE__ */ jsx("li", { children: "Ensure email addresses are valid and not duplicates" }),
+            /* @__PURE__ */ jsx("li", { children: "Review the error messages for specific guidance" })
+          ] }),
+          warnings.length > 0 && /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx("li", { children: "Users with invalid locations were still created successfully" }),
+            /* @__PURE__ */ jsx("li", { children: "You can assign locations manually after import using the user management interface" }),
+            /* @__PURE__ */ jsx("li", { children: "Check the locations table to see available valid location names" }),
+            /* @__PURE__ */ jsx("li", { children: "Consider updating your import template with correct location names" })
+          ] }),
+          /* @__PURE__ */ jsx("li", { children: "Download the report to fix issues in bulk" })
+        ] }) })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(Button, { onClick: onClose, variant: "outline", size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }) })
+  ] }) });
+};
 export {
   AddEducationDialog as AddCertificatesDialog,
   AddOrganisationCertificateDialog,
@@ -8127,10 +8309,13 @@ export {
   AssignSoftwareDialog,
   Certificates,
   CreateUserDialog,
+  DepartmentManagement,
   DepartmentRolePairsDisplay,
   EditUserDialog,
   EditableField,
   EditableProfileHeader,
+  ImportErrorReport,
+  LocationManagement,
   MultipleRolesField,
   OrganisationPanel,
   OrganisationProvider,
@@ -8141,6 +8326,7 @@ export {
   ProfileAvatar,
   ProfileBasicInfo,
   ProfileContactInfo,
+  RoleManagement,
   UserCard,
   UserDetailView,
   UserList,

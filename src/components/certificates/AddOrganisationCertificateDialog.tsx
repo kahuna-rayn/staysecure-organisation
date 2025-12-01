@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
+import { useOrganisationContext } from '../../context/OrganisationContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { toast } from '@/hooks/use-toast';
+import { toast } from '@/components/ui/use-toast';
 import { Loader2, X, Plus } from 'lucide-react';
 
 interface AddOrganisationCertificateDialogProps {
@@ -19,6 +19,7 @@ const AddOrganisationCertificateDialog: React.FC<AddOrganisationCertificateDialo
   onOpenChange,
   onSuccess,
 }) => {
+  const { supabaseClient } = useOrganisationContext();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     type: 'Certificate',
@@ -49,7 +50,7 @@ const AddOrganisationCertificateDialog: React.FC<AddOrganisationCertificateDialo
     
     try {
       // Get current user
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
       
       if (userError || !user) {
         throw new Error('User not authenticated');
@@ -67,7 +68,7 @@ const AddOrganisationCertificateDialog: React.FC<AddOrganisationCertificateDialo
         org_cert: true, // This is an organisation certificate
       };
       
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('certificates')
         .insert([certificateData]);
       

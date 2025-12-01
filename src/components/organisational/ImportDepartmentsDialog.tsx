@@ -8,14 +8,7 @@ import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useQuery } from '@tanstack/react-query';
 import Papa from 'papaparse';
-
-interface ImportError {
-  rowNumber: number;
-  identifier: string;
-  field?: string;
-  error: string;
-  rawData: any;
-}
+import { ImportError } from '../import/ImportErrorReport';
 
 interface ImportDepartmentsDialogProps {
   onImportComplete?: () => Promise<void>;

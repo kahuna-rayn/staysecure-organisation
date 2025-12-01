@@ -34,6 +34,12 @@ export { default as MultipleRolesField } from './components/profile/MultipleRole
 
 // Organisational component exports
 export { DepartmentRolePairsDisplay } from './components/organisational/DepartmentRolePairsDisplay';
+export { DepartmentManagement } from './components/organisational/DepartmentManagement';
+export { LocationManagement } from './components/organisational/LocationManagement';
+export { RoleManagement } from './components/organisational/RoleManagement';
+
+// Import component exports
+export { ImportErrorReport, type ImportError } from './components/import/ImportErrorReport';
 
 // Hook exports (re-exported from main hooks directory)
 export { useUserManagement } from '@/hooks/useUserManagement';

@@ -7,14 +7,7 @@ import { Upload, FileText, Download, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import Papa from 'papaparse';
-
-interface ImportError {
-  rowNumber: number;
-  identifier: string;
-  field?: string;
-  error: string;
-  rawData: any;
-}
+import { ImportError } from '../import/ImportErrorReport';
 
 interface ImportRolesDialogProps {
   onImportComplete?: () => Promise<void>;

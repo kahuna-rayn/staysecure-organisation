@@ -25,6 +25,10 @@ export { default as ProfileContactInfo } from './components/profile/ProfileConta
 export { default as EditableField } from './components/profile/EditableField';
 export { default as MultipleRolesField } from './components/profile/MultipleRolesField';
 export { DepartmentRolePairsDisplay } from './components/organisational/DepartmentRolePairsDisplay';
+export { DepartmentManagement } from './components/organisational/DepartmentManagement';
+export { LocationManagement } from './components/organisational/LocationManagement';
+export { RoleManagement } from './components/organisational/RoleManagement';
+export { ImportErrorReport, type ImportError } from './components/import/ImportErrorReport';
 export { useUserManagement } from './hooks/useUserManagement';
 export { useUserProfiles } from './hooks/useUserProfiles';
 export { useUserRole } from './hooks/useUserRole';

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserAssets } from '@/hooks/useUserAssets';
+import { useOrganisationContext } from '../../context/OrganisationContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +10,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Plus, Award, X, Save } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
-import { supabase } from '@/integrations/supabase/client';
 
 interface CreateCertificateDialogProps {
   isOpen: boolean;
@@ -24,6 +24,7 @@ export const CreateCertificateDialog: React.FC<CreateCertificateDialogProps> = (
   isOrganisationCertificate = false,
   onSuccess
 }) => {
+  const { supabaseClient } = useOrganisationContext();
   const { profiles } = useUserProfiles();
   const [formData, setFormData] = useState({
     user_id: '',
@@ -39,7 +40,7 @@ export const CreateCertificateDialog: React.FC<CreateCertificateDialogProps> = (
     e.preventDefault();
     try {
       // Get current user for organisation certificates
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
       if (userError || !user) {
         throw new Error('User not authenticated');
       }
@@ -53,7 +54,7 @@ export const CreateCertificateDialog: React.FC<CreateCertificateDialogProps> = (
         org_cert: isOrganisationCertificate, // Set org_cert flag
       };
       
-      const { error } = await supabase
+      const { error } = await supabaseClient
         .from('certificates')
         .insert([certificateData]);
       

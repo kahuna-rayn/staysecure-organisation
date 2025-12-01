@@ -40,6 +40,33 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     },
   });
 
+  // Fetch valid departments for validation
+  const { data: validDepartments } = useQuery({
+    queryKey: ['departments'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('departments')
+        .select('id, name')
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // Fetch valid roles for validation
+  const { data: validRoles } = useQuery({
+    queryKey: ['roles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('roles')
+        .select('role_id, name, department_id, is_active')
+        .eq('is_active', true)
+        .order('name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -70,10 +97,10 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   });
 
   const generateSampleCSV = () => {
-    const headers = ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level'];
+    const headers = ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role'];
     const sampleData = [
-      ['john.doe@company.com', 'John Doe', 'John', 'Doe', '+1-555-0123', 'EMP-2024-001', 'User'],
-      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+1-555-0124', 'EMP-2024-002', 'Manager']
+      ['john.doe@company.com', 'John Doe', 'John', 'Doe', '+1-555-0123', 'EMP-2024-001', 'User', 'Main Office', 'Engineering', 'Software Engineer'],
+      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+1-555-0124', 'EMP-2024-002', 'Manager', 'Branch Office', 'Human Resources', 'HR Manager']
     ];
     
     const csvContent = [headers, ...sampleData]
@@ -102,11 +129,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const trimmedLocation = locationName.trim();
     console.log('Location validation: Checking location', { 
       providedLocation: trimmedLocation, 
-      availableLocations: validLocations.map(l => l.name) 
+      availableLocations: validLocations.map((l: { name: string }) => l.name) 
     });
     
     const validLocation = validLocations.find(
-      loc => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
+      (loc: { name: string }) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
     );
 
     console.log('Location validation result:', { 
@@ -118,6 +145,83 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     return {
       isValid: !!validLocation,
       locationId: validLocation?.id
+    };
+  };
+
+  // Helper function to validate department
+  const validateDepartment = (departmentName: string): { isValid: boolean; departmentId?: string } => {
+    if (!departmentName || !validDepartments) {
+      return { isValid: false };
+    }
+
+    const trimmedName = departmentName.trim().toLowerCase();
+    const department = validDepartments.find(
+      (dept: { name: string }) => dept.name.toLowerCase() === trimmedName
+    );
+
+    return {
+      isValid: !!department,
+      departmentId: department?.id
+    };
+  };
+
+  // Helper function to validate role
+  const validateRole = (roleName: string): { isValid: boolean; roleId?: string; departmentId?: string | null } => {
+    if (!roleName || !validRoles) {
+      return { isValid: false };
+    }
+
+    const trimmedName = roleName.trim().toLowerCase();
+    const role = validRoles.find(
+      (r: { name: string }) => r.name.toLowerCase() === trimmedName
+    );
+
+    return {
+      isValid: !!role,
+      roleId: role?.role_id,
+      departmentId: role?.department_id || null
+    };
+  };
+
+  // Helper function to validate department-role pair
+  const validateDepartmentRolePair = (
+    departmentName: string,
+    roleName: string
+  ): { isValid: boolean; error?: string; departmentId?: string; roleId?: string } => {
+    // Validate department
+    const deptValidation = validateDepartment(departmentName);
+    if (!deptValidation.isValid) {
+      return { isValid: false, error: `Department "${departmentName}" does not exist` };
+    }
+
+    // Validate role
+    const roleValidation = validateRole(roleName);
+    if (!roleValidation.isValid) {
+      return { isValid: false, error: `Role "${roleName}" does not exist or is not active` };
+    }
+
+    // Check if role belongs to department or is a general role
+    if (roleValidation.departmentId === null) {
+      // General role (no department) - valid for any department
+      return {
+        isValid: true,
+        departmentId: deptValidation.departmentId,
+        roleId: roleValidation.roleId
+      };
+    }
+
+    // Role has a department - must match
+    if (roleValidation.departmentId !== deptValidation.departmentId) {
+      return {
+        isValid: false,
+        error: `Role "${roleName}" does not belong to department "${departmentName}"`
+      };
+    }
+
+    return {
+      isValid: true,
+      departmentId: deptValidation.departmentId,
+      roleId: roleValidation.roleId
     };
   };
 
@@ -240,9 +344,57 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
     console.log('Processing user:', email);
 
-    // Validate all fields
+    // Validate all fields BEFORE creating user
     const accessLevelValue = row['Access Level'] || row['access_level'] || '';
     const accessLevelValidation = validateAccessLevel(accessLevelValue);
+
+    const locationName = row['Location'] || row['location'] || '';
+    const departmentName = row['Department'] || row['department'] || '';
+    const roleName = row['Role'] || row['role'] || '';
+
+    // Validate location if provided
+    if (locationName) {
+      const locationValidation = validateLocation(locationName);
+      if (!locationValidation.isValid) {
+        throw new Error(`Location "${locationName}" does not exist`);
+      }
+    }
+
+    // Validate department if provided
+    let departmentId: string | undefined;
+    if (departmentName) {
+      const deptValidation = validateDepartment(departmentName);
+      if (!deptValidation.isValid) {
+        throw new Error(`Department "${departmentName}" does not exist`);
+      }
+      departmentId = deptValidation.departmentId;
+    }
+
+    // Validate role if provided
+    let roleId: string | undefined;
+    let roleDepartmentId: string | null | undefined;
+    if (roleName) {
+      const roleValidation = validateRole(roleName);
+      if (!roleValidation.isValid) {
+        throw new Error(`Role "${roleName}" does not exist or is not active`);
+      }
+      roleId = roleValidation.roleId;
+      roleDepartmentId = roleValidation.departmentId;
+    }
+
+    // Validate department-role pair if both provided
+    if (departmentName && roleName) {
+      const pairValidation = validateDepartmentRolePair(departmentName, roleName);
+      if (!pairValidation.isValid) {
+        throw new Error(pairValidation.error || 'Invalid department-role pair');
+      }
+      // Use validated IDs from pair validation
+      departmentId = pairValidation.departmentId;
+      roleId = pairValidation.roleId;
+    } else if (roleName && roleDepartmentId !== null) {
+      // Role-only but role has a department - invalid
+      throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
+    }
 
     // Extract client path using the same logic as client.ts
     const clientId = getCurrentClientId();
@@ -278,6 +430,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error(friendlyError);
     }
 
+    const userId = authData?.user?.id;
+    if (!userId) {
+      throw new Error('User created but user ID not returned');
+    }
+
     // Collect all warnings
     const warnings = [];
     
@@ -287,6 +444,132 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         value: accessLevelValue,
         message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
       });
+    }
+
+    // Assign location if provided
+    if (locationName) {
+      const locationValidation = validateLocation(locationName);
+      if (locationValidation.isValid && locationValidation.locationId) {
+        try {
+          const locationData = {
+            user_id: userId,
+            location_id: locationValidation.locationId,
+            full_name: row['Full Name'] || row['full_name'] || 'Unknown User',
+            access_purpose: 'General Access',
+            status: 'Active',
+            date_access_created: new Date().toISOString()
+          };
+
+          const { error: locationError } = await supabase
+            .from('physical_location_access')
+            .insert(locationData);
+
+          if (locationError) {
+            console.error('Error assigning location:', locationError);
+            warnings.push({
+              field: 'Location',
+              value: locationName,
+              message: `Location "${locationName}" could not be assigned: ${locationError.message}`
+            });
+          }
+        } catch (locationError: any) {
+          console.error('Exception assigning location:', locationError);
+          warnings.push({
+            field: 'Location',
+            value: locationName,
+            message: `Location "${locationName}" could not be assigned: ${locationError.message}`
+          });
+        }
+      }
+    }
+
+    // Assign department and/or role if provided
+    if (departmentName || roleName) {
+      try {
+        // Generate pairing_id if both department and role are provided
+        const pairingId = (departmentId && roleId) ? crypto.randomUUID() : undefined;
+
+        // Assign department if provided
+        if (departmentId) {
+          const { error: deptError } = await supabase
+            .from('user_departments')
+            .insert({
+              user_id: userId,
+              department_id: departmentId,
+              is_primary: false, // Will be set to true if this is the first department
+              pairing_id: pairingId,
+              assigned_by: userId // In production, this should be the current admin user ID
+            });
+
+          if (deptError) {
+            console.error('Error assigning department:', deptError);
+            warnings.push({
+              field: 'Department',
+              value: departmentName,
+              message: `Department "${departmentName}" could not be assigned: ${deptError.message}`
+            });
+          } else {
+            // Set as primary if this is the first department (check if any exist)
+            const { data: existingDepts } = await supabase
+              .from('user_departments')
+              .select('id')
+              .eq('user_id', userId);
+            
+            if (existingDepts && existingDepts.length === 1) {
+              // This is the first department, set as primary
+              await supabase
+                .from('user_departments')
+                .update({ is_primary: true })
+                .eq('user_id', userId)
+                .eq('department_id', departmentId);
+            }
+          }
+        }
+
+        // Assign role if provided
+        if (roleId) {
+          const { error: roleError } = await supabase
+            .from('user_profile_roles')
+            .insert({
+              user_id: userId,
+              role_id: roleId,
+              is_primary: false, // Will be set to true if this is the first role
+              pairing_id: pairingId,
+              assigned_by: userId // In production, this should be the current admin user ID
+            });
+
+          if (roleError) {
+            console.error('Error assigning role:', roleError);
+            warnings.push({
+              field: 'Role',
+              value: roleName,
+              message: `Role "${roleName}" could not be assigned: ${roleError.message}`
+            });
+          } else {
+            // Set as primary if this is the first role (check if any exist)
+            const { data: existingRoles } = await supabase
+              .from('user_profile_roles')
+              .select('id')
+              .eq('user_id', userId);
+            
+            if (existingRoles && existingRoles.length === 1) {
+              // This is the first role, set as primary
+              await supabase
+                .from('user_profile_roles')
+                .update({ is_primary: true })
+                .eq('user_id', userId)
+                .eq('role_id', roleId);
+            }
+          }
+        }
+      } catch (assignmentError: any) {
+        console.error('Exception assigning department/role:', assignmentError);
+        warnings.push({
+          field: 'Department/Role',
+          value: `${departmentName || ''} / ${roleName || ''}`,
+          message: `Could not assign department/role: ${assignmentError.message}`
+        });
+      }
     }
 
     return { 
@@ -422,7 +705,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             await onImportComplete();
           }
         },
-        error: (error) => {
+        error: (error: any) => {
           console.error('Parse error:', error);
           toast({
             title: "Parse error",
@@ -461,7 +744,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         <DialogHeader>
           <DialogTitle>Import Users</DialogTitle>
           <DialogDescription>
-            Upload a CSV or Excel file to import users in bulk. Users will be created with authentication accounts and will need to activate via email. Roles and departments can be assigned after import.
+            Upload a CSV file to import users in bulk. Users will be created with authentication accounts and will receive an activation link via email. Departments, roles, and locations can be assigned during import.
           </DialogDescription>
         </DialogHeader>
         
@@ -549,7 +832,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             <div className="flex flex-wrap gap-2 mb-4">
               {[
                 'Email', 'Full Name', 'First Name', 'Last Name', 
-                'Phone', 'Employee ID', 'Access Level'
+                'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role'
               ].map((column) => (
                 <Badge key={column} variant="outline" className="text-xs">
                   {column}
@@ -559,7 +842,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             <div className="text-sm text-blue-800 space-y-1">
               <p>• <strong>Email</strong> is required for each user</p>
               <p>• Users will be created with 'Pending' status and must activate via email</p>
-              <p>• Roles and departments can be assigned after bulk import</p>
+              <p>• <strong>Location</strong> (optional) - must match an existing active location</p>
+              <p>• <strong>Department</strong> (optional) - must match an existing department</p>
+              <p>• <strong>Role</strong> (optional) - must match an existing active role</p>
+              <p>• If both <strong>Department</strong> and <strong>Role</strong> are provided, the role must belong to that department (or be a general role)</p>
+              <p>• If only <strong>Role</strong> is provided, it must be a general role (not assigned to any department)</p>
               <p>• All other fields are optional and will use default values if not provided</p>
             </div>
           </div>

@@ -1619,6 +1619,22 @@
         return data || [];
       }
     });
+    const { data: validDepartments } = reactQuery.useQuery({
+      queryKey: ["departments"],
+      queryFn: async () => {
+        const { data, error } = await client.supabase.from("departments").select("id, name").order("name");
+        if (error) throw error;
+        return data || [];
+      }
+    });
+    const { data: validRoles } = reactQuery.useQuery({
+      queryKey: ["roles"],
+      queryFn: async () => {
+        const { data, error } = await client.supabase.from("roles").select("role_id, name, department_id, is_active").eq("is_active", true).order("name");
+        if (error) throw error;
+        return data || [];
+      }
+    });
     const onDrop = o.useCallback((acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
@@ -1645,10 +1661,10 @@
       multiple: false
     });
     const generateSampleCSV = () => {
-      const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level"];
+      const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role"];
       const sampleData = [
-        ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "EMP-2024-001", "User"],
-        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Manager"]
+        ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "EMP-2024-001", "User", "Main Office", "Engineering", "Software Engineer"],
+        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Manager", "Branch Office", "Human Resources", "HR Manager"]
       ];
       const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -1660,6 +1676,84 @@
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+    };
+    const validateLocation = (locationName) => {
+      if (!locationName || !validLocations) {
+        console.log("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
+        return { isValid: false };
+      }
+      const trimmedLocation = locationName.trim();
+      console.log("Location validation: Checking location", {
+        providedLocation: trimmedLocation,
+        availableLocations: validLocations.map((l) => l.name)
+      });
+      const validLocation = validLocations.find(
+        (loc) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
+      );
+      console.log("Location validation result:", {
+        location: trimmedLocation,
+        found: !!validLocation,
+        validLocation
+      });
+      return {
+        isValid: !!validLocation,
+        locationId: validLocation == null ? void 0 : validLocation.id
+      };
+    };
+    const validateDepartment = (departmentName) => {
+      if (!departmentName || !validDepartments) {
+        return { isValid: false };
+      }
+      const trimmedName = departmentName.trim().toLowerCase();
+      const department = validDepartments.find(
+        (dept) => dept.name.toLowerCase() === trimmedName
+      );
+      return {
+        isValid: !!department,
+        departmentId: department == null ? void 0 : department.id
+      };
+    };
+    const validateRole = (roleName) => {
+      if (!roleName || !validRoles) {
+        return { isValid: false };
+      }
+      const trimmedName = roleName.trim().toLowerCase();
+      const role = validRoles.find(
+        (r) => r.name.toLowerCase() === trimmedName
+      );
+      return {
+        isValid: !!role,
+        roleId: role == null ? void 0 : role.role_id,
+        departmentId: (role == null ? void 0 : role.department_id) || null
+      };
+    };
+    const validateDepartmentRolePair = (departmentName, roleName) => {
+      const deptValidation = validateDepartment(departmentName);
+      if (!deptValidation.isValid) {
+        return { isValid: false, error: `Department "${departmentName}" does not exist` };
+      }
+      const roleValidation = validateRole(roleName);
+      if (!roleValidation.isValid) {
+        return { isValid: false, error: `Role "${roleName}" does not exist or is not active` };
+      }
+      if (roleValidation.departmentId === null) {
+        return {
+          isValid: true,
+          departmentId: deptValidation.departmentId,
+          roleId: roleValidation.roleId
+        };
+      }
+      if (roleValidation.departmentId !== deptValidation.departmentId) {
+        return {
+          isValid: false,
+          error: `Role "${roleName}" does not belong to department "${departmentName}"`
+        };
+      }
+      return {
+        isValid: true,
+        departmentId: deptValidation.departmentId,
+        roleId: roleValidation.roleId
+      };
     };
     const validateAccessLevel = (accessLevel) => {
       if (!accessLevel) {
@@ -1734,6 +1828,7 @@
       return errorMessage.length > 100 ? "An unexpected error occurred while creating the user. Please try again." : errorMessage;
     };
     const processUserImport = async (row) => {
+      var _a;
       const email = row["Email"] || row["email"];
       if (!email) {
         console.error("Missing email for row:", row);
@@ -1742,6 +1837,43 @@
       console.log("Processing user:", email);
       const accessLevelValue = row["Access Level"] || row["access_level"] || "";
       const accessLevelValidation = validateAccessLevel(accessLevelValue);
+      const locationName = row["Location"] || row["location"] || "";
+      const departmentName = row["Department"] || row["department"] || "";
+      const roleName = row["Role"] || row["role"] || "";
+      if (locationName) {
+        const locationValidation = validateLocation(locationName);
+        if (!locationValidation.isValid) {
+          throw new Error(`Location "${locationName}" does not exist`);
+        }
+      }
+      let departmentId;
+      if (departmentName) {
+        const deptValidation = validateDepartment(departmentName);
+        if (!deptValidation.isValid) {
+          throw new Error(`Department "${departmentName}" does not exist`);
+        }
+        departmentId = deptValidation.departmentId;
+      }
+      let roleId;
+      let roleDepartmentId;
+      if (roleName) {
+        const roleValidation = validateRole(roleName);
+        if (!roleValidation.isValid) {
+          throw new Error(`Role "${roleName}" does not exist or is not active`);
+        }
+        roleId = roleValidation.roleId;
+        roleDepartmentId = roleValidation.departmentId;
+      }
+      if (departmentName && roleName) {
+        const pairValidation = validateDepartmentRolePair(departmentName, roleName);
+        if (!pairValidation.isValid) {
+          throw new Error(pairValidation.error || "Invalid department-role pair");
+        }
+        departmentId = pairValidation.departmentId;
+        roleId = pairValidation.roleId;
+      } else if (roleName && roleDepartmentId !== null) {
+        throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
+      }
       const clientId = client.getCurrentClientId();
       const clientPath = clientId ? `/${clientId}` : "";
       const { data: authData, error: authError } = await client.supabase.functions.invoke("create-user", {
@@ -1771,6 +1903,10 @@
         const friendlyError = translateError(authData.error);
         throw new Error(friendlyError);
       }
+      const userId = (_a = authData == null ? void 0 : authData.user) == null ? void 0 : _a.id;
+      if (!userId) {
+        throw new Error("User created but user ID not returned");
+      }
       const warnings = [];
       if (!accessLevelValidation.isValid && accessLevelValue) {
         warnings.push({
@@ -1778,6 +1914,97 @@
           value: accessLevelValue,
           message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
         });
+      }
+      if (locationName) {
+        const locationValidation = validateLocation(locationName);
+        if (locationValidation.isValid && locationValidation.locationId) {
+          try {
+            const locationData = {
+              user_id: userId,
+              location_id: locationValidation.locationId,
+              full_name: row["Full Name"] || row["full_name"] || "Unknown User",
+              access_purpose: "General Access",
+              status: "Active",
+              date_access_created: (/* @__PURE__ */ new Date()).toISOString()
+            };
+            const { error: locationError } = await client.supabase.from("physical_location_access").insert(locationData);
+            if (locationError) {
+              console.error("Error assigning location:", locationError);
+              warnings.push({
+                field: "Location",
+                value: locationName,
+                message: `Location "${locationName}" could not be assigned: ${locationError.message}`
+              });
+            }
+          } catch (locationError) {
+            console.error("Exception assigning location:", locationError);
+            warnings.push({
+              field: "Location",
+              value: locationName,
+              message: `Location "${locationName}" could not be assigned: ${locationError.message}`
+            });
+          }
+        }
+      }
+      if (departmentName || roleName) {
+        try {
+          const pairingId = departmentId && roleId ? crypto.randomUUID() : void 0;
+          if (departmentId) {
+            const { error: deptError } = await client.supabase.from("user_departments").insert({
+              user_id: userId,
+              department_id: departmentId,
+              is_primary: false,
+              // Will be set to true if this is the first department
+              pairing_id: pairingId,
+              assigned_by: userId
+              // In production, this should be the current admin user ID
+            });
+            if (deptError) {
+              console.error("Error assigning department:", deptError);
+              warnings.push({
+                field: "Department",
+                value: departmentName,
+                message: `Department "${departmentName}" could not be assigned: ${deptError.message}`
+              });
+            } else {
+              const { data: existingDepts } = await client.supabase.from("user_departments").select("id").eq("user_id", userId);
+              if (existingDepts && existingDepts.length === 1) {
+                await client.supabase.from("user_departments").update({ is_primary: true }).eq("user_id", userId).eq("department_id", departmentId);
+              }
+            }
+          }
+          if (roleId) {
+            const { error: roleError } = await client.supabase.from("user_profile_roles").insert({
+              user_id: userId,
+              role_id: roleId,
+              is_primary: false,
+              // Will be set to true if this is the first role
+              pairing_id: pairingId,
+              assigned_by: userId
+              // In production, this should be the current admin user ID
+            });
+            if (roleError) {
+              console.error("Error assigning role:", roleError);
+              warnings.push({
+                field: "Role",
+                value: roleName,
+                message: `Role "${roleName}" could not be assigned: ${roleError.message}`
+              });
+            } else {
+              const { data: existingRoles } = await client.supabase.from("user_profile_roles").select("id").eq("user_id", userId);
+              if (existingRoles && existingRoles.length === 1) {
+                await client.supabase.from("user_profile_roles").update({ is_primary: true }).eq("user_id", userId).eq("role_id", roleId);
+              }
+            }
+          }
+        } catch (assignmentError) {
+          console.error("Exception assigning department/role:", assignmentError);
+          warnings.push({
+            field: "Department/Role",
+            value: `${departmentName || ""} / ${roleName || ""}`,
+            message: `Could not assign department/role: ${assignmentError.message}`
+          });
+        }
       }
       return {
         email,
@@ -1922,7 +2149,7 @@
       /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Users" }),
-          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV or Excel file to import users in bulk. Users will be created with authentication accounts and will need to activate via email. Roles and departments can be assigned after import." })
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV file to import users in bulk. Users will be created with authentication accounts and will receive an activation link via email. Departments, roles, and locations can be assigned during import." })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
@@ -1987,7 +2214,10 @@
               "Last Name",
               "Phone",
               "Employee ID",
-              "Access Level"
+              "Access Level",
+              "Location",
+              "Department",
+              "Role"
             ].map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
@@ -1996,7 +2226,33 @@
                 " is required for each user"
               ] }),
               /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• Users will be created with 'Pending' status and must activate via email" }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• Roles and departments can be assigned after bulk import" }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Location" }),
+                " (optional) - must match an existing active location"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Department" }),
+                " (optional) - must match an existing department"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
+                " (optional) - must match an existing active role"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• If both ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Department" }),
+                " and ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
+                " are provided, the role must belong to that department (or be a general role)"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• If only ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
+                " is provided, it must be a general role (not assigned to any department)"
+              ] }),
               /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• All other fields are optional and will use default values if not provided" })
             ] })
           ] })

@@ -2850,12 +2850,20 @@ const RoleManagement = () => {
     department_id: "none",
     is_active: true
   });
-  const [sortField2, setSortField2] = useState("name");
-  const [sortDirection2, setSortDirection2] = useState("asc");
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
   const { data: rolesData, isLoading: rolesLoading } = useQuery({
     queryKey: ["roles"],
     queryFn: async () => {
       const { data, error } = await supabaseClient.from("roles").select("*");
+      if (error) throw error;
+      return data;
+    }
+  });
+  const { data: departments } = useQuery({
+    queryKey: ["departments-for-roles"],
+    queryFn: async () => {
+      const { data, error } = await supabaseClient.from("departments").select("id, name").order("name");
       if (error) throw error;
       return data;
     }
@@ -2865,37 +2873,34 @@ const RoleManagement = () => {
     return [...rolesData].sort((a, b) => {
       let aValue;
       let bValue;
-      if (sortField2 === "name") {
+      if (sortField === "name") {
         aValue = a.name.toLowerCase();
         bValue = b.name.toLowerCase();
-      } else if (sortField2 === "description") {
-        aValue = (a.description || "").toLowerCase();
-        bValue = (b.description || "").toLowerCase();
+      } else if (sortField === "department") {
+        const aDept = departments == null ? void 0 : departments.find((d) => d.id === a.department_id);
+        const bDept = departments == null ? void 0 : departments.find((d) => d.id === b.department_id);
+        aValue = ((aDept == null ? void 0 : aDept.name) || "No department").toLowerCase();
+        bValue = ((bDept == null ? void 0 : bDept.name) || "No department").toLowerCase();
+      } else if (sortField === "status") {
+        aValue = a.is_active ? 1 : 0;
+        bValue = b.is_active ? 1 : 0;
       } else {
         aValue = new Date(a.created_at);
         bValue = new Date(b.created_at);
       }
-      if (aValue < bValue) return sortDirection2 === "asc" ? -1 : 1;
-      if (aValue > bValue) return sortDirection2 === "asc" ? 1 : -1;
+      if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
+      if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [rolesData, sortField2, sortDirection2]);
+  }, [rolesData, sortField, sortDirection, departments]);
   const handleSort = (field) => {
-    if (sortField2 === field) {
-      setSortDirection2(sortDirection2 === "asc" ? "desc" : "asc");
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
-      setSortField2(field);
-      setSortDirection2("asc");
+      setSortField(field);
+      setSortDirection("asc");
     }
   };
-  const { data: departments } = useQuery({
-    queryKey: ["departments-for-roles"],
-    queryFn: async () => {
-      const { data, error } = await supabaseClient.from("departments").select("id, name").order("name");
-      if (error) throw error;
-      return data;
-    }
-  });
   const createRoleMutation = useMutation({
     mutationFn: async (roleData) => {
       const { error } = await supabaseClient.from("roles").insert([{
@@ -3121,7 +3126,19 @@ const RoleManagement = () => {
                 onClick: () => handleSort("name"),
                 children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
                   "Name",
-                  sortField2 === "name" && (sortDirection2 === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
+                  sortField === "name" && (sortDirection === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
+                ] })
+              }
+            ),
+            /* @__PURE__ */ jsx(TableHead, { children: "Description" }),
+            /* @__PURE__ */ jsx(
+              TableHead,
+              {
+                className: "cursor-pointer hover:bg-muted/70 transition-colors",
+                onClick: () => handleSort("department"),
+                children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+                  "Department",
+                  sortField === "department" && (sortDirection === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
                 ] })
               }
             ),
@@ -3129,15 +3146,13 @@ const RoleManagement = () => {
               TableHead,
               {
                 className: "cursor-pointer hover:bg-muted/70 transition-colors",
-                onClick: () => handleSort("description"),
+                onClick: () => handleSort("status"),
                 children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-                  "Description",
-                  sortField2 === "description" && (sortDirection2 === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
+                  "Status",
+                  sortField === "status" && (sortDirection === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
                 ] })
               }
             ),
-            /* @__PURE__ */ jsx(TableHead, { children: "Department" }),
-            /* @__PURE__ */ jsx(TableHead, { children: "Status" }),
             /* @__PURE__ */ jsx(
               TableHead,
               {
@@ -3145,7 +3160,7 @@ const RoleManagement = () => {
                 onClick: () => handleSort("created_at"),
                 children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
                   "Created",
-                  sortField2 === "created_at" && (sortDirection2 === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
+                  sortField === "created_at" && (sortDirection === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
                 ] })
               }
             ),
@@ -3585,6 +3600,8 @@ const DepartmentManagement = () => {
     description: "",
     manager_id: "none"
   });
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
   const { data: departmentsData, isLoading: departmentsLoading } = useQuery({
     queryKey: ["departments"],
     queryFn: async () => {
@@ -3601,9 +3618,6 @@ const DepartmentManagement = () => {
       if (sortField === "name") {
         aValue = a.name.toLowerCase();
         bValue = b.name.toLowerCase();
-      } else if (sortField === "description") {
-        aValue = (a.description || "").toLowerCase();
-        bValue = (b.description || "").toLowerCase();
       } else {
         aValue = new Date(a.created_at);
         bValue = new Date(b.created_at);
@@ -3843,17 +3857,7 @@ const DepartmentManagement = () => {
                 ] })
               }
             ),
-            /* @__PURE__ */ jsx(
-              TableHead,
-              {
-                className: "cursor-pointer hover:bg-muted/70 transition-colors",
-                onClick: () => handleSort("description"),
-                children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-                  "Description",
-                  sortField === "description" && (sortDirection === "asc" ? /* @__PURE__ */ jsx(ArrowUp, { className: "h-4 w-4" }) : /* @__PURE__ */ jsx(ArrowDown, { className: "h-4 w-4" }))
-                ] })
-              }
-            ),
+            /* @__PURE__ */ jsx(TableHead, { children: "Description" }),
             /* @__PURE__ */ jsx(TableHead, { children: "Manager" }),
             /* @__PURE__ */ jsx(
               TableHead,
@@ -3970,6 +3974,8 @@ const LocationManagement = () => {
     room: "",
     status: "Active"
   });
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
   const { data: locationsData, isLoading: locationsLoading } = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {

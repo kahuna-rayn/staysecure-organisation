@@ -32,7 +32,7 @@ export const RoleManagement: React.FC = () => {
     department_id: 'none',
     is_active: true,
   });
-  const [sortField, setSortField] = useState<'name' | 'description' | 'created_at'>('name');
+  const [sortField, setSortField] = useState<'name' | 'department' | 'status' | 'created_at'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: rolesData, isLoading: rolesLoading } = useQuery({
@@ -47,40 +47,6 @@ export const RoleManagement: React.FC = () => {
     },
   });
 
-  // Sort roles based on current sort configuration
-  const roles = useMemo(() => {
-    if (!rolesData) return [];
-    
-    return [...rolesData].sort((a, b) => {
-      let aValue: string | Date;
-      let bValue: string | Date;
-      
-      if (sortField === 'name') {
-        aValue = a.name.toLowerCase();
-        bValue = b.name.toLowerCase();
-      } else if (sortField === 'description') {
-        aValue = (a.description || '').toLowerCase();
-        bValue = (b.description || '').toLowerCase();
-      } else {
-        aValue = new Date(a.created_at);
-        bValue = new Date(b.created_at);
-      }
-      
-      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
-      return 0;
-    });
-  }, [rolesData, sortField, sortDirection]);
-
-  const handleSort = (field: 'name' | 'description' | 'created_at') => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
   const { data: departments } = useQuery({
     queryKey: ['departments-for-roles'],
     queryFn: async () => {
@@ -93,6 +59,45 @@ export const RoleManagement: React.FC = () => {
       return data as Department[];
     },
   });
+
+  // Sort roles based on current sort configuration
+  const roles = useMemo(() => {
+    if (!rolesData) return [];
+    
+    return [...rolesData].sort((a, b) => {
+      let aValue: string | Date | number;
+      let bValue: string | Date | number;
+      
+      if (sortField === 'name') {
+        aValue = a.name.toLowerCase();
+        bValue = b.name.toLowerCase();
+      } else if (sortField === 'department') {
+        const aDept = departments?.find(d => d.id === a.department_id);
+        const bDept = departments?.find(d => d.id === b.department_id);
+        aValue = (aDept?.name || 'No department').toLowerCase();
+        bValue = (bDept?.name || 'No department').toLowerCase();
+      } else if (sortField === 'status') {
+        aValue = a.is_active ? 1 : 0; // Active = 1, Inactive = 0
+        bValue = b.is_active ? 1 : 0;
+      } else {
+        aValue = new Date(a.created_at);
+        bValue = new Date(b.created_at);
+      }
+      
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }, [rolesData, sortField, sortDirection, departments]);
+
+  const handleSort = (field: 'name' | 'department' | 'status' | 'created_at') => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('asc');
+    }
+  };
 
   const createRoleMutation = useMutation({
     mutationFn: async (roleData: typeof formData) => {
@@ -355,13 +360,14 @@ export const RoleManagement: React.FC = () => {
                     )}
                   </div>
                 </TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-muted/70 transition-colors"
-                  onClick={() => handleSort('description')}
+                  onClick={() => handleSort('department')}
                 >
                   <div className="flex items-center gap-2">
-                    Description
-                    {sortField === 'description' && (
+                    Department
+                    {sortField === 'department' && (
                       sortDirection === 'asc' ? (
                         <ArrowUp className="h-4 w-4" />
                       ) : (
@@ -370,8 +376,21 @@ export const RoleManagement: React.FC = () => {
                     )}
                   </div>
                 </TableHead>
-                <TableHead>Department</TableHead>
-                <TableHead>Status</TableHead>
+                <TableHead 
+                  className="cursor-pointer hover:bg-muted/70 transition-colors"
+                  onClick={() => handleSort('status')}
+                >
+                  <div className="flex items-center gap-2">
+                    Status
+                    {sortField === 'status' && (
+                      sortDirection === 'asc' ? (
+                        <ArrowUp className="h-4 w-4" />
+                      ) : (
+                        <ArrowDown className="h-4 w-4" />
+                      )
+                    )}
+                  </div>
+                </TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-muted/70 transition-colors"
                   onClick={() => handleSort('created_at')}

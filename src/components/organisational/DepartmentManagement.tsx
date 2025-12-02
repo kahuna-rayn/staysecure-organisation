@@ -34,6 +34,8 @@ export const DepartmentManagement: React.FC = () => {
     description: '',
     manager_id: 'none',
   });
+  const [sortField, setSortField] = useState<'name' | 'created_at'>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: departmentsData, isLoading: departmentsLoading } = useQuery({
     queryKey: ['departments'],
@@ -58,9 +60,6 @@ export const DepartmentManagement: React.FC = () => {
       if (sortField === 'name') {
         aValue = a.name.toLowerCase();
         bValue = b.name.toLowerCase();
-      } else if (sortField === 'description') {
-        aValue = (a.description || '').toLowerCase();
-        bValue = (b.description || '').toLowerCase();
       } else {
         aValue = new Date(a.created_at);
         bValue = new Date(b.created_at);
@@ -72,7 +71,7 @@ export const DepartmentManagement: React.FC = () => {
     });
   }, [departmentsData, sortField, sortDirection]);
 
-  const handleSort = (field: 'name' | 'description' | 'created_at') => {
+  const handleSort = (field: 'name' | 'created_at') => {
     if (sortField === field) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
@@ -344,21 +343,7 @@ export const DepartmentManagement: React.FC = () => {
                     )}
                   </div>
                 </TableHead>
-                <TableHead 
-                  className="cursor-pointer hover:bg-muted/70 transition-colors"
-                  onClick={() => handleSort('description')}
-                >
-                  <div className="flex items-center gap-2">
-                    Description
-                    {sortField === 'description' && (
-                      sortDirection === 'asc' ? (
-                        <ArrowUp className="h-4 w-4" />
-                      ) : (
-                        <ArrowDown className="h-4 w-4" />
-                      )
-                    )}
-                  </div>
-                </TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead>Manager</TableHead>
                 <TableHead 
                   className="cursor-pointer hover:bg-muted/70 transition-colors"

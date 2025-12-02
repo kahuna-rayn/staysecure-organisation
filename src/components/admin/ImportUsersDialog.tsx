@@ -67,6 +67,19 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     },
   });
 
+  // Fetch all existing profiles for manager validation
+  const { data: existingProfiles } = useQuery({
+    queryKey: ['profiles-for-manager-validation'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, email, full_name, username')
+        .order('full_name');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -96,11 +109,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     multiple: false
   });
 
-  const generateSampleCSV = () => {
-    const headers = ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role'];
+    const generateSampleCSV = () => {
+    const headers = ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager'];
     const sampleData = [
-      ['john.doe@company.com', 'John Doe', 'John', 'Doe', '+1-555-0123', 'EMP-2024-001', 'User', 'Main Office', 'Engineering', 'Software Engineer'],
-      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+1-555-0124', 'EMP-2024-002', 'Manager', 'Branch Office', 'Human Resources', 'HR Manager']
+      ['john.doe@company.com', 'John Doe', 'John', 'Doe', '+1-555-0123', 'EMP-2024-001', 'User', 'Main Office', 'Engineering', 'Software Engineer', 'jane.smith@company.com'],
+      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+1-555-0124', 'EMP-2024-002', 'Manager', 'Branch Office', 'Human Resources', 'HR Manager', '']
     ];
     
     const csvContent = [headers, ...sampleData]
@@ -225,6 +238,31 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     };
   };
 
+
+  // Helper function to validate manager
+  const validateManager = (managerIdentifier: string): { isValid: boolean; managerId?: string } => {
+    if (!managerIdentifier || !existingProfiles) {
+      return { isValid: false };
+    }
+
+    const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
+    
+    // Try to find manager by email, full_name, or username (case-insensitive)
+    const manager = existingProfiles.find((profile: any) => {
+      const email = (profile.email || '').toLowerCase();
+      const fullName = (profile.full_name || '').toLowerCase();
+      const username = (profile.username || '').toLowerCase();
+      
+      return email === trimmedIdentifier || 
+             fullName === trimmedIdentifier || 
+             username === trimmedIdentifier;
+    });
+
+    return {
+      isValid: !!manager,
+      managerId: manager?.id
+    };
+  };
 
   // Helper function to validate access level
   const validateAccessLevel = (accessLevel: string): { isValid: boolean; value?: string } => {
@@ -396,6 +434,24 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
     }
 
+    // Validate manager if provided
+    const managerName = row['Manager'] || row['manager'] || '';
+    let managerId: string | undefined;
+    let managerWarning: any = null;
+    if (managerName) {
+      const managerValidation = validateManager(managerName);
+      if (!managerValidation.isValid) {
+        // Manager doesn't exist - create user anyway but add warning
+        managerWarning = {
+          field: 'Manager',
+          value: managerName,
+          message: `Manager "${managerName}" does not exist in the system - user created without manager assignment`
+        };
+      } else {
+        managerId = managerValidation.managerId;
+      }
+    }
+
     // Extract client path using the same logic as client.ts
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : '';
@@ -412,6 +468,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         status: 'Pending',
         employee_id: row['Employee ID'] || row['employee_id'] || '',
         access_level: accessLevelValidation.isValid ? accessLevelValidation.value : 'user',
+        manager: managerId || null, // Include manager if validated
         clientPath // Pass client path explicitly
       }
     });
@@ -444,6 +501,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         value: accessLevelValue,
         message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
       });
+    }
+
+    // Add manager warning if manager doesn't exist
+    if (managerWarning) {
+      warnings.push(managerWarning);
     }
 
     // Assign location if provided
@@ -832,7 +894,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             <div className="flex flex-wrap gap-2 mb-4">
               {[
                 'Email', 'Full Name', 'First Name', 'Last Name', 
-                'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role'
+                'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager'
               ].map((column) => (
                 <Badge key={column} variant="outline" className="text-xs">
                   {column}
@@ -847,6 +909,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               <p>• <strong>Role</strong> (optional) - must match an existing active role</p>
               <p>• If both <strong>Department</strong> and <strong>Role</strong> are provided, the role must belong to that department (or be a general role)</p>
               <p>• If only <strong>Role</strong> is provided, it must be a general role (not assigned to any department)</p>
+              <p>• <strong>Manager</strong> (optional) - can be identified by email, full name, or username. If manager doesn't exist, user will be created but a warning will be reported</p>
               <p>• All other fields are optional and will use default values if not provided</p>
             </div>
           </div>

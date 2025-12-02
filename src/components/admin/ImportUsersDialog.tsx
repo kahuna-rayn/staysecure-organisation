@@ -10,6 +10,7 @@ import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
 import Papa from 'papaparse';
 import { ImportError } from '@/components/import/ImportErrorReport';
 import { useQuery } from '@tanstack/react-query';
+import { validateManager as validateManagerUtil } from '@/utils/managerValidation';
 
 interface ImportUsersDialogProps {
   onImportComplete?: () => Promise<void>;
@@ -239,29 +240,9 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   };
 
 
-  // Helper function to validate manager
+  // Helper function to validate manager (using utility function)
   const validateManager = (managerIdentifier: string): { isValid: boolean; managerId?: string } => {
-    if (!managerIdentifier || !existingProfiles) {
-      return { isValid: false };
-    }
-
-    const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
-    
-    // Try to find manager by email, full_name, or username (case-insensitive)
-    const manager = existingProfiles.find((profile: any) => {
-      const email = (profile.email || '').toLowerCase();
-      const fullName = (profile.full_name || '').toLowerCase();
-      const username = (profile.username || '').toLowerCase();
-      
-      return email === trimmedIdentifier || 
-             fullName === trimmedIdentifier || 
-             username === trimmedIdentifier;
-    });
-
-    return {
-      isValid: !!manager,
-      managerId: manager?.id
-    };
+    return validateManagerUtil(managerIdentifier, existingProfiles);
   };
 
   // Helper function to validate access level

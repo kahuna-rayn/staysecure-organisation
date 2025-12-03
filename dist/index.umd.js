@@ -7432,7 +7432,11 @@
           }
         }
         if (onAvatarUpdate) {
+          console.log("ProfileAvatar: Calling onAvatarUpdate with:", urlData.publicUrl);
           onAvatarUpdate(urlData.publicUrl);
+          console.log("ProfileAvatar: onAvatarUpdate called");
+        } else {
+          console.warn("ProfileAvatar: onAvatarUpdate callback not provided");
         }
         useToast.toast({
           title: "Avatar uploaded",
@@ -7700,7 +7704,7 @@
         await handleFieldSave("location", locationName);
       }
     };
-    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", children: [
+    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-3", children: [
       /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-center md:justify-start", children: /* @__PURE__ */ jsxRuntime.jsx(
         ProfileAvatar,
         {
@@ -7709,10 +7713,14 @@
           lastName: profile.lastName || profile.last_name || "",
           profileId: profile.id,
           onAvatarUpdate: (newAvatarUrl) => {
+            console.log("EditableProfileHeader: onAvatarUpdate called with:", newAvatarUrl);
             if (onOptimisticUpdate) {
+              console.log("EditableProfileHeader: Calling onOptimisticUpdate");
               onOptimisticUpdate("avatar_url", newAvatarUrl);
             }
+            console.log("EditableProfileHeader: Calling onProfileUpdate");
             onProfileUpdate();
+            console.log("EditableProfileHeader: onProfileUpdate called");
           }
         }
       ) }),
@@ -7927,9 +7935,13 @@
       })
     }), [profile, hardware, software, certificates, userEmail]);
     const handleProfileUpdate = async () => {
+      console.log("PersonaProfile: handleProfileUpdate called");
       setOptimisticData(null);
+      console.log("PersonaProfile: Cleared optimistic data, refetching profile...");
       await refetchProfile();
+      console.log("PersonaProfile: Profile refetched");
       refetchAssets();
+      console.log("PersonaProfile: Assets refetch triggered");
     };
     if (profileLoading || assetsLoading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });

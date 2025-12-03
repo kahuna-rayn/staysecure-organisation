@@ -124,7 +124,11 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
 
       // Call the callback if provided
       if (onAvatarUpdate) {
+        console.log('ProfileAvatar: Calling onAvatarUpdate with:', urlData.publicUrl);
         onAvatarUpdate(urlData.publicUrl);
+        console.log('ProfileAvatar: onAvatarUpdate called');
+      } else {
+        console.warn('ProfileAvatar: onAvatarUpdate callback not provided');
       }
 
       toast({

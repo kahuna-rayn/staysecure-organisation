@@ -176,7 +176,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     <Card className="w-full">
       <CardContent className="p-6 lg:p-8">
         {/* 4-column layout: Avatar, Personal, Work, Status */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           {/* Column 1 - Avatar section */}
           <div className="flex justify-center md:justify-start">
             <ProfileAvatar 
@@ -185,10 +185,14 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               lastName={profile.lastName || profile.last_name || ''}
               profileId={profile.id}
               onAvatarUpdate={(newAvatarUrl) => {
+                console.log('EditableProfileHeader: onAvatarUpdate called with:', newAvatarUrl);
                 if (onOptimisticUpdate) {
+                  console.log('EditableProfileHeader: Calling onOptimisticUpdate');
                   onOptimisticUpdate('avatar_url', newAvatarUrl);
                 }
+                console.log('EditableProfileHeader: Calling onProfileUpdate');
                 onProfileUpdate();
+                console.log('EditableProfileHeader: onProfileUpdate called');
               }}
             />
           </div>

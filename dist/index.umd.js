@@ -7928,8 +7928,9 @@
         return mapped;
       })
     }), [profile, hardware, software, certificates, userEmail]);
-    const handleProfileUpdate = () => {
-      refetchProfile();
+    const handleProfileUpdate = async () => {
+      setOptimisticData(null);
+      await refetchProfile();
       refetchAssets();
     };
     if (profileLoading || assetsLoading) {
@@ -7942,7 +7943,9 @@
       setOptimisticData((prev) => {
         const baseData = prev || personaData;
         const updated = { ...baseData };
-        if (field in updated) {
+        if (field === "avatar_url") {
+          updated.avatar = value;
+        } else if (field in updated) {
           updated[field] = value;
         } else if (updated.account && field in updated.account) {
           updated.account = { ...updated.account, [field]: value };

@@ -130,9 +130,11 @@ const PersonaProfile: React.FC = () => {
     }),
   }), [profile, hardware, software, certificates, userEmail]);
 
-  const handleProfileUpdate = () => {
+  const handleProfileUpdate = async () => {
+    // Clear optimistic data first so fresh data will be used
+    setOptimisticData(null);
     // Refetch both profile and assets data to ensure everything is fresh
-    refetchProfile();
+    await refetchProfile();
     refetchAssets();
   };
 
@@ -157,7 +159,10 @@ const PersonaProfile: React.FC = () => {
     setOptimisticData(prev => {
       const baseData = prev || personaData;
       const updated = { ...baseData };
-      if (field in updated) {
+      // Map avatar_url to avatar field
+      if (field === 'avatar_url') {
+        updated.avatar = value;
+      } else if (field in updated) {
         updated[field] = value;
       } else if (updated.account && field in updated.account) {
         updated.account = { ...updated.account, [field]: value };

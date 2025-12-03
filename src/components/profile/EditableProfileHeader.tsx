@@ -179,9 +179,16 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
           {/* Avatar section */}
           <div className="flex justify-center lg:justify-start">
             <ProfileAvatar 
-              avatarUrl={profile.avatar}
-              firstName={profile.firstName}
-              lastName={profile.lastName}
+              avatarUrl={profile.avatar || profile.avatar_url}
+              firstName={profile.firstName || profile.first_name || ''}
+              lastName={profile.lastName || profile.last_name || ''}
+              profileId={profile.id}
+              onAvatarUpdate={(newAvatarUrl) => {
+                if (onOptimisticUpdate) {
+                  onOptimisticUpdate('avatar_url', newAvatarUrl);
+                }
+                onProfileUpdate();
+              }}
             />
           </div>
           

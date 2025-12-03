@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Upload, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { useOrganisationContext } from "@/context/OrganisationContext";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 interface ProfileAvatarProps {
   avatarUrl?: string;
@@ -12,6 +13,7 @@ interface ProfileAvatarProps {
   lastName: string;
   profileId?: string;
   onAvatarUpdate?: (avatarUrl: string) => void;
+  supabaseClient?: SupabaseClient;
 }
 
 const ProfileAvatar: React.FC<ProfileAvatarProps> = ({ 
@@ -19,9 +21,24 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   firstName, 
   lastName,
   profileId,
-  onAvatarUpdate
+  onAvatarUpdate,
+  supabaseClient: propSupabaseClient
 }) => {
-  const { supabaseClient } = useOrganisationContext();
+  // Try to get supabaseClient from context, fall back to prop
+  let contextSupabaseClient: SupabaseClient | undefined;
+  try {
+    const context = useOrganisationContext();
+    contextSupabaseClient = context.supabaseClient;
+  } catch (error) {
+    // Context not available - that's okay, we'll use prop
+    contextSupabaseClient = undefined;
+  }
+  
+  const supabaseClient = propSupabaseClient || contextSupabaseClient;
+  
+  if (!supabaseClient) {
+    console.error('ProfileAvatar: supabaseClient is required. Either wrap in OrganisationProvider or pass as prop.');
+  }
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -36,6 +53,15 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    if (!supabaseClient) {
+      toast({
+        title: "Configuration error",
+        description: "Supabase client is not available. Please contact support.",
+        variant: "destructive"
+      });
+      return;
+    }
 
     // Check file type - only images
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -158,7 +184,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
         variant="outline"
         className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
         onClick={handleAvatarClick}
-        disabled={uploading || !profileId}
+        disabled={uploading || !profileId || !supabaseClient}
       >
         {uploading ? (
           <Loader2 className="h-3 w-3 animate-spin" />

@@ -86,6 +86,19 @@ const isSuperAdmin = currentUserRole === 'super_admin';
     },
   });
 
+  // Fetch languages for dropdown
+  const { data: languages } = useQuery({
+    queryKey: ['languages'],
+    queryFn: async () => {
+      const { data } = await supabaseClient
+        .from('languages')
+        .select('code, display_name, native_name, flag_emoji')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+      return data || [];
+    },
+  });
+
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
     return input.replace(/[^0-9+\s\-\(\)]/g, '');
@@ -155,6 +168,7 @@ const handleFullNameChange = (value: string) => {
         access_level: 'User',
         location_id: '',
         location: '',
+        language: 'English',
         bio: ''
       };
       onUserChange(resetUser);
@@ -290,15 +304,36 @@ const handleFullNameChange = (value: string) => {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea
-              id="bio"
-              value={newUser.bio}
-              onChange={(e) => updateField('bio', e.target.value)}
-              placeholder="Enter bio (optional)"
-              rows={3}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="language">Language</Label>
+              <Select 
+                value={newUser.language || 'English'} 
+                onValueChange={(value) => updateField('language', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages?.map((language) => (
+                    <SelectItem key={language.display_name || language.code} value={language.display_name || language.code}>
+                      {language.flag_emoji && <span className="mr-2">{language.flag_emoji}</span>}
+                      {language.native_name || language.display_name || language.code}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bio">Bio</Label>
+              <Textarea
+                id="bio"
+                value={newUser.bio}
+                onChange={(e) => updateField('bio', e.target.value)}
+                placeholder="Enter bio (optional)"
+                rows={3}
+              />
+            </div>
           </div>
 
           <div className="text-sm text-muted-foreground">

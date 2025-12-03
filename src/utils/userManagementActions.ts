@@ -16,6 +16,7 @@ interface NewUser {
   location_id?: string;
   status?: string;
   access_level?: string;
+  language?: string;
   bio?: string;
   employee_id?: string;
   role?: string;
@@ -157,6 +158,7 @@ export const handleCreateUser = async (
         location: newUser.location,
         location_id: newUser.location_id || null,
         // Don't update status - Edge Function sets it to 'Pending' for activation
+        language: newUser.language,
         bio: newUser.bio,
         employee_id: newUser.employee_id,
       });

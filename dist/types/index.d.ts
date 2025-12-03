@@ -37,6 +37,7 @@ export interface UserProfile {
     location_id?: string;
     status?: string;
     access_level?: string;
+    language?: string;
     bio?: string;
     employee_id?: string;
     avatar_url?: string;
@@ -61,6 +62,7 @@ export interface NewUser {
     location_id?: string;
     status: string;
     access_level: string;
+    language?: string;
     bio: string;
     employee_id: string;
 }

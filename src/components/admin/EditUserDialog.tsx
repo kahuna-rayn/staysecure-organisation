@@ -40,6 +40,19 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
     },
   });
 
+  // Fetch languages for dropdown
+  const { data: languages } = useQuery({
+    queryKey: ['languages'],
+    queryFn: async () => {
+      const { data } = await supabaseClient
+        .from('languages')
+        .select('code, display_name, native_name, flag_emoji')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+      return data || [];
+    },
+  });
+
   if (!editingUser) return null;
 
   const updateField = (field: keyof UserProfile, value: string) => {
@@ -205,15 +218,36 @@ const EditUserDialog: React.FC<EditUserDialogProps> = ({
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="edit_bio">Bio</Label>
-            <Textarea
-              id="edit_bio"
-              value={editingUser.bio || ''}
-              onChange={(e) => updateField('bio', e.target.value)}
-              placeholder="Enter bio (optional)"
-              rows={3}
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit_language">Language</Label>
+              <Select 
+                value={editingUser.language || 'English'} 
+                onValueChange={(value) => updateField('language', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select language" />
+                </SelectTrigger>
+                <SelectContent>
+                  {languages?.map((language) => (
+                    <SelectItem key={language.display_name || language.code} value={language.display_name || language.code}>
+                      {language.flag_emoji && <span className="mr-2">{language.flag_emoji}</span>}
+                      {language.native_name || language.display_name || language.code}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit_bio">Bio</Label>
+              <Textarea
+                id="edit_bio"
+                value={editingUser.bio || ''}
+                onChange={(e) => updateField('bio', e.target.value)}
+                placeholder="Enter bio (optional)"
+                rows={3}
+              />
+            </div>
           </div>
 
           <DialogFooter>

@@ -785,6 +785,7 @@
           location: newUser.location,
           location_id: newUser.location_id || null,
           // Don't update status - Edge Function sets it to 'Pending' for activation
+          language: newUser.language,
           bio: newUser.bio,
           employee_id: newUser.employee_id
         });
@@ -1225,6 +1226,13 @@
         return data || [];
       }
     });
+    const { data: languages } = reactQuery.useQuery({
+      queryKey: ["languages"],
+      queryFn: async () => {
+        const { data } = await supabaseClient.from("languages").select("code, display_name, native_name, flag_emoji").eq("is_active", true).order("sort_order", { ascending: true });
+        return data || [];
+      }
+    });
     const validatePhoneInput = (input2) => {
       return input2.replace(/[^0-9+\s\-\(\)]/g, "");
     };
@@ -1274,6 +1282,7 @@
           access_level: "User",
           location_id: "",
           location: "",
+          language: "English",
           bio: ""
         };
         onUserChange(resetUser);
@@ -1423,18 +1432,37 @@
               )
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "bio", children: "Bio" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              textarea.Textarea,
-              {
-                id: "bio",
-                value: newUser.bio,
-                onChange: (e) => updateField("bio", e.target.value),
-                placeholder: "Enter bio (optional)",
-                rows: 3
-              }
-            )
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "language", children: "Language" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(
+                select.Select,
+                {
+                  value: newUser.language || "English",
+                  onValueChange: (value) => updateField("language", value),
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select language" }) }),
+                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: languages == null ? void 0 : languages.map((language) => /* @__PURE__ */ jsxRuntime.jsxs(select.SelectItem, { value: language.display_name || language.code, children: [
+                      language.flag_emoji && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "mr-2", children: language.flag_emoji }),
+                      language.native_name || language.display_name || language.code
+                    ] }, language.display_name || language.code)) })
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "bio", children: "Bio" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                textarea.Textarea,
+                {
+                  id: "bio",
+                  value: newUser.bio,
+                  onChange: (e) => updateField("bio", e.target.value),
+                  placeholder: "Enter bio (optional)",
+                  rows: 3
+                }
+              )
+            ] })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" }),
@@ -1460,6 +1488,13 @@
       queryKey: ["locations"],
       queryFn: async () => {
         const { data } = await supabaseClient.from("locations").select("id, name").eq("status", "Active").order("name");
+        return data || [];
+      }
+    });
+    const { data: languages } = reactQuery.useQuery({
+      queryKey: ["languages"],
+      queryFn: async () => {
+        const { data } = await supabaseClient.from("languages").select("code, display_name, native_name, flag_emoji").eq("is_active", true).order("sort_order", { ascending: true });
         return data || [];
       }
     });
@@ -1631,18 +1666,37 @@
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_bio", children: "Bio" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            textarea.Textarea,
-            {
-              id: "edit_bio",
-              value: editingUser.bio || "",
-              onChange: (e) => updateField("bio", e.target.value),
-              placeholder: "Enter bio (optional)",
-              rows: 3
-            }
-          )
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_language", children: "Language" }),
+            /* @__PURE__ */ jsxRuntime.jsxs(
+              select.Select,
+              {
+                value: editingUser.language || "English",
+                onValueChange: (value) => updateField("language", value),
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select language" }) }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: languages == null ? void 0 : languages.map((language) => /* @__PURE__ */ jsxRuntime.jsxs(select.SelectItem, { value: language.display_name || language.code, children: [
+                    language.flag_emoji && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "mr-2", children: language.flag_emoji }),
+                    language.native_name || language.display_name || language.code
+                  ] }, language.display_name || language.code)) })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_bio", children: "Bio" }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              textarea.Textarea,
+              {
+                id: "edit_bio",
+                value: editingUser.bio || "",
+                onChange: (e) => updateField("bio", e.target.value),
+                placeholder: "Enter bio (optional)",
+                rows: 3
+              }
+            )
+          ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),

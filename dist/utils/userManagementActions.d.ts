@@ -11,6 +11,7 @@ interface NewUser {
     location_id?: string;
     status?: string;
     access_level?: string;
+    language?: string;
     bio?: string;
     employee_id?: string;
     role?: string;

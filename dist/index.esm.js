@@ -836,6 +836,7 @@ const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
         location: newUser.location,
         location_id: newUser.location_id || null,
         // Don't update status - Edge Function sets it to 'Pending' for activation
+        language: newUser.language,
         bio: newUser.bio,
         employee_id: newUser.employee_id
       });
@@ -1276,6 +1277,13 @@ const CreateUserDialog = ({
       return data || [];
     }
   });
+  const { data: languages } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => {
+      const { data } = await supabaseClient.from("languages").select("code, display_name, native_name, flag_emoji").eq("is_active", true).order("sort_order", { ascending: true });
+      return data || [];
+    }
+  });
   const validatePhoneInput = (input) => {
     return input.replace(/[^0-9+\s\-\(\)]/g, "");
   };
@@ -1325,6 +1333,7 @@ const CreateUserDialog = ({
         access_level: "User",
         location_id: "",
         location: "",
+        language: "English",
         bio: ""
       };
       onUserChange(resetUser);
@@ -1474,18 +1483,37 @@ const CreateUserDialog = ({
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "bio", children: "Bio" }),
-          /* @__PURE__ */ jsx(
-            Textarea,
-            {
-              id: "bio",
-              value: newUser.bio,
-              onChange: (e) => updateField("bio", e.target.value),
-              placeholder: "Enter bio (optional)",
-              rows: 3
-            }
-          )
+        /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "language", children: "Language" }),
+            /* @__PURE__ */ jsxs(
+              Select,
+              {
+                value: newUser.language || "English",
+                onValueChange: (value) => updateField("language", value),
+                children: [
+                  /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select language" }) }),
+                  /* @__PURE__ */ jsx(SelectContent, { children: languages == null ? void 0 : languages.map((language) => /* @__PURE__ */ jsxs(SelectItem, { value: language.display_name || language.code, children: [
+                    language.flag_emoji && /* @__PURE__ */ jsx("span", { className: "mr-2", children: language.flag_emoji }),
+                    language.native_name || language.display_name || language.code
+                  ] }, language.display_name || language.code)) })
+                ]
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "bio", children: "Bio" }),
+            /* @__PURE__ */ jsx(
+              Textarea,
+              {
+                id: "bio",
+                value: newUser.bio,
+                onChange: (e) => updateField("bio", e.target.value),
+                placeholder: "Enter bio (optional)",
+                rows: 3
+              }
+            )
+          ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground", children: [
           /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" }),
@@ -1511,6 +1539,13 @@ const EditUserDialog = ({
     queryKey: ["locations"],
     queryFn: async () => {
       const { data } = await supabaseClient.from("locations").select("id, name").eq("status", "Active").order("name");
+      return data || [];
+    }
+  });
+  const { data: languages } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => {
+      const { data } = await supabaseClient.from("languages").select("code, display_name, native_name, flag_emoji").eq("is_active", true).order("sort_order", { ascending: true });
       return data || [];
     }
   });
@@ -1682,18 +1717,37 @@ const EditUserDialog = ({
           )
         ] })
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsx(Label, { htmlFor: "edit_bio", children: "Bio" }),
-        /* @__PURE__ */ jsx(
-          Textarea,
-          {
-            id: "edit_bio",
-            value: editingUser.bio || "",
-            onChange: (e) => updateField("bio", e.target.value),
-            placeholder: "Enter bio (optional)",
-            rows: 3
-          }
-        )
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_language", children: "Language" }),
+          /* @__PURE__ */ jsxs(
+            Select,
+            {
+              value: editingUser.language || "English",
+              onValueChange: (value) => updateField("language", value),
+              children: [
+                /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select language" }) }),
+                /* @__PURE__ */ jsx(SelectContent, { children: languages == null ? void 0 : languages.map((language) => /* @__PURE__ */ jsxs(SelectItem, { value: language.display_name || language.code, children: [
+                  language.flag_emoji && /* @__PURE__ */ jsx("span", { className: "mr-2", children: language.flag_emoji }),
+                  language.native_name || language.display_name || language.code
+                ] }, language.display_name || language.code)) })
+              ]
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_bio", children: "Bio" }),
+          /* @__PURE__ */ jsx(
+            Textarea,
+            {
+              id: "edit_bio",
+              value: editingUser.bio || "",
+              onChange: (e) => updateField("bio", e.target.value),
+              placeholder: "Enter bio (optional)",
+              rows: 3
+            }
+          )
+        ] })
       ] }),
       /* @__PURE__ */ jsxs(DialogFooter, { children: [
         /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),

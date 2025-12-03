@@ -193,6 +193,11 @@ const PersonaProfile: React.FC = () => {
 
   const displayData = optimisticData || personaData;
 
+  // Log the function to verify it's the right one
+  console.log('PersonaProfile: handleProfileUpdate at render:', handleProfileUpdate);
+  console.log('PersonaProfile: handleProfileUpdate type:', typeof handleProfileUpdate);
+  console.log('PersonaProfile: handleProfileUpdate name:', handleProfileUpdate?.name);
+
   return (
     <div className="space-y-6">
       {!hasAdminAccess && (

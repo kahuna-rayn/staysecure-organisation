@@ -7978,6 +7978,9 @@
       });
     };
     const displayData = optimisticData || personaData;
+    console.log("PersonaProfile: handleProfileUpdate at render:", handleProfileUpdate);
+    console.log("PersonaProfile: handleProfileUpdate type:", typeof handleProfileUpdate);
+    console.log("PersonaProfile: handleProfileUpdate name:", handleProfileUpdate == null ? void 0 : handleProfileUpdate.name);
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
       /* @__PURE__ */ jsxRuntime.jsx(

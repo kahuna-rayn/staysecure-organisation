@@ -7990,10 +7990,16 @@
         EditableProfileHeader,
         {
           profile: displayData,
-          onProfileUpdate: () => {
-            console.log("PersonaProfile: onProfileUpdate prop called directly");
-            handleProfileUpdate();
-          },
+          onProfileUpdate: o.useCallback(() => {
+            console.log("PersonaProfile: onProfileUpdate prop called directly - WRAPPER EXECUTED");
+            console.log("PersonaProfile: handleProfileUpdate reference:", handleProfileUpdate);
+            console.log("PersonaProfile: handleProfileUpdate type:", typeof handleProfileUpdate);
+            if (handleProfileUpdate && typeof handleProfileUpdate === "function") {
+              handleProfileUpdate();
+            } else {
+              console.error("PersonaProfile: handleProfileUpdate is not a function!", handleProfileUpdate);
+            }
+          }, [handleProfileUpdate]),
           onOptimisticUpdate: handleOptimisticUpdate
         }
       ),

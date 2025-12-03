@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { useAuth } from 'staysecure-auth';
 import { useProfile } from "@/hooks/useProfile";
 import { useUserAssets } from "@/hooks/useUserAssets";
@@ -202,10 +202,16 @@ const PersonaProfile: React.FC = () => {
       )}
       <EditableProfileHeader 
         profile={displayData} 
-        onProfileUpdate={() => {
-          console.log('PersonaProfile: onProfileUpdate prop called directly');
-          handleProfileUpdate();
-        }} 
+        onProfileUpdate={useCallback(() => {
+          console.log('PersonaProfile: onProfileUpdate prop called directly - WRAPPER EXECUTED');
+          console.log('PersonaProfile: handleProfileUpdate reference:', handleProfileUpdate);
+          console.log('PersonaProfile: handleProfileUpdate type:', typeof handleProfileUpdate);
+          if (handleProfileUpdate && typeof handleProfileUpdate === 'function') {
+            handleProfileUpdate();
+          } else {
+            console.error('PersonaProfile: handleProfileUpdate is not a function!', handleProfileUpdate);
+          }
+        }, [handleProfileUpdate])} 
         onOptimisticUpdate={handleOptimisticUpdate} 
       />
       <PersonaDetailsTabs profile={displayData} userId={user?.id || ''} onUpdate={handleProfileUpdate} />

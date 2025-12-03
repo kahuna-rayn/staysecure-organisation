@@ -8037,7 +8037,17 @@ const PersonaProfile = () => {
   const displayData = optimisticData || personaData;
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     !hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
-    /* @__PURE__ */ jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: handleProfileUpdate, onOptimisticUpdate: handleOptimisticUpdate }),
+    /* @__PURE__ */ jsx(
+      EditableProfileHeader,
+      {
+        profile: displayData,
+        onProfileUpdate: () => {
+          console.log("PersonaProfile: onProfileUpdate prop called directly");
+          handleProfileUpdate();
+        },
+        onOptimisticUpdate: handleOptimisticUpdate
+      }
+    ),
     /* @__PURE__ */ jsx(PersonaDetailsTabs, { profile: displayData, userId: (user == null ? void 0 : user.id) || "", onUpdate: handleProfileUpdate })
   ] });
 };

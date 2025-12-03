@@ -9,7 +9,6 @@ import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
 import { useUserPhysicalLocations } from '@/hooks/useUserPhysicalLocations';
 import { toast } from '@/components/ui/use-toast';
-import { useOrganisationContext } from '@/context/OrganisationContext';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileContactInfo from './ProfileContactInfo';
 import EditableField from './EditableField';
@@ -29,15 +28,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   onOptimisticUpdate
 }) => {
   const { profiles, updateProfile } = useUserProfiles();
-  // Try to get supabaseClient from context for ProfileAvatar
-  let supabaseClient;
-  try {
-    const context = useOrganisationContext();
-    supabaseClient = context.supabaseClient;
-  } catch (error) {
-    // Context not available - ProfileAvatar will handle this
-    supabaseClient = undefined;
-  }
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [managerValue, setManagerValue] = useState(profile.manager || '');
@@ -193,7 +183,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               firstName={profile.firstName || profile.first_name || ''}
               lastName={profile.lastName || profile.last_name || ''}
               profileId={profile.id}
-              supabaseClient={supabaseClient}
               onAvatarUpdate={(newAvatarUrl) => {
                 if (onOptimisticUpdate) {
                   onOptimisticUpdate('avatar_url', newAvatarUrl);

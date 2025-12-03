@@ -4,8 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Upload, Loader2 } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
-import { useOrganisationContext } from "@/context/OrganisationContext";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ProfileAvatarProps {
   avatarUrl?: string;
@@ -13,7 +12,6 @@ interface ProfileAvatarProps {
   lastName: string;
   profileId?: string;
   onAvatarUpdate?: (avatarUrl: string) => void;
-  supabaseClient?: SupabaseClient;
 }
 
 const ProfileAvatar: React.FC<ProfileAvatarProps> = ({ 
@@ -21,24 +19,8 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   firstName, 
   lastName,
   profileId,
-  onAvatarUpdate,
-  supabaseClient: propSupabaseClient
+  onAvatarUpdate
 }) => {
-  // Try to get supabaseClient from context, fall back to prop
-  let contextSupabaseClient: SupabaseClient | undefined;
-  try {
-    const context = useOrganisationContext();
-    contextSupabaseClient = context.supabaseClient;
-  } catch (error) {
-    // Context not available - that's okay, we'll use prop
-    contextSupabaseClient = undefined;
-  }
-  
-  const supabaseClient = propSupabaseClient || contextSupabaseClient;
-  
-  if (!supabaseClient) {
-    console.error('ProfileAvatar: supabaseClient is required. Either wrap in OrganisationProvider or pass as prop.');
-  }
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -53,15 +35,6 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
-    if (!supabaseClient) {
-      toast({
-        title: "Configuration error",
-        description: "Supabase client is not available. Please contact support.",
-        variant: "destructive"
-      });
-      return;
-    }
 
     // Check file type - only images
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -99,7 +72,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
           const urlParts = avatarUrl.split('/storage/v1/object/public/avatars/');
           if (urlParts.length > 1) {
             const oldFilePath = urlParts[1];
-            await supabaseClient.storage
+            await supabase.storage
               .from('avatars')
               .remove([oldFilePath]);
           }
@@ -110,7 +83,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
       }
 
       // Upload to Supabase Storage
-      const { data, error } = await supabaseClient.storage
+      const { data, error } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -123,13 +96,13 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
       }
 
       // Get public URL
-      const { data: urlData } = supabaseClient.storage
+      const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
       // Update profile with new avatar URL
       if (profileId) {
-        const { error: updateError } = await supabaseClient
+        const { error: updateError } = await supabase
           .from('profiles')
           .update({ avatar_url: urlData.publicUrl })
           .eq('id', profileId);
@@ -184,7 +157,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
         variant="outline"
         className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0"
         onClick={handleAvatarClick}
-        disabled={uploading || !profileId || !supabaseClient}
+        disabled={uploading || !profileId}
       >
         {uploading ? (
           <Loader2 className="h-3 w-3 animate-spin" />

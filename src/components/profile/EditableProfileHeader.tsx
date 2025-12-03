@@ -172,7 +172,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     }
   };
 
-
   return (
     <Card className="w-full">
       <CardContent className="p-6 lg:p-8">
@@ -196,7 +195,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
           
           {/* Column 2 - Personal info */}
           <div className="space-y-2">
-            <div className="text-center sm:text-left space-y-2">
+              <div className="text-center sm:text-left space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <EditableField
                     value={profile.firstName || ''}
@@ -267,7 +266,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
 
           {/* Column 3 - Work info */}
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-2 text-sm">
                 <Network className="h-4 w-4 text-muted-foreground" />
                 {editingField === 'manager' ? (
                   <Select
@@ -341,7 +340,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
 
           {/* Column 4 - Status info */}
           <div className="space-y-2">
-            <ProfileContactInfo
+              <ProfileContactInfo
                 startDate={profile.startDate}
                 userId={profile.id}
                 status={profile.account?.status}

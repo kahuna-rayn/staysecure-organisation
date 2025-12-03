@@ -131,15 +131,11 @@ const PersonaProfile: React.FC = () => {
   }), [profile, hardware, software, certificates, userEmail]);
 
   const handleProfileUpdate = async () => {
-    console.log('PersonaProfile: handleProfileUpdate called');
     // Clear optimistic data first so fresh data will be used
     setOptimisticData(null);
-    console.log('PersonaProfile: Cleared optimistic data, refetching profile...');
-    // Refetch both profile and assets data to ensure everything is fresh
+    // Refetch both profile and assets data - same pattern as UserManagement
     await refetchProfile();
-    console.log('PersonaProfile: Profile refetched');
     refetchAssets();
-    console.log('PersonaProfile: Assets refetch triggered');
   };
 
   if (profileLoading || assetsLoading) {
@@ -202,16 +198,7 @@ const PersonaProfile: React.FC = () => {
       )}
       <EditableProfileHeader 
         profile={displayData} 
-        onProfileUpdate={useCallback(() => {
-          console.log('PersonaProfile: onProfileUpdate prop called directly - WRAPPER EXECUTED');
-          console.log('PersonaProfile: handleProfileUpdate reference:', handleProfileUpdate);
-          console.log('PersonaProfile: handleProfileUpdate type:', typeof handleProfileUpdate);
-          if (handleProfileUpdate && typeof handleProfileUpdate === 'function') {
-            handleProfileUpdate();
-          } else {
-            console.error('PersonaProfile: handleProfileUpdate is not a function!', handleProfileUpdate);
-          }
-        }, [handleProfileUpdate])} 
+        onProfileUpdate={handleProfileUpdate} 
         onOptimisticUpdate={handleOptimisticUpdate} 
       />
       <PersonaDetailsTabs profile={displayData} userId={user?.id || ''} onUpdate={handleProfileUpdate} />

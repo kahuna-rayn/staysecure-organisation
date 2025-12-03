@@ -7483,11 +7483,7 @@ const ProfileAvatar = ({
         }
       }
       if (onAvatarUpdate) {
-        console.log("ProfileAvatar: Calling onAvatarUpdate with:", urlData.publicUrl);
         onAvatarUpdate(urlData.publicUrl);
-        console.log("ProfileAvatar: onAvatarUpdate called");
-      } else {
-        console.warn("ProfileAvatar: onAvatarUpdate callback not provided");
       }
       toast({
         title: "Avatar uploaded",
@@ -7764,33 +7760,11 @@ const EditableProfileHeader = ({
         lastName: profile.lastName || profile.last_name || "",
         profileId: profile.id,
         onAvatarUpdate: (newAvatarUrl) => {
-          console.log("EditableProfileHeader: onAvatarUpdate called with:", newAvatarUrl);
-          console.log("EditableProfileHeader: onProfileUpdate type:", typeof onProfileUpdate);
-          console.log("EditableProfileHeader: onProfileUpdate value:", onProfileUpdate);
           if (onOptimisticUpdate) {
-            console.log("EditableProfileHeader: Calling onOptimisticUpdate");
             onOptimisticUpdate("avatar_url", newAvatarUrl);
           }
-          console.log("EditableProfileHeader: Calling onProfileUpdate");
-          if (onProfileUpdate && typeof onProfileUpdate === "function") {
-            try {
-              console.log("EditableProfileUpdate: About to invoke onProfileUpdate, function name:", onProfileUpdate.name);
-              const result = onProfileUpdate();
-              console.log("EditableProfileHeader: onProfileUpdate returned:", result);
-              if (result && typeof result.then === "function") {
-                console.log("EditableProfileHeader: onProfileUpdate returned a promise, waiting...");
-                result.then(() => {
-                  console.log("EditableProfileHeader: onProfileUpdate promise resolved");
-                }).catch((err) => {
-                  console.error("EditableProfileHeader: onProfileUpdate promise rejected:", err);
-                });
-              }
-              console.log("EditableProfileHeader: onProfileUpdate called successfully");
-            } catch (error) {
-              console.error("EditableProfileHeader: Error calling onProfileUpdate:", error);
-            }
-          } else {
-            console.error("EditableProfileHeader: onProfileUpdate is not a function!", onProfileUpdate);
+          if (onProfileUpdate) {
+            onProfileUpdate();
           }
         }
       }
@@ -8006,13 +7980,9 @@ const PersonaProfile = () => {
     })
   }), [profile, hardware, software, certificates, userEmail]);
   const handleProfileUpdate = async () => {
-    console.log("PersonaProfile: handleProfileUpdate called");
     setOptimisticData(null);
-    console.log("PersonaProfile: Cleared optimistic data, refetching profile...");
     await refetchProfile();
-    console.log("PersonaProfile: Profile refetched");
     refetchAssets();
-    console.log("PersonaProfile: Assets refetch triggered");
   };
   if (profileLoading || assetsLoading) {
     return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
@@ -8041,16 +8011,7 @@ const PersonaProfile = () => {
       EditableProfileHeader,
       {
         profile: displayData,
-        onProfileUpdate: useCallback(() => {
-          console.log("PersonaProfile: onProfileUpdate prop called directly - WRAPPER EXECUTED");
-          console.log("PersonaProfile: handleProfileUpdate reference:", handleProfileUpdate);
-          console.log("PersonaProfile: handleProfileUpdate type:", typeof handleProfileUpdate);
-          if (handleProfileUpdate && typeof handleProfileUpdate === "function") {
-            handleProfileUpdate();
-          } else {
-            console.error("PersonaProfile: handleProfileUpdate is not a function!", handleProfileUpdate);
-          }
-        }, [handleProfileUpdate]),
+        onProfileUpdate: handleProfileUpdate,
         onOptimisticUpdate: handleOptimisticUpdate
       }
     ),

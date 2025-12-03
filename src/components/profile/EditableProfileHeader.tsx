@@ -185,33 +185,13 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               lastName={profile.lastName || profile.last_name || ''}
               profileId={profile.id}
               onAvatarUpdate={(newAvatarUrl) => {
-                console.log('EditableProfileHeader: onAvatarUpdate called with:', newAvatarUrl);
-                console.log('EditableProfileHeader: onProfileUpdate type:', typeof onProfileUpdate);
-                console.log('EditableProfileHeader: onProfileUpdate value:', onProfileUpdate);
+                // Update optimistic state immediately
                 if (onOptimisticUpdate) {
-                  console.log('EditableProfileHeader: Calling onOptimisticUpdate');
                   onOptimisticUpdate('avatar_url', newAvatarUrl);
                 }
-                console.log('EditableProfileHeader: Calling onProfileUpdate');
-                if (onProfileUpdate && typeof onProfileUpdate === 'function') {
-                  try {
-                    console.log('EditableProfileUpdate: About to invoke onProfileUpdate, function name:', onProfileUpdate.name);
-                    const result = onProfileUpdate();
-                    console.log('EditableProfileHeader: onProfileUpdate returned:', result);
-                    if (result && typeof result.then === 'function') {
-                      console.log('EditableProfileHeader: onProfileUpdate returned a promise, waiting...');
-                      result.then(() => {
-                        console.log('EditableProfileHeader: onProfileUpdate promise resolved');
-                      }).catch((err) => {
-                        console.error('EditableProfileHeader: onProfileUpdate promise rejected:', err);
-                      });
-                    }
-                    console.log('EditableProfileHeader: onProfileUpdate called successfully');
-                  } catch (error) {
-                    console.error('EditableProfileHeader: Error calling onProfileUpdate:', error);
-                  }
-                } else {
-                  console.error('EditableProfileHeader: onProfileUpdate is not a function!', onProfileUpdate);
+                // Trigger refetch - same pattern as UserManagement
+                if (onProfileUpdate) {
+                  onProfileUpdate();
                 }
               }}
             />

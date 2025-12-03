@@ -11,6 +11,7 @@ export default defineConfig({
       skipDiagnostics: true, // Skip type checking during build - external deps will be provided by consuming app
     }),
   ],
+  css: false, // Disable CSS processing for library build - CSS will be handled by consuming app
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),

@@ -709,6 +709,31 @@ const useOrganisationContext = () => {
 const CLIENT_CONFIGS = {
   default: {}
 };
+const __vite_import_meta_env__ = { "BASE_URL": "/", "DEV": false, "MODE": "production", "PROD": true, "SSR": false };
+const isTestEnvironment = typeof process !== "undefined" && (process.env.NODE_ENV === "test" || process.env.JEST_WORKER_ID !== void 0);
+const getEnvVar = (key) => {
+  if (isTestEnvironment && typeof process !== "undefined" && process.env) {
+    return process.env[key];
+  }
+  const metaEnv = typeof globalThis !== "undefined" && globalThis.__VITE_META_ENV__;
+  if (metaEnv) {
+    return metaEnv[key];
+  }
+  try {
+    return __vite_import_meta_env__[key];
+  } catch {
+    if (typeof process !== "undefined" && process.env) {
+      return process.env[key];
+    }
+  }
+  return void 0;
+};
+const getSupabaseUrl = () => {
+  return getEnvVar("VITE_SUPABASE_URL");
+};
+const getSupabaseAnonKey = () => {
+  return getEnvVar("VITE_SUPABASE_ANON_KEY") || getEnvVar("VITE_SUPABASE_PUB_KEY") || getEnvVar("VITE_SB_PUB_KEY");
+};
 const handleSaveUser = async (editingUser, updateProfile, onSuccess) => {
   try {
     await updateProfile(editingUser.id, editingUser);
@@ -726,7 +751,7 @@ const handleSaveUser = async (editingUser, updateProfile, onSuccess) => {
   }
 };
 const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
-  var _a;
+  var _a, _b;
   try {
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : "";
@@ -736,8 +761,8 @@ const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
     }
     const accessToken = sessionData.session.access_token;
     const clientConfig = clientId && CLIENT_CONFIGS[clientId] || CLIENT_CONFIGS["default"];
-    const anonKey = (clientConfig == null ? void 0 : clientConfig.supabaseAnonKey) || void 0 || void 0 || void 0;
-    const baseUrl = void 0;
+    const anonKey = (clientConfig == null ? void 0 : clientConfig.supabaseAnonKey) || getSupabaseAnonKey();
+    const baseUrl = (_b = getSupabaseUrl()) == null ? void 0 : _b.replace(/\/$/, "");
     if (!baseUrl) {
       throw new Error("Supabase base URL is not configured.");
     }
@@ -1677,6 +1702,22 @@ const EditUserDialog = ({
     ] })
   ] }) });
 };
+const validateManager = (managerIdentifier, existingProfiles) => {
+  if (!managerIdentifier || !existingProfiles) {
+    return { isValid: false };
+  }
+  const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
+  const manager = existingProfiles.find((profile) => {
+    const email = (profile.email || "").toLowerCase();
+    const fullName = (profile.full_name || "").toLowerCase();
+    const username = (profile.username || "").toLowerCase();
+    return email === trimmedIdentifier || fullName === trimmedIdentifier || username === trimmedIdentifier;
+  });
+  return {
+    isValid: !!manager,
+    managerId: manager == null ? void 0 : manager.id
+  };
+};
 const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -1709,7 +1750,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   const { data: existingProfiles } = useQuery({
     queryKey: ["profiles-for-manager-validation"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("id, email, full_name, username").order("full_name");
+      const { data, error } = await supabase.from("profiles").select("id, full_name, username").order("full_name");
       if (error) throw error;
       return data || [];
     }
@@ -1834,21 +1875,8 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
       roleId: roleValidation.roleId
     };
   };
-  const validateManager = (managerIdentifier) => {
-    if (!managerIdentifier || !existingProfiles) {
-      return { isValid: false };
-    }
-    const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
-    const manager = existingProfiles.find((profile) => {
-      const email = (profile.email || "").toLowerCase();
-      const fullName = (profile.full_name || "").toLowerCase();
-      const username = (profile.username || "").toLowerCase();
-      return email === trimmedIdentifier || fullName === trimmedIdentifier || username === trimmedIdentifier;
-    });
-    return {
-      isValid: !!manager,
-      managerId: manager == null ? void 0 : manager.id
-    };
+  const validateManager$1 = (managerIdentifier) => {
+    return validateManager(managerIdentifier, existingProfiles);
   };
   const validateAccessLevel = (accessLevel) => {
     if (!accessLevel) {
@@ -1973,7 +2001,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     let managerId;
     let managerWarning = null;
     if (managerName) {
-      const managerValidation = validateManager(managerName);
+      const managerValidation = validateManager$1(managerName);
       if (!managerValidation.isValid) {
         managerWarning = {
           field: "Manager",
@@ -3365,7 +3393,7 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
     link.click();
     document.body.removeChild(link);
   };
-  const validateManager = async (managerName) => {
+  const validateManager2 = async (managerName) => {
     if (!managerName || !managerName.trim()) {
       return { isValid: false };
     }
@@ -3390,7 +3418,7 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
     const warnings = [];
     let managerId = null;
     if (managerName) {
-      const managerValidation = await validateManager(managerName);
+      const managerValidation = await validateManager2(managerName);
       if (managerValidation.isValid) {
         managerId = managerValidation.managerId || null;
       } else {
@@ -7379,13 +7407,102 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
     )
   ] }) });
 };
-const ProfileAvatar = ({ avatarUrl, firstName, lastName }) => {
+const ProfileAvatar = ({
+  avatarUrl,
+  firstName,
+  lastName,
+  profileId,
+  onAvatarUpdate
+}) => {
+  const fileInputRef = useRef(null);
+  const [uploading, setUploading] = useState(false);
   const initials = firstName && lastName ? firstName.charAt(0) + lastName.charAt(0) : (firstName == null ? void 0 : firstName.slice(0, 2)) || "U";
-  const handleAvatarUpload = () => {
-    toast({
-      title: "Avatar Upload",
-      description: "Avatar upload functionality will be implemented with Supabase Storage."
-    });
+  const handleAvatarClick = () => {
+    var _a;
+    console.log("ProfileAvatar: Upload button clicked");
+    console.log("ProfileAvatar: fileInputRef.current:", fileInputRef.current);
+    console.log("ProfileAvatar: profileId:", profileId);
+    console.log("ProfileAvatar: supabase:", supabase);
+    (_a = fileInputRef.current) == null ? void 0 : _a.click();
+  };
+  const handleFileChange = async (event) => {
+    var _a;
+    console.log("ProfileAvatar: File selected:", event.target.files);
+    const file = (_a = event.target.files) == null ? void 0 : _a[0];
+    if (!file) {
+      console.log("ProfileAvatar: No file selected");
+      return;
+    }
+    console.log("ProfileAvatar: Processing file:", file.name, file.type, file.size);
+    const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+    if (!validTypes.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image (JPEG, PNG, GIF, or WebP)",
+        variant: "destructive"
+      });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Please upload an image smaller than 5MB",
+        variant: "destructive"
+      });
+      return;
+    }
+    setUploading(true);
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `avatars/${profileId || "user"}-${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      if (avatarUrl && avatarUrl.includes("/storage/v1/object/public/avatars/")) {
+        try {
+          const urlParts = avatarUrl.split("/storage/v1/object/public/avatars/");
+          if (urlParts.length > 1) {
+            const oldFilePath = urlParts[1];
+            await supabase.storage.from("avatars").remove([oldFilePath]);
+          }
+        } catch (error2) {
+          console.warn("Could not delete old avatar:", error2);
+        }
+      }
+      const { data, error } = await supabase.storage.from("avatars").upload(fileName, file, {
+        cacheControl: "3600",
+        upsert: false
+      });
+      if (error) {
+        console.error("Storage upload error:", error);
+        throw error;
+      }
+      const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(fileName);
+      if (profileId) {
+        const { error: updateError } = await supabase.from("profiles").update({ avatar_url: urlData.publicUrl }).eq("id", profileId);
+        if (updateError) {
+          console.error("Profile update error:", updateError);
+          throw updateError;
+        }
+      }
+      if (onAvatarUpdate) {
+        onAvatarUpdate(urlData.publicUrl);
+      }
+      toast({
+        title: "Avatar uploaded",
+        description: "Your avatar has been updated successfully"
+      });
+    } catch (error) {
+      console.error("Error uploading avatar:", error);
+      const errorMessage = (error == null ? void 0 : error.message) || "Failed to upload avatar. Please try again.";
+      toast({
+        title: "Upload failed",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
   return /* @__PURE__ */ jsxs("div", { className: "relative", children: [
     /* @__PURE__ */ jsxs(Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
@@ -7393,13 +7510,24 @@ const ProfileAvatar = ({ avatarUrl, firstName, lastName }) => {
       /* @__PURE__ */ jsx(AvatarFallback, { className: "text-2xl", children: initials })
     ] }),
     /* @__PURE__ */ jsx(
+      "input",
+      {
+        ref: fileInputRef,
+        type: "file",
+        accept: "image/jpeg,image/png,image/gif,image/webp",
+        onChange: handleFileChange,
+        className: "hidden"
+      }
+    ),
+    /* @__PURE__ */ jsx(
       Button,
       {
         size: "sm",
         variant: "outline",
         className: "absolute -bottom-2 -right-2 h-8 w-8 rounded-full p-0",
-        onClick: handleAvatarUpload,
-        children: /* @__PURE__ */ jsx(Upload, { className: "h-3 w-3" })
+        onClick: handleAvatarClick,
+        disabled: uploading || !profileId,
+        children: uploading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-3 w-3 animate-spin" }) : /* @__PURE__ */ jsx(Upload, { className: "h-3 w-3" })
       }
     )
   ] });
@@ -7623,16 +7751,23 @@ const EditableProfileHeader = ({
       await handleFieldSave("location", locationName);
     }
   };
-  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col lg:flex-row lg:items-start gap-6", children: [
-    /* @__PURE__ */ jsx("div", { className: "flex justify-center lg:justify-start", children: /* @__PURE__ */ jsx(
+  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", children: [
+    /* @__PURE__ */ jsx("div", { className: "flex justify-center md:justify-start", children: /* @__PURE__ */ jsx(
       ProfileAvatar,
       {
-        avatarUrl: profile.avatar,
-        firstName: profile.firstName,
-        lastName: profile.lastName
+        avatarUrl: profile.avatar || profile.avatar_url,
+        firstName: profile.firstName || profile.first_name || "",
+        lastName: profile.lastName || profile.last_name || "",
+        profileId: profile.id,
+        onAvatarUpdate: (newAvatarUrl) => {
+          if (onOptimisticUpdate) {
+            onOptimisticUpdate("avatar_url", newAvatarUrl);
+          }
+          onProfileUpdate();
+        }
       }
     ) }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 flex-1", children: [
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 md:col-span-3", children: [
       /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
         /* @__PURE__ */ jsxs("div", { className: "text-center sm:text-left space-y-2", children: [
           /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2", children: [

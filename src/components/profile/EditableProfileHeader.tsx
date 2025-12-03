@@ -175,9 +175,10 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   return (
     <Card className="w-full">
       <CardContent className="p-6 lg:p-8">
-        <div className="flex flex-col lg:flex-row lg:items-start gap-6">
-          {/* Avatar section */}
-          <div className="flex justify-center lg:justify-start">
+        {/* 4-column layout including avatar */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
+          {/* Column 1 - Avatar section */}
+          <div className="flex justify-center md:justify-start">
             <ProfileAvatar 
               avatarUrl={profile.avatar || profile.avatar_url}
               firstName={profile.firstName || profile.first_name || ''}
@@ -192,8 +193,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
             />
           </div>
           
-          {/* 3-column layout for profile info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 flex-1">
+          {/* Columns 2-4 for profile info */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 md:col-span-3">
             {/* Column 1 - Personal info */}
             <div className="space-y-2">
               <div className="text-center sm:text-left space-y-2">

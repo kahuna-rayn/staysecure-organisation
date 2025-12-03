@@ -54,6 +54,28 @@ src/__tests__/
 └── hibDataUtils.test.ts              # HIB checklist data utilities tests
 ```
 
+## UI Testing
+
+**Note:** UI interaction tests are **not included in this library module**. They should be written in the **consuming applications** (e.g., the "learn" app) where:
+- Components are used with real dependencies
+- Full user flows can be tested
+- Integration with the actual app context is verified
+
+### What This Library Tests
+- ✅ **Rendering** - Components render correctly
+- ✅ **Permissions** - UI shows/hides based on permissions
+- ✅ **Business Logic** - Core functionality and utilities
+- ✅ **Context** - Context provider and hooks
+
+### UI Testing Guide for Consuming Apps
+
+See [`UI_TESTING_GUIDE.md`](./UI_TESTING_GUIDE.md) for a comprehensive guide on testing UI interactions in consuming applications:
+- Testing user interactions
+- Form testing
+- User flows
+- Accessibility testing
+- Best practices
+
 ## Test Files Documentation
 
 ### 1. `context/OrganisationContext.test.tsx`

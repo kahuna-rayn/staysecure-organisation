@@ -122,7 +122,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
         }
       }
 
-      // Call the callback if provided - this will trigger the parent to refetch
+      // Call the callback if provided
       if (onAvatarUpdate) {
         onAvatarUpdate(urlData.publicUrl);
       }
@@ -151,7 +151,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   return (
     <div className="relative">
       <Avatar className="h-24 w-24 border-2 border-primary">
-        <AvatarImage src={avatarUrl} alt={`${firstName} ${lastName}`} key={avatarUrl} />
+        <AvatarImage src={avatarUrl} alt={`${firstName} ${lastName}`} />
         <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
       </Avatar>
       <input

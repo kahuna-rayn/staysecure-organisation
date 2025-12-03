@@ -176,7 +176,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     <Card className="w-full">
       <CardContent className="p-6 lg:p-8">
         {/* 4-column layout: Avatar, Personal, Work, Status */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
           {/* Column 1 - Avatar section */}
           <div className="flex justify-center md:justify-start">
             <ProfileAvatar 
@@ -185,28 +185,10 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               lastName={profile.lastName || profile.last_name || ''}
               profileId={profile.id}
               onAvatarUpdate={(newAvatarUrl) => {
-                console.log('EditableProfileHeader: onAvatarUpdate called with:', newAvatarUrl);
-                // Update optimistic state immediately
                 if (onOptimisticUpdate) {
                   onOptimisticUpdate('avatar_url', newAvatarUrl);
                 }
-                // Trigger refetch - same pattern as UserManagement
-                console.log('EditableProfileHeader: Calling onProfileUpdate, type:', typeof onProfileUpdate);
-                console.log('EditableProfileHeader: onProfileUpdate function:', onProfileUpdate);
-                if (onProfileUpdate) {
-                  console.log('EditableProfileHeader: onProfileUpdate exists, calling it...');
-                  // Make this async and await the result
-                  (async () => {
-                    try {
-                      const result = await onProfileUpdate();
-                      console.log('EditableProfileHeader: onProfileUpdate completed:', result);
-                    } catch (error) {
-                      console.error('EditableProfileHeader: Error calling onProfileUpdate:', error);
-                    }
-                  })();
-                } else {
-                  console.error('EditableProfileHeader: onProfileUpdate is not provided!');
-                }
+                onProfileUpdate();
               }}
             />
           </div>

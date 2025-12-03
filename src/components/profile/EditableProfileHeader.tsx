@@ -349,7 +349,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 passwordLastChanged={profile.account?.passwordLastChanged}
                 twoFactorEnabled={profile.account?.twoFactorEnabled}
               />
-            </div>
           </div>
         </div>
       </CardContent>

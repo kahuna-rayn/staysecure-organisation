@@ -29,12 +29,21 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
     : firstName?.slice(0, 2) || 'U';
 
   const handleAvatarClick = () => {
+    console.log('ProfileAvatar: Upload button clicked');
+    console.log('ProfileAvatar: fileInputRef.current:', fileInputRef.current);
+    console.log('ProfileAvatar: profileId:', profileId);
+    console.log('ProfileAvatar: supabase:', supabase);
     fileInputRef.current?.click();
   };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('ProfileAvatar: File selected:', event.target.files);
     const file = event.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      console.log('ProfileAvatar: No file selected');
+      return;
+    }
+    console.log('ProfileAvatar: Processing file:', file.name, file.type, file.size);
 
     // Check file type - only images
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];

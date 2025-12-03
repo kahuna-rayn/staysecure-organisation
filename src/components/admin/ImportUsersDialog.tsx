@@ -74,7 +74,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, email, full_name, username')
+        .select('id, full_name, username')
         .order('full_name');
       if (error) throw error;
       return data || [];

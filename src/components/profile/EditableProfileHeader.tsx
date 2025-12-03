@@ -173,15 +173,13 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   };
 
   // Debug: Log the grid classes
-  const gridClasses = "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8";
-  console.log('EditableProfileHeader: Grid classes:', gridClasses);
   console.log('EditableProfileHeader: Profile data:', { id: profile.id, avatar: profile.avatar || profile.avatar_url });
 
   return (
     <Card className="w-full">
       <CardContent className="p-6 lg:p-8">
         {/* 4-column layout: Avatar, Personal, Work, Status */}
-        <div className={gridClasses} style={{ border: '2px solid red' }}>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8" style={{ border: '2px solid red' }}>
           {/* Column 1 - Avatar section */}
           <div className="flex justify-center md:justify-start" style={{ border: '1px solid blue', padding: '8px' }}>
             <div style={{ border: '1px solid green', padding: '4px' }}>

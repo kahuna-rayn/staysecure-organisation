@@ -7751,155 +7751,164 @@ const EditableProfileHeader = ({
       await handleFieldSave("location", locationName);
     }
   };
-  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", children: [
-    /* @__PURE__ */ jsx("div", { className: "flex justify-center md:justify-start", children: /* @__PURE__ */ jsx(
-      ProfileAvatar,
-      {
-        avatarUrl: profile.avatar || profile.avatar_url,
-        firstName: profile.firstName || profile.first_name || "",
-        lastName: profile.lastName || profile.last_name || "",
-        profileId: profile.id,
-        onAvatarUpdate: (newAvatarUrl) => {
-          if (onOptimisticUpdate) {
-            onOptimisticUpdate("avatar_url", newAvatarUrl);
+  const gridClasses = "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8";
+  console.log("EditableProfileHeader: Grid classes:", gridClasses);
+  console.log("EditableProfileHeader: Profile data:", { id: profile.id, avatar: profile.avatar || profile.avatar_url });
+  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: gridClasses, style: { border: "2px solid red" }, children: [
+    /* @__PURE__ */ jsx("div", { className: "flex justify-center md:justify-start", style: { border: "1px solid blue", padding: "8px" }, children: /* @__PURE__ */ jsxs("div", { style: { border: "1px solid green", padding: "4px" }, children: [
+      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 1: AVATAR" }),
+      /* @__PURE__ */ jsx(
+        ProfileAvatar,
+        {
+          avatarUrl: profile.avatar || profile.avatar_url,
+          firstName: profile.firstName || profile.first_name || "",
+          lastName: profile.lastName || profile.last_name || "",
+          profileId: profile.id,
+          onAvatarUpdate: (newAvatarUrl) => {
+            if (onOptimisticUpdate) {
+              onOptimisticUpdate("avatar_url", newAvatarUrl);
+            }
+            onProfileUpdate();
           }
-          onProfileUpdate();
         }
-      }
-    ) }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 md:col-span-3", children: [
-      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsxs("div", { className: "text-center sm:text-left space-y-2", children: [
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
-            /* @__PURE__ */ jsx(
-              EditableField,
-              {
-                value: profile.firstName || "",
-                fieldKey: "firstName",
-                onSave: (field, value) => handleNameChange("firstName", value),
-                isEditing: editingField === "firstName",
-                onEdit: handleFieldEdit,
-                onCancel: handleFieldCancel,
-                saving,
-                placeholder: "First Name",
-                inputClassName: "text-sm h-8"
-              }
-            ),
-            /* @__PURE__ */ jsx(
-              EditableField,
-              {
-                value: profile.lastName || "",
-                fieldKey: "lastName",
-                onSave: (field, value) => handleNameChange("lastName", value),
-                isEditing: editingField === "lastName",
-                onEdit: handleFieldEdit,
-                onCancel: handleFieldCancel,
-                saving,
-                placeholder: "Last Name",
-                inputClassName: "text-sm h-8"
-              }
-            )
-          ] }),
+      )
+    ] }) }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-2", style: { border: "1px solid blue", padding: "8px" }, children: [
+      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 2: PERSONAL INFO" }),
+      /* @__PURE__ */ jsxs("div", { className: "text-center sm:text-left space-y-2", children: [
+        /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
           /* @__PURE__ */ jsx(
             EditableField,
             {
-              value: profile.full_name || `${profile.firstName} ${profile.lastName}`.trim(),
-              fieldKey: "full_name",
-              onSave: (field, value) => handleFullNameChange(value),
-              isEditing: editingField === "full_name",
+              value: profile.firstName || "",
+              fieldKey: "firstName",
+              onSave: (field, value) => handleNameChange("firstName", value),
+              isEditing: editingField === "firstName",
               onEdit: handleFieldEdit,
               onCancel: handleFieldCancel,
               saving,
-              placeholder: "Full Name (Auto-generated, editable)",
-              className: "flex-1",
-              inputClassName: "text-2xl font-bold h-10"
+              placeholder: "First Name",
+              inputClassName: "text-sm h-8"
             }
-          )
-        ] }),
-        ((_a = profile.account) == null ? void 0 : _a.username) && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsx(User, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsx("span", { className: "text-foreground", children: profile.account.username })
-        ] }),
-        ((_b = profile.account) == null ? void 0 : _b.employeeId) && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsx(Hash, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsx("span", { className: "text-foreground", children: profile.account.employeeId })
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsx(Phone, { className: "h-4 w-4 text-muted-foreground" }),
+          ),
           /* @__PURE__ */ jsx(
             EditableField,
             {
-              value: profile.phone || "Not provided",
-              fieldKey: "phone",
-              placeholder: "Phone number",
-              onSave: handleFieldSave,
-              isEditing: editingField === "phone",
+              value: profile.lastName || "",
+              fieldKey: "lastName",
+              onSave: (field, value) => handleNameChange("lastName", value),
+              isEditing: editingField === "lastName",
               onEdit: handleFieldEdit,
               onCancel: handleFieldCancel,
               saving,
-              inputClassName: "h-6 text-sm"
+              placeholder: "Last Name",
+              inputClassName: "text-sm h-8"
             }
           )
-        ] })
+        ] }),
+        /* @__PURE__ */ jsx(
+          EditableField,
+          {
+            value: profile.full_name || `${profile.firstName} ${profile.lastName}`.trim(),
+            fieldKey: "full_name",
+            onSave: (field, value) => handleFullNameChange(value),
+            isEditing: editingField === "full_name",
+            onEdit: handleFieldEdit,
+            onCancel: handleFieldCancel,
+            saving,
+            placeholder: "Full Name (Auto-generated, editable)",
+            className: "flex-1",
+            inputClassName: "text-2xl font-bold h-10"
+          }
+        )
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsx(Network, { className: "h-4 w-4 text-muted-foreground" }),
-          editingField === "manager" ? /* @__PURE__ */ jsxs(
-            Select,
-            {
-              value: managerValue,
-              onValueChange: handleManagerChange,
-              children: [
-                /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager" }) }),
-                /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
-              ]
-            }
-          ) : /* @__PURE__ */ jsx(
-            EditableField,
-            {
-              value: managerName,
-              fieldKey: "manager",
-              onSave: handleFieldSave,
-              isEditing: editingField === "manager",
-              onEdit: handleFieldEdit,
-              onCancel: handleFieldCancel,
-              saving,
-              inputClassName: "text-sm h-6"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-          /* @__PURE__ */ jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsx(
-            EditableField,
-            {
-              value: profile.location || "Not specified",
-              fieldKey: "location",
-              placeholder: "Select location",
-              onSave: handleFieldSave,
-              onSelectChange: handleLocationSelect,
-              isEditing: editingField === "location",
-              onEdit: handleFieldEdit,
-              onCancel: handleFieldCancel,
-              saving,
-              type: "select",
-              asyncOptions: physicalLocations,
-              isLoading: locationsLoading,
-              inputClassName: "h-6 text-sm w-48",
-              locationId: profile.locationId
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 w-full", children: [
-          /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-            primaryDepartment && /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryDepartment.department_name }),
-            primaryRole && /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryRole.role_name })
-          ] })
-        ] })
+      ((_a = profile.account) == null ? void 0 : _a.username) && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(User, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx("span", { className: "text-foreground", children: profile.account.username })
       ] }),
-      /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsx(
+      ((_b = profile.account) == null ? void 0 : _b.employeeId) && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(Hash, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx("span", { className: "text-foreground", children: profile.account.employeeId })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(Phone, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx(
+          EditableField,
+          {
+            value: profile.phone || "Not provided",
+            fieldKey: "phone",
+            placeholder: "Phone number",
+            onSave: handleFieldSave,
+            isEditing: editingField === "phone",
+            onEdit: handleFieldEdit,
+            onCancel: handleFieldCancel,
+            saving,
+            inputClassName: "h-6 text-sm"
+          }
+        )
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-2", style: { border: "1px solid blue", padding: "8px" }, children: [
+      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 3: WORK INFO" }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(Network, { className: "h-4 w-4 text-muted-foreground" }),
+        editingField === "manager" ? /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: managerValue,
+            onValueChange: handleManagerChange,
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager" }) }),
+              /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
+            ]
+          }
+        ) : /* @__PURE__ */ jsx(
+          EditableField,
+          {
+            value: managerName,
+            fieldKey: "manager",
+            onSave: handleFieldSave,
+            isEditing: editingField === "manager",
+            onEdit: handleFieldEdit,
+            onCancel: handleFieldCancel,
+            saving,
+            inputClassName: "text-sm h-6"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsx(
+          EditableField,
+          {
+            value: profile.location || "Not specified",
+            fieldKey: "location",
+            placeholder: "Select location",
+            onSave: handleFieldSave,
+            onSelectChange: handleLocationSelect,
+            isEditing: editingField === "location",
+            onEdit: handleFieldEdit,
+            onCancel: handleFieldCancel,
+            saving,
+            type: "select",
+            asyncOptions: physicalLocations,
+            isLoading: locationsLoading,
+            inputClassName: "h-6 text-sm w-48",
+            locationId: profile.locationId
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 w-full", children: [
+        /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),
+        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+          primaryDepartment && /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryDepartment.department_name }),
+          primaryRole && /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryRole.role_name })
+        ] })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-2", style: { border: "1px solid blue", padding: "8px" }, children: [
+      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 4: STATUS INFO" }),
+      /* @__PURE__ */ jsx(
         ProfileContactInfo,
         {
           startDate: profile.startDate,
@@ -7910,7 +7919,7 @@ const EditableProfileHeader = ({
           passwordLastChanged: (_f = profile.account) == null ? void 0 : _f.passwordLastChanged,
           twoFactorEnabled: (_g = profile.account) == null ? void 0 : _g.twoFactorEnabled
         }
-      ) })
+      )
     ] })
   ] }) }) });
 };

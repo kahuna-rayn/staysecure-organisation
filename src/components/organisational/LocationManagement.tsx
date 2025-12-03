@@ -26,6 +26,8 @@ export const LocationManagement: React.FC = () => {
     room: '',
     status: 'Active',
   });
+  const [sortField, setSortField] = useState<'name' | 'building' | 'status' | 'created_at'>('name');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
   const { data: locationsData, isLoading: locationsLoading } = useQuery({
     queryKey: ['locations'],

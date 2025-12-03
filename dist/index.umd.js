@@ -1655,6 +1655,14 @@
         return data || [];
       }
     });
+    const { data: existingProfiles } = reactQuery.useQuery({
+      queryKey: ["profiles-for-manager-validation"],
+      queryFn: async () => {
+        const { data, error } = await client.supabase.from("profiles").select("id, email, full_name, username").order("full_name");
+        if (error) throw error;
+        return data || [];
+      }
+    });
     const onDrop = o.useCallback((acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
@@ -1681,10 +1689,10 @@
       multiple: false
     });
     const generateSampleCSV = () => {
-      const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role"];
+      const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"];
       const sampleData = [
-        ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "EMP-2024-001", "User", "Main Office", "Engineering", "Software Engineer"],
-        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Manager", "Branch Office", "Human Resources", "HR Manager"]
+        ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "EMP-2024-001", "User", "Main Office", "Engineering", "Software Engineer", "jane.smith@company.com"],
+        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Manager", "Branch Office", "Human Resources", "HR Manager", ""]
       ];
       const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -1773,6 +1781,22 @@
         isValid: true,
         departmentId: deptValidation.departmentId,
         roleId: roleValidation.roleId
+      };
+    };
+    const validateManager = (managerIdentifier) => {
+      if (!managerIdentifier || !existingProfiles) {
+        return { isValid: false };
+      }
+      const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
+      const manager = existingProfiles.find((profile) => {
+        const email = (profile.email || "").toLowerCase();
+        const fullName = (profile.full_name || "").toLowerCase();
+        const username = (profile.username || "").toLowerCase();
+        return email === trimmedIdentifier || fullName === trimmedIdentifier || username === trimmedIdentifier;
+      });
+      return {
+        isValid: !!manager,
+        managerId: manager == null ? void 0 : manager.id
       };
     };
     const validateAccessLevel = (accessLevel) => {
@@ -1894,6 +1918,21 @@
       } else if (roleName && roleDepartmentId !== null) {
         throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
       }
+      const managerName = row["Manager"] || row["manager"] || "";
+      let managerId;
+      let managerWarning = null;
+      if (managerName) {
+        const managerValidation = validateManager(managerName);
+        if (!managerValidation.isValid) {
+          managerWarning = {
+            field: "Manager",
+            value: managerName,
+            message: `Manager "${managerName}" does not exist in the system - user created without manager assignment`
+          };
+        } else {
+          managerId = managerValidation.managerId;
+        }
+      }
       const clientId = client.getCurrentClientId();
       const clientPath = clientId ? `/${clientId}` : "";
       const { data: authData, error: authError } = await client.supabase.functions.invoke("create-user", {
@@ -1907,6 +1946,8 @@
           status: "Pending",
           employee_id: row["Employee ID"] || row["employee_id"] || "",
           access_level: accessLevelValidation.isValid ? accessLevelValidation.value : "user",
+          manager: managerId || null,
+          // Include manager if validated
           clientPath
           // Pass client path explicitly
         }
@@ -1934,6 +1975,9 @@
           value: accessLevelValue,
           message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
         });
+      }
+      if (managerWarning) {
+        warnings.push(managerWarning);
       }
       if (locationName) {
         const locationValidation = validateLocation(locationName);
@@ -2237,7 +2281,8 @@
               "Access Level",
               "Location",
               "Department",
-              "Role"
+              "Role",
+              "Manager"
             ].map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
@@ -2272,6 +2317,11 @@
                 "• If only ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
                 " is provided, it must be a general role (not assigned to any department)"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Manager" }),
+                " (optional) - can be identified by email, full name, or username. If manager doesn't exist, user will be created but a warning will be reported"
               ] }),
               /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• All other fields are optional and will use default values if not provided" })
             ] })

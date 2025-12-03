@@ -151,6 +151,34 @@ This module requires specific Supabase database tables. Ensure your database has
 - Lucide React icons
 - Tailwind CSS utilities
 
+## Testing
+
+This module uses **Vitest** for testing with full TypeScript and ESM support.
+
+### Quick Start
+
+```bash
+# Run all tests
+npm test
+
+# Watch mode (recommended during development)
+npm run test:watch
+
+# With coverage
+npm run test:coverage
+```
+
+### Test Coverage
+
+- ✅ **42+ tests passing**
+- ✅ **7 test suites** covering utilities, context, components, and data management
+- ✅ **Native `import.meta.env` support** (no workarounds needed)
+
+### Documentation
+
+- 📖 [Comprehensive Test Documentation](./src/__tests__/README.md)
+- 📋 [Quick Reference Guide](./TESTING.md)
+
 ## Development
 
 ### Building the Module

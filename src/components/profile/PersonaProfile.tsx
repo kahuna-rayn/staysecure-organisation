@@ -131,11 +131,15 @@ const PersonaProfile: React.FC = () => {
   }), [profile, hardware, software, certificates, userEmail]);
 
   const handleProfileUpdate = async () => {
+    console.log('PersonaProfile: handleProfileUpdate called');
     // Clear optimistic data first so fresh data will be used
     setOptimisticData(null);
     // Refetch both profile and assets data - same pattern as UserManagement
+    console.log('PersonaProfile: Calling refetchProfile...');
     await refetchProfile();
+    console.log('PersonaProfile: refetchProfile completed');
     refetchAssets();
+    console.log('PersonaProfile: refetchAssets called');
   };
 
   if (profileLoading || assetsLoading) {

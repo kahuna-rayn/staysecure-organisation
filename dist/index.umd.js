@@ -7709,11 +7709,17 @@
           lastName: profile.lastName || profile.last_name || "",
           profileId: profile.id,
           onAvatarUpdate: (newAvatarUrl) => {
+            console.log("EditableProfileHeader: onAvatarUpdate called with:", newAvatarUrl);
             if (onOptimisticUpdate) {
               onOptimisticUpdate("avatar_url", newAvatarUrl);
             }
+            console.log("EditableProfileHeader: Calling onProfileUpdate, type:", typeof onProfileUpdate);
             if (onProfileUpdate) {
+              console.log("EditableProfileHeader: onProfileUpdate exists, calling it...");
               onProfileUpdate();
+              console.log("EditableProfileHeader: onProfileUpdate called");
+            } else {
+              console.error("EditableProfileHeader: onProfileUpdate is not provided!");
             }
           }
         }
@@ -7929,9 +7935,13 @@
       })
     }), [profile, hardware, software, certificates, userEmail]);
     const handleProfileUpdate = async () => {
+      console.log("PersonaProfile: handleProfileUpdate called");
       setOptimisticData(null);
+      console.log("PersonaProfile: Calling refetchProfile...");
       await refetchProfile();
+      console.log("PersonaProfile: refetchProfile completed");
       refetchAssets();
+      console.log("PersonaProfile: refetchAssets called");
     };
     if (profileLoading || assetsLoading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });

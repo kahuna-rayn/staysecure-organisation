@@ -175,7 +175,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   return (
     <Card className="w-full">
       <CardContent className="p-6 lg:p-8">
-        {/* 4-column layout including avatar */}
+        {/* 4-column layout: Avatar, Personal, Work, Status */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
           {/* Column 1 - Avatar section */}
           <div className="flex justify-center md:justify-start">
@@ -193,10 +193,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
             />
           </div>
           
-          {/* Columns 2-4 for profile info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 md:col-span-3">
-            {/* Column 1 - Personal info */}
-            <div className="space-y-2">
+          {/* Column 2 - Personal info */}
+          <div className="space-y-2">
               <div className="text-center sm:text-left space-y-2">
                 <div className="grid grid-cols-2 gap-2">
                   <EditableField
@@ -266,8 +264,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               </div>
             </div>
 
-            {/* Column 2 - Work info */}
-            <div className="space-y-2">
+          {/* Column 3 - Work info */}
+          <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Network className="h-4 w-4 text-muted-foreground" />
                 {editingField === 'manager' ? (
@@ -340,8 +338,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               </div>
             </div>
 
-            {/* Column 3 - Status info */}
-            <div className="space-y-2">
+          {/* Column 4 - Status info */}
+          <div className="space-y-2">
               <ProfileContactInfo
                 startDate={profile.startDate}
                 userId={profile.id}

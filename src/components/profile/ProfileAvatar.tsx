@@ -151,7 +151,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   return (
     <div className="relative">
       <Avatar className="h-24 w-24 border-2 border-primary">
-        <AvatarImage src={avatarUrl} alt={`${firstName} ${lastName}`} />
+        <AvatarImage src={avatarUrl} alt={`${firstName} ${lastName}`} key={avatarUrl} />
         <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
       </Avatar>
       <input

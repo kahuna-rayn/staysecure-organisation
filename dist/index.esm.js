@@ -7506,7 +7506,7 @@ const ProfileAvatar = ({
   };
   return /* @__PURE__ */ jsxs("div", { className: "relative", children: [
     /* @__PURE__ */ jsxs(Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
-      /* @__PURE__ */ jsx(AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }),
+      /* @__PURE__ */ jsx(AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }, avatarUrl),
       /* @__PURE__ */ jsx(AvatarFallback, { className: "text-2xl", children: initials })
     ] }),
     /* @__PURE__ */ jsx(
@@ -8005,7 +8005,7 @@ const PersonaProfile = () => {
   const displayData = optimisticData || personaData;
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     !hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
-    /* @__PURE__ */ jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
+    /* @__PURE__ */ jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: handleProfileUpdate, onOptimisticUpdate: handleOptimisticUpdate }),
     /* @__PURE__ */ jsx(PersonaDetailsTabs, { profile: displayData, userId: (user == null ? void 0 : user.id) || "", onUpdate: handleProfileUpdate })
   ] });
 };

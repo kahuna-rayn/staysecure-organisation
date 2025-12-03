@@ -7765,13 +7765,19 @@ const EditableProfileHeader = ({
         profileId: profile.id,
         onAvatarUpdate: (newAvatarUrl) => {
           console.log("EditableProfileHeader: onAvatarUpdate called with:", newAvatarUrl);
+          console.log("EditableProfileHeader: onProfileUpdate type:", typeof onProfileUpdate);
+          console.log("EditableProfileHeader: onProfileUpdate value:", onProfileUpdate);
           if (onOptimisticUpdate) {
             console.log("EditableProfileHeader: Calling onOptimisticUpdate");
             onOptimisticUpdate("avatar_url", newAvatarUrl);
           }
           console.log("EditableProfileHeader: Calling onProfileUpdate");
-          onProfileUpdate();
-          console.log("EditableProfileHeader: onProfileUpdate called");
+          if (onProfileUpdate && typeof onProfileUpdate === "function") {
+            onProfileUpdate();
+            console.log("EditableProfileHeader: onProfileUpdate called successfully");
+          } else {
+            console.error("EditableProfileHeader: onProfileUpdate is not a function!", onProfileUpdate);
+          }
         }
       }
     ) }),

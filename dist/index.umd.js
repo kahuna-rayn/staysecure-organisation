@@ -7455,7 +7455,7 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "relative", children: [
       /* @__PURE__ */ jsxRuntime.jsxs(avatar.Avatar, { className: "h-24 w-24 border-2 border-primary", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }, avatarUrl),
+        /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarImage, { src: avatarUrl, alt: `${firstName} ${lastName}` }),
         /* @__PURE__ */ jsxRuntime.jsx(avatar.AvatarFallback, { className: "text-2xl", children: initials })
       ] }),
       /* @__PURE__ */ jsxRuntime.jsx(
@@ -7700,7 +7700,7 @@
         await handleFieldSave("location", locationName);
       }
     };
-    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-3", children: [
+    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", children: [
       /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-center md:justify-start", children: /* @__PURE__ */ jsxRuntime.jsx(
         ProfileAvatar,
         {
@@ -7709,25 +7709,10 @@
           lastName: profile.lastName || profile.last_name || "",
           profileId: profile.id,
           onAvatarUpdate: (newAvatarUrl) => {
-            console.log("EditableProfileHeader: onAvatarUpdate called with:", newAvatarUrl);
             if (onOptimisticUpdate) {
               onOptimisticUpdate("avatar_url", newAvatarUrl);
             }
-            console.log("EditableProfileHeader: Calling onProfileUpdate, type:", typeof onProfileUpdate);
-            console.log("EditableProfileHeader: onProfileUpdate function:", onProfileUpdate);
-            if (onProfileUpdate) {
-              console.log("EditableProfileHeader: onProfileUpdate exists, calling it...");
-              (async () => {
-                try {
-                  const result = await onProfileUpdate();
-                  console.log("EditableProfileHeader: onProfileUpdate completed:", result);
-                } catch (error) {
-                  console.error("EditableProfileHeader: Error calling onProfileUpdate:", error);
-                }
-              })();
-            } else {
-              console.error("EditableProfileHeader: onProfileUpdate is not provided!");
-            }
+            onProfileUpdate();
           }
         }
       ) }),
@@ -7941,27 +7926,11 @@
         return mapped;
       })
     }), [profile, hardware, software, certificates, userEmail]);
-    const handlePersonaProfileUpdate = o.useCallback(async () => {
-      console.log("PersonaProfile: handlePersonaProfileUpdate CALLED - function is executing!");
-      console.log("PersonaProfile: refetchProfile available?", !!refetchProfile, refetchProfile);
-      console.log("PersonaProfile: refetchAssets available?", !!refetchAssets, refetchAssets);
+    const handleProfileUpdate = async () => {
       setOptimisticData(null);
-      if (refetchProfile) {
-        console.log("PersonaProfile: Calling refetchProfile...");
-        await refetchProfile();
-        console.log("PersonaProfile: refetchProfile completed");
-      } else {
-        console.warn("PersonaProfile: refetchProfile is not available");
-      }
-      if (refetchAssets) {
-        refetchAssets();
-        console.log("PersonaProfile: refetchAssets called");
-      } else {
-        console.warn("PersonaProfile: refetchAssets is not available");
-      }
-    }, [refetchProfile, refetchAssets]);
-    console.log("PersonaProfile: handlePersonaProfileUpdate CREATED:", handlePersonaProfileUpdate);
-    console.log("PersonaProfile: handlePersonaProfileUpdate.toString():", handlePersonaProfileUpdate.toString());
+      await refetchProfile();
+      refetchAssets();
+    };
     if (profileLoading || assetsLoading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
     }
@@ -7983,38 +7952,10 @@
       });
     };
     const displayData = optimisticData || personaData;
-    console.log("PersonaProfile: handlePersonaProfileUpdate at render:", handlePersonaProfileUpdate);
-    console.log("PersonaProfile: handlePersonaProfileUpdate type:", typeof handlePersonaProfileUpdate);
-    console.log("PersonaProfile: handlePersonaProfileUpdate name:", handlePersonaProfileUpdate == null ? void 0 : handlePersonaProfileUpdate.name);
-    console.log("PersonaProfile: handlePersonaProfileUpdate defined?", !!handlePersonaProfileUpdate);
-    if (!handlePersonaProfileUpdate) {
-      console.error("PersonaProfile: handlePersonaProfileUpdate is not defined!");
-      return /* @__PURE__ */ jsxRuntime.jsx("div", { children: "Error: Profile update handler not available" });
-    }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
-      /* @__PURE__ */ jsxRuntime.jsx(
-        EditableProfileHeader,
-        {
-          profile: displayData,
-          onProfileUpdate: async () => {
-            console.log("PersonaProfile: onProfileUpdate called directly");
-            setOptimisticData(null);
-            if (refetchProfile) {
-              console.log("PersonaProfile: Calling refetchProfile directly...");
-              await refetchProfile();
-              console.log("PersonaProfile: refetchProfile completed");
-            }
-            if (refetchAssets) {
-              console.log("PersonaProfile: Calling refetchAssets directly...");
-              refetchAssets();
-              console.log("PersonaProfile: refetchAssets called");
-            }
-          },
-          onOptimisticUpdate: handleOptimisticUpdate
-        }
-      ),
-      /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: displayData, userId: (user == null ? void 0 : user.id) || "", onUpdate: handlePersonaProfileUpdate })
+      /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
+      /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: displayData, userId: (user == null ? void 0 : user.id) || "", onUpdate: handleProfileUpdate })
     ] });
   };
   const UserDetailView = () => {

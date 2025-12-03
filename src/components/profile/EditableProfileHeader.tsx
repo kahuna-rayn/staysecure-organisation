@@ -195,21 +195,15 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 console.log('EditableProfileHeader: onProfileUpdate function:', onProfileUpdate);
                 if (onProfileUpdate) {
                   console.log('EditableProfileHeader: onProfileUpdate exists, calling it...');
-                  try {
-                    const result = onProfileUpdate();
-                    console.log('EditableProfileHeader: onProfileUpdate returned:', result);
-                    if (result && typeof result.then === 'function') {
-                      console.log('EditableProfileHeader: onProfileUpdate is async, waiting for promise...');
-                      result.then(() => {
-                        console.log('EditableProfileHeader: onProfileUpdate promise resolved');
-                      }).catch((err) => {
-                        console.error('EditableProfileHeader: onProfileUpdate promise rejected:', err);
-                      });
+                  // Make this async and await the result
+                  (async () => {
+                    try {
+                      const result = await onProfileUpdate();
+                      console.log('EditableProfileHeader: onProfileUpdate completed:', result);
+                    } catch (error) {
+                      console.error('EditableProfileHeader: Error calling onProfileUpdate:', error);
                     }
-                    console.log('EditableProfileHeader: onProfileUpdate called');
-                  } catch (error) {
-                    console.error('EditableProfileHeader: Error calling onProfileUpdate:', error);
-                  }
+                  })();
                 } else {
                   console.error('EditableProfileHeader: onProfileUpdate is not provided!');
                 }

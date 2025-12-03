@@ -130,17 +130,32 @@ const PersonaProfile: React.FC = () => {
     }),
   }), [profile, hardware, software, certificates, userEmail]);
 
+  // Create the update function - ensure it's always defined
   const handlePersonaProfileUpdate = useCallback(async () => {
-    console.log('PersonaProfile: handlePersonaProfileUpdate called');
+    console.log('PersonaProfile: handlePersonaProfileUpdate CALLED - function is executing!');
+    console.log('PersonaProfile: refetchProfile available?', !!refetchProfile, refetchProfile);
+    console.log('PersonaProfile: refetchAssets available?', !!refetchAssets, refetchAssets);
     // Clear optimistic data first so fresh data will be used
     setOptimisticData(null);
     // Refetch both profile and assets data - same pattern as UserManagement
-    console.log('PersonaProfile: Calling refetchProfile...');
-    await refetchProfile();
-    console.log('PersonaProfile: refetchProfile completed');
-    refetchAssets();
-    console.log('PersonaProfile: refetchAssets called');
+    if (refetchProfile) {
+      console.log('PersonaProfile: Calling refetchProfile...');
+      await refetchProfile();
+      console.log('PersonaProfile: refetchProfile completed');
+    } else {
+      console.warn('PersonaProfile: refetchProfile is not available');
+    }
+    if (refetchAssets) {
+      refetchAssets();
+      console.log('PersonaProfile: refetchAssets called');
+    } else {
+      console.warn('PersonaProfile: refetchAssets is not available');
+    }
   }, [refetchProfile, refetchAssets]);
+
+  // Log when the function is created
+  console.log('PersonaProfile: handlePersonaProfileUpdate CREATED:', handlePersonaProfileUpdate);
+  console.log('PersonaProfile: handlePersonaProfileUpdate.toString():', handlePersonaProfileUpdate.toString());
 
   if (profileLoading || assetsLoading) {
     return (
@@ -197,6 +212,13 @@ const PersonaProfile: React.FC = () => {
   console.log('PersonaProfile: handlePersonaProfileUpdate at render:', handlePersonaProfileUpdate);
   console.log('PersonaProfile: handlePersonaProfileUpdate type:', typeof handlePersonaProfileUpdate);
   console.log('PersonaProfile: handlePersonaProfileUpdate name:', handlePersonaProfileUpdate?.name);
+  console.log('PersonaProfile: handlePersonaProfileUpdate defined?', !!handlePersonaProfileUpdate);
+
+  // Ensure we have a valid function before rendering
+  if (!handlePersonaProfileUpdate) {
+    console.error('PersonaProfile: handlePersonaProfileUpdate is not defined!');
+    return <div>Error: Profile update handler not available</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -207,7 +229,21 @@ const PersonaProfile: React.FC = () => {
       )}
       <EditableProfileHeader 
         profile={displayData} 
-        onProfileUpdate={handlePersonaProfileUpdate} 
+        onProfileUpdate={async () => {
+          // Direct refetch pattern like UserManagement - no callback chain
+          console.log('PersonaProfile: onProfileUpdate called directly');
+          setOptimisticData(null);
+          if (refetchProfile) {
+            console.log('PersonaProfile: Calling refetchProfile directly...');
+            await refetchProfile();
+            console.log('PersonaProfile: refetchProfile completed');
+          }
+          if (refetchAssets) {
+            console.log('PersonaProfile: Calling refetchAssets directly...');
+            refetchAssets();
+            console.log('PersonaProfile: refetchAssets called');
+          }
+        }}
         onOptimisticUpdate={handleOptimisticUpdate} 
       />
       <PersonaDetailsTabs profile={displayData} userId={user?.id || ''} onUpdate={handlePersonaProfileUpdate} />

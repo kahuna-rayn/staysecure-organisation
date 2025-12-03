@@ -7768,21 +7768,14 @@ const EditableProfileHeader = ({
           console.log("EditableProfileHeader: onProfileUpdate function:", onProfileUpdate);
           if (onProfileUpdate) {
             console.log("EditableProfileHeader: onProfileUpdate exists, calling it...");
-            try {
-              const result = onProfileUpdate();
-              console.log("EditableProfileHeader: onProfileUpdate returned:", result);
-              if (result && typeof result.then === "function") {
-                console.log("EditableProfileHeader: onProfileUpdate is async, waiting for promise...");
-                result.then(() => {
-                  console.log("EditableProfileHeader: onProfileUpdate promise resolved");
-                }).catch((err) => {
-                  console.error("EditableProfileHeader: onProfileUpdate promise rejected:", err);
-                });
+            (async () => {
+              try {
+                const result = await onProfileUpdate();
+                console.log("EditableProfileHeader: onProfileUpdate completed:", result);
+              } catch (error) {
+                console.error("EditableProfileHeader: Error calling onProfileUpdate:", error);
               }
-              console.log("EditableProfileHeader: onProfileUpdate called");
-            } catch (error) {
-              console.error("EditableProfileHeader: Error calling onProfileUpdate:", error);
-            }
+            })();
           } else {
             console.error("EditableProfileHeader: onProfileUpdate is not provided!");
           }
@@ -8000,14 +7993,26 @@ const PersonaProfile = () => {
     })
   }), [profile, hardware, software, certificates, userEmail]);
   const handlePersonaProfileUpdate = useCallback(async () => {
-    console.log("PersonaProfile: handlePersonaProfileUpdate called");
+    console.log("PersonaProfile: handlePersonaProfileUpdate CALLED - function is executing!");
+    console.log("PersonaProfile: refetchProfile available?", !!refetchProfile, refetchProfile);
+    console.log("PersonaProfile: refetchAssets available?", !!refetchAssets, refetchAssets);
     setOptimisticData(null);
-    console.log("PersonaProfile: Calling refetchProfile...");
-    await refetchProfile();
-    console.log("PersonaProfile: refetchProfile completed");
-    refetchAssets();
-    console.log("PersonaProfile: refetchAssets called");
+    if (refetchProfile) {
+      console.log("PersonaProfile: Calling refetchProfile...");
+      await refetchProfile();
+      console.log("PersonaProfile: refetchProfile completed");
+    } else {
+      console.warn("PersonaProfile: refetchProfile is not available");
+    }
+    if (refetchAssets) {
+      refetchAssets();
+      console.log("PersonaProfile: refetchAssets called");
+    } else {
+      console.warn("PersonaProfile: refetchAssets is not available");
+    }
   }, [refetchProfile, refetchAssets]);
+  console.log("PersonaProfile: handlePersonaProfileUpdate CREATED:", handlePersonaProfileUpdate);
+  console.log("PersonaProfile: handlePersonaProfileUpdate.toString():", handlePersonaProfileUpdate.toString());
   if (profileLoading || assetsLoading) {
     return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
   }
@@ -8032,13 +8037,31 @@ const PersonaProfile = () => {
   console.log("PersonaProfile: handlePersonaProfileUpdate at render:", handlePersonaProfileUpdate);
   console.log("PersonaProfile: handlePersonaProfileUpdate type:", typeof handlePersonaProfileUpdate);
   console.log("PersonaProfile: handlePersonaProfileUpdate name:", handlePersonaProfileUpdate == null ? void 0 : handlePersonaProfileUpdate.name);
+  console.log("PersonaProfile: handlePersonaProfileUpdate defined?", !!handlePersonaProfileUpdate);
+  if (!handlePersonaProfileUpdate) {
+    console.error("PersonaProfile: handlePersonaProfileUpdate is not defined!");
+    return /* @__PURE__ */ jsx("div", { children: "Error: Profile update handler not available" });
+  }
   return /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
     !hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
     /* @__PURE__ */ jsx(
       EditableProfileHeader,
       {
         profile: displayData,
-        onProfileUpdate: handlePersonaProfileUpdate,
+        onProfileUpdate: async () => {
+          console.log("PersonaProfile: onProfileUpdate called directly");
+          setOptimisticData(null);
+          if (refetchProfile) {
+            console.log("PersonaProfile: Calling refetchProfile directly...");
+            await refetchProfile();
+            console.log("PersonaProfile: refetchProfile completed");
+          }
+          if (refetchAssets) {
+            console.log("PersonaProfile: Calling refetchAssets directly...");
+            refetchAssets();
+            console.log("PersonaProfile: refetchAssets called");
+          }
+        },
         onOptimisticUpdate: handleOptimisticUpdate
       }
     ),

@@ -130,8 +130,8 @@ const PersonaProfile: React.FC = () => {
     }),
   }), [profile, hardware, software, certificates, userEmail]);
 
-  const handleProfileUpdate = async () => {
-    console.log('PersonaProfile: handleProfileUpdate called');
+  const handlePersonaProfileUpdate = useCallback(async () => {
+    console.log('PersonaProfile: handlePersonaProfileUpdate called');
     // Clear optimistic data first so fresh data will be used
     setOptimisticData(null);
     // Refetch both profile and assets data - same pattern as UserManagement
@@ -140,7 +140,7 @@ const PersonaProfile: React.FC = () => {
     console.log('PersonaProfile: refetchProfile completed');
     refetchAssets();
     console.log('PersonaProfile: refetchAssets called');
-  };
+  }, [refetchProfile, refetchAssets]);
 
   if (profileLoading || assetsLoading) {
     return (
@@ -194,9 +194,9 @@ const PersonaProfile: React.FC = () => {
   const displayData = optimisticData || personaData;
 
   // Log the function to verify it's the right one
-  console.log('PersonaProfile: handleProfileUpdate at render:', handleProfileUpdate);
-  console.log('PersonaProfile: handleProfileUpdate type:', typeof handleProfileUpdate);
-  console.log('PersonaProfile: handleProfileUpdate name:', handleProfileUpdate?.name);
+  console.log('PersonaProfile: handlePersonaProfileUpdate at render:', handlePersonaProfileUpdate);
+  console.log('PersonaProfile: handlePersonaProfileUpdate type:', typeof handlePersonaProfileUpdate);
+  console.log('PersonaProfile: handlePersonaProfileUpdate name:', handlePersonaProfileUpdate?.name);
 
   return (
     <div className="space-y-6">
@@ -207,10 +207,10 @@ const PersonaProfile: React.FC = () => {
       )}
       <EditableProfileHeader 
         profile={displayData} 
-        onProfileUpdate={handleProfileUpdate} 
+        onProfileUpdate={handlePersonaProfileUpdate} 
         onOptimisticUpdate={handleOptimisticUpdate} 
       />
-      <PersonaDetailsTabs profile={displayData} userId={user?.id || ''} onUpdate={handleProfileUpdate} />
+      <PersonaDetailsTabs profile={displayData} userId={user?.id || ''} onUpdate={handlePersonaProfileUpdate} />
     </div>
   );
 };

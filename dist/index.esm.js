@@ -7765,10 +7765,24 @@ const EditableProfileHeader = ({
             onOptimisticUpdate("avatar_url", newAvatarUrl);
           }
           console.log("EditableProfileHeader: Calling onProfileUpdate, type:", typeof onProfileUpdate);
+          console.log("EditableProfileHeader: onProfileUpdate function:", onProfileUpdate);
           if (onProfileUpdate) {
             console.log("EditableProfileHeader: onProfileUpdate exists, calling it...");
-            onProfileUpdate();
-            console.log("EditableProfileHeader: onProfileUpdate called");
+            try {
+              const result = onProfileUpdate();
+              console.log("EditableProfileHeader: onProfileUpdate returned:", result);
+              if (result && typeof result.then === "function") {
+                console.log("EditableProfileHeader: onProfileUpdate is async, waiting for promise...");
+                result.then(() => {
+                  console.log("EditableProfileHeader: onProfileUpdate promise resolved");
+                }).catch((err) => {
+                  console.error("EditableProfileHeader: onProfileUpdate promise rejected:", err);
+                });
+              }
+              console.log("EditableProfileHeader: onProfileUpdate called");
+            } catch (error) {
+              console.error("EditableProfileHeader: Error calling onProfileUpdate:", error);
+            }
           } else {
             console.error("EditableProfileHeader: onProfileUpdate is not provided!");
           }

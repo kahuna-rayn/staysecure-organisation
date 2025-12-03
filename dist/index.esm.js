@@ -7751,10 +7751,8 @@ const EditableProfileHeader = ({
       await handleFieldSave("location", locationName);
     }
   };
-  const gridClasses = "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8";
-  console.log("EditableProfileHeader: Grid classes:", gridClasses);
   console.log("EditableProfileHeader: Profile data:", { id: profile.id, avatar: profile.avatar || profile.avatar_url });
-  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: gridClasses, style: { border: "2px solid red" }, children: [
+  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", style: { border: "2px solid red" }, children: [
     /* @__PURE__ */ jsx("div", { className: "flex justify-center md:justify-start", style: { border: "1px solid blue", padding: "8px" }, children: /* @__PURE__ */ jsxs("div", { style: { border: "1px solid green", padding: "4px" }, children: [
       /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 1: AVATAR" }),
       /* @__PURE__ */ jsx(

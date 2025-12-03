@@ -7751,28 +7751,23 @@ const EditableProfileHeader = ({
       await handleFieldSave("location", locationName);
     }
   };
-  console.log("EditableProfileHeader: Profile data:", { id: profile.id, avatar: profile.avatar || profile.avatar_url });
-  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", style: { border: "2px solid red" }, children: [
-    /* @__PURE__ */ jsx("div", { className: "flex justify-center md:justify-start", style: { border: "1px solid blue", padding: "8px" }, children: /* @__PURE__ */ jsxs("div", { style: { border: "1px solid green", padding: "4px" }, children: [
-      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 1: AVATAR" }),
-      /* @__PURE__ */ jsx(
-        ProfileAvatar,
-        {
-          avatarUrl: profile.avatar || profile.avatar_url,
-          firstName: profile.firstName || profile.first_name || "",
-          lastName: profile.lastName || profile.last_name || "",
-          profileId: profile.id,
-          onAvatarUpdate: (newAvatarUrl) => {
-            if (onOptimisticUpdate) {
-              onOptimisticUpdate("avatar_url", newAvatarUrl);
-            }
-            onProfileUpdate();
+  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsx(CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", children: [
+    /* @__PURE__ */ jsx("div", { className: "flex justify-center md:justify-start", children: /* @__PURE__ */ jsx(
+      ProfileAvatar,
+      {
+        avatarUrl: profile.avatar || profile.avatar_url,
+        firstName: profile.firstName || profile.first_name || "",
+        lastName: profile.lastName || profile.last_name || "",
+        profileId: profile.id,
+        onAvatarUpdate: (newAvatarUrl) => {
+          if (onOptimisticUpdate) {
+            onOptimisticUpdate("avatar_url", newAvatarUrl);
           }
+          onProfileUpdate();
         }
-      )
-    ] }) }),
-    /* @__PURE__ */ jsxs("div", { className: "space-y-2", style: { border: "1px solid blue", padding: "8px" }, children: [
-      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 2: PERSONAL INFO" }),
+      }
+    ) }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
       /* @__PURE__ */ jsxs("div", { className: "text-center sm:text-left space-y-2", children: [
         /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-2", children: [
           /* @__PURE__ */ jsx(
@@ -7846,8 +7841,7 @@ const EditableProfileHeader = ({
         )
       ] })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "space-y-2", style: { border: "1px solid blue", padding: "8px" }, children: [
-      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 3: WORK INFO" }),
+    /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
         /* @__PURE__ */ jsx(Network, { className: "h-4 w-4 text-muted-foreground" }),
         editingField === "manager" ? /* @__PURE__ */ jsxs(
@@ -7904,21 +7898,18 @@ const EditableProfileHeader = ({
         ] })
       ] })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "space-y-2", style: { border: "1px solid blue", padding: "8px" }, children: [
-      /* @__PURE__ */ jsx("div", { style: { fontSize: "10px", color: "red", marginBottom: "4px" }, children: "COLUMN 4: STATUS INFO" }),
-      /* @__PURE__ */ jsx(
-        ProfileContactInfo,
-        {
-          startDate: profile.startDate,
-          userId: profile.id,
-          status: (_c = profile.account) == null ? void 0 : _c.status,
-          accessLevel: (_d = profile.account) == null ? void 0 : _d.accessLevel,
-          lastLogin: (_e = profile.account) == null ? void 0 : _e.lastLogin,
-          passwordLastChanged: (_f = profile.account) == null ? void 0 : _f.passwordLastChanged,
-          twoFactorEnabled: (_g = profile.account) == null ? void 0 : _g.twoFactorEnabled
-        }
-      )
-    ] })
+    /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsx(
+      ProfileContactInfo,
+      {
+        startDate: profile.startDate,
+        userId: profile.id,
+        status: (_c = profile.account) == null ? void 0 : _c.status,
+        accessLevel: (_d = profile.account) == null ? void 0 : _d.accessLevel,
+        lastLogin: (_e = profile.account) == null ? void 0 : _e.lastLogin,
+        passwordLastChanged: (_f = profile.account) == null ? void 0 : _f.passwordLastChanged,
+        twoFactorEnabled: (_g = profile.account) == null ? void 0 : _g.twoFactorEnabled
+      }
+    ) })
   ] }) }) });
 };
 const PersonaProfile = () => {

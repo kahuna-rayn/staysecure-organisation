@@ -194,8 +194,22 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 }
                 console.log('EditableProfileHeader: Calling onProfileUpdate');
                 if (onProfileUpdate && typeof onProfileUpdate === 'function') {
-                  onProfileUpdate();
-                  console.log('EditableProfileHeader: onProfileUpdate called successfully');
+                  try {
+                    console.log('EditableProfileUpdate: About to invoke onProfileUpdate, function name:', onProfileUpdate.name);
+                    const result = onProfileUpdate();
+                    console.log('EditableProfileHeader: onProfileUpdate returned:', result);
+                    if (result && typeof result.then === 'function') {
+                      console.log('EditableProfileHeader: onProfileUpdate returned a promise, waiting...');
+                      result.then(() => {
+                        console.log('EditableProfileHeader: onProfileUpdate promise resolved');
+                      }).catch((err) => {
+                        console.error('EditableProfileHeader: onProfileUpdate promise rejected:', err);
+                      });
+                    }
+                    console.log('EditableProfileHeader: onProfileUpdate called successfully');
+                  } catch (error) {
+                    console.error('EditableProfileHeader: Error calling onProfileUpdate:', error);
+                  }
                 } else {
                   console.error('EditableProfileHeader: onProfileUpdate is not a function!', onProfileUpdate);
                 }

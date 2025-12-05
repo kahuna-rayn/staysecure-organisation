@@ -96,5 +96,101 @@ Implement a **soft delete** pattern across the application:
 
 ---
 
+## Build & Release Automation
+
+### Current State
+
+The module requires **manual building** before committing:
+1. Make code changes
+2. Run `npm run build` to generate `dist/` files
+3. Commit both source and `dist/` files
+4. Push to repository
+
+**Problem:** Easy to forget building, leading to outdated `dist/` files in the repository. Consuming apps (like `learn`) install from git and rely on the built files in `dist/`.
+
+### Proposed Solution: CI/CD Pipeline
+
+**Option 1: GitHub Actions (Recommended)**
+
+Create `.github/workflows/build.yml` to:
+- Trigger on push to `main` (or PRs)
+- Install dependencies (`npm install`)
+- Run tests (`npm test`)
+- Build the module (`npm run build`)
+- Commit `dist/` back to the repo automatically
+
+**Benefits:**
+- Ensures `dist/` is always up to date
+- No manual build step required
+- Tests run automatically
+- Consistent builds across environments
+
+**Workflow structure:**
+```yaml
+name: Build and Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - run: npm install
+      - run: npm test
+      - run: npm run build
+      - name: Commit dist files
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add dist/
+          git commit -m "Build: Update dist files" || exit 0
+          git push
+```
+
+### Auto Version Bumping
+
+**Current State:** Manual version updates in `package.json`
+
+**Proposed Solution: Use `standard-version`**
+
+A tool that automates versioning and CHANGELOG generation based on conventional commits.
+
+**Setup:**
+1. Install: `npm install --save-dev standard-version`
+2. Add script to `package.json`: `"release": "standard-version"`
+3. Use conventional commit messages:
+   - `feat:` → minor version bump (1.0.6 → 1.1.0)
+   - `fix:` → patch version bump (1.0.6 → 1.0.7)
+   - `BREAKING CHANGE:` → major version bump (1.0.6 → 2.0.0)
+
+**Usage:**
+```bash
+npm run release
+```
+
+**Benefits:**
+- Automatic version bumping based on commit history
+- Generates/updates CHANGELOG.md automatically
+- Creates git tag
+- Commits everything in one step
+- Can be integrated into CI/CD pipeline
+
+**Alternative Options:**
+- `npm version patch/minor/major` - Built-in npm command
+- `release-please` (Google) - Automated releases via PR
+- GitHub Actions with conventional commits parser
+
+**Recommendation:** Use `standard-version` for simplicity and control over release timing.
+
+---
+
 **Created:** 2025-12-05  
 **Status:** Future Work / Technical Debt

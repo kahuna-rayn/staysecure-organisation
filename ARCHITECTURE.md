@@ -9,7 +9,7 @@ This module follows the **SAME pattern as the auth module** for consistency acro
 1. **Consuming app provides the client**: The consuming application (hub/learn) creates the Supabase client and passes it via `OrganisationProvider` config prop
 2. **Functions receive client as parameter**: Functions like `handleCreateUser` and `handleDeleteUser` receive `supabaseClient` as the first parameter
 3. **Components get client from context**: Components use `useOrganisationContext()` to get `supabaseClient`
-4. **URL extracted from client**: The Supabase URL is extracted from `supabaseClient.supabaseUrl` property
+4. **Edge Functions**: Uses `supabaseClient.functions.invoke()` (no URL extraction needed - client handles it automatically)
 
 ### Why This Pattern?
 
@@ -30,8 +30,10 @@ export const handleCreateUser = async (
   updateProfile: ...,
   onSuccess: ...
 ) => {
-  // Extract URL from client
-  const baseUrl = (supabaseClient as any).supabaseUrl?.replace(/\/$/, '');
+  // Use supabaseClient.functions.invoke() - no URL extraction needed
+  const { data, error } = await supabaseClient.functions.invoke('create-user', {
+    body: { ... }
+  });
   // Use supabaseClient for all operations
   const { data } = await supabaseClient.auth.getSession();
   // ...

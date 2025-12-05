@@ -7,7 +7,7 @@
  * - Functions receive `supabaseClient` as a parameter (passed from context)
  * - DO NOT import `supabase` from '@/integrations/supabase/client' (it's a stub)
  * - DO NOT use environment variables directly for Supabase URL
- * - Extract URL from `supabaseClient.supabaseUrl` property
+ * - Uses `supabaseClient.functions.invoke()` (no URL extraction needed - client handles it)
  * 
  * Why this pattern?
  * - Consistency: Matches auth module pattern (supabaseClient via config)
@@ -102,30 +102,16 @@ export const handleCreateUser = async (
       throw new Error('Unable to determine current session. Please refresh and try again.');
     }
 
-    const accessToken = sessionData.session.access_token;
-
-    // Get Supabase URL from the client (consistent with auth module pattern)
-    // DO NOT use CLIENT_CONFIGS or env vars - the client is provided by consuming app
-    const baseUrl = (supabaseClient as any).supabaseUrl?.replace(/\/$/, '');
-    if (!baseUrl) {
-      throw new Error('Supabase base URL is not configured.');
-    }
-
-    const createUserUrl = `${baseUrl}/functions/v1/create-user`;
-
+    // Call the create-user Edge Function using supabaseClient.functions.invoke()
+    // This is consistent with handleDeleteUser and ImportUsersDialog
+    // No need to extract URL - the client handles it automatically
     console.log('[handleCreateUser] Invoking create-user Edge Function', {
-      createUserUrl,
-      hasAccessToken: !!accessToken,
       clientId,
+      hasAccessToken: !!sessionData.session.access_token,
     });
 
-    const response = await fetch(createUserUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
-      },
-      body: JSON.stringify({
+    const { data, error } = await supabaseClient.functions.invoke('create-user', {
+      body: {
         email: newUser.email,
         full_name: newUser.full_name,
         first_name: newUser.first_name || '',
@@ -139,39 +125,18 @@ export const handleCreateUser = async (
         bio: newUser.bio || '',
         employee_id: newUser.employee_id || '',
         clientPath // Pass client path explicitly
-      })
+      }
     });
-
-    const rawText = await response.text();
-    let data: any = null;
-    try {
-      data = rawText ? JSON.parse(rawText) : null;
-    } catch (parseError) {
-      console.warn('[handleCreateUser] Failed to parse Edge Function response as JSON', {
-        parseError,
-        rawText,
-        status: response.status,
-      });
-    }
-
-    console.log('[handleCreateUser] Edge Function response summary', {
-      status: response.status,
-      ok: response.ok,
-      dataPreview: data ? JSON.stringify(data).slice(0, 200) : rawText?.slice(0, 200),
-    });
-
-    const error = !response.ok
-      ? { message: data?.error || rawText || response.statusText || `Request failed with status ${response.status}` }
-      : null;
 
     if (error) {
+      console.error('[handleCreateUser] Edge Function error:', error);
       throw new Error(error.message || 'Failed to create user');
     }
 
     // Check if the function returned an error (since Edge Functions return 200 even for errors)
     if (data?.error) {
-      console.error('Edge Function returned error:', data.error);
-      console.error('Full Edge Function response:', data);
+      console.error('[handleCreateUser] Edge Function returned error:', data.error);
+      console.error('[handleCreateUser] Full Edge Function response:', data);
       throw new Error(data.error);
     }
 

@@ -706,31 +706,6 @@ const useOrganisationContext = () => {
   }
   return context;
 };
-const CLIENT_CONFIGS = {
-  default: {}
-};
-const __vite_import_meta_env__ = { "BASE_URL": "/", "DEV": false, "MODE": "production", "PROD": true, "SSR": false };
-const isTestEnvironment = typeof process !== "undefined" && (process.env.NODE_ENV === "test" || process.env.JEST_WORKER_ID !== void 0);
-const getEnvVar = (key) => {
-  if (isTestEnvironment && typeof process !== "undefined" && process.env) {
-    return process.env[key];
-  }
-  const metaEnv = typeof globalThis !== "undefined" && globalThis.__VITE_META_ENV__;
-  if (metaEnv) {
-    return metaEnv[key];
-  }
-  try {
-    return __vite_import_meta_env__[key];
-  } catch {
-    if (typeof process !== "undefined" && process.env) {
-      return process.env[key];
-    }
-  }
-  return void 0;
-};
-const getSupabaseAnonKey = () => {
-  return getEnvVar("VITE_SUPABASE_ANON_KEY") || getEnvVar("VITE_SUPABASE_PUB_KEY") || getEnvVar("VITE_SB_PUB_KEY");
-};
 const handleSaveUser = async (editingUser, updateProfile, onSuccess) => {
   try {
     await updateProfile(editingUser.id, editingUser);
@@ -747,37 +722,21 @@ const handleSaveUser = async (editingUser, updateProfile, onSuccess) => {
     });
   }
 };
-const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
-  var _a, _b;
+const handleCreateUser = async (supabaseClient, newUser, updateProfile, onSuccess) => {
+  var _a;
   try {
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : "";
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
     if (sessionError || !((_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token)) {
       throw new Error("Unable to determine current session. Please refresh and try again.");
     }
-    const accessToken = sessionData.session.access_token;
-    const clientConfig = clientId && CLIENT_CONFIGS[clientId] || CLIENT_CONFIGS["default"];
-    const anonKey = (clientConfig == null ? void 0 : clientConfig.supabaseAnonKey) || getSupabaseAnonKey();
-    const baseUrl = (_b = clientConfig == null ? void 0 : clientConfig.supabaseUrl) == null ? void 0 : _b.replace(/\/$/, "");
-    if (!baseUrl) {
-      throw new Error("Supabase base URL is not configured.");
-    }
-    const createUserUrl = `${baseUrl}/functions/v1/create-user`;
     console.log("[handleCreateUser] Invoking create-user Edge Function", {
-      createUserUrl,
-      hasAnonKey: !!anonKey,
-      hasAccessToken: !!accessToken,
-      clientId
+      clientId,
+      hasAccessToken: !!sessionData.session.access_token
     });
-    const response = await fetch(createUserUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...anonKey ? { apikey: anonKey } : {},
-        ...accessToken ? { Authorization: `Bearer ${accessToken}` } : {}
-      },
-      body: JSON.stringify({
+    const { data, error } = await supabaseClient.functions.invoke("create-user", {
+      body: {
         email: newUser.email,
         full_name: newUser.full_name,
         first_name: newUser.first_name || "",
@@ -792,31 +751,15 @@ const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
         employee_id: newUser.employee_id || "",
         clientPath
         // Pass client path explicitly
-      })
+      }
     });
-    const rawText = await response.text();
-    let data = null;
-    try {
-      data = rawText ? JSON.parse(rawText) : null;
-    } catch (parseError) {
-      console.warn("[handleCreateUser] Failed to parse Edge Function response as JSON", {
-        parseError,
-        rawText,
-        status: response.status
-      });
-    }
-    console.log("[handleCreateUser] Edge Function response summary", {
-      status: response.status,
-      ok: response.ok,
-      dataPreview: data ? JSON.stringify(data).slice(0, 200) : rawText == null ? void 0 : rawText.slice(0, 200)
-    });
-    const error = !response.ok ? { message: (data == null ? void 0 : data.error) || rawText || response.statusText || `Request failed with status ${response.status}` } : null;
     if (error) {
+      console.error("[handleCreateUser] Edge Function error:", error);
       throw new Error(error.message || "Failed to create user");
     }
     if (data == null ? void 0 : data.error) {
-      console.error("Edge Function returned error:", data.error);
-      console.error("Full Edge Function response:", data);
+      console.error("[handleCreateUser] Edge Function returned error:", data.error);
+      console.error("[handleCreateUser] Full Edge Function response:", data);
       throw new Error(data.error);
     }
     if (!data || !data.user) {
@@ -847,7 +790,7 @@ const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
             status: "Active",
             date_access_created: (/* @__PURE__ */ new Date()).toISOString()
           };
-          const { data: locationDataResult, error: locationError } = await supabase.from("physical_location_access").insert(locationData).select();
+          const { data: locationDataResult, error: locationError } = await supabaseClient.from("physical_location_access").insert(locationData).select();
           if (locationError) {
             console.error("❌ Error assigning physical location access:", locationError);
           }
@@ -870,9 +813,9 @@ const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
     });
   }
 };
-const handleDeleteUser = async (userId, userName, reason) => {
+const handleDeleteUser = async (supabaseClient, userId, userName, reason) => {
   try {
-    const { data, error } = await supabase.functions.invoke("delete-user", {
+    const { data, error } = await supabaseClient.functions.invoke("delete-user", {
       body: {
         userId,
         reason: reason || void 0
@@ -2461,7 +2404,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   ] });
 };
 const UserManagement = () => {
-  const { hasPermission, onUserAction } = useOrganisationContext();
+  const { hasPermission, onUserAction, supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
   const { toast: toast2 } = useToast();
   const [viewMode, setViewMode] = useViewPreference("userManagement", "cards");
@@ -2497,7 +2440,7 @@ const UserManagement = () => {
     e.preventDefault();
     setIsCreatingUser(true);
     try {
-      await handleCreateUser(newUser, async (id, updates) => {
+      await handleCreateUser(supabaseClient, newUser, async (id, updates) => {
         await updateProfile(id, updates);
       }, async () => {
         await refetch();
@@ -2520,7 +2463,7 @@ const UserManagement = () => {
     if (!userToDelete) return;
     setIsDeleting(true);
     try {
-      const result = await handleDeleteUser(userToDelete.id, userToDelete.name, reason);
+      const result = await handleDeleteUser(supabaseClient, userToDelete.id, userToDelete.name, reason);
       if (result.success) {
         setIsDeleteDialogOpen(false);
         setUserToDelete(null);

@@ -30,8 +30,7 @@ vi.mock('@/components/ui/use-toast', () => ({
   toast: vi.fn(),
 }));
 
-// Mock global fetch
-global.fetch = vi.fn();
+// No need to mock global.fetch - we use functions.invoke now
 
 // Mock import.meta.env for Vitest (Vitest supports this natively!)
 import.meta.env.VITE_SUPABASE_URL = 'https://test.supabase.co';
@@ -120,7 +119,6 @@ describe('handleCreateUser', () => {
     const clientModule = await import('@/integrations/supabase/client');
     getCurrentClientId = clientModule.getCurrentClientId;
     vi.clearAllMocks();
-    vi.mocked(global.fetch).mockClear();
   });
 
 
@@ -156,10 +154,9 @@ describe('handleCreateUser', () => {
       error: null,
     });
 
-    vi.mocked(global.fetch).mockResolvedValue({
-      ok: true,
-      status: 200,
-      text: vi.fn().mockResolvedValue(JSON.stringify(mockEdgeFunctionResponse)),
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
+      data: mockEdgeFunctionResponse,
+      error: null,
     });
 
     mockUpdateProfile.mockResolvedValue(undefined);
@@ -177,7 +174,12 @@ describe('handleCreateUser', () => {
 
     expect(getCurrentClientId).toHaveBeenCalled();
     expect(mockSupabaseClient.auth.getSession).toHaveBeenCalled();
-    expect(global.fetch).toHaveBeenCalled();
+    expect(mockSupabaseClient.functions.invoke).toHaveBeenCalledWith('create-user', {
+      body: expect.objectContaining({
+        email: newUser.email,
+        full_name: newUser.full_name,
+      })
+    });
     expect(mockUpdateProfile).toHaveBeenCalled();
     expect(toast).toHaveBeenCalledWith({
       title: 'Success',
@@ -227,7 +229,7 @@ describe('handleCreateUser', () => {
     });
   });
 
-  it('should handle missing Supabase URL', async () => {
+  it('should handle edge function invoke error', async () => {
     const newUser = {
       email: 'newuser@example.com',
       full_name: 'New User',
@@ -239,17 +241,21 @@ describe('handleCreateUser', () => {
       },
     };
 
-    const clientWithoutUrl = { ...mockSupabaseClient, supabaseUrl: undefined };
-    clientWithoutUrl.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: mockSession,
       error: null,
     });
 
-    await handleCreateUser(clientWithoutUrl as any, newUser, mockUpdateProfile, mockOnSuccess);
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
+      data: null,
+      error: new Error('Network error'),
+    });
+
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
-      description: 'Supabase base URL is not configured.',
+      description: expect.stringContaining('Failed to create user'),
       variant: 'destructive',
     });
   });
@@ -275,10 +281,9 @@ describe('handleCreateUser', () => {
       error: null,
     });
 
-    vi.mocked(global.fetch).mockResolvedValue({
-      ok: true,
-      status: 200,
-      text: jest.fn().mockResolvedValue(JSON.stringify(mockErrorResponse)),
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
+      data: mockErrorResponse,
+      error: null,
     });
 
     await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
@@ -307,11 +312,9 @@ describe('handleCreateUser', () => {
       error: null,
     });
 
-    vi.mocked(global.fetch).mockResolvedValue({
-      ok: false,
-      status: 500,
-      statusText: 'Internal Server Error',
-      text: jest.fn().mockResolvedValue('Server Error'),
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
+      data: null,
+      error: new Error('Internal Server Error'),
     });
 
     await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
@@ -341,10 +344,9 @@ describe('handleCreateUser', () => {
       error: null,
     });
 
-    vi.mocked(global.fetch).mockResolvedValue({
-      ok: true,
-      status: 200,
-      text: jest.fn().mockResolvedValue(JSON.stringify({})),
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
+      data: {},
+      error: null,
     });
 
     await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
@@ -380,10 +382,9 @@ describe('handleCreateUser', () => {
       error: null,
     });
 
-    vi.mocked(global.fetch).mockResolvedValue({
-      ok: true,
-      status: 200,
-      text: vi.fn().mockResolvedValue(JSON.stringify(mockEdgeFunctionResponse)),
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
+      data: mockEdgeFunctionResponse,
+      error: null,
     });
 
     mockUpdateProfile.mockResolvedValue(undefined);

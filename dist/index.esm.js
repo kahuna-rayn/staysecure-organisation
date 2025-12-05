@@ -1287,7 +1287,7 @@ const CreateUserDialog = ({
         location: "",
         language: "English",
         bio: "",
-        manager: ""
+        manager: void 0
       };
       onUserChange(resetUser);
       setIsFullNameManuallyEdited(false);
@@ -1442,12 +1442,12 @@ const CreateUserDialog = ({
             /* @__PURE__ */ jsxs(
               Select,
               {
-                value: newUser.manager || "",
-                onValueChange: (value) => updateField("manager", value),
+                value: newUser.manager || "none",
+                onValueChange: (value) => updateField("manager", value === "none" ? "" : value),
                 children: [
                   /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager (optional)" }) }),
                   /* @__PURE__ */ jsxs(SelectContent, { children: [
-                    /* @__PURE__ */ jsx(SelectItem, { value: "", children: "No manager" }),
+                    /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "No manager" }),
                     profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsx(SelectItem, { value: profile.id, children: profile.full_name || profile.email || profile.username }, profile.id))
                   ] })
                 ]

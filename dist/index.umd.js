@@ -1236,7 +1236,7 @@
           location: "",
           language: "English",
           bio: "",
-          manager: ""
+          manager: void 0
         };
         onUserChange(resetUser);
         setIsFullNameManuallyEdited(false);
@@ -1391,12 +1391,12 @@
               /* @__PURE__ */ jsxRuntime.jsxs(
                 select.Select,
                 {
-                  value: newUser.manager || "",
-                  onValueChange: (value) => updateField("manager", value),
+                  value: newUser.manager || "none",
+                  onValueChange: (value) => updateField("manager", value === "none" ? "" : value),
                   children: [
                     /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager (optional)" }) }),
                     /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "", children: "No manager" }),
+                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", children: "No manager" }),
                       profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: profile.id, children: profile.full_name || profile.email || profile.username }, profile.id))
                     ] })
                   ]

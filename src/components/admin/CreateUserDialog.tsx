@@ -86,6 +86,19 @@ const isSuperAdmin = currentUserRole === 'super_admin';
     },
   });
 
+  // Fetch user profiles for manager dropdown
+  const { data: profiles } = useQuery({
+    queryKey: ['profiles-for-managers'],
+    queryFn: async () => {
+      const { data } = await supabaseClient
+        .from('profiles')
+        .select('id, full_name, email, username')
+        .eq('status', 'Active')
+        .order('full_name');
+      return data || [];
+    },
+  });
+
   // Fetch languages for dropdown
   const { data: languages } = useQuery({
     queryKey: ['languages'],
@@ -169,7 +182,8 @@ const handleFullNameChange = (value: string) => {
         location_id: '',
         location: '',
         language: 'English',
-        bio: ''
+        bio: '',
+        manager: ''
       };
       onUserChange(resetUser);
       setIsFullNameManuallyEdited(false); 
@@ -306,6 +320,25 @@ const handleFullNameChange = (value: string) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
+              <Label htmlFor="manager">Manager</Label>
+              <Select 
+                value={newUser.manager || ''} 
+                onValueChange={(value) => updateField('manager', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select manager (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="">No manager</SelectItem>
+                  {profiles?.map((profile) => (
+                    <SelectItem key={profile.id} value={profile.id}>
+                      {profile.full_name || profile.email || profile.username}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="language">Language</Label>
               <Select 
                 value={newUser.language || 'English'} 
@@ -324,16 +357,18 @@ const handleFullNameChange = (value: string) => {
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="bio">Bio</Label>
-              <Textarea
-                id="bio"
-                value={newUser.bio}
-                onChange={(e) => updateField('bio', e.target.value)}
-                placeholder="Enter bio (optional)"
-                rows={3}
-              />
-            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="bio">Bio</Label>
+            <Textarea
+              id="bio"
+              value={newUser.bio}
+              onChange={(e) => updateField('bio', e.target.value)}
+              placeholder="Enter bio (optional)"
+              rows={3}
+              className="w-full"
+            />
           </div>
 
           <div className="text-sm text-muted-foreground">

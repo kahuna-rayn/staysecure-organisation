@@ -160,6 +160,7 @@ export const handleCreateUser = async (
         language: newUser.language,
         bio: newUser.bio,
         employee_id: newUser.employee_id,
+        manager: newUser.manager || null,
       });
 
             // Assign physical location access if location is selected
@@ -225,33 +226,37 @@ export const handleDeleteUser = async (supabaseClient: SupabaseClient, userId: s
     });
 
     if (error) {
-      console.error('Error calling delete function:', error);
+      console.error('[handleDeleteUser] Edge Function invocation error:', error);
+      const errorMessage = error.message || 'Failed to delete user';
       toast({
         title: "Error",
-        description: "Failed to delete user",
+        description: errorMessage,
         variant: "destructive",
       });
-      return { success: false, error: "Failed to delete user" };
+      return { success: false, error: errorMessage };
     }
 
-    if (!data.success) {
-      console.error('Delete function returned error:', data.error);
+    if (!data || !data.success) {
+      const errorMessage = data?.error || 'Failed to delete user';
+      console.error('[handleDeleteUser] Edge Function returned error:', errorMessage);
+      console.error('[handleDeleteUser] Full Edge Function response:', data);
       toast({
         title: "Error",
-        description: data.error || "Failed to delete user",
+        description: errorMessage,
         variant: "destructive",
       });
-      return { success: false, error: data.error || "Failed to delete user" };
+      return { success: false, error: errorMessage };
     }
 
     return { success: true, deletedUser: data.deletedUser };
   } catch (error: any) {
-    console.error('Error deleting user:', error);
+    console.error('[handleDeleteUser] Exception:', error);
+    const errorMessage = error?.message || 'Failed to delete user';
     toast({
       title: "Error",
-      description: "Failed to delete user",
+      description: errorMessage,
       variant: "destructive",
     });
-    return { success: false, error: "Failed to delete user" };
+    return { success: false, error: errorMessage };
   }
 };

@@ -69,6 +69,7 @@ export interface NewUser {
   language?: string;
   bio: string;
   employee_id: string;
+  manager?: string;
 }
 
 export interface Role {

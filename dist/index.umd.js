@@ -727,7 +727,8 @@
           // Don't update status - Edge Function sets it to 'Pending' for activation
           language: newUser.language,
           bio: newUser.bio,
-          employee_id: newUser.employee_id
+          employee_id: newUser.employee_id,
+          manager: newUser.manager || null
         });
         if (newUser.location_id) {
           try {
@@ -771,32 +772,36 @@
         }
       });
       if (error) {
-        console.error("Error calling delete function:", error);
+        console.error("[handleDeleteUser] Edge Function invocation error:", error);
+        const errorMessage = error.message || "Failed to delete user";
         useToast.toast({
           title: "Error",
-          description: "Failed to delete user",
+          description: errorMessage,
           variant: "destructive"
         });
-        return { success: false, error: "Failed to delete user" };
+        return { success: false, error: errorMessage };
       }
-      if (!data.success) {
-        console.error("Delete function returned error:", data.error);
+      if (!data || !data.success) {
+        const errorMessage = (data == null ? void 0 : data.error) || "Failed to delete user";
+        console.error("[handleDeleteUser] Edge Function returned error:", errorMessage);
+        console.error("[handleDeleteUser] Full Edge Function response:", data);
         useToast.toast({
           title: "Error",
-          description: data.error || "Failed to delete user",
+          description: errorMessage,
           variant: "destructive"
         });
-        return { success: false, error: data.error || "Failed to delete user" };
+        return { success: false, error: errorMessage };
       }
       return { success: true, deletedUser: data.deletedUser };
     } catch (error) {
-      console.error("Error deleting user:", error);
+      console.error("[handleDeleteUser] Exception:", error);
+      const errorMessage = (error == null ? void 0 : error.message) || "Failed to delete user";
       useToast.toast({
         title: "Error",
-        description: "Failed to delete user",
+        description: errorMessage,
         variant: "destructive"
       });
-      return { success: false, error: "Failed to delete user" };
+      return { success: false, error: errorMessage };
     }
   };
   const EditableField = ({
@@ -1166,6 +1171,13 @@
         return data || [];
       }
     });
+    const { data: profiles } = reactQuery.useQuery({
+      queryKey: ["profiles-for-managers"],
+      queryFn: async () => {
+        const { data } = await supabaseClient.from("profiles").select("id, full_name, email, username").eq("status", "Active").order("full_name");
+        return data || [];
+      }
+    });
     const { data: languages } = reactQuery.useQuery({
       queryKey: ["languages"],
       queryFn: async () => {
@@ -1223,7 +1235,8 @@
           location_id: "",
           location: "",
           language: "English",
-          bio: ""
+          bio: "",
+          manager: ""
         };
         onUserChange(resetUser);
         setIsFullNameManuallyEdited(false);
@@ -1374,6 +1387,23 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "manager", children: "Manager" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(
+                select.Select,
+                {
+                  value: newUser.manager || "",
+                  onValueChange: (value) => updateField("manager", value),
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager (optional)" }) }),
+                    /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "", children: "No manager" }),
+                      profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: profile.id, children: profile.full_name || profile.email || profile.username }, profile.id))
+                    ] })
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "language", children: "Language" }),
               /* @__PURE__ */ jsxRuntime.jsxs(
                 select.Select,
@@ -1389,20 +1419,21 @@
                   ]
                 }
               )
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "bio", children: "Bio" }),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                textarea.Textarea,
-                {
-                  id: "bio",
-                  value: newUser.bio,
-                  onChange: (e) => updateField("bio", e.target.value),
-                  placeholder: "Enter bio (optional)",
-                  rows: 3
-                }
-              )
             ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "bio", children: "Bio" }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              textarea.Textarea,
+              {
+                id: "bio",
+                value: newUser.bio,
+                onChange: (e) => updateField("bio", e.target.value),
+                placeholder: "Enter bio (optional)",
+                rows: 3,
+                className: "w-full"
+              }
+            )
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" }),

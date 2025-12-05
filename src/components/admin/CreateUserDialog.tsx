@@ -183,7 +183,7 @@ const handleFullNameChange = (value: string) => {
         location: '',
         language: 'English',
         bio: '',
-        manager: ''
+        manager: undefined
       };
       onUserChange(resetUser);
       setIsFullNameManuallyEdited(false); 
@@ -322,14 +322,14 @@ const handleFullNameChange = (value: string) => {
             <div className="space-y-2">
               <Label htmlFor="manager">Manager</Label>
               <Select 
-                value={newUser.manager || ''} 
-                onValueChange={(value) => updateField('manager', value)}
+                value={newUser.manager || 'none'} 
+                onValueChange={(value) => updateField('manager', value === 'none' ? '' : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select manager (optional)" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">No manager</SelectItem>
+                  <SelectItem value="none">No manager</SelectItem>
                   {profiles?.map((profile) => (
                     <SelectItem key={profile.id} value={profile.id}>
                       {profile.full_name || profile.email || profile.username}

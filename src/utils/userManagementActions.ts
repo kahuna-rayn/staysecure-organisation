@@ -2,7 +2,7 @@ import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
 import { CLIENT_CONFIGS } from '@/config/clients';
 import { toast } from '@/components/ui/use-toast';
 import type { UserProfile } from '@/hooks/useUserProfiles';
-import { getSupabaseUrl, getSupabaseAnonKey } from '@/utils/env';
+import { getSupabaseAnonKey } from '@/utils/env';
 
 // Define NewUser type locally since it's not exported from useUserManagement
 interface NewUser {
@@ -69,8 +69,8 @@ export const handleCreateUser = async (
       clientConfig?.supabaseAnonKey ||
       getSupabaseAnonKey();
 
-    // Build Edge Function URL using the project URL
-    const baseUrl = getSupabaseUrl()?.replace(/\/$/, '');
+    // Get Supabase URL from CLIENT_CONFIGS
+    const baseUrl = clientConfig?.supabaseUrl?.replace(/\/$/, '');
     if (!baseUrl) {
       throw new Error('Supabase base URL is not configured.');
     }

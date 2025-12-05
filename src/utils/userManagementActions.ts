@@ -1,8 +1,40 @@
-import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
-import { CLIENT_CONFIGS } from '@/config/clients';
+/**
+ * User Management Actions
+ * 
+ * ARCHITECTURE PATTERN (CRITICAL - DO NOT CHANGE):
+ * ================================================
+ * This module follows the SAME pattern as the auth module:
+ * - Functions receive `supabaseClient` as a parameter (passed from context)
+ * - DO NOT import `supabase` from '@/integrations/supabase/client' (it's a stub)
+ * - DO NOT use environment variables directly for Supabase URL
+ * - Extract URL from `supabaseClient.supabaseUrl` property
+ * 
+ * Why this pattern?
+ * - Consistency: Matches auth module pattern (supabaseClient via config)
+ * - Module independence: Consuming app provides the client, module doesn't depend on env vars
+ * - Testability: Easy to mock the client in tests
+ * 
+ * IMPORTANT: If you need to call these functions, you MUST:
+ * 1. Get `supabaseClient` from `useOrganisationContext()` hook
+ * 2. Pass it as the first parameter to `handleCreateUser` and `handleDeleteUser`
+ * 
+ * Example:
+ * ```tsx
+ * const { supabaseClient } = useOrganisationContext();
+ * await handleCreateUser(supabaseClient, newUser, updateProfile, onSuccess);
+ * ```
+ * 
+ * DO NOT:
+ * - Import `supabase` from '@/integrations/supabase/client'
+ * - Use environment variables directly (consuming app handles config)
+ * - Use `import.meta.env.VITE_SUPABASE_URL` directly
+ * - Change the function signatures to remove supabaseClient parameter
+ */
+
+import { getCurrentClientId } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
 import type { UserProfile } from '@/hooks/useUserProfiles';
-import { getSupabaseAnonKey } from '@/utils/env';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Define NewUser type locally since it's not exported from useUserManagement
 interface NewUser {
@@ -44,7 +76,18 @@ export const handleSaveUser = async (
   }
 };
 
+/**
+ * Create a new user via Edge Function
+ * 
+ * @param supabaseClient - REQUIRED: Supabase client from OrganisationContext (DO NOT use stub from '@/integrations/supabase/client')
+ * @param newUser - User data to create
+ * @param updateProfile - Callback to update user profile after creation
+ * @param onSuccess - Callback on successful creation
+ * 
+ * Pattern: Same as auth module - receives supabaseClient as parameter from consuming app
+ */
 export const handleCreateUser = async (
+  supabaseClient: SupabaseClient,
   newUser: NewUser,
   updateProfile: (id: string, updates: Partial<UserProfile>) => Promise<void>,
   onSuccess: () => void
@@ -54,23 +97,16 @@ export const handleCreateUser = async (
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : '';
     
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    const { data: sessionData, error: sessionError } = await supabaseClient.auth.getSession();
     if (sessionError || !sessionData?.session?.access_token) {
       throw new Error('Unable to determine current session. Please refresh and try again.');
     }
 
     const accessToken = sessionData.session.access_token;
 
-    const clientConfig =
-      (clientId && CLIENT_CONFIGS[clientId]) ||
-      CLIENT_CONFIGS['default'];
-
-    const anonKey =
-      clientConfig?.supabaseAnonKey ||
-      getSupabaseAnonKey();
-
-    // Get Supabase URL from CLIENT_CONFIGS
-    const baseUrl = clientConfig?.supabaseUrl?.replace(/\/$/, '');
+    // Get Supabase URL from the client (consistent with auth module pattern)
+    // DO NOT use CLIENT_CONFIGS or env vars - the client is provided by consuming app
+    const baseUrl = (supabaseClient as any).supabaseUrl?.replace(/\/$/, '');
     if (!baseUrl) {
       throw new Error('Supabase base URL is not configured.');
     }
@@ -79,7 +115,6 @@ export const handleCreateUser = async (
 
     console.log('[handleCreateUser] Invoking create-user Edge Function', {
       createUserUrl,
-      hasAnonKey: !!anonKey,
       hasAccessToken: !!accessToken,
       clientId,
     });
@@ -88,7 +123,6 @@ export const handleCreateUser = async (
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(anonKey ? { apikey: anonKey } : {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
       },
       body: JSON.stringify({
@@ -175,7 +209,7 @@ export const handleCreateUser = async (
             date_access_created: new Date().toISOString()
           };
 
-          const { data: locationDataResult, error: locationError } = await supabase
+          const { data: locationDataResult, error: locationError } = await supabaseClient
             .from('physical_location_access')
             .insert(locationData)
             .select();
@@ -205,10 +239,20 @@ export const handleCreateUser = async (
   }
 };
 
-export const handleDeleteUser = async (userId: string, userName: string, reason?: string): Promise<{ success: boolean; deletedUser?: any; error?: string }> => {
+/**
+ * Delete a user via Edge Function
+ * 
+ * @param supabaseClient - REQUIRED: Supabase client from OrganisationContext (DO NOT use stub from '@/integrations/supabase/client')
+ * @param userId - ID of user to delete
+ * @param userName - Name of user (for display)
+ * @param reason - Optional reason for deletion
+ * 
+ * Pattern: Same as auth module - receives supabaseClient as parameter from consuming app
+ */
+export const handleDeleteUser = async (supabaseClient: SupabaseClient, userId: string, userName: string, reason?: string): Promise<{ success: boolean; deletedUser?: any; error?: string }> => {
   try {
     // Call the delete-user Edge Function
-    const { data, error } = await supabase.functions.invoke('delete-user', {
+    const { data, error } = await supabaseClient.functions.invoke('delete-user', {
       body: {
         userId,
         reason: reason || undefined

@@ -11,6 +11,28 @@ A reusable React component library for organisation management, including user m
 - **Certificate Management**: Manage organizational certificates and compliance documents
 - **Organisation Profile**: Maintain organization details and contact information
 
+## Architecture
+
+⚠️ **IMPORTANT**: This module follows a specific architecture pattern for Supabase client management. **DO NOT** change this pattern without understanding the implications.
+
+**Key Pattern**: Functions receive `supabaseClient` as a parameter (from context), not from imports or environment variables.
+
+📖 **See [ARCHITECTURE.md](./ARCHITECTURE.md) for complete documentation** on:
+- Why this pattern exists
+- How to use it correctly
+- What NOT to do
+- History of changes
+
+**Quick Reference**:
+```tsx
+// ✅ CORRECT: Get client from context
+const { supabaseClient } = useOrganisationContext();
+await handleCreateUser(supabaseClient, newUser, updateProfile, onSuccess);
+
+// ❌ WRONG: Don't import from stub
+import { supabase } from '@/integrations/supabase/client'; // DON'T DO THIS
+```
+
 ## Installation
 
 ### As Git Submodule

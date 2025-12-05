@@ -7,32 +7,27 @@ import { handleSaveUser, handleCreateUser, handleDeleteUser } from '@/utils/user
 import type { UserProfile } from '@/hooks/useUserProfiles';
 
 // Mock dependencies
-vi.mock('@/integrations/supabase/client', () => ({
-  supabase: {
-    auth: {
-      getSession: jest.fn(),
-    },
-    from: jest.fn(() => ({
-      insert: jest.fn(() => ({
-        select: jest.fn(),
-      })),
-    })),
-    functions: {
-      invoke: jest.fn(),
-    },
+const mockSupabaseClient = {
+  supabaseUrl: 'https://test.supabase.co',
+  auth: {
+    getSession: vi.fn(),
   },
-  getCurrentClientId: jest.fn(() => 'test-client'),
+  from: vi.fn(() => ({
+    insert: vi.fn(() => ({
+      select: vi.fn(),
+    })),
+  })),
+  functions: {
+    invoke: vi.fn(),
+  },
+};
+
+vi.mock('@/integrations/supabase/client', () => ({
+  getCurrentClientId: vi.fn(() => 'test-client'),
 }));
 
 vi.mock('@/components/ui/use-toast', () => ({
   toast: vi.fn(),
-}));
-
-vi.mock('@/config/clients', () => ({
-  CLIENT_CONFIGS: {
-    default: { supabaseAnonKey: 'default-key' },
-    'test-client': { supabaseAnonKey: 'test-key' },
-  },
 }));
 
 // Mock global fetch
@@ -115,13 +110,19 @@ describe('handleSaveUser', () => {
 describe('handleCreateUser', () => {
   const mockUpdateProfile = vi.fn();
   const mockOnSuccess = vi.fn();
-  const { toast } = await import('@/components/ui/use-toast');
-  const { supabase, getCurrentClientId } = await import('@/integrations/supabase/client');
+  let toast: any;
+  let getCurrentClientId: any;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+    const toastModule = await import('@/components/ui/use-toast');
+    toast = toastModule.toast;
+    const clientModule = await import('@/integrations/supabase/client');
+    getCurrentClientId = clientModule.getCurrentClientId;
     vi.clearAllMocks();
     vi.mocked(global.fetch).mockClear();
   });
+
 
   it('should successfully create a new user', async () => {
     const newUser = {
@@ -150,7 +151,7 @@ describe('handleCreateUser', () => {
       },
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: mockSession,
       error: null,
     });
@@ -163,7 +164,7 @@ describe('handleCreateUser', () => {
 
     mockUpdateProfile.mockResolvedValue(undefined);
 
-    supabase.from.mockReturnValue({
+    mockSupabaseClient.from.mockReturnValue({
       insert: vi.fn().mockReturnValue({
         select: vi.fn().mockResolvedValue({
           data: [{ id: 'access-1' }],
@@ -172,10 +173,10 @@ describe('handleCreateUser', () => {
       }),
     });
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(getCurrentClientId).toHaveBeenCalled();
-    expect(supabase.auth.getSession).toHaveBeenCalled();
+    expect(mockSupabaseClient.auth.getSession).toHaveBeenCalled();
     expect(global.fetch).toHaveBeenCalled();
     expect(mockUpdateProfile).toHaveBeenCalled();
     expect(toast).toHaveBeenCalledWith({
@@ -191,12 +192,12 @@ describe('handleCreateUser', () => {
       full_name: 'New User',
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: null,
       error: null,
     });
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
@@ -212,12 +213,12 @@ describe('handleCreateUser', () => {
       full_name: 'New User',
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: null,
       error: new Error('Session error'),
     });
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
@@ -227,9 +228,6 @@ describe('handleCreateUser', () => {
   });
 
   it('should handle missing Supabase URL', async () => {
-    const originalUrl = process.env.VITE_SUPABASE_URL;
-    delete process.env.VITE_SUPABASE_URL;
-
     const newUser = {
       email: 'newuser@example.com',
       full_name: 'New User',
@@ -241,20 +239,19 @@ describe('handleCreateUser', () => {
       },
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    const clientWithoutUrl = { ...mockSupabaseClient, supabaseUrl: undefined };
+    clientWithoutUrl.auth.getSession.mockResolvedValue({
       data: mockSession,
       error: null,
     });
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(clientWithoutUrl as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
       description: 'Supabase base URL is not configured.',
       variant: 'destructive',
     });
-
-    process.env.VITE_SUPABASE_URL = originalUrl;
   });
 
   it('should handle edge function error response', async () => {
@@ -273,7 +270,7 @@ describe('handleCreateUser', () => {
       error: 'User already exists',
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: mockSession,
       error: null,
     });
@@ -284,7 +281,7 @@ describe('handleCreateUser', () => {
       text: jest.fn().mockResolvedValue(JSON.stringify(mockErrorResponse)),
     });
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
@@ -305,7 +302,7 @@ describe('handleCreateUser', () => {
       },
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: mockSession,
       error: null,
     });
@@ -317,7 +314,7 @@ describe('handleCreateUser', () => {
       text: jest.fn().mockResolvedValue('Server Error'),
     });
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(toast).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -339,7 +336,7 @@ describe('handleCreateUser', () => {
       },
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: mockSession,
       error: null,
     });
@@ -350,7 +347,7 @@ describe('handleCreateUser', () => {
       text: jest.fn().mockResolvedValue(JSON.stringify({})),
     });
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
@@ -378,7 +375,7 @@ describe('handleCreateUser', () => {
       },
     };
 
-    supabase.auth.getSession.mockResolvedValue({
+    mockSupabaseClient.auth.getSession.mockResolvedValue({
       data: mockSession,
       error: null,
     });
@@ -391,23 +388,20 @@ describe('handleCreateUser', () => {
 
     mockUpdateProfile.mockResolvedValue(undefined);
 
-    await handleCreateUser(newUser, mockUpdateProfile, mockOnSuccess);
+    await handleCreateUser(mockSupabaseClient as any, newUser, mockUpdateProfile, mockOnSuccess);
 
     expect(mockUpdateProfile).toHaveBeenCalled();
-    expect(supabase.from).not.toHaveBeenCalled(); // Should not call location access
+    expect(mockSupabaseClient.from).not.toHaveBeenCalled(); // Should not call location access
   });
 });
 
 describe('handleDeleteUser', () => {
   let toast: any;
-  let supabase: any;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     const toastModule = await import('@/components/ui/use-toast');
-    const supabaseModule = await import('@/integrations/supabase/client');
     toast = toastModule.toast;
-    supabase = supabaseModule.supabase;
   });
 
   it('should successfully delete a user', async () => {
@@ -415,7 +409,7 @@ describe('handleDeleteUser', () => {
     const userName = 'John Doe';
     const deletedUser = { id: userId, full_name: userName };
 
-    supabase.functions.invoke.mockResolvedValue({
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
       data: {
         success: true,
         deletedUser,
@@ -423,9 +417,9 @@ describe('handleDeleteUser', () => {
       error: null,
     });
 
-    const result = await handleDeleteUser(userId, userName);
+    const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName);
 
-    expect(supabase.functions.invoke).toHaveBeenCalledWith('delete-user', {
+    expect(mockSupabaseClient.functions.invoke).toHaveBeenCalledWith('delete-user', {
       body: {
         userId,
         reason: undefined,
@@ -440,7 +434,7 @@ describe('handleDeleteUser', () => {
     const userName = 'John Doe';
     const reason = 'No longer needed';
 
-    supabase.functions.invoke.mockResolvedValue({
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
       data: {
         success: true,
         deletedUser: { id: userId },
@@ -448,7 +442,7 @@ describe('handleDeleteUser', () => {
       error: null,
     });
 
-    const result = await handleDeleteUser(userId, userName, reason);
+    const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName, reason);
 
     expect(supabase.functions.invoke).toHaveBeenCalledWith('delete-user', {
       body: {
@@ -463,12 +457,12 @@ describe('handleDeleteUser', () => {
     const userId = 'user-1';
     const userName = 'John Doe';
 
-    supabase.functions.invoke.mockResolvedValue({
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
       data: null,
       error: new Error('Function error'),
     });
 
-    const result = await handleDeleteUser(userId, userName);
+    const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName);
 
     expect(result.success).toBe(false);
     expect(result.error).toBe('Failed to delete user');
@@ -483,7 +477,7 @@ describe('handleDeleteUser', () => {
     const userId = 'user-1';
     const userName = 'John Doe';
 
-    supabase.functions.invoke.mockResolvedValue({
+    mockSupabaseClient.functions.invoke.mockResolvedValue({
       data: {
         success: false,
         error: 'User not found',
@@ -491,7 +485,7 @@ describe('handleDeleteUser', () => {
       error: null,
     });
 
-    const result = await handleDeleteUser(userId, userName);
+    const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName);
 
     expect(result.success).toBe(false);
     expect(result.error).toBe('User not found');
@@ -508,7 +502,7 @@ describe('handleDeleteUser', () => {
 
     supabase.functions.invoke.mockRejectedValue(new Error('Network error'));
 
-    const result = await handleDeleteUser(userId, userName);
+    const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName);
 
     expect(result.success).toBe(false);
     expect(result.error).toBe('Failed to delete user');

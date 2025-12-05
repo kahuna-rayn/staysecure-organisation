@@ -19,8 +19,16 @@ import ImportUsersDialog from './ImportUsersDialog';
 import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
 
 
+/**
+ * User Management Component
+ * 
+ * Pattern: Gets supabaseClient from OrganisationContext and passes it to handleCreateUser/handleDeleteUser
+ * This follows the same pattern as the auth module - client is provided via context, not imported from stub
+ */
 const UserManagement: React.FC = () => {
-  const { hasPermission, onUserAction } = useOrganisationContext();
+  // Get supabaseClient from context (provided by consuming app via OrganisationProvider)
+  // DO NOT import supabase from '@/integrations/supabase/client' - it's a stub
+  const { hasPermission, onUserAction, supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
   const { toast } = useToast();
   const [viewMode, setViewMode] = useViewPreference('userManagement', 'cards');
@@ -62,7 +70,7 @@ const UserManagement: React.FC = () => {
     setIsCreatingUser(true);
     
     try {
-      await handleCreateUser(newUser, async (id, updates) => {
+      await handleCreateUser(supabaseClient, newUser, async (id, updates) => {
         await updateProfile(id, updates);
       }, async () => {
         // Refresh the user list after successful creation
@@ -90,7 +98,7 @@ const UserManagement: React.FC = () => {
     if (!userToDelete) return;
     setIsDeleting(true);
     try {
-      const result = await handleDeleteUser(userToDelete.id, userToDelete.name, reason);
+      const result = await handleDeleteUser(supabaseClient, userToDelete.id, userToDelete.name, reason);
       if (result.success) {
         // Close dialog first
         setIsDeleteDialogOpen(false);

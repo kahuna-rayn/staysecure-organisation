@@ -1,3 +1,25 @@
+/**
+ * Organisation Context
+ * 
+ * ARCHITECTURE PATTERN (CRITICAL - DO NOT CHANGE):
+ * ================================================
+ * This module follows the SAME pattern as the auth module:
+ * - OrganisationProvider receives `supabaseClient` via config prop (from consuming app)
+ * - Functions like handleCreateUser/handleDeleteUser receive supabaseClient as parameter
+ * - Components get supabaseClient from useOrganisationContext() hook
+ * 
+ * This ensures:
+ * - Consistency with auth module pattern
+ * - Module independence (no env var dependencies)
+ * - Easy testing (mock the client)
+ * 
+ * Example usage in components:
+ * ```tsx
+ * const { supabaseClient } = useOrganisationContext();
+ * await handleCreateUser(supabaseClient, newUser, updateProfile, onSuccess);
+ * ```
+ */
+
 import React, { createContext, useContext, ReactNode } from 'react';
 import type { OrganisationConfig } from '../types';
 

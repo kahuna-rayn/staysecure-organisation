@@ -728,9 +728,6 @@ const getEnvVar = (key) => {
   }
   return void 0;
 };
-const getSupabaseUrl = () => {
-  return getEnvVar("VITE_SUPABASE_URL");
-};
 const getSupabaseAnonKey = () => {
   return getEnvVar("VITE_SUPABASE_ANON_KEY") || getEnvVar("VITE_SUPABASE_PUB_KEY") || getEnvVar("VITE_SB_PUB_KEY");
 };
@@ -762,7 +759,7 @@ const handleCreateUser = async (newUser, updateProfile, onSuccess) => {
     const accessToken = sessionData.session.access_token;
     const clientConfig = clientId && CLIENT_CONFIGS[clientId] || CLIENT_CONFIGS["default"];
     const anonKey = (clientConfig == null ? void 0 : clientConfig.supabaseAnonKey) || getSupabaseAnonKey();
-    const baseUrl = (_b = getSupabaseUrl()) == null ? void 0 : _b.replace(/\/$/, "");
+    const baseUrl = (_b = clientConfig == null ? void 0 : clientConfig.supabaseUrl) == null ? void 0 : _b.replace(/\/$/, "");
     if (!baseUrl) {
       throw new Error("Supabase base URL is not configured.");
     }

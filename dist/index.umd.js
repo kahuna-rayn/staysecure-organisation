@@ -8963,6 +8963,7 @@
   exports2.EditableField = EditableField;
   exports2.EditableProfileHeader = EditableProfileHeader;
   exports2.ImportErrorReport = ImportErrorReport;
+  exports2.ImportUsersDialog = ImportUsersDialog;
   exports2.LocationManagement = LocationManagement;
   exports2.MultipleRolesField = MultipleRolesField;
   exports2.OrganisationPanel = OrganisationPanel;

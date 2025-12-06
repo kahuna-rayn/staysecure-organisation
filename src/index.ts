@@ -24,6 +24,7 @@ export { default as AssignSoftwareDialog } from './components/admin/AssignSoftwa
 export { default as AddCertificatesDialog } from './components/certificates/AddCertificatesDialog';
 export { default as AddPhysicalLocationDialog } from './components/admin/AddPhysicalLocationDialog';
 export { default as AssignPhysicalLocationDialog } from './components/admin/AssignPhysicalLocationDialog';
+export { default as ImportUsersDialog } from './components/admin/ImportUsersDialog';
 
 // Profile component exports
 export { default as ProfileBasicInfo } from './components/profile/ProfileBasicInfo';

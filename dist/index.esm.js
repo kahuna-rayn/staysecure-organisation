@@ -8987,6 +8987,7 @@ export {
   EditableField,
   EditableProfileHeader,
   ImportErrorReport,
+  ImportUsersDialog,
   LocationManagement,
   MultipleRolesField,
   OrganisationPanel,

@@ -3,14 +3,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Building, User, Edit2, Save, X, Hash, Phone, Star, Network } from 'lucide-react';
+import { MapPin, Building, User, Edit2, Save, X, Hash, Phone, Star, Network, Calendar, Shield, Clock } from 'lucide-react';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
 import { useUserPhysicalLocations } from '@/hooks/useUserPhysicalLocations';
 import { toast } from '@/components/ui/use-toast';
 import ProfileAvatar from './ProfileAvatar';
-import ProfileContactInfo from './ProfileContactInfo';
 import EditableField from './EditableField';
 import { UserRoleField } from './UserRoleField';
 
@@ -31,6 +30,17 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [managerValue, setManagerValue] = useState(profile.manager || '');
+
+  // Helper functions for date formatting
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'Not set';
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const formatDateAndTime = (dateString?: string) => {
+    if (!dateString) return 'Never';
+    return new Date(dateString).toLocaleString();
+  };
 
   const handleFieldEdit = (field: string) => {
     setEditingField(field);
@@ -176,7 +186,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     <Card className="w-full">
       <CardContent className="p-6 lg:p-8">
         {/* 4-column layout: Avatar, Personal, Work, Status */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-6">
           {/* Column 1 - Avatar section */}
           <div className="flex justify-center md:justify-start">
             <ProfileAvatar 
@@ -298,7 +308,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 )}
               </div>
               
-              <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center justify-end gap-2 w-full text-sm">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
                 <EditableField
                   value={profile.location || 'Not specified'}
@@ -338,17 +348,31 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               </div>
             </div>
 
-          {/* Column 4 - Status info */}
+          {/* Column 4 - Status info (inlined from ProfileContactInfo) */}
           <div className="space-y-2">
-              <ProfileContactInfo
-                startDate={profile.startDate}
-                userId={profile.id}
-                status={profile.account?.status}
-                accessLevel={profile.account?.accessLevel}
-                lastLogin={profile.account?.lastLogin}
-                passwordLastChanged={profile.account?.passwordLastChanged}
-                twoFactorEnabled={profile.account?.twoFactorEnabled}
-              />
+            <div className="flex flex-col items-end space-y-3 ml-auto">
+              {/* Account Status Information */}
+              <div className="flex items-center justify-end gap-2 w-full text-sm">
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                <Badge variant={profile.account?.status === 'Active' ? 'default' : 'secondary'}>
+                  {profile.account?.status || 'Active'}
+                </Badge>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 text-sm">
+                <UserRoleField userId={profile.id} />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 text-sm w-full">
+                <Calendar className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="whitespace-nowrap text-right">Started {formatDate(profile.startDate)}</span>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 text-sm w-full">
+                <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
+                <span className="whitespace-nowrap text-right">Last login: {profile.account?.lastLogin ? formatDateAndTime(profile.account.lastLogin) : 'Never'}</span>
+              </div>
+            </div>
           </div>
         </div>
       </CardContent>

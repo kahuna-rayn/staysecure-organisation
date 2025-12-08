@@ -27,10 +27,9 @@ export { default as AssignPhysicalLocationDialog } from './components/admin/Assi
 export { default as ImportUsersDialog } from './components/admin/ImportUsersDialog';
 
 // Profile component exports
-export { default as ProfileBasicInfo } from './components/profile/ProfileBasicInfo';
 export { default as ProfileAvatar } from './components/profile/ProfileAvatar';
-export { default as ProfileContactInfo } from './components/profile/ProfileContactInfo';
 export { default as EditableField } from './components/profile/EditableField';
+export { RoleSelector } from './components/profile/RoleSelector';
 export { default as MultipleRolesField } from './components/profile/MultipleRolesField';
 
 // Organisational component exports

@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { RoleSelector } from './RoleSelector';
 import { useUserRoleById, AppRole } from '@/hooks/useUserRoleById';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useQuery } from '@tanstack/react-query';
+import { useOrganisationContext } from '@/context/OrganisationContext';
+import { useAuth } from 'staysecure-auth';
 import { Loader2, Key } from 'lucide-react';
 
 interface UserRoleFieldProps {
@@ -13,14 +16,25 @@ export const UserRoleField: React.FC<UserRoleFieldProps> = ({ userId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { role, isLoading, updateRole, isUpdating, getRoleDisplayName, getRoleBadgeVariant } = useUserRoleById(userId);
   const { hasAdminAccess } = useUserRole();
-
-  const roleOptions: { value: AppRole; label: string }[] = [
-    { value: 'user', label: 'User' },
-    { value: 'author', label: 'Author' },
-    { value: 'manager', label: 'Manager' },
-    { value: 'client_admin', label: 'Administrator' },
-    { value: 'super_admin', label: 'Super Administrator' },
-  ];
+  const { supabaseClient } = useOrganisationContext();
+  const { user } = useAuth();
+  
+  // Check if current user is super_admin
+  const { data: currentUserRole } = useQuery({
+    queryKey: ['user-role', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabaseClient
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+      return data?.role;
+    },
+    enabled: !!user?.id
+  });
+  
+  const isSuperAdmin = currentUserRole === 'super_admin';
 
   if (isLoading) {
     return (
@@ -56,24 +70,13 @@ export const UserRoleField: React.FC<UserRoleFieldProps> = ({ userId }) => {
   return (
     <div className="flex items-center gap-2">
       <Key className="h-4 w-4 text-muted-foreground" />
-      <Select
+      <RoleSelector
         value={role || 'user'}
         onValueChange={(value) => handleRoleChange(value as AppRole)}
+        isSuperAdmin={isSuperAdmin}
         disabled={isUpdating}
-        open={isEditing}
-        onOpenChange={setIsEditing}
-      >
-        <SelectTrigger className="w-48 h-8 text-sm">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent className="z-50">
-          {roleOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        triggerClassName="w-48 h-8 text-sm"
+      />
       {isUpdating && <Loader2 className="h-4 w-4 animate-spin" />}
     </div>
   );

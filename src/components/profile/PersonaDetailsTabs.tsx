@@ -28,9 +28,10 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   const [isAddEducationOpen, setIsAddEducationOpen] = useState(false);
   const departmentRolesRef = useRef<UserDepartmentsRolesManagerRef>(null);
 
-  // Detect if we're in Learn mode (root path) or Govern mode (admin path)
-  // This is the GOVERN app, so default to GOVERN mode unless explicitly set to LEARN
-  const isLearnMode = import.meta.env.VITE_APP_MODE === 'LEARN';
+  // Detect if we're in Learn app or Govern app based on URL
+  // Check if 'learn' appears in the hostname (e.g., staysecure-learn.raynsecure.com)
+  const isLearnMode = typeof window !== 'undefined' && 
+    (window.location.hostname.includes('learn') || window.location.pathname.includes('/learn'));
   const { hasAdminAccess } = useUserRole();
 
   const handleCertificateUpdate = (certificateId: string, updates: any) => {
@@ -47,7 +48,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   // Get the appropriate grid class based on mode
   const getGridClass = () => {
     if (isLearnMode) {
-      return "grid-cols-3"; // Only Departments & Roles, Physical Location and Certificates in Learn mode
+      return "grid-cols-2"; // Only Departments & Roles and Certificates in Learn mode
     }
     
     if (profile?.enrolled_in_learn) {

@@ -79,3 +79,11 @@ export const useOrganisationContext = (): OrganisationContextValue => {
   }
   return context;
 };
+
+/**
+ * Safe version of useOrganisationContext that returns null if context is not available.
+ * Use this when the component might be used outside of OrganisationProvider.
+ */
+export const useOrganisationContextSafe = (): OrganisationContextValue | null => {
+  return useContext(OrganisationContext);
+};

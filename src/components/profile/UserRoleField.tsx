@@ -4,7 +4,7 @@ import { RoleSelector } from './RoleSelector';
 import { useUserRoleById, AppRole } from '@/hooks/useUserRoleById';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useQuery } from '@tanstack/react-query';
-import { useOrganisationContextSafe } from '@/context/OrganisationContext';
+import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useAuth } from 'staysecure-auth';
 import { Loader2, Key } from 'lucide-react';
 
@@ -16,22 +16,22 @@ export const UserRoleField: React.FC<UserRoleFieldProps> = ({ userId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { role, isLoading, updateRole, isUpdating, getRoleDisplayName, getRoleBadgeVariant } = useUserRoleById(userId);
   const { hasAdminAccess } = useUserRole();
-  const organisationContext = useOrganisationContextSafe();
+  const { supabaseClient} = useOrganisationContext();
   const { user } = useAuth();
   
   // Check if current user is super_admin (only if context is available)
   const { data: currentUserRole } = useQuery({
     queryKey: ['user-role', user?.id],
     queryFn: async () => {
-      if (!user?.id || !organisationContext?.supabaseClient) return null;
-      const { data } = await organisationContext.supabaseClient
+      if (!user?.id) return null;
+      const { data } = await supabaseClient
         .from('user_roles')
         .select('role')
         .eq('user_id', user.id)
         .single();
       return data?.role;
     },
-    enabled: !!user?.id && !!organisationContext?.supabaseClient
+    enabled: !!user?.id
   });
   
   const isSuperAdmin = currentUserRole === 'super_admin';

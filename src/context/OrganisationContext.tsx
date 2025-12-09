@@ -28,7 +28,7 @@ interface OrganisationContextValue extends OrganisationConfig {
   hasPermission: (permission: keyof NonNullable<OrganisationConfig['permissions']>) => boolean;
 }
 
-const OrganisationContext = createContext<OrganisationContextValue | null>(null);
+export const OrganisationContext = createContext<OrganisationContextValue | null>(null);
 
 interface OrganisationProviderProps {
   config: OrganisationConfig;
@@ -78,12 +78,4 @@ export const useOrganisationContext = (): OrganisationContextValue => {
     throw new Error('useOrganisationContext must be used within OrganisationProvider');
   }
   return context;
-};
-
-/**
- * Safe version of useOrganisationContext that returns null if context is not available.
- * Use this when the component might be used outside of OrganisationProvider.
- */
-export const useOrganisationContextSafe = (): OrganisationContextValue | null => {
-  return useContext(OrganisationContext);
 };

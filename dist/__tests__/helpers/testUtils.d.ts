@@ -10,7 +10,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
     config?: Partial<OrganisationConfig>;
     queryClient?: QueryClient;
 }
-export declare const renderWithProviders: (ui: React.ReactElement, { config, queryClient, ...renderOptions }?: CustomRenderOptions) => import('@testing-library/react').RenderResult<typeof import("@testing-library/dom/types/queries"), HTMLElement, HTMLElement>;
+export declare const renderWithProviders: (ui: React.ReactElement, { config, queryClient, ...renderOptions }?: CustomRenderOptions) => any;
 export * from '@testing-library/react';
 export { default as userEvent } from '@testing-library/user-event';
 //# sourceMappingURL=testUtils.d.ts.map

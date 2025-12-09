@@ -1128,6 +1128,41 @@
       }
     ) });
   };
+  const RoleSelector = ({
+    value,
+    onValueChange,
+    isSuperAdmin = false,
+    placeholder = "Select access level",
+    disabled = false,
+    className,
+    triggerClassName
+  }) => {
+    const allRoles = [
+      { value: "user", label: "User" },
+      { value: "client_admin", label: "Admin" },
+      { value: "author", label: "Author" },
+      { value: "super_admin", label: "Super Admin" }
+    ];
+    const availableRoles = allRoles.filter((role) => {
+      if (role.value === "author" || role.value === "super_admin") {
+        return isSuperAdmin;
+      }
+      return true;
+    });
+    return /* @__PURE__ */ jsxRuntime.jsxs(
+      select.Select,
+      {
+        value,
+        onValueChange,
+        disabled,
+        className,
+        children: [
+          /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: triggerClassName, children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: availableRoles.map((role) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: role.value, children: role.label }, role.value)) })
+        ]
+      }
+    );
+  };
   const CreateUserDialog = ({
     isOpen,
     onOpenChange,
@@ -1326,25 +1361,13 @@
                 "Access Level ",
                 /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-red-500", children: "*" })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsxs(
-                select.Select,
+              /* @__PURE__ */ jsxRuntime.jsx(
+                RoleSelector,
                 {
-                  value: newUser.access_level,
-                  onValueChange: (value) => {
-                    const backendValue = value === "Admin" ? "client_admin" : value.toLowerCase();
-                    updateField("access_level", backendValue);
-                  },
-                  required: true,
-                  children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select access level" }) }),
-                    /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "user", children: "User" }),
-                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "manager", children: "Manager" }),
-                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "client_admin", children: "Admin" }),
-                      isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "author", children: "Author" }),
-                      isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "super_admin", children: "Super Admin" })
-                    ] })
-                  ]
+                  value: newUser.access_level || "user",
+                  onValueChange: (value) => updateField("access_level", value),
+                  isSuperAdmin,
+                  placeholder: "Select access level"
                 }
               )
             ] }),
@@ -7235,6 +7258,7 @@
     const [isAssignSoftwareOpen, setIsAssignSoftwareOpen] = o.useState(false);
     const [isAddEducationOpen, setIsAddEducationOpen] = o.useState(false);
     const departmentRolesRef = o.useRef(null);
+    const isLearnMode = typeof window !== "undefined" && (window.location.hostname.includes("learn") || window.location.pathname.includes("/learn"));
     const { hasAdminAccess } = useUserRole.useUserRole();
     const handleCertificateUpdate = (certificateId, updates) => {
     };
@@ -7242,6 +7266,9 @@
       onUpdate == null ? void 0 : onUpdate();
     };
     const getGridClass = () => {
+      if (isLearnMode) {
+        return "grid-cols-2";
+      }
       if (profile == null ? void 0 : profile.enrolled_in_learn) {
         return "grid-cols-7";
       }
@@ -7254,7 +7281,7 @@
             /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Departments & Roles" })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+          !isLearnMode && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
             /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "hardware", className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(Laptop, { className: "h-4 w-4" }),
               /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Hardware" })
@@ -7268,7 +7295,7 @@
             /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Physical Location" })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "knowledge", className: "flex items-center gap-2", children: [
+          !isLearnMode && /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "knowledge", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(BookOpen, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Knowledge" })
           ] }),
@@ -7276,7 +7303,7 @@
             /* @__PURE__ */ jsxRuntime.jsx(GraduationCap, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Certificates" })
           ] }),
-          (profile == null ? void 0 : profile.enrolled_in_learn) && /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "learn", className: "flex items-center gap-2", children: [
+          !isLearnMode && (profile == null ? void 0 : profile.enrolled_in_learn) && /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "learn", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(Play, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "StaySecure LEARN" })
           ] })
@@ -7295,7 +7322,7 @@
           ) }),
           /* @__PURE__ */ jsxRuntime.jsx(UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+        !isLearnMode && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
           /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "hardware", className: "space-y-4 animate-fade-in", children: [
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(
               button.Button,
@@ -7320,7 +7347,7 @@
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile, canAdd: hasAdminAccess }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments, { userId: profile.id }) }),
+        !isLearnMode && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments, { userId: profile.id }) }),
         /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
           /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(
             button.Button,
@@ -7339,9 +7366,9 @@
             }
           )
         ] }),
-        (profile == null ? void 0 : profile.enrolled_in_learn) && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "learn", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(LearningTracksTab, { userId: profile.id }) })
+        !isLearnMode && (profile == null ? void 0 : profile.enrolled_in_learn) && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "learn", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(LearningTracksTab, { userId: profile.id }) })
       ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+      !isLearnMode && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
         /* @__PURE__ */ jsxRuntime.jsx(
           AssignHardwareDialog,
           {
@@ -7510,13 +7537,18 @@
     const [isEditing, setIsEditing] = o.useState(false);
     const { role, isLoading, updateRole, isUpdating, getRoleDisplayName, getRoleBadgeVariant } = useUserRoleById.useUserRoleById(userId);
     const { hasAdminAccess } = useUserRole.useUserRole();
-    const roleOptions = [
-      { value: "user", label: "User" },
-      { value: "author", label: "Author" },
-      { value: "manager", label: "Manager" },
-      { value: "client_admin", label: "Administrator" },
-      { value: "super_admin", label: "Super Administrator" }
-    ];
+    const { supabaseClient } = useOrganisationContext();
+    const { user } = staysecureAuth.useAuth();
+    const { data: currentUserRole } = reactQuery.useQuery({
+      queryKey: ["user-role", user == null ? void 0 : user.id],
+      queryFn: async () => {
+        if (!(user == null ? void 0 : user.id)) return null;
+        const { data } = await supabaseClient.from("user_roles").select("role").eq("user_id", user.id).single();
+        return data == null ? void 0 : data.role;
+      },
+      enabled: !!(user == null ? void 0 : user.id)
+    });
+    const isSuperAdmin = currentUserRole === "super_admin";
     if (isLoading) {
       return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
@@ -7543,60 +7575,17 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntime.jsx(Key, { className: "h-4 w-4 text-muted-foreground" }),
-      /* @__PURE__ */ jsxRuntime.jsxs(
-        select.Select,
+      /* @__PURE__ */ jsxRuntime.jsx(
+        RoleSelector,
         {
           value: role || "user",
           onValueChange: (value) => handleRoleChange(value),
+          isSuperAdmin,
           disabled: isUpdating,
-          open: isEditing,
-          onOpenChange: setIsEditing,
-          children: [
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48 h-8 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-            /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { className: "z-50", children: roleOptions.map((option) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: option.value, children: option.label }, option.value)) })
-          ]
+          triggerClassName: "w-48 h-8 text-sm"
         }
       ),
       isUpdating && /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" })
-    ] });
-  };
-  const ProfileContactInfo = ({
-    startDate,
-    userId,
-    status,
-    accessLevel,
-    lastLogin,
-    passwordLastChanged,
-    twoFactorEnabled
-  }) => {
-    const formatDate = (dateString) => {
-      if (!dateString) return "Not set";
-      return new Date(dateString).toLocaleDateString();
-    };
-    const formatDateAndTime = (dateString) => {
-      if (!dateString) return "Never";
-      return new Date(dateString).toLocaleString();
-    };
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: status === "Active" ? "default" : "secondary", children: status || "Active" })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end gap-2 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(UserRoleField, { userId }) }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
-          "Started ",
-          formatDate(startDate)
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
-          "Last login: ",
-          lastLogin ? formatDateAndTime(lastLogin) : "Never"
-        ] })
-      ] })
     ] });
   };
   const EditableProfileHeader = ({
@@ -7605,11 +7594,19 @@
     isReadOnly = false,
     onOptimisticUpdate
   }) => {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e;
     const { profiles, updateProfile } = useUserProfiles.useUserProfiles();
     const [editingField, setEditingField] = o.useState(null);
     const [saving, setSaving] = o.useState(false);
     const [managerValue, setManagerValue] = o.useState(profile.manager || "");
+    const formatDate = (dateString) => {
+      if (!dateString) return "Not set";
+      return new Date(dateString).toLocaleDateString();
+    };
+    const formatDateAndTime = (dateString) => {
+      if (!dateString) return "Never";
+      return new Date(dateString).toLocaleString();
+    };
     const handleFieldEdit = (field) => {
       setEditingField(field);
     };
@@ -7725,7 +7722,7 @@
         await handleFieldSave("location", locationName);
       }
     };
-    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6 lg:gap-8", children: [
+    return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-6 lg:p-8", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4 lg:gap-6", children: [
       /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-center md:justify-start", children: /* @__PURE__ */ jsxRuntime.jsx(
         ProfileAvatar,
         {
@@ -7842,7 +7839,7 @@
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2 w-full text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
           /* @__PURE__ */ jsxRuntime.jsx(
             EditableField,
@@ -7872,18 +7869,27 @@
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxRuntime.jsx(
-        ProfileContactInfo,
-        {
-          startDate: profile.startDate,
-          userId: profile.id,
-          status: (_c = profile.account) == null ? void 0 : _c.status,
-          accessLevel: (_d = profile.account) == null ? void 0 : _d.accessLevel,
-          lastLogin: (_e = profile.account) == null ? void 0 : _e.lastLogin,
-          passwordLastChanged: (_f = profile.account) == null ? void 0 : _f.passwordLastChanged,
-          twoFactorEnabled: (_g = profile.account) == null ? void 0 : _g.twoFactorEnabled
-        }
-      ) })
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2 w-full text-sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
+          /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: ((_c = profile.account) == null ? void 0 : _c.status) === "Active" ? "default" : "secondary", children: ((_d = profile.account) == null ? void 0 : _d.status) || "Active" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end gap-2 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(UserRoleField, { userId: profile.id }) }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2 text-sm w-full", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground shrink-0" }),
+          /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "whitespace-nowrap text-right", children: [
+            "Started ",
+            formatDate(profile.startDate)
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2 text-sm w-full", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-muted-foreground shrink-0" }),
+          /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "whitespace-nowrap text-right", children: [
+            "Last login: ",
+            ((_e = profile.account) == null ? void 0 : _e.lastLogin) ? formatDateAndTime(profile.account.lastLogin) : "Never"
+          ] })
+        ] })
+      ] }) })
     ] }) }) });
   };
   const PersonaProfile = () => {
@@ -8416,161 +8422,6 @@
       ] })
     ] }) });
   };
-  const ProfileBasicInfo = ({
-    firstName,
-    lastName,
-    manager,
-    phone,
-    location,
-    locationId,
-    username,
-    employeeId,
-    editingField,
-    onEdit,
-    onSave,
-    onCancel,
-    saving,
-    profiles,
-    currentUserId,
-    userId
-  }) => {
-    console.log("ProfileBasicInfo rendering with userId:", userId, "currentUserId:", currentUserId);
-    const { userDepartments } = useUserDepartments.useUserDepartments(userId);
-    const { primaryRole } = useUserProfileRoles.useUserProfileRoles(userId);
-    const { data: physicalLocations, isLoading: locationsLoading } = useUserPhysicalLocations.useUserPhysicalLocations(userId);
-    const primaryDepartment = userDepartments.find((dept) => dept.is_primary);
-    const handleNameSave = async (fieldKey, value) => {
-      await onSave("full_name", value);
-    };
-    const [managerValue, setManagerValue] = o.useState(manager);
-    o.useEffect(() => {
-      setManagerValue(manager);
-    }, [manager, editingField]);
-    const handleManagerChange = async (userId2) => {
-      setManagerValue(userId2);
-      await onSave("manager", userId2);
-    };
-    const handleLocationSelect = async (locationName, selectedOption) => {
-      if (selectedOption == null ? void 0 : selectedOption.id) {
-        await onSave("location", locationName);
-      } else {
-        await onSave("location", locationName);
-      }
-    };
-    const filteredProfiles = profiles.filter((user) => user.id !== currentUserId);
-    const managerProfile = profiles.find((u) => u.id === manager);
-    const managerName = managerProfile ? managerProfile.full_name || managerProfile.username : "Not assigned";
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
-      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2 mb-4", children: /* @__PURE__ */ jsxRuntime.jsx(
-        EditableField,
-        {
-          value: `${firstName} ${lastName}`,
-          fieldKey: "full_name",
-          onSave: handleNameSave,
-          isEditing: editingField === "full_name",
-          onEdit,
-          onCancel,
-          saving,
-          className: "flex-1",
-          inputClassName: "text-2xl font-bold h-10"
-        }
-      ) }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 lg:gap-12 w-full", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2 w-full", children: [
-          username && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(User, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-foreground", children: username })
-          ] }),
-          employeeId && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Hash, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-foreground", children: employeeId })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Phone, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              EditableField,
-              {
-                value: phone || "Not provided",
-                fieldKey: "phone",
-                placeholder: "Phone number",
-                onSave,
-                isEditing: editingField === "phone",
-                onEdit,
-                onCancel,
-                saving,
-                inputClassName: "h-6 text-sm"
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2 w-full", children: [
-          editingField === "manager" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm text-muted-foreground", children: "Reports to:" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              select.Select,
-              {
-                value: managerValue,
-                onValueChange: handleManagerChange,
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager" }) }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
-                ]
-              }
-            )
-          ] }) : /* @__PURE__ */ jsxRuntime.jsx(
-            EditableField,
-            {
-              value: managerName,
-              fieldKey: "manager",
-              label: "Reports to:",
-              onSave,
-              isEditing: editingField === "manager",
-              onEdit,
-              onCancel,
-              saving,
-              inputClassName: "text-sm h-6"
-            }
-          ),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              EditableField,
-              {
-                value: location || "Not specified",
-                fieldKey: "location",
-                placeholder: "Select location",
-                onSave,
-                onSelectChange: handleLocationSelect,
-                isEditing: editingField === "location",
-                onEdit,
-                onCancel,
-                saving,
-                type: "select",
-                asyncOptions: physicalLocations,
-                isLoading: locationsLoading,
-                inputClassName: "h-6 text-sm w-48",
-                locationId
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "System Role:" }),
-            /* @__PURE__ */ jsxRuntime.jsx(UserRoleField, { userId })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 w-full", children: [
-            primaryDepartment && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }),
-              /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "default", children: primaryDepartment.department_name })
-            ] }),
-            primaryRole && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }),
-              /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "default", children: primaryRole.role_name })
-            ] })
-          ] })
-        ] })
-      ] })
-    ] });
-  };
   const MultipleRolesField = ({
     userId,
     departmentValue,
@@ -8973,9 +8824,8 @@
   exports2.PersonaProfile = PersonaProfile;
   exports2.PhysicalLocationTab = PhysicalLocationTab;
   exports2.ProfileAvatar = ProfileAvatar;
-  exports2.ProfileBasicInfo = ProfileBasicInfo;
-  exports2.ProfileContactInfo = ProfileContactInfo;
   exports2.RoleManagement = RoleManagement;
+  exports2.RoleSelector = RoleSelector;
   exports2.UserCard = UserCard;
   exports2.UserDetailView = UserDetailView;
   exports2.UserList = UserList;

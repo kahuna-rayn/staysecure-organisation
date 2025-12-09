@@ -28,7 +28,7 @@ interface OrganisationContextValue extends OrganisationConfig {
   hasPermission: (permission: keyof NonNullable<OrganisationConfig['permissions']>) => boolean;
 }
 
-export const OrganisationContext = createContext<OrganisationContextValue | null>(null);
+const OrganisationContext = createContext<OrganisationContextValue | null>(null);
 
 interface OrganisationProviderProps {
   config: OrganisationConfig;

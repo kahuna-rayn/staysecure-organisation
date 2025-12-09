@@ -28,13 +28,12 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   const [isAddEducationOpen, setIsAddEducationOpen] = useState(false);
   const departmentRolesRef = useRef<UserDepartmentsRolesManagerRef>(null);
 
-  // Detect if we're in Learn app or Govern app based on URL
-  // Check if 'learn' appears in the hostname (e.g., staysecure-learn.raynsecure.com)
-  const isLearnMode = typeof window !== 'undefined' && 
-    (window.location.hostname.includes('learn') || window.location.pathname.includes('/learn'));
+  // Detect if we're in Learn mode (root path) or Govern mode (admin path)
+  // This is the GOVERN app, so default to GOVERN mode unless explicitly set to LEARN
+  const isLearnMode = import.meta.env.VITE_APP_MODE === 'LEARN';
   const { hasAdminAccess } = useUserRole();
 
-  const handleCertificateUpdate = (_certificateId: string, _updates: any) => {
+  const handleCertificateUpdate = (certificateId: string, updates: any) => {
     // This would typically update the certificate in the database
   };
 
@@ -48,55 +47,58 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   // Get the appropriate grid class based on mode
   const getGridClass = () => {
     if (isLearnMode) {
-      return "grid-cols-2"; // Only Certificates and Departments & Roles in Learn mode
+      return "grid-cols-3"; // Only Departments & Roles, Physical Location and Certificates in Learn mode
     }
     
     if (profile?.enrolled_in_learn) {
-      return "grid-cols-8"; // All tabs including Learn
+      return "grid-cols-7"; // All tabs including Learn
     }
     
-    return "grid-cols-7"; // Certificates, Departments & Roles, Knowledge, Accounts, Hardware, Software, Location
+    return "grid-cols-6"; // All tabs except Learn
   };
 
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <Tabs defaultValue="certification" className="w-full">
+        <Tabs defaultValue="departments" className="w-full">
           <TabsList className={`grid w-full ${getGridClass()} mb-6`}>
-            {/* Always visible tabs */}
-            <TabsTrigger value="certification" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              <span className="hidden sm:inline">Certificates</span>
-            </TabsTrigger>
-            
             <TabsTrigger value="departments" className="flex items-center gap-2">
               <Users className="h-4 w-4" />
               <span className="hidden sm:inline">Departments & Roles</span>
             </TabsTrigger>
             
-            {/* Only show these tabs when NOT in Learn mode */}
+            {/* Only show these tabs in Govern mode */}
             {!isLearnMode && (
               <>
-                <TabsTrigger value="knowledge" className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">Knowledge</span>
-                </TabsTrigger>
-                <TabsTrigger value="accounts" className="flex items-center gap-2">
-                  <MonitorSmartphone className="h-4 w-4" />
-                  <span className="hidden sm:inline">Accounts</span>
-                </TabsTrigger>
                 <TabsTrigger value="hardware" className="flex items-center gap-2">
                   <Laptop className="h-4 w-4" />
                   <span className="hidden sm:inline">Hardware</span>
                 </TabsTrigger>
-                <TabsTrigger value="location" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span className="hidden sm:inline">Location</span>
+                <TabsTrigger value="software" className="flex items-center gap-2">
+                  <MonitorSmartphone className="h-4 w-4" />
+                  <span className="hidden sm:inline">Accounts</span>
                 </TabsTrigger>
               </>
             )}
             
-            {/* Only show Learn tab when NOT in Learn mode and user is enrolled */}
+            <TabsTrigger value="location" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span className="hidden sm:inline">Physical Location</span>
+            </TabsTrigger>
+            
+            {/* Only show Knowledge tab in Govern mode */}
+            {!isLearnMode && (
+              <TabsTrigger value="knowledge" className="flex items-center gap-2">
+                <BookOpen className="h-4 w-4" />
+                <span className="hidden sm:inline">Knowledge</span>
+              </TabsTrigger>
+            )}
+            <TabsTrigger value="certification" className="flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" />
+              <span className="hidden sm:inline">Certificates</span>
+            </TabsTrigger>
+            
+            {/* Only show Learn tab in Govern mode */}
             {!isLearnMode && profile?.enrolled_in_learn && (
               <TabsTrigger value="learn" className="flex items-center gap-2">
                 <Play className="h-4 w-4" />
@@ -104,8 +106,63 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
               </TabsTrigger>
             )}
           </TabsList>
+          
 
-          {/* Always visible tab contents */}
+          <TabsContent value="departments" className="space-y-4 animate-fade-in">
+            {hasAdminAccess && (
+              <div className="flex justify-end">
+                <Button 
+                  onClick={() => departmentRolesRef.current?.handleAddNewRow?.()}
+                  size="icon"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            <UserDepartmentsRolesManager userId={userId} ref={departmentRolesRef} />
+          </TabsContent>
+          
+          {/* Only show these tab contents in Govern mode */}
+          {!isLearnMode && (
+            <>
+              <TabsContent value="hardware" className="space-y-4 animate-fade-in">
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={() => setIsAssignHardwareOpen(true)}
+                    size="icon"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <HardwareInventory profile={profile} onUpdate={handleDataChange} />
+              </TabsContent>
+              
+              <TabsContent value="software" className="space-y-4 animate-fade-in">
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={() => setIsAssignSoftwareOpen(true)}
+                    size="icon"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <SoftwareAccounts profile={profile} />
+              </TabsContent>
+
+            </>
+          )}
+                        
+          <TabsContent value="location" className="space-y-4 animate-fade-in">
+            <PhysicalLocationTab profile={profile} canAdd={hasAdminAccess} />
+          </TabsContent>
+          
+          {/* Only show Knowledge tab content in Govern mode */}
+          {!isLearnMode && (
+            <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
+              <MyDocuments userId={profile.id} />
+            </TabsContent>
+          )}
+              
           <TabsContent value="certification" className="space-y-4 animate-fade-in">
             <div className="flex justify-end">
               <Button 
@@ -122,58 +179,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
             />
           </TabsContent>
 
-          <TabsContent value="departments" className="space-y-4 animate-fade-in">
-            {hasAdminAccess && (
-              <div className="flex justify-end">
-                <Button 
-                  onClick={() => departmentRolesRef.current?.handleAddNewRow?.()}
-                  size="icon"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-            <UserDepartmentsRolesManager userId={userId} ref={departmentRolesRef} />
-          </TabsContent>
-          
-          {/* Only show these tab contents when NOT in Learn mode */}
-          {!isLearnMode && (
-            <>
-              <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
-                <MyDocuments userId={profile.id} />
-              </TabsContent>
-              
-              <TabsContent value="accounts" className="space-y-4 animate-fade-in">
-                <div className="flex justify-end">
-                  <Button 
-                    onClick={() => setIsAssignSoftwareOpen(true)}
-                    size="icon"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <SoftwareAccounts profile={profile} />
-              </TabsContent>
-
-              <TabsContent value="hardware" className="space-y-4 animate-fade-in">
-                <div className="flex justify-end">
-                  <Button 
-                    onClick={() => setIsAssignHardwareOpen(true)}
-                    size="icon"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <HardwareInventory profile={profile} onUpdate={handleDataChange} />
-              </TabsContent>
-
-              <TabsContent value="location" className="space-y-4 animate-fade-in">
-                <PhysicalLocationTab profile={profile} canAdd={hasAdminAccess} />
-              </TabsContent>
-            </>
-          )}
-
-          {/* Only show Learn tab content when NOT in Learn mode and user is enrolled */}
+          {/* Only show Learn tab content in Govern mode */}
           {!isLearnMode && profile?.enrolled_in_learn && (
             <TabsContent value="learn" className="space-y-4 animate-fade-in">
               <LearningTracksTab userId={profile.id} />
@@ -181,7 +187,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           )}
         </Tabs>
 
-        {/* Dialogs - only show when NOT in Learn mode */}
+        {/* Dialogs - only show in Govern mode */}
         {!isLearnMode && (
           <>
             <AssignHardwareDialog

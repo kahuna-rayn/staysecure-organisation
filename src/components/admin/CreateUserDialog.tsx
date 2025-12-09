@@ -12,7 +12,6 @@ import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { NewUser } from '../../types';
 import EditableField from '../profile/EditableField';
 import { useAuth } from 'staysecure-auth';
-import { RoleSelector } from '../profile/RoleSelector';
 
 interface CreateUserDialogProps {
   isOpen: boolean;
@@ -260,12 +259,26 @@ const handleFullNameChange = (value: string) => {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="access_level">Access Level <span className="text-red-500">*</span></Label>
-              <RoleSelector
-                value={newUser.access_level || 'user'}
-                onValueChange={(value) => updateField('access_level', value)}
-                isSuperAdmin={isSuperAdmin}
-                placeholder="Select access level"
-              />
+              <Select 
+                value={newUser.access_level} 
+                onValueChange={(value) => {
+                  // Map display values to backend values
+                  const backendValue = value === 'Admin' ? 'client_admin' : value.toLowerCase();
+                  updateField('access_level', backendValue);
+                }}
+                required
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select access level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
+                  <SelectItem value="client_admin">Admin</SelectItem>
+                  {isSuperAdmin && <SelectItem value="author">Author</SelectItem>}
+                  {isSuperAdmin && <SelectItem value="super_admin">Super Admin</SelectItem>}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="location">Location <span className="text-red-500">*</span></Label>

@@ -194,3 +194,82 @@ npm run release
 
 **Created:** 2025-12-05  
 **Status:** Future Work / Technical Debt
+
+## User Management Edge Functions Location
+
+### Current Implementation
+
+User-related Edge Functions (`create-user`, `delete-user`) are currently located in the **`learn` app**:
+- `learn/supabase/functions/create-user/index.ts`
+- `learn/supabase/functions/delete-user/index.ts`
+
+However, these functions are called from the **`organisation` module**:
+- `organisation/src/utils/userManagementActions.ts` - `handleCreateUser()` and `handleDeleteUser()`
+- `organisation/src/components/admin/ImportUsersDialog.tsx` - Uses `create-user` function
+
+### Problem
+
+**Architectural inconsistency:**
+- User management logic belongs in the `organisation` module (it's the module's core responsibility)
+- Edge Functions are in the `learn` app, making them app-specific rather than shared
+- Other consuming apps (e.g., `govern`, `hub`) that use the `organisation` module may need to duplicate these functions
+- Creates dependency on `learn` app for core user management functionality
+
+### Proposed Solution
+
+**Move Edge Functions to a shared location or the `organisation` module:**
+
+**Option 1: Move to `organisation` module (Recommended)**
+- Create `organisation/supabase/functions/` directory
+- Move `create-user` and `delete-user` functions there
+- Update all consuming apps to reference the new location
+- Ensures user management functions are co-located with user management code
+
+**Option 2: Create shared Edge Functions repository**
+- Create a separate repository for shared Supabase Edge Functions
+- Both `organisation` module and consuming apps reference this shared repo
+- More complex but allows true sharing across multiple projects
+
+**Option 3: Keep in root `supabase/functions/`**
+- Move functions to `/Users/naresh/staysecure-projects/supabase/functions/`
+- All apps can reference them from the shared location
+- Requires coordination across all apps
+
+### Scope of Changes
+
+**Files to move:**
+- `learn/supabase/functions/create-user/index.ts` → `organisation/supabase/functions/create-user/index.ts`
+- `learn/supabase/functions/delete-user/index.ts` → `organisation/supabase/functions/delete-user/index.ts`
+
+**Files to update:**
+- All consuming apps (`learn`, `govern`, `hub`) - Update Supabase config to reference new function locations
+- Deployment scripts - Update to deploy from new location
+- Documentation - Update function locations in docs
+
+**Related Edge Functions to consider:**
+- `update-user-password` - May also belong in `organisation` module
+- Any other user-related functions
+
+### Implementation Notes
+
+- This is a **breaking change** - requires coordination across all consuming apps
+- Need to update Supabase project configuration in all apps
+- May need to update deployment pipelines
+- Consider backward compatibility during transition period
+- Update all references in code comments and documentation
+
+### Priority
+
+**Medium** - Not blocking current functionality, but important for:
+- Proper module architecture and separation of concerns
+- Reusability across multiple consuming apps
+- Maintainability and code organization
+
+### Related Files
+
+- `learn/supabase/functions/create-user/index.ts` - Current location
+- `learn/supabase/functions/delete-user/index.ts` - Current location
+- `organisation/src/utils/userManagementActions.ts` - Calls these functions
+- `organisation/src/components/admin/ImportUsersDialog.tsx` - Uses `create-user`
+
+---

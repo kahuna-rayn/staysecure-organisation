@@ -1,7 +1,7 @@
 import { default as React } from 'react';
 
 interface PersonaDetailsTabsProps {
-    profile: any;
+    profile: Record<string, unknown>;
     userId: string;
     onUpdate?: () => void;
 }

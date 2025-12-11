@@ -3,6 +3,9 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useUserRoleById, AppRole } from '@/hooks/useUserRoleById';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useOrganisationContext } from '@/context/OrganisationContext';
+import { useAuth } from 'staysecure-auth';
+import { useQuery } from '@tanstack/react-query';
 import { Loader2, Key } from 'lucide-react';
 
 interface UserRoleFieldProps {
@@ -13,14 +16,44 @@ export const UserRoleField: React.FC<UserRoleFieldProps> = ({ userId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { role, isLoading, updateRole, isUpdating, getRoleDisplayName, getRoleBadgeVariant } = useUserRoleById(userId);
   const { hasAdminAccess } = useUserRole();
+  const { supabaseClient } = useOrganisationContext();
+  const { user } = useAuth();
 
-  const roleOptions: { value: AppRole; label: string }[] = [
+  // Check if current user is super_admin
+  const { data: currentUserRole } = useQuery({
+    queryKey: ['user-role', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null;
+      const { data } = await supabaseClient
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .single();
+      return data?.role;
+    },
+    enabled: !!user?.id
+  });
+
+  const isSuperAdmin = currentUserRole === 'super_admin';
+
+  // Define available roles - filter based on current user's permissions
+  const allRoleOptions: { value: AppRole; label: string }[] = [
     { value: 'user', label: 'User' },
     { value: 'author', label: 'Author' },
-    { value: 'manager', label: 'Manager' },
-    { value: 'client_admin', label: 'Administrator' },
-    { value: 'super_admin', label: 'Super Administrator' },
+    { value: 'client_admin', label: 'Admin' },
+    { value: 'super_admin', label: 'Super Admin' },
   ];
+
+  // Filter roles based on current user's permissions:
+  // - super_admin can assign all roles
+  // - client_admin can assign only: user, client_admin (NOT super_admin or author)
+  const roleOptions = allRoleOptions.filter(option => {
+    if (option.value === 'super_admin' || option.value === 'author') {
+      return isSuperAdmin; // Only super_admin can assign super_admin and author
+    }
+    // All other roles (user, client_admin) are available to both super_admin and client_admin
+    return true;
+  });
 
   if (isLoading) {
     return (

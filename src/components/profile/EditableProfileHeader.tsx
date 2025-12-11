@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, Building, User, Edit2, Save, X, Hash, Phone, Star, Network } from 'lucide-react';
+import { MapPin, User, Hash, Phone, Star, Network } from 'lucide-react';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
@@ -12,10 +11,9 @@ import { toast } from '@/components/ui/use-toast';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileContactInfo from './ProfileContactInfo';
 import EditableField from './EditableField';
-import { UserRoleField } from './UserRoleField';
 
 interface EditableProfileHeaderProps {
-  profile: any;
+  profile: Record<string, unknown>;
   onProfileUpdate: () => void;
   isReadOnly?: boolean;
   onOptimisticUpdate?: (field: string, value: string) => void;
@@ -24,7 +22,7 @@ interface EditableProfileHeaderProps {
 const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({ 
   profile, 
   onProfileUpdate,
-  isReadOnly = false,
+  isReadOnly: _isReadOnly = false,
   onOptimisticUpdate
 }) => {
   const { profiles, updateProfile } = useUserProfiles();
@@ -39,7 +37,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const handleFieldSave = async (field: string, value: string) => {
     try {
       setSaving(true);
-      let updateData: any = {};
+      const updateData: Record<string, unknown> = {};
       if (field === 'full_name') {
         updateData.full_name = value;
       } else if (field === 'phone') {
@@ -77,11 +75,12 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
         onOptimisticUpdate(field, value);
       }
       onProfileUpdate();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Save error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
       toast({
         title: "Error",
-        description: error.message || "Failed to update profile",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -98,7 +97,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
       setSaving(true);
 
       // Update the specific name field
-      const updateData: any = {};
+      const updateData: Record<string, unknown> = {};
       if (field === 'firstName') {
         updateData.first_name = value;
       } else {
@@ -127,10 +126,11 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
         }
       }
       onProfileUpdate();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
       toast({
         title: "Error",
-        description: error.message || "Failed to update profile",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

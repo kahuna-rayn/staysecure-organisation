@@ -1187,8 +1187,6 @@ const CreateUserDialog = ({
   onSubmit,
   loading = false
 }) => {
-  const [editingField, setEditingField] = useState(null);
-  const [saving, setSaving] = useState(false);
   const { supabaseClient } = useOrganisationContext();
   const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
   const { user } = useAuth();
@@ -1237,7 +1235,7 @@ const CreateUserDialog = ({
     }
   });
   const validatePhoneInput = (input) => {
-    return input.replace(/[^0-9+\s\-\(\)]/g, "");
+    return input.replace(/[^0-9+\s\-()]/g, "");
   };
   const updateField = (field, value) => {
     if (field === "phone") {
@@ -1282,7 +1280,7 @@ const CreateUserDialog = ({
         phone: "",
         employee_id: "",
         status: "Active",
-        access_level: "User",
+        access_level: "",
         location_id: "",
         location: "",
         language: "English",
@@ -1291,8 +1289,6 @@ const CreateUserDialog = ({
       };
       onUserChange(resetUser);
       setIsFullNameManuallyEdited(false);
-      setEditingField(null);
-      setSaving(false);
     }
     onOpenChange(open);
   };
@@ -1380,7 +1376,7 @@ const CreateUserDialog = ({
             /* @__PURE__ */ jsxs(
               Select,
               {
-                value: newUser.access_level,
+                value: newUser.access_level || void 0,
                 onValueChange: (value) => {
                   const backendValue = value === "Admin" ? "client_admin" : value.toLowerCase();
                   updateField("access_level", backendValue);
@@ -1390,7 +1386,6 @@ const CreateUserDialog = ({
                   /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select access level" }) }),
                   /* @__PURE__ */ jsxs(SelectContent, { children: [
                     /* @__PURE__ */ jsx(SelectItem, { value: "user", children: "User" }),
-                    /* @__PURE__ */ jsx(SelectItem, { value: "manager", children: "Manager" }),
                     /* @__PURE__ */ jsx(SelectItem, { value: "client_admin", children: "Admin" }),
                     isSuperAdmin && /* @__PURE__ */ jsx(SelectItem, { value: "author", children: "Author" }),
                     isSuperAdmin && /* @__PURE__ */ jsx(SelectItem, { value: "super_admin", children: "Super Admin" })
@@ -7570,13 +7565,30 @@ const UserRoleField = ({ userId }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { role, isLoading, updateRole, isUpdating, getRoleDisplayName, getRoleBadgeVariant } = useUserRoleById(userId);
   const { hasAdminAccess } = useUserRole();
-  const roleOptions = [
+  const { supabaseClient } = useOrganisationContext();
+  const { user } = useAuth();
+  const { data: currentUserRole } = useQuery({
+    queryKey: ["user-role", user == null ? void 0 : user.id],
+    queryFn: async () => {
+      if (!(user == null ? void 0 : user.id)) return null;
+      const { data } = await supabaseClient.from("user_roles").select("role").eq("user_id", user.id).single();
+      return data == null ? void 0 : data.role;
+    },
+    enabled: !!(user == null ? void 0 : user.id)
+  });
+  const isSuperAdmin = currentUserRole === "super_admin";
+  const allRoleOptions = [
     { value: "user", label: "User" },
     { value: "author", label: "Author" },
-    { value: "manager", label: "Manager" },
-    { value: "client_admin", label: "Administrator" },
-    { value: "super_admin", label: "Super Administrator" }
+    { value: "client_admin", label: "Admin" },
+    { value: "super_admin", label: "Super Admin" }
   ];
+  const roleOptions = allRoleOptions.filter((option) => {
+    if (option.value === "super_admin" || option.value === "author") {
+      return isSuperAdmin;
+    }
+    return true;
+  });
   if (isLoading) {
     return /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
@@ -7662,7 +7674,7 @@ const ProfileContactInfo = ({
 const EditableProfileHeader = ({
   profile,
   onProfileUpdate,
-  isReadOnly = false,
+  isReadOnly: _isReadOnly = false,
   onOptimisticUpdate
 }) => {
   var _a, _b, _c, _d, _e, _f, _g;
@@ -7676,7 +7688,7 @@ const EditableProfileHeader = ({
   const handleFieldSave = async (field, value) => {
     try {
       setSaving(true);
-      let updateData = {};
+      const updateData = {};
       if (field === "full_name") {
         updateData.full_name = value;
       } else if (field === "phone") {
@@ -7713,9 +7725,10 @@ const EditableProfileHeader = ({
       onProfileUpdate();
     } catch (error) {
       console.error("Save error:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
       toast({
         title: "Error",
-        description: error.message || "Failed to update profile",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -7754,9 +7767,10 @@ const EditableProfileHeader = ({
       }
       onProfileUpdate();
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
       toast({
         title: "Error",
-        description: error.message || "Failed to update profile",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

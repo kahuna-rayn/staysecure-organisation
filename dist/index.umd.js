@@ -1136,8 +1136,6 @@
     onSubmit,
     loading = false
   }) => {
-    const [editingField, setEditingField] = o.useState(null);
-    const [saving, setSaving] = o.useState(false);
     const { supabaseClient } = useOrganisationContext();
     const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = o.useState(false);
     const { user } = staysecureAuth.useAuth();
@@ -1186,7 +1184,7 @@
       }
     });
     const validatePhoneInput = (input2) => {
-      return input2.replace(/[^0-9+\s\-\(\)]/g, "");
+      return input2.replace(/[^0-9+\s\-()]/g, "");
     };
     const updateField = (field, value) => {
       if (field === "phone") {
@@ -1231,7 +1229,7 @@
           phone: "",
           employee_id: "",
           status: "Active",
-          access_level: "User",
+          access_level: "",
           location_id: "",
           location: "",
           language: "English",
@@ -1240,8 +1238,6 @@
         };
         onUserChange(resetUser);
         setIsFullNameManuallyEdited(false);
-        setEditingField(null);
-        setSaving(false);
       }
       onOpenChange(open);
     };
@@ -1329,7 +1325,7 @@
               /* @__PURE__ */ jsxRuntime.jsxs(
                 select.Select,
                 {
-                  value: newUser.access_level,
+                  value: newUser.access_level || void 0,
                   onValueChange: (value) => {
                     const backendValue = value === "Admin" ? "client_admin" : value.toLowerCase();
                     updateField("access_level", backendValue);
@@ -1339,7 +1335,6 @@
                     /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select access level" }) }),
                     /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
                       /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "user", children: "User" }),
-                      /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "manager", children: "Manager" }),
                       /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "client_admin", children: "Admin" }),
                       isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "author", children: "Author" }),
                       isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "super_admin", children: "Super Admin" })
@@ -7519,13 +7514,30 @@
     const [isEditing, setIsEditing] = o.useState(false);
     const { role, isLoading, updateRole, isUpdating, getRoleDisplayName, getRoleBadgeVariant } = useUserRoleById.useUserRoleById(userId);
     const { hasAdminAccess } = useUserRole.useUserRole();
-    const roleOptions = [
+    const { supabaseClient } = useOrganisationContext();
+    const { user } = staysecureAuth.useAuth();
+    const { data: currentUserRole } = reactQuery.useQuery({
+      queryKey: ["user-role", user == null ? void 0 : user.id],
+      queryFn: async () => {
+        if (!(user == null ? void 0 : user.id)) return null;
+        const { data } = await supabaseClient.from("user_roles").select("role").eq("user_id", user.id).single();
+        return data == null ? void 0 : data.role;
+      },
+      enabled: !!(user == null ? void 0 : user.id)
+    });
+    const isSuperAdmin = currentUserRole === "super_admin";
+    const allRoleOptions = [
       { value: "user", label: "User" },
       { value: "author", label: "Author" },
-      { value: "manager", label: "Manager" },
-      { value: "client_admin", label: "Administrator" },
-      { value: "super_admin", label: "Super Administrator" }
+      { value: "client_admin", label: "Admin" },
+      { value: "super_admin", label: "Super Admin" }
     ];
+    const roleOptions = allRoleOptions.filter((option) => {
+      if (option.value === "super_admin" || option.value === "author") {
+        return isSuperAdmin;
+      }
+      return true;
+    });
     if (isLoading) {
       return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }),
@@ -7611,7 +7623,7 @@
   const EditableProfileHeader = ({
     profile,
     onProfileUpdate,
-    isReadOnly = false,
+    isReadOnly: _isReadOnly = false,
     onOptimisticUpdate
   }) => {
     var _a, _b, _c, _d, _e, _f, _g;
@@ -7625,7 +7637,7 @@
     const handleFieldSave = async (field, value) => {
       try {
         setSaving(true);
-        let updateData = {};
+        const updateData = {};
         if (field === "full_name") {
           updateData.full_name = value;
         } else if (field === "phone") {
@@ -7662,9 +7674,10 @@
         onProfileUpdate();
       } catch (error) {
         console.error("Save error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
         useToast.toast({
           title: "Error",
-          description: error.message || "Failed to update profile",
+          description: errorMessage,
           variant: "destructive"
         });
       } finally {
@@ -7703,9 +7716,10 @@
         }
         onProfileUpdate();
       } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
         useToast.toast({
           title: "Error",
-          description: error.message || "Failed to update profile",
+          description: errorMessage,
           variant: "destructive"
         });
       } finally {

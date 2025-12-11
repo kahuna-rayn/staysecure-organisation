@@ -1,7 +1,7 @@
 import { default as React } from 'react';
 
 interface EditableProfileHeaderProps {
-    profile: any;
+    profile: Record<string, unknown>;
     onProfileUpdate: () => void;
     isReadOnly?: boolean;
     onOptimisticUpdate?: (field: string, value: string) => void;

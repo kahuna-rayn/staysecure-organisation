@@ -168,7 +168,7 @@ const handleFullNameChange = (value: string) => {
         phone: '',
         employee_id: '',
         status: 'Active',
-        access_level: '',
+        access_level: 'User',
         location_id: '',
         location: '',
         language: 'English',
@@ -248,7 +248,7 @@ const handleFullNameChange = (value: string) => {
             <div className="space-y-2">
               <Label htmlFor="access_level">Access Level <span className="text-red-500">*</span></Label>
               <Select 
-                value={newUser.access_level || undefined} 
+                value={newUser.access_level} 
                 onValueChange={(value) => {
                   // Map display values to backend values
                   const backendValue = value === 'Admin' ? 'client_admin' : value.toLowerCase();
@@ -261,6 +261,7 @@ const handleFullNameChange = (value: string) => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="user">User</SelectItem>
+                  <SelectItem value="manager">Manager</SelectItem>
                   <SelectItem value="client_admin">Admin</SelectItem>
                   {isSuperAdmin && <SelectItem value="author">Author</SelectItem>}
                   {isSuperAdmin && <SelectItem value="super_admin">Super Admin</SelectItem>}

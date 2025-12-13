@@ -52,10 +52,10 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
     }
     
     if (profile?.enrolled_in_learn) {
-      return "grid-cols-8"; // All tabs including Learn
+      return "grid-cols-7"; // All tabs including Learn
     }
     
-    return "grid-cols-7"; // Certificates, Departments & Roles, Knowledge, Accounts, Hardware, Software, Location
+    return "grid-cols-6"; // Certificates, Departments & Roles, Knowledge, Accounts, Hardware, Location
   };
 
   return (

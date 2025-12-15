@@ -91,7 +91,7 @@ const PersonaProfile: React.FC = () => {
       employeeId: profile?.employee_id || 'Not assigned',
       status: profile?.status || 'Active',
       accessLevel: profile?.access_level || 'User',
-      lastLogin: profile?.last_login || profile?.created_at || '',
+      lastLogin: (user?.last_sign_in_at as string | undefined) || '',
       passwordLastChanged: profile?.password_last_changed || profile?.created_at || '',
       twoFactorEnabled: profile?.two_factor_enabled || false,
     },
@@ -126,7 +126,7 @@ const PersonaProfile: React.FC = () => {
       };
       return mapped;
     }),
-  }), [profile, hardware, software, certificates, userEmail]);
+  }), [profile, hardware, software, certificates, userEmail, user]);
 
   const handleProfileUpdate = async () => {
     // Clear optimistic data first so fresh data will be used

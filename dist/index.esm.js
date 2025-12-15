@@ -8046,7 +8046,7 @@ const PersonaProfile = () => {
       employeeId: (profile == null ? void 0 : profile.employee_id) || "Not assigned",
       status: (profile == null ? void 0 : profile.status) || "Active",
       accessLevel: (profile == null ? void 0 : profile.access_level) || "User",
-      lastLogin: (profile == null ? void 0 : profile.last_login) || (profile == null ? void 0 : profile.created_at) || "",
+      lastLogin: (user == null ? void 0 : user.last_sign_in_at) || "",
       passwordLastChanged: (profile == null ? void 0 : profile.password_last_changed) || (profile == null ? void 0 : profile.created_at) || "",
       twoFactorEnabled: (profile == null ? void 0 : profile.two_factor_enabled) || false
     },
@@ -8083,7 +8083,7 @@ const PersonaProfile = () => {
       };
       return mapped;
     })
-  }), [profile, hardware, software, certificates, userEmail]);
+  }), [profile, hardware, software, certificates, userEmail, user]);
   const handleProfileUpdate = async () => {
     setOptimisticData(null);
     await refetchProfile();

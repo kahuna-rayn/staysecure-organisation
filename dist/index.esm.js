@@ -7659,6 +7659,7 @@ const ProfileContactInfo = ({
   const formatDateAndTime = (dateString) => {
     if (!dateString) return "Never";
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Never";
     return date.toLocaleString("en-GB", {
       day: "numeric",
       month: "numeric",

@@ -31,7 +31,12 @@ const ProfileContactInfo: React.FC<ProfileContactInfoProps> = ({
 
   const formatDateAndTime = (dateString?: string) => {
     if (!dateString) return 'Never';
+    // Parse the date string - Supabase timestamptz values are in UTC (ISO format)
+    // JavaScript's Date constructor interprets ISO strings as UTC and converts to local timezone
     const date = new Date(dateString);
+    // Check if date is valid
+    if (isNaN(date.getTime())) return 'Never';
+    // Format in UK style (DD/MM/YYYY) using browser's local timezone
     return date.toLocaleString('en-GB', {
       day: 'numeric',
       month: 'numeric',

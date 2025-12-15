@@ -8020,7 +8020,7 @@ const EditableProfileHeader = ({
   ] }) }) });
 };
 const PersonaProfile = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { hasAdminAccess } = useUserRole();
   const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
   const { hardware, software, certificates, loading: assetsLoading, refetch: refetchAssets } = useUserAssets(user == null ? void 0 : user.id);

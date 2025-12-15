@@ -7969,7 +7969,7 @@
     ] }) }) });
   };
   const PersonaProfile = () => {
-    const { user, signOut } = staysecureAuth.useAuth();
+    const { user } = staysecureAuth.useAuth();
     const { hasAdminAccess } = useUserRole.useUserRole();
     const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile.useProfile();
     const { hardware, software, certificates, loading: assetsLoading, refetch: refetchAssets } = useUserAssets.useUserAssets(user == null ? void 0 : user.id);

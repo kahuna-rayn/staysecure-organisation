@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, User, Hash, Phone, Star, Network } from 'lucide-react';
+import { MapPin, User, Hash, Phone, Star, Network, Globe } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
 import { useUserPhysicalLocations } from '@/hooks/useUserPhysicalLocations';
+import { useOrganisationContext } from '@/context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileContactInfo from './ProfileContactInfo';
@@ -26,9 +28,24 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   onOptimisticUpdate
 }) => {
   const { profiles, updateProfile } = useUserProfiles();
+  const { supabaseClient } = useOrganisationContext();
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [savingLanguage, setSavingLanguage] = useState(false);
   const [managerValue, setManagerValue] = useState(profile.manager || '');
+
+  // Fetch languages for dropdown
+  const { data: languages } = useQuery({
+    queryKey: ['languages'],
+    queryFn: async () => {
+      const { data } = await supabaseClient
+        .from('languages')
+        .select('code, display_name, native_name, flag_emoji')
+        .eq('is_active', true)
+        .order('sort_order', { ascending: true });
+      return data || [];
+    },
+  });
 
   const handleFieldEdit = (field: string) => {
     setEditingField(field);
@@ -52,6 +69,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
         updateData.department = value;
       } else if (field === 'manager') {
         updateData.manager = value;
+      } else if (field === 'language') {
+        updateData.language = value;
       }
       
       if (!profile.id) {
@@ -316,6 +335,40 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                   inputClassName="h-6 text-sm w-48"
                   locationId={profile.locationId}
                 />
+              </div>
+
+              <div className="flex items-center gap-2 text-sm">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <Select 
+                  value={(profile.language as string) || 'English'} 
+                  onValueChange={async (value) => {
+                    try {
+                      setSavingLanguage(true);
+                      await handleFieldSave('language', value);
+                    } finally {
+                      setSavingLanguage(false);
+                    }
+                  }}
+                  disabled={savingLanguage}
+                >
+                  <SelectTrigger className="w-48 h-6 text-sm">
+                    <SelectValue placeholder="Select language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {languages?.map((lang) => {
+                      const langValue = lang.display_name || lang.code;
+                      const langLabel = lang.native_name || lang.display_name || lang.code;
+                      return (
+                        <SelectItem key={langValue} value={langValue}>
+                          <div className="flex items-center gap-2">
+                            {lang.flag_emoji && <span>{lang.flag_emoji}</span>}
+                            <span>{langLabel}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Primary Department and Role */}

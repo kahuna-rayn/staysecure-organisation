@@ -1,11 +1,9 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useAuth } from 'staysecure-auth';
 import { useProfile } from "@/hooks/useProfile";
 import { useUserAssets } from "@/hooks/useUserAssets";
 import { useUserRole } from "@/hooks/useUserRole";
-import { Loader2, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
 import EditableProfileHeader from "./EditableProfileHeader";
 import PersonaDetailsTabs from "./PersonaDetailsTabs";
 
@@ -63,7 +61,7 @@ export interface PersonProfile {
 }
 
 const PersonaProfile: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const { hasAdminAccess } = useUserRole();
   const { profile, loading: profileLoading, refetch: refetchProfile } = useProfile();
   const { hardware, software, certificates, loading: assetsLoading, refetch: refetchAssets } = useUserAssets(user?.id);
@@ -171,21 +169,6 @@ const PersonaProfile: React.FC = () => {
     });
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast({
-        title: "Signed out successfully",
-        description: "You have been signed out of your account.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error signing out",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
 
   const displayData = optimisticData || personaData;
 

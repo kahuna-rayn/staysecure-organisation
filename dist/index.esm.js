@@ -326,6 +326,17 @@ const FileText = createLucideIcon("FileText", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const Globe = createLucideIcon("Globe", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
+  ["path", { d: "M2 12h20", key: "9i4pu4" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const GraduationCap = createLucideIcon("GraduationCap", [
   [
     "path",
@@ -7293,9 +7304,9 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
       return "grid-cols-3";
     }
     if (profile == null ? void 0 : profile.enrolled_in_learn) {
-      return "grid-cols-8";
+      return "grid-cols-7";
     }
-    return "grid-cols-7";
+    return "grid-cols-6";
   };
   return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsxs(CardContent, { className: "p-6", children: [
     /* @__PURE__ */ jsxs(Tabs, { defaultValue: "certification", className: "w-full", children: [
@@ -7636,10 +7647,10 @@ const ProfileContactInfo = ({
   startDate,
   userId,
   status,
-  accessLevel,
+  accessLevel: _accessLevel,
   lastLogin,
-  passwordLastChanged,
-  twoFactorEnabled
+  passwordLastChanged: _passwordLastChanged,
+  twoFactorEnabled: _twoFactorEnabled
 }) => {
   const formatDate = (dateString) => {
     if (!dateString) return "Not set";
@@ -7647,7 +7658,15 @@ const ProfileContactInfo = ({
   };
   const formatDateAndTime = (dateString) => {
     if (!dateString) return "Never";
-    return new Date(dateString).toLocaleString();
+    const date = new Date(dateString);
+    return date.toLocaleString("en-GB", {
+      day: "numeric",
+      month: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true
+    });
   };
   return /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
@@ -7679,9 +7698,18 @@ const EditableProfileHeader = ({
 }) => {
   var _a, _b, _c, _d, _e, _f, _g;
   const { profiles, updateProfile } = useUserProfiles();
+  const { supabaseClient } = useOrganisationContext();
   const [editingField, setEditingField] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [savingLanguage, setSavingLanguage] = useState(false);
   const [managerValue, setManagerValue] = useState(profile.manager || "");
+  const { data: languages } = useQuery({
+    queryKey: ["languages"],
+    queryFn: async () => {
+      const { data } = await supabaseClient.from("languages").select("code, display_name, native_name, flag_emoji").eq("is_active", true).order("sort_order", { ascending: true });
+      return data || [];
+    }
+  });
   const handleFieldEdit = (field) => {
     setEditingField(field);
   };
@@ -7703,6 +7731,8 @@ const EditableProfileHeader = ({
         updateData.department = value;
       } else if (field === "manager") {
         updateData.manager = value;
+      } else if (field === "language") {
+        updateData.language = value;
       }
       if (!profile.id) {
         console.error("Profile ID is undefined. Profile object:", profile);
@@ -7938,6 +7968,35 @@ const EditableProfileHeader = ({
           }
         )
       ] }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        /* @__PURE__ */ jsx(Globe, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsxs(
+          Select,
+          {
+            value: profile.language || "English",
+            onValueChange: async (value) => {
+              try {
+                setSavingLanguage(true);
+                await handleFieldSave("language", value);
+              } finally {
+                setSavingLanguage(false);
+              }
+            },
+            disabled: savingLanguage,
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select language" }) }),
+              /* @__PURE__ */ jsx(SelectContent, { children: languages == null ? void 0 : languages.map((lang) => {
+                const langValue = lang.display_name || lang.code;
+                const langLabel = lang.native_name || lang.display_name || lang.code;
+                return /* @__PURE__ */ jsx(SelectItem, { value: langValue, children: /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+                  lang.flag_emoji && /* @__PURE__ */ jsx("span", { children: lang.flag_emoji }),
+                  /* @__PURE__ */ jsx("span", { children: langLabel })
+                ] }) }, langValue);
+              }) })
+            ]
+          }
+        )
+      ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 w-full", children: [
         /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
@@ -8084,7 +8143,7 @@ const UserDetailView = () => {
       employeeId: profileObj.employee_id || "Not assigned",
       status: profileObj.status || "Active",
       accessLevel: profileObj.access_level || "User",
-      lastLogin: profileObj.last_login || profileObj.created_at,
+      lastLogin: profileObj.last_login || "",
       passwordLastChanged: profileObj.password_last_changed || profileObj.created_at,
       twoFactorEnabled: profileObj.two_factor_enabled || false
     },

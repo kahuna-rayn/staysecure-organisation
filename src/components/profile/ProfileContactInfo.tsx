@@ -19,10 +19,10 @@ const ProfileContactInfo: React.FC<ProfileContactInfoProps> = ({
   startDate,
   userId,
   status,
-  accessLevel,
+  accessLevel: _accessLevel,
   lastLogin,
-  passwordLastChanged,
-  twoFactorEnabled
+  passwordLastChanged: _passwordLastChanged,
+  twoFactorEnabled: _twoFactorEnabled
 }) => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Not set';
@@ -31,7 +31,15 @@ const ProfileContactInfo: React.FC<ProfileContactInfoProps> = ({
 
   const formatDateAndTime = (dateString?: string) => {
     if (!dateString) return 'Never';
-    return new Date(dateString).toLocaleString();
+    const date = new Date(dateString);
+    return date.toLocaleString('en-GB', {
+      day: 'numeric',
+      month: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
   };
   return (
     <div className="flex flex-col items-end space-y-3 ml-auto">

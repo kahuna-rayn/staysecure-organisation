@@ -34,7 +34,7 @@ const UserDetailView: React.FC = () => {
       employeeId: profileObj.employee_id || 'Not assigned',
       status: profileObj.status || 'Active',
       accessLevel: profileObj.access_level || 'User',
-      lastLogin: profileObj.last_login || profileObj.created_at,
+      lastLogin: profileObj.last_login || '',
       passwordLastChanged: profileObj.password_last_changed || profileObj.created_at,
       twoFactorEnabled: profileObj.two_factor_enabled || false,
     },

@@ -73,15 +73,7 @@ const PersonaProfile: React.FC = () => {
   const [optimisticData, setOptimisticData] = useState<PersonProfile | null>(null);
 
   // Memoize personaData to prevent infinite re-renders - MUST be called before any early returns
-  const personaData = useMemo(() => {
-    // Debug: log user object to see what properties are available
-    console.log('PersonaProfile - user object:', user);
-    console.log('PersonaProfile - user?.last_sign_in_at:', user?.last_sign_in_at);
-    
-    const lastLoginValue = (user?.last_sign_in_at as string | undefined) || '';
-    console.log('PersonaProfile - lastLoginValue:', lastLoginValue);
-    
-    return {
+  const personaData = useMemo(() => ({
     id: profile?.id || '',
     full_name: profile?.full_name || '',
     firstName: profile?.first_name || '',  // Use actual first_name from DB
@@ -99,7 +91,7 @@ const PersonaProfile: React.FC = () => {
       employeeId: profile?.employee_id || 'Not assigned',
       status: profile?.status || 'Active',
       accessLevel: profile?.access_level || 'User',
-      lastLogin: lastLoginValue,
+      lastLogin: (user?.last_sign_in_at as string | undefined) || '',
       passwordLastChanged: profile?.password_last_changed || profile?.created_at || '',
       twoFactorEnabled: profile?.two_factor_enabled || false,
     },
@@ -134,8 +126,7 @@ const PersonaProfile: React.FC = () => {
       };
       return mapped;
     }),
-    };
-  }, [profile, hardware, software, certificates, userEmail, user]);
+  }), [profile, hardware, software, certificates, userEmail, user]);
 
   const handleProfileUpdate = async () => {
     // Clear optimistic data first so fresh data will be used

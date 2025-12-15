@@ -8027,64 +8027,70 @@ const PersonaProfile = () => {
   const { hardware, software, certificates, loading: assetsLoading, refetch: refetchAssets } = useUserAssets(user == null ? void 0 : user.id);
   const userEmail = user == null ? void 0 : user.email;
   const [optimisticData, setOptimisticData] = useState(null);
-  const personaData = useMemo(() => ({
-    id: (profile == null ? void 0 : profile.id) || "",
-    full_name: (profile == null ? void 0 : profile.full_name) || "",
-    firstName: (profile == null ? void 0 : profile.first_name) || "",
-    // Use actual first_name from DB
-    lastName: (profile == null ? void 0 : profile.last_name) || "",
-    // Use actual last_name from DB
-    email: userEmail || "",
-    phone: (profile == null ? void 0 : profile.phone) || "Not provided",
-    location: (profile == null ? void 0 : profile.location) || "Not specified",
-    avatar: (profile == null ? void 0 : profile.avatar_url) || "",
-    role: (profile == null ? void 0 : profile.role) || "Employee",
-    department: (profile == null ? void 0 : profile.department) || "General",
-    manager: (profile == null ? void 0 : profile.manager) || "Not assigned",
-    startDate: (profile == null ? void 0 : profile.start_date) || (profile == null ? void 0 : profile.created_at) || "",
-    account: {
-      username: (profile == null ? void 0 : profile.username) || "Not set",
-      employeeId: (profile == null ? void 0 : profile.employee_id) || "Not assigned",
-      status: (profile == null ? void 0 : profile.status) || "Active",
-      accessLevel: (profile == null ? void 0 : profile.access_level) || "User",
-      lastLogin: (user == null ? void 0 : user.last_sign_in_at) || "",
-      passwordLastChanged: (profile == null ? void 0 : profile.password_last_changed) || (profile == null ? void 0 : profile.created_at) || "",
-      twoFactorEnabled: (profile == null ? void 0 : profile.two_factor_enabled) || false
-    },
-    hardware: (hardware || []).map((h) => ({
-      id: h.id,
-      type: h.type,
-      model: h.model,
-      serialNumber: h.serial_number,
-      status: h.status,
-      assignedDate: h.assigned_date,
-      manufacturer: h.manufacturer || "",
-      osEdition: h.os_edition || "",
-      osVersion: h.os_version || ""
-    })),
-    software: (software || []).map((s) => ({
-      id: s.id,
-      name: s.name,
-      role_account_type: s.role_account_type,
-      expiryDate: s.expiryDate,
-      lastUsed: s.lastUsed
-    })),
-    certificates: (certificates || []).map((c) => {
-      const mapped = {
-        name: c.name,
-        issuedBy: c.issued_by,
-        dateAcquired: c.date_acquired,
-        expiryDate: c.expiry_date,
-        credentialId: c.credential_id,
-        status: c.status,
-        org_cert: c.org_cert !== void 0 ? c.org_cert : false,
-        // Preserve false, default to false if undefined
-        type: c.type
-        // Include type for display
-      };
-      return mapped;
-    })
-  }), [profile, hardware, software, certificates, userEmail, user]);
+  const personaData = useMemo(() => {
+    console.log("PersonaProfile - user object:", user);
+    console.log("PersonaProfile - user?.last_sign_in_at:", user == null ? void 0 : user.last_sign_in_at);
+    const lastLoginValue = (user == null ? void 0 : user.last_sign_in_at) || "";
+    console.log("PersonaProfile - lastLoginValue:", lastLoginValue);
+    return {
+      id: (profile == null ? void 0 : profile.id) || "",
+      full_name: (profile == null ? void 0 : profile.full_name) || "",
+      firstName: (profile == null ? void 0 : profile.first_name) || "",
+      // Use actual first_name from DB
+      lastName: (profile == null ? void 0 : profile.last_name) || "",
+      // Use actual last_name from DB
+      email: userEmail || "",
+      phone: (profile == null ? void 0 : profile.phone) || "Not provided",
+      location: (profile == null ? void 0 : profile.location) || "Not specified",
+      avatar: (profile == null ? void 0 : profile.avatar_url) || "",
+      role: (profile == null ? void 0 : profile.role) || "Employee",
+      department: (profile == null ? void 0 : profile.department) || "General",
+      manager: (profile == null ? void 0 : profile.manager) || "Not assigned",
+      startDate: (profile == null ? void 0 : profile.start_date) || (profile == null ? void 0 : profile.created_at) || "",
+      account: {
+        username: (profile == null ? void 0 : profile.username) || "Not set",
+        employeeId: (profile == null ? void 0 : profile.employee_id) || "Not assigned",
+        status: (profile == null ? void 0 : profile.status) || "Active",
+        accessLevel: (profile == null ? void 0 : profile.access_level) || "User",
+        lastLogin: lastLoginValue,
+        passwordLastChanged: (profile == null ? void 0 : profile.password_last_changed) || (profile == null ? void 0 : profile.created_at) || "",
+        twoFactorEnabled: (profile == null ? void 0 : profile.two_factor_enabled) || false
+      },
+      hardware: (hardware || []).map((h) => ({
+        id: h.id,
+        type: h.type,
+        model: h.model,
+        serialNumber: h.serial_number,
+        status: h.status,
+        assignedDate: h.assigned_date,
+        manufacturer: h.manufacturer || "",
+        osEdition: h.os_edition || "",
+        osVersion: h.os_version || ""
+      })),
+      software: (software || []).map((s) => ({
+        id: s.id,
+        name: s.name,
+        role_account_type: s.role_account_type,
+        expiryDate: s.expiryDate,
+        lastUsed: s.lastUsed
+      })),
+      certificates: (certificates || []).map((c) => {
+        const mapped = {
+          name: c.name,
+          issuedBy: c.issued_by,
+          dateAcquired: c.date_acquired,
+          expiryDate: c.expiry_date,
+          credentialId: c.credential_id,
+          status: c.status,
+          org_cert: c.org_cert !== void 0 ? c.org_cert : false,
+          // Preserve false, default to false if undefined
+          type: c.type
+          // Include type for display
+        };
+        return mapped;
+      })
+    };
+  }, [profile, hardware, software, certificates, userEmail, user]);
   const handleProfileUpdate = async () => {
     setOptimisticData(null);
     await refetchProfile();

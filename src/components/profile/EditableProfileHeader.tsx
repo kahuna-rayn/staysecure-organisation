@@ -356,6 +356,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                   </SelectTrigger>
                   <SelectContent>
                     {languages?.map((lang) => {
+                      // Save display_name (e.g., 'Chinese', 'English') to match what's stored in profiles
                       const langValue = lang.display_name || lang.code;
                       const langLabel = lang.native_name || lang.display_name || lang.code;
                       return (

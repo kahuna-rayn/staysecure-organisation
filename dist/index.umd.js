@@ -7925,6 +7925,7 @@
             {
               value: profile.language || "English",
               onValueChange: async (value) => {
+                console.log("Select onValueChange - value:", value);
                 try {
                   setSavingLanguage(true);
                   await handleFieldSave("language", value);
@@ -7938,6 +7939,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: languages == null ? void 0 : languages.map((lang) => {
                   const langValue = lang.display_name || lang.code;
                   const langLabel = lang.native_name || lang.display_name || lang.code;
+                  console.log("langValue:", langValue, "langLabel:", langLabel);
                   return /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: langValue, children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
                     lang.flag_emoji && /* @__PURE__ */ jsxRuntime.jsx("span", { children: lang.flag_emoji }),
                     /* @__PURE__ */ jsxRuntime.jsx("span", { children: langLabel })
@@ -7945,7 +7947,12 @@
                 }) })
               ]
             }
-          )
+          ),
+          (() => {
+            console.log("EditableProfileHeader render - profile.language:", profile.language);
+            console.log("EditableProfileHeader render - profile object:", profile);
+            return null;
+          })()
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 w-full", children: [
           /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),
@@ -7991,6 +7998,7 @@
       department: (profile == null ? void 0 : profile.department) || "General",
       manager: (profile == null ? void 0 : profile.manager) || "Not assigned",
       startDate: (profile == null ? void 0 : profile.start_date) || (profile == null ? void 0 : profile.created_at) || "",
+      language: (profile == null ? void 0 : profile.language) || "English",
       account: {
         username: (profile == null ? void 0 : profile.username) || "Not set",
         employeeId: (profile == null ? void 0 : profile.employee_id) || "Not assigned",
@@ -8046,20 +8054,28 @@
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8", children: /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "No profile found. Please update your profile information." }) });
     }
     const handleOptimisticUpdate = (field, value) => {
+      console.log("PersonaProfile handleOptimisticUpdate - field:", field, "value:", value);
       setOptimisticData((prev) => {
         const baseData = prev || personaData;
         const updated = { ...baseData };
         if (field === "avatar_url") {
           updated.avatar = value;
+        } else if (field === "language") {
+          console.log("PersonaProfile - setting language to:", value);
+          updated.language = value;
         } else if (field in updated) {
           updated[field] = value;
         } else if (updated.account && field in updated.account) {
           updated.account = { ...updated.account, [field]: value };
         }
+        console.log("PersonaProfile - updated optimisticData language:", updated.language);
         return updated;
       });
     };
     const displayData = optimisticData || personaData;
+    console.log("PersonaProfile render - displayData.language:", displayData.language);
+    console.log("PersonaProfile render - personaData.language:", personaData.language);
+    console.log("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
       /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
@@ -8087,6 +8103,7 @@
       department: profileObj.department || "General",
       manager: profileObj.manager || "Not assigned",
       startDate: profileObj.start_date || profileObj.created_at,
+      language: profileObj.language || "English",
       enrolled_in_learn: profileObj.enrolled_in_learn || false,
       account: {
         username: profileObj.username || "Not set",
@@ -8135,7 +8152,9 @@
     const handleOptimisticUpdate = (field, value) => {
       setPersonaData((prev) => {
         const updated = { ...prev };
-        if (field in updated) {
+        if (field === "language") {
+          updated.language = value;
+        } else if (field in updated) {
           updated[field] = value;
         } else if (updated.account && field in updated.account) {
           updated.account = { ...updated.account, [field]: value };

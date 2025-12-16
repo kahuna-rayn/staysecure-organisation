@@ -28,6 +28,7 @@ const UserDetailView: React.FC = () => {
     department: profileObj.department || 'General',
     manager: profileObj.manager || 'Not assigned',
     startDate: profileObj.start_date || profileObj.created_at,
+    language: profileObj.language || 'English',
     enrolled_in_learn: profileObj.enrolled_in_learn || false,
     account: {
       username: profileObj.username || 'Not set',
@@ -81,7 +82,9 @@ const UserDetailView: React.FC = () => {
   const handleOptimisticUpdate = (field: string, value: string) => {
     setPersonaData((prev: any) => {
       const updated = { ...prev };
-      if (field in updated) {
+      if (field === 'language') {
+        updated.language = value;
+      } else if (field in updated) {
         updated[field] = value;
       } else if (updated.account && field in updated.account) {
         updated.account = { ...updated.account, [field]: value };

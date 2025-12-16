@@ -13,6 +13,7 @@ export interface PersonProfile {
     department: string;
     manager: string;
     startDate: string;
+    language?: string;
     account: {
         username: string;
         employeeId: string;

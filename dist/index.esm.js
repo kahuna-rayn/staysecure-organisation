@@ -1697,6 +1697,26 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
         message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
       });
     }
+    if (managerId) {
+      try {
+        const { error: managerUpdateError } = await supabase2.from("profiles").update({ manager: managerId }).eq("id", userId);
+        if (managerUpdateError) {
+          console.error("Error updating profile manager:", managerUpdateError);
+          warnings.push({
+            field: "Manager",
+            value: managerEmail,
+            message: `Manager could not be assigned: ${managerUpdateError.message}`
+          });
+        }
+      } catch (managerError) {
+        console.error("Exception updating profile manager:", managerError);
+        warnings.push({
+          field: "Manager",
+          value: managerEmail,
+          message: `Manager could not be assigned: ${managerError.message}`
+        });
+      }
+    }
     if (managerWarning) {
       warnings.push(managerWarning);
     }

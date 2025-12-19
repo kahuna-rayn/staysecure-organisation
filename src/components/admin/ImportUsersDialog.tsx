@@ -483,6 +483,32 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       });
     }
 
+    // Update manager_id in profiles table if manager was provided and validated
+    if (managerId) {
+      try {
+        const { error: managerUpdateError } = await supabase
+          .from('profiles')
+          .update({ manager: managerId })
+          .eq('id', userId);
+
+        if (managerUpdateError) {
+          console.error('Error updating profile manager:', managerUpdateError);
+          warnings.push({
+            field: 'Manager',
+            value: managerEmail,
+            message: `Manager could not be assigned: ${managerUpdateError.message}`
+          });
+        }
+      } catch (managerError: any) {
+        console.error('Exception updating profile manager:', managerError);
+        warnings.push({
+          field: 'Manager',
+          value: managerEmail,
+          message: `Manager could not be assigned: ${managerError.message}`
+        });
+      }
+    }
+
     // Add manager warning if manager doesn't exist
     if (managerWarning) {
       warnings.push(managerWarning);

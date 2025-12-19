@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Edit, Trash2, Phone, MapPin, IdCard, Mail, Eye, Settings } from 'lucide-react';
+import { Edit, Trash2, Phone, MapPin, IdCard, Mail } from 'lucide-react';
 import EditableField from '../profile/EditableField';
 import { toast } from '@/components/ui/use-toast';
 import { DepartmentRolePairsDisplay } from '../organisational/DepartmentRolePairsDisplay';
@@ -162,12 +162,6 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
 
         <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>
           <Button size="sm" variant="outline" onClick={handleViewDetails}>
-            <Eye className="h-3 w-3" />
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => navigate(`/admin/users/${user.id}`)}>
-            <Settings className="h-3 w-3" />
-          </Button>
-          <Button size="sm" variant="outline" onClick={() => onEdit(user)}>
             <Edit className="h-3 w-3" />
           </Button>
           <Button size="sm" variant="outline" onClick={() => onDelete(user.id)}>

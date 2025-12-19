@@ -414,13 +414,14 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     }
 
     // Validate manager email if provided (manager must be specified by email address)
-    const managerEmail = row['Manager'] || row['manager'] || '';
+    const managerEmail = (row['Manager'] || row['manager'] || '').trim();
     let managerId: string | undefined;
     let managerWarning: any = null;
     if (managerEmail) {
       const managerValidation = validateManager(managerEmail);
       if (!managerValidation.isValid) {
         // Manager email doesn't exist - create user anyway but add warning
+        console.warn(`Manager email "${managerEmail}" not found in existing profiles`, { existingProfilesCount: existingProfiles?.length });
         managerWarning = {
           field: 'Manager',
           value: managerEmail,
@@ -429,6 +430,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       } else {
         // Valid manager email found - assign manager
         managerId = managerValidation.managerId;
+        console.log(`Manager validated: ${managerEmail} -> ${managerId}`);
       }
     }
 
@@ -486,6 +488,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     // Update manager_id in profiles table if manager was provided and validated
     if (managerId) {
       try {
+        console.log(`Updating manager for user ${userId} with managerId ${managerId}`);
         const { error: managerUpdateError } = await supabase
           .from('profiles')
           .update({ manager: managerId })
@@ -498,6 +501,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             value: managerEmail,
             message: `Manager could not be assigned: ${managerUpdateError.message}`
           });
+        } else {
+          console.log(`Successfully updated manager for user ${userId}`);
         }
       } catch (managerError: any) {
         console.error('Exception updating profile manager:', managerError);
@@ -507,6 +512,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           message: `Manager could not be assigned: ${managerError.message}`
         });
       }
+    } else if (managerEmail) {
+      console.warn(`Manager email provided (${managerEmail}) but managerId is undefined - manager not assigned`);
     }
 
     // Add manager warning if manager doesn't exist

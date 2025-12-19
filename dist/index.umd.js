@@ -1588,12 +1588,13 @@
       } else if (roleName && roleDepartmentId !== null) {
         throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
       }
-      const managerEmail = row["Manager"] || row["manager"] || "";
+      const managerEmail = (row["Manager"] || row["manager"] || "").trim();
       let managerId;
       let managerWarning = null;
       if (managerEmail) {
         const managerValidation = validateManager$1(managerEmail);
         if (!managerValidation.isValid) {
+          console.warn(`Manager email "${managerEmail}" not found in existing profiles`, { existingProfilesCount: existingProfiles == null ? void 0 : existingProfiles.length });
           managerWarning = {
             field: "Manager",
             value: managerEmail,
@@ -1601,6 +1602,7 @@
           };
         } else {
           managerId = managerValidation.managerId;
+          console.log(`Manager validated: ${managerEmail} -> ${managerId}`);
         }
       }
       const clientId = client.getCurrentClientId();
@@ -1648,6 +1650,7 @@
       }
       if (managerId) {
         try {
+          console.log(`Updating manager for user ${userId} with managerId ${managerId}`);
           const { error: managerUpdateError } = await supabase.from("profiles").update({ manager: managerId }).eq("id", userId);
           if (managerUpdateError) {
             console.error("Error updating profile manager:", managerUpdateError);
@@ -1656,6 +1659,8 @@
               value: managerEmail,
               message: `Manager could not be assigned: ${managerUpdateError.message}`
             });
+          } else {
+            console.log(`Successfully updated manager for user ${userId}`);
           }
         } catch (managerError) {
           console.error("Exception updating profile manager:", managerError);
@@ -1665,6 +1670,8 @@
             message: `Manager could not be assigned: ${managerError.message}`
           });
         }
+      } else if (managerEmail) {
+        console.warn(`Manager email provided (${managerEmail}) but managerId is undefined - manager not assigned`);
       }
       if (managerWarning) {
         warnings.push(managerWarning);

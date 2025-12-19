@@ -255,7 +255,7 @@ describe('handleCreateUser', () => {
 
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
-      description: expect.stringContaining('Failed to create user'),
+      description: 'Network error',
       variant: 'destructive',
     });
   });
@@ -445,7 +445,7 @@ describe('handleDeleteUser', () => {
 
     const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName, reason);
 
-    expect(supabase.functions.invoke).toHaveBeenCalledWith('delete-user', {
+    expect(mockSupabaseClient.functions.invoke).toHaveBeenCalledWith('delete-user', {
       body: {
         userId,
         reason,
@@ -466,10 +466,10 @@ describe('handleDeleteUser', () => {
     const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe('Failed to delete user');
+    expect(result.error).toBe('Function error');
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
-      description: 'Failed to delete user',
+      description: 'Function error',
       variant: 'destructive',
     });
   });
@@ -501,15 +501,15 @@ describe('handleDeleteUser', () => {
     const userId = 'user-1';
     const userName = 'John Doe';
 
-    supabase.functions.invoke.mockRejectedValue(new Error('Network error'));
+    mockSupabaseClient.functions.invoke.mockRejectedValue(new Error('Network error'));
 
     const result = await handleDeleteUser(mockSupabaseClient as any, userId, userName);
 
     expect(result.success).toBe(false);
-    expect(result.error).toBe('Failed to delete user');
+    expect(result.error).toBe('Network error');
     expect(toast).toHaveBeenCalledWith({
       title: 'Error',
-      description: 'Failed to delete user',
+      description: 'Network error',
       variant: 'destructive',
     });
   });

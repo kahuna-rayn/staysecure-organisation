@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+dist
 dist-ssr
 *.local
 
@@ -34,3 +35,6 @@ coverage
 # OS
 .DS_Store
 Thumbs.db
+
+# Stub UI component files for tests (provided by consuming apps)
+src/components/ui/

@@ -3,9 +3,13 @@
  */
 
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, renderHook } from '@testing-library/react';
 import { OrganisationWrapper } from '@/components/OrganisationWrapper';
 import { renderWithProviders } from '../helpers/testUtils';
+import { useOrganisationContext, OrganisationProvider } from '@/context/OrganisationContext';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { createClient } from '@supabase/supabase-js';
+import { vi } from 'vitest';
 
 // Mock dependencies
 vi.mock('@/integrations/supabase/client', () => ({
@@ -39,13 +43,7 @@ describe('OrganisationWrapper', () => {
   });
 
   it('should provide OrganisationProvider with correct config', () => {
-    const { useOrganisationContext } = require('@/context/OrganisationContext');
-    const { renderHook } = require('@testing-library/react');
-    const { QueryClientProvider } = require('@tanstack/react-query');
-    const { OrganisationProvider } = require('@/context/OrganisationContext');
-    const { createClient } = require('@supabase/supabase-js');
-
-    const queryClient = new (require('@tanstack/react-query').QueryClient)({
+    const queryClient = new QueryClient({
       defaultOptions: { queries: { retry: false } },
     });
 

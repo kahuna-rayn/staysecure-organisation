@@ -18,23 +18,23 @@ vi.mock('@/components/ui/card', () => ({
   CardTitle: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
 }));
 
-jest.mock('@/components/ui/button', () => ({
+vi.mock('@/components/ui/button', () => ({
   Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,
 }));
 
-jest.mock('@/components/ui/input', () => ({
+vi.mock('@/components/ui/input', () => ({
   Input: (props: any) => <input {...props} />,
 }));
 
-jest.mock('@/components/ui/label', () => ({
+vi.mock('@/components/ui/label', () => ({
   Label: ({ children, ...props }: any) => <label {...props}>{children}</label>,
 }));
 
-jest.mock('@/components/ui/textarea', () => ({
+vi.mock('@/components/ui/textarea', () => ({
   Textarea: (props: any) => <textarea {...props} />,
 }));
 
-jest.mock('@/components/ui/select', () => ({
+vi.mock('@/components/ui/select', () => ({
   Select: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   SelectContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   SelectItem: ({ children, value }: any) => <div data-value={value}>{children}</div>,
@@ -42,7 +42,7 @@ jest.mock('@/components/ui/select', () => ({
   SelectValue: () => <div>Select...</div>,
 }));
 
-jest.mock('@/components/ui/table', () => ({
+vi.mock('@/components/ui/table', () => ({
   Table: ({ children }: { children: React.ReactNode }) => <table>{children}</table>,
   TableBody: ({ children }: { children: React.ReactNode }) => <tbody>{children}</tbody>,
   TableCell: ({ children }: { children: React.ReactNode }) => <td>{children}</td>,
@@ -51,7 +51,7 @@ jest.mock('@/components/ui/table', () => ({
   TableRow: ({ children }: { children: React.ReactNode }) => <tr>{children}</tr>,
 }));
 
-jest.mock('@/components/ui/dialog', () => ({
+vi.mock('@/components/ui/dialog', () => ({
   Dialog: ({ children, open }: any) => open ? <div>{children}</div> : null,
   DialogContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   DialogDescription: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -61,7 +61,7 @@ jest.mock('@/components/ui/dialog', () => ({
   DialogTrigger: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
-jest.mock('lucide-react', () => ({
+vi.mock('lucide-react', () => ({
   Building2: () => <span>Building2</span>,
   Plus: () => <span>Plus</span>,
   Edit: () => <span>Edit</span>,
@@ -72,12 +72,12 @@ jest.mock('lucide-react', () => ({
   ArrowDown: () => <span>ArrowDown</span>,
 }));
 
-jest.mock('@/components/organisational/ImportDepartmentsDialog', () => ({
+vi.mock('@/components/organisational/ImportDepartmentsDialog', () => ({
   __esModule: true,
   default: () => <div>ImportDepartmentsDialog</div>,
 }));
 
-jest.mock('@/components/import/ImportErrorReport', () => ({
+vi.mock('@/components/import/ImportErrorReport', () => ({
   ImportErrorReport: () => null,
   ImportError: {},
 }));
@@ -117,12 +117,12 @@ describe('DepartmentManagement', () => {
 
   beforeEach(() => {
     queryClient = createTestQueryClient();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should render loading state initially', () => {
     mockSelect.mockReturnValue({
-      then: vi.fn((callback) => {
+      then: vi.fn((_callback) => {
         // Simulate loading
         return Promise.resolve({ data: null, error: null });
       }),

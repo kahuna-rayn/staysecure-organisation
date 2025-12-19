@@ -1021,9 +1021,15 @@
     const { data: profiles } = reactQuery.useQuery({
       queryKey: ["profiles-for-managers"],
       queryFn: async () => {
-        const { data } = await supabaseClient.from("profiles").select("id, full_name, email, username").eq("status", "Active").order("full_name");
-        return data || [];
-      }
+        const { data } = await supabaseClient.from("profiles").select("id, full_name, username").eq("status", "Active").order("full_name");
+        return (data || []).map((profile) => ({
+          ...profile,
+          email: profile.username
+          // username stores the email
+        }));
+      },
+      enabled: isOpen
+      // Only fetch when dialog is open
     });
     const { data: languages } = reactQuery.useQuery({
       queryKey: ["languages"],

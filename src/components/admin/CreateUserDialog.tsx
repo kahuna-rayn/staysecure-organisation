@@ -84,16 +84,23 @@ const isSuperAdmin = currentUserRole === 'super_admin';
   });
 
   // Fetch user profiles for manager dropdown
+  // Note: username stores the email address in this system
+  // Only fetch when dialog is open to avoid unnecessary queries
   const { data: profiles } = useQuery({
     queryKey: ['profiles-for-managers'],
     queryFn: async () => {
       const { data } = await supabaseClient
         .from('profiles')
-        .select('id, full_name, email, username')
+        .select('id, full_name, username')
         .eq('status', 'Active')
         .order('full_name');
-      return data || [];
+      // Map username to email field for consistency (username = email in this system)
+      return (data || []).map(profile => ({
+        ...profile,
+        email: profile.username // username stores the email
+      }));
     },
+    enabled: isOpen, // Only fetch when dialog is open
   });
 
   // Fetch languages for dropdown

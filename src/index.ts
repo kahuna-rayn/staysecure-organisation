@@ -17,7 +17,6 @@ export { default as UserList } from './components/admin/UserList';
 export { default as UserCard } from './components/admin/UserCard';
 export { default as UserTable } from './components/admin/UserTable';
 export { default as CreateUserDialog } from './components/admin/CreateUserDialog';
-export { default as EditUserDialog } from './components/admin/EditUserDialog';
 export { default as AddOrganisationCertificateDialog } from './components/certificates/AddOrganisationCertificateDialog';
 export { default as AssignHardwareDialog } from './components/admin/AssignHardwareDialog';
 export { default as AssignSoftwareDialog } from './components/admin/AssignSoftwareDialog';

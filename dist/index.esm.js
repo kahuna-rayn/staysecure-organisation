@@ -18,11 +18,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { EditableTable } from "@/components/ui/editable-table";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "staysecure-auth";
 import { useDropzone } from "react-dropzone";
@@ -850,105 +850,6 @@ const handleDeleteUser = async (supabaseClient, userId, userName, reason) => {
     return { success: false, error: errorMessage };
   }
 };
-const EditableField = ({
-  value,
-  fieldKey,
-  label,
-  placeholder,
-  className,
-  inputClassName,
-  locationId,
-  isEditing,
-  onEdit,
-  onSave,
-  onCancel,
-  type = "text",
-  options,
-  asyncOptions,
-  isLoading,
-  onSelectChange
-}) => {
-  const [editValue, setEditValue] = o.useState(value);
-  o.useEffect(() => {
-    setEditValue(value);
-  }, [value, isEditing]);
-  const validatePhoneInput = (input) => {
-    return input.replace(/[^0-9+\s\-\(\)]/g, "");
-  };
-  const handleSave = async () => {
-    if (fieldKey) {
-      await onSave(fieldKey, editValue);
-    }
-  };
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSave();
-    } else if (e.key === "Escape") {
-      onCancel();
-    }
-  };
-  const handleInputChange = (e) => {
-    const newValue = e.target.value;
-    if (fieldKey === "phone") {
-      const validatedValue = validatePhoneInput(newValue);
-      setEditValue(validatedValue);
-    } else {
-      setEditValue(newValue);
-    }
-  };
-  if (isEditing) {
-    if (type === "select" && (options || asyncOptions)) {
-      const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
-      return /* @__PURE__ */ jsxs(
-        Select,
-        {
-          value: editValue,
-          onValueChange: (newValue) => {
-            setEditValue(newValue);
-            const selectedOption = selectOptions.find((opt) => opt.value === newValue);
-            if (onSelectChange && selectedOption) {
-              onSelectChange(newValue, selectedOption);
-            } else {
-              handleSave();
-            }
-          },
-          disabled: isLoading,
-          children: [
-            /* @__PURE__ */ jsx(SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
-            /* @__PURE__ */ jsxs(SelectContent, { children: [
-              selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsx(SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
-              selectOptions.map((option) => /* @__PURE__ */ jsx(SelectItem, { value: option.value, children: option.label }, option.value))
-            ] })
-          ]
-        }
-      );
-    }
-    return /* @__PURE__ */ jsx(
-      Input,
-      {
-        type,
-        value: editValue,
-        placeholder,
-        onChange: handleInputChange,
-        onBlur: handleSave,
-        onKeyDown: handleKeyDown,
-        className: inputClassName || "h-6 text-sm w-32",
-        autoFocus: true
-      }
-    );
-  }
-  return /* @__PURE__ */ jsxs("div", { className, children: [
-    label && /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label }),
-    /* @__PURE__ */ jsx(
-      "span",
-      {
-        className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
-        onClick: () => fieldKey && onEdit(fieldKey),
-        children: value || placeholder
-      }
-    )
-  ] });
-};
 const DepartmentRolePairsDisplay = ({ pairs, userId }) => {
   if (!pairs || pairs.length === 0) {
     return /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "No assignments" });
@@ -959,11 +860,9 @@ const DepartmentRolePairsDisplay = ({ pairs, userId }) => {
     pair.role
   ] }, index)) });
 };
-const UserCard = ({ user, onEdit, onDelete }) => {
+const UserCard = ({ user, onDelete }) => {
   var _a;
   const navigate = useNavigate();
-  const [editingField, setEditingField] = useState(null);
-  const [saving, setSaving] = useState(false);
   const initials = user.full_name ? user.full_name.split(" ").map((n) => n.charAt(0)).join("").slice(0, 2) : ((_a = user.username) == null ? void 0 : _a.slice(0, 2)) || "U";
   const getStatusColor = (status) => {
     switch (status) {
@@ -985,34 +884,6 @@ const UserCard = ({ user, onEdit, onDelete }) => {
       return data;
     }
   });
-  const handleFieldSave = async (fieldKey, value) => {
-    setSaving(true);
-    try {
-      if (fieldKey === "email") {
-        toast({
-          title: "Email Update Limitation",
-          description: "Email addresses are managed by authentication and cannot be updated directly from this interface.",
-          variant: "destructive"
-        });
-        return;
-      }
-      const updatedUser = { ...user, [fieldKey]: value };
-      onEdit(updatedUser);
-      toast({
-        title: "Field updated",
-        description: `${fieldKey} has been updated successfully.`
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setSaving(false);
-      setEditingField(null);
-    }
-  };
   const handleViewDetails = () => {
     navigate(`/admin/users/${user.id}`);
   };
@@ -1033,21 +904,7 @@ const UserCard = ({ user, onEdit, onDelete }) => {
     /* @__PURE__ */ jsxs("div", { className: "space-y-2 text-sm", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(Mail, { className: "h-3 w-3 text-muted-foreground" }),
-        /* @__PURE__ */ jsx(
-          EditableField,
-          {
-            value: user.email || "No email",
-            fieldKey: "email",
-            placeholder: "Enter email",
-            className: "flex-1",
-            inputClassName: "text-sm",
-            onSave: handleFieldSave,
-            isEditing: editingField === "email",
-            onEdit: setEditingField,
-            onCancel: () => setEditingField(null),
-            saving
-          }
-        )
+        /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: user.email || "No email" })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(IdCard, { className: "h-3 w-3 text-muted-foreground" }),
@@ -1085,12 +942,11 @@ const UserCard = ({ user, onEdit, onDelete }) => {
     ] })
   ] }) });
 };
-const UserList = ({ profiles, onEdit, onDelete }) => {
+const UserList = ({ profiles, onDelete }) => {
   return /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", children: profiles.map((user) => /* @__PURE__ */ jsx(
     UserCard,
     {
       user,
-      onEdit,
       onDelete
     },
     user.id
@@ -1485,235 +1341,6 @@ const CreateUserDialog = ({
       ] })
     ] })
   ] });
-};
-const EditUserDialog = ({
-  isOpen,
-  onOpenChange,
-  editingUser,
-  onUserChange,
-  onSubmit
-}) => {
-  const { supabaseClient } = useOrganisationContext();
-  const { data: locations } = useQuery({
-    queryKey: ["locations"],
-    queryFn: async () => {
-      const { data } = await supabaseClient.from("locations").select("id, name").eq("status", "Active").order("name");
-      return data || [];
-    }
-  });
-  const { data: languages } = useQuery({
-    queryKey: ["languages"],
-    queryFn: async () => {
-      const { data } = await supabaseClient.from("languages").select("code, display_name, native_name, flag_emoji").eq("is_active", true).order("sort_order", { ascending: true });
-      return data || [];
-    }
-  });
-  if (!editingUser) return null;
-  const updateField = (field, value) => {
-    onUserChange({ ...editingUser, [field]: value });
-  };
-  const handleLocationChange = (locationId) => {
-    const selectedLocation = locations == null ? void 0 : locations.find((loc) => loc.id === locationId);
-    if (selectedLocation) {
-      onUserChange({
-        ...editingUser,
-        location_id: locationId,
-        location: selectedLocation.name
-      });
-    }
-  };
-  const getLocationId = () => {
-    if (editingUser.location_id) {
-      return editingUser.location_id;
-    }
-    if (editingUser.location && locations) {
-      const foundLocation = locations.find((loc) => loc.name === editingUser.location);
-      return (foundLocation == null ? void 0 : foundLocation.id) || "";
-    }
-    return "";
-  };
-  return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl max-h-[90vh] overflow-y-auto", children: [
-    /* @__PURE__ */ jsxs(DialogHeader, { children: [
-      /* @__PURE__ */ jsx(DialogTitle, { children: "Edit User" }),
-      /* @__PURE__ */ jsx(DialogDescription, { children: "Update user information" })
-    ] }),
-    /* @__PURE__ */ jsxs("form", { onSubmit, className: "space-y-4", children: [
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_full_name", children: "Full Name" }),
-          /* @__PURE__ */ jsx(
-            Input,
-            {
-              id: "edit_full_name",
-              value: editingUser.full_name || "",
-              onChange: (e) => updateField("full_name", e.target.value),
-              placeholder: "Enter full name"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_username", children: "Username" }),
-          /* @__PURE__ */ jsx(
-            Input,
-            {
-              id: "edit_username",
-              value: editingUser.username || "",
-              onChange: (e) => updateField("username", e.target.value),
-              placeholder: "Enter username"
-            }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_email", children: "Email" }),
-          /* @__PURE__ */ jsx(
-            Input,
-            {
-              id: "edit_email",
-              type: "email",
-              value: editingUser.email || "",
-              onChange: (e) => updateField("email", e.target.value),
-              placeholder: "Enter email address"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_phone", children: "Phone" }),
-          /* @__PURE__ */ jsx(
-            Input,
-            {
-              id: "edit_phone",
-              value: editingUser.phone || "",
-              onChange: (e) => updateField("phone", e.target.value),
-              placeholder: "Enter phone number"
-            }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_role", children: "Role" }),
-          /* @__PURE__ */ jsx(
-            Input,
-            {
-              id: "edit_role",
-              value: editingUser.role || "",
-              onChange: (e) => updateField("role", e.target.value),
-              placeholder: "Enter user role"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_department", children: "Department" }),
-          /* @__PURE__ */ jsx(
-            Input,
-            {
-              id: "edit_department",
-              value: editingUser.department || "",
-              onChange: (e) => updateField("department", e.target.value),
-              placeholder: "Enter department"
-            }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_employee_id", children: "Employee ID" }),
-          /* @__PURE__ */ jsx(
-            Input,
-            {
-              id: "edit_employee_id",
-              value: editingUser.employee_id || "",
-              onChange: (e) => updateField("employee_id", e.target.value),
-              placeholder: "Enter employee ID"
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_location", children: "Location" }),
-          /* @__PURE__ */ jsxs(Select, { value: getLocationId(), onValueChange: handleLocationChange, children: [
-            /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select a location" }) }),
-            /* @__PURE__ */ jsx(SelectContent, { children: locations == null ? void 0 : locations.map((location) => /* @__PURE__ */ jsx(SelectItem, { value: location.id, children: location.name }, location.id)) })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_status", children: "Status" }),
-          /* @__PURE__ */ jsxs(
-            Select,
-            {
-              value: editingUser.status || "Active",
-              onValueChange: (value) => updateField("status", value),
-              children: [
-                /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, {}) }),
-                /* @__PURE__ */ jsxs(SelectContent, { children: [
-                  /* @__PURE__ */ jsx(SelectItem, { value: "Active", children: "Active" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "Inactive", children: "Inactive" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "Pending", children: "Pending" })
-                ] })
-              ]
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_access_level", children: "Access Level" }),
-          /* @__PURE__ */ jsxs(
-            Select,
-            {
-              value: editingUser.access_level || "User",
-              onValueChange: (value) => updateField("access_level", value),
-              children: [
-                /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, {}) }),
-                /* @__PURE__ */ jsxs(SelectContent, { children: [
-                  /* @__PURE__ */ jsx(SelectItem, { value: "User", children: "User" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "Manager", children: "Manager" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "Admin", children: "Admin" })
-                ] })
-              ]
-            }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_language", children: "Language" }),
-          /* @__PURE__ */ jsxs(
-            Select,
-            {
-              value: editingUser.language || "English",
-              onValueChange: (value) => updateField("language", value),
-              children: [
-                /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select language" }) }),
-                /* @__PURE__ */ jsx(SelectContent, { children: languages == null ? void 0 : languages.map((language) => /* @__PURE__ */ jsxs(SelectItem, { value: language.display_name || language.code, children: [
-                  language.flag_emoji && /* @__PURE__ */ jsx("span", { className: "mr-2", children: language.flag_emoji }),
-                  language.native_name || language.display_name || language.code
-                ] }, language.display_name || language.code)) })
-              ]
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsx(Label, { htmlFor: "edit_bio", children: "Bio" }),
-          /* @__PURE__ */ jsx(
-            Textarea,
-            {
-              id: "edit_bio",
-              value: editingUser.bio || "",
-              onChange: (e) => updateField("bio", e.target.value),
-              placeholder: "Enter bio (optional)",
-              rows: 3
-            }
-          )
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", size: "icon", children: /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) })
-      ] })
-    ] })
-  ] }) });
 };
 const validateManager = (managerIdentifier, existingProfiles) => {
   if (!managerIdentifier || !existingProfiles) {
@@ -2423,7 +2050,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   ] });
 };
 const UserManagement = () => {
-  const { hasPermission, onUserAction, supabaseClient } = useOrganisationContext();
+  const { supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
   const { toast: toast2 } = useToast();
   const [viewMode, setViewMode] = useViewPreference("userManagement", "cards");
@@ -2436,25 +2063,12 @@ const UserManagement = () => {
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const {
-    editingUser,
-    setEditingUser,
-    isEditDialogOpen,
-    setIsEditDialogOpen,
     isCreateDialogOpen,
     setIsCreateDialogOpen,
     newUser,
     setNewUser,
-    openEditDialog,
-    closeEditDialog,
     resetNewUser
   } = useUserManagement();
-  const onSaveUser = async (e) => {
-    e.preventDefault();
-    if (!editingUser) return;
-    await handleSaveUser(editingUser, async (id, updates) => {
-      await updateProfile(id, updates);
-    }, closeEditDialog);
-  };
   const onCreateUser = async (e) => {
     e.preventDefault();
     setIsCreatingUser(true);
@@ -2568,29 +2182,17 @@ const UserManagement = () => {
           UserList,
           {
             profiles,
-            onEdit: openEditDialog,
             onDelete: onDeleteUser
           }
         ) : /* @__PURE__ */ jsx(
           UserTable,
           {
             profiles,
-            onEdit: openEditDialog,
             onDelete: onDeleteUser,
             onUpdate: onUpdateProfile
           }
         ) })
       ] }),
-      /* @__PURE__ */ jsx(
-        EditUserDialog,
-        {
-          isOpen: isEditDialogOpen,
-          onOpenChange: setIsEditDialogOpen,
-          editingUser,
-          onUserChange: setEditingUser,
-          onSubmit: onSaveUser
-        }
-      ),
       /* @__PURE__ */ jsx(
         DeleteUserDialog,
         {
@@ -7673,6 +7275,105 @@ const ProfileContactInfo = ({
     ] })
   ] });
 };
+const EditableField = ({
+  value,
+  fieldKey,
+  label,
+  placeholder,
+  className,
+  inputClassName,
+  locationId,
+  isEditing,
+  onEdit,
+  onSave,
+  onCancel,
+  type = "text",
+  options,
+  asyncOptions,
+  isLoading,
+  onSelectChange
+}) => {
+  const [editValue, setEditValue] = o.useState(value);
+  o.useEffect(() => {
+    setEditValue(value);
+  }, [value, isEditing]);
+  const validatePhoneInput = (input) => {
+    return input.replace(/[^0-9+\s\-\(\)]/g, "");
+  };
+  const handleSave = async () => {
+    if (fieldKey) {
+      await onSave(fieldKey, editValue);
+    }
+  };
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSave();
+    } else if (e.key === "Escape") {
+      onCancel();
+    }
+  };
+  const handleInputChange = (e) => {
+    const newValue = e.target.value;
+    if (fieldKey === "phone") {
+      const validatedValue = validatePhoneInput(newValue);
+      setEditValue(validatedValue);
+    } else {
+      setEditValue(newValue);
+    }
+  };
+  if (isEditing) {
+    if (type === "select" && (options || asyncOptions)) {
+      const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
+      return /* @__PURE__ */ jsxs(
+        Select,
+        {
+          value: editValue,
+          onValueChange: (newValue) => {
+            setEditValue(newValue);
+            const selectedOption = selectOptions.find((opt) => opt.value === newValue);
+            if (onSelectChange && selectedOption) {
+              onSelectChange(newValue, selectedOption);
+            } else {
+              handleSave();
+            }
+          },
+          disabled: isLoading,
+          children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsx(SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
+              selectOptions.map((option) => /* @__PURE__ */ jsx(SelectItem, { value: option.value, children: option.label }, option.value))
+            ] })
+          ]
+        }
+      );
+    }
+    return /* @__PURE__ */ jsx(
+      Input,
+      {
+        type,
+        value: editValue,
+        placeholder,
+        onChange: handleInputChange,
+        onBlur: handleSave,
+        onKeyDown: handleKeyDown,
+        className: inputClassName || "h-6 text-sm w-32",
+        autoFocus: true
+      }
+    );
+  }
+  return /* @__PURE__ */ jsxs("div", { className, children: [
+    label && /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label }),
+    /* @__PURE__ */ jsx(
+      "span",
+      {
+        className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
+        onClick: () => fieldKey && onEdit(fieldKey),
+        children: value || placeholder
+      }
+    )
+  ] });
+};
 const EditableProfileHeader = ({
   profile,
   onProfileUpdate,
@@ -7686,6 +7387,10 @@ const EditableProfileHeader = ({
   const [saving, setSaving] = useState(false);
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [managerValue, setManagerValue] = useState(profile.manager || "");
+  const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
+  useEffect(() => {
+    setIsFullNameManuallyEdited(false);
+  }, [profile.id]);
   const { data: languages } = useQuery({
     queryKey: ["languages"],
     queryFn: async () => {
@@ -7752,7 +7457,6 @@ const EditableProfileHeader = ({
     setEditingField(null);
   };
   const handleNameChange = async (field, value) => {
-    var _a2;
     try {
       setSaving(true);
       const updateData = {};
@@ -7761,10 +7465,19 @@ const EditableProfileHeader = ({
       } else {
         updateData.last_name = value;
       }
-      if (profile.full_name === "" || ((_a2 = profile.full_name) == null ? void 0 : _a2.trim()) === "") {
+      if (!isFullNameManuallyEdited) {
         const firstName = field === "firstName" ? value : profile.firstName || "";
         const lastName = field === "lastName" ? value : profile.lastName || "";
         updateData.full_name = `${firstName} ${lastName}`.trim();
+      }
+      if (!profile.id) {
+        console.error("Profile ID is undefined. Profile object:", profile);
+        toast({
+          title: "Error",
+          description: "Profile ID is missing. Cannot update profile.",
+          variant: "destructive"
+        });
+        return;
       }
       await updateProfile(profile.id, updateData);
       toast({
@@ -7791,6 +7504,7 @@ const EditableProfileHeader = ({
     }
   };
   const handleFullNameChange = async (value) => {
+    setIsFullNameManuallyEdited(true);
     await handleFieldSave("full_name", value);
   };
   const filteredProfiles = profiles.filter((user) => user.id !== profile.id);
@@ -9067,7 +8781,6 @@ export {
   CreateUserDialog,
   DepartmentManagement,
   DepartmentRolePairsDisplay,
-  EditUserDialog,
   EditableField,
   EditableProfileHeader,
   ImportErrorReport,

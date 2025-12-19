@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -33,6 +33,12 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const [saving, setSaving] = useState(false);
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [managerValue, setManagerValue] = useState(profile.manager || '');
+  const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
+
+  // Reset the manual edit flag when profile changes
+  useEffect(() => {
+    setIsFullNameManuallyEdited(false);
+  }, [profile.id]);
 
   // Fetch languages for dropdown
   const { data: languages } = useQuery({
@@ -123,14 +129,24 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
         updateData.last_name = value;
       }
       
-      // Only auto-generate full_name if it's currently empty
-      if (profile.full_name === '' || profile.full_name?.trim() === '') {
-        const firstName = field === 'firstName' ? value : profile.firstName || '';
-        const lastName = field === 'lastName' ? value : profile.lastName || '';
+      // Only auto-update full_name if it has NOT been manually edited by the user
+      if (!isFullNameManuallyEdited) {
+        const firstName = field === 'firstName' ? value : (profile.firstName as string || '');
+        const lastName = field === 'lastName' ? value : (profile.lastName as string || '');
         updateData.full_name = `${firstName} ${lastName}`.trim();
       }
       
-      await updateProfile(profile.id, updateData);
+      if (!profile.id) {
+        console.error('Profile ID is undefined. Profile object:', profile);
+        toast({
+          title: "Error",
+          description: "Profile ID is missing. Cannot update profile.",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      await updateProfile(profile.id as string, updateData);
       
       toast({
         title: "Profile updated",
@@ -141,7 +157,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
       if (onOptimisticUpdate) {
         onOptimisticUpdate(field, value);
         if (updateData.full_name) {
-          onOptimisticUpdate('full_name', updateData.full_name);
+          onOptimisticUpdate('full_name', updateData.full_name as string);
         }
       }
       onProfileUpdate();
@@ -158,7 +174,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   };
 
   const handleFullNameChange = async (value: string) => {
-    // Allow manual override of full_name
+    // Mark that user has manually edited the full name
+    setIsFullNameManuallyEdited(true);
     await handleFieldSave('full_name', value);
   };
 

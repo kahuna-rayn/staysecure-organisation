@@ -3,7 +3,6 @@ import { UserProfile } from '../../hooks/useUserProfiles';
 
 interface UserListProps {
     profiles: UserProfile[];
-    onEdit: (user: UserProfile) => void;
     onDelete: (userId: string) => void;
 }
 declare const UserList: React.FC<UserListProps>;

@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserManagement } from '@/hooks/useUserManagement';
 import { useViewPreference } from '@/hooks/useViewPreference';
-import { handleSaveUser, handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
-import { Button } from '@/components/ui/button';
+import { handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { LayoutGrid, List, Users } from 'lucide-react';
@@ -14,7 +12,6 @@ import { useToast } from '@/hooks/use-toast';
 import UserList from './UserList';
 import UserTable from './UserTable';
 import CreateUserDialog from './CreateUserDialog';
-import EditUserDialog from './EditUserDialog';
 import ImportUsersDialog from './ImportUsersDialog';
 import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
 
@@ -28,7 +25,7 @@ import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorR
 const UserManagement: React.FC = () => {
   // Get supabaseClient from context (provided by consuming app via OrganisationProvider)
   // DO NOT import supabase from '@/integrations/supabase/client' - it's a stub
-  const { hasPermission, onUserAction, supabaseClient } = useOrganisationContext();
+  const { supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
   const { toast } = useToast();
   const [viewMode, setViewMode] = useViewPreference('userManagement', 'cards');
@@ -42,27 +39,12 @@ const UserManagement: React.FC = () => {
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   
   const {
-    editingUser,
-    setEditingUser,
-    isEditDialogOpen,
-    setIsEditDialogOpen,
     isCreateDialogOpen,
     setIsCreateDialogOpen,
     newUser,
     setNewUser,
-    openEditDialog,
-    closeEditDialog,
     resetNewUser
   } = useUserManagement();
-
-  const onSaveUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingUser) return;
-
-    await handleSaveUser(editingUser, async (id, updates) => {
-      await updateProfile(id, updates);
-    }, closeEditDialog);
-  };
 
   const onCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,7 +100,7 @@ const UserManagement: React.FC = () => {
     }
   };
 
-  const onUpdateProfile = async (id: string, updates: any) => {
+  const onUpdateProfile = async (id: string, updates: Record<string, unknown>) => {
     const result = await updateProfile(id, updates);
     return { success: result.success, error: result.error };
   };
@@ -189,27 +171,17 @@ const UserManagement: React.FC = () => {
             {viewMode === 'cards' ? (
               <UserList
                 profiles={profiles}
-                onEdit={openEditDialog}
                 onDelete={onDeleteUser}
               />
             ) : (
               <UserTable
                 profiles={profiles}
-                onEdit={openEditDialog}
                 onDelete={onDeleteUser}
                 onUpdate={onUpdateProfile}
               />
             )}
           </CardContent>
         </Card>
-
-      <EditUserDialog
-        isOpen={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
-        editingUser={editingUser}
-        onUserChange={setEditingUser}
-        onSubmit={onSaveUser}
-      />
 
         <DeleteUserDialog
           open={isDeleteDialogOpen}

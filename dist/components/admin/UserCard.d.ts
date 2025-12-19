@@ -3,7 +3,6 @@ import { UserProfile } from '../../hooks/useUserProfiles';
 
 interface UserCardProps {
     user: UserProfile;
-    onEdit: (user: UserProfile) => void;
     onDelete: (userId: string) => void;
 }
 declare const UserCard: React.FC<UserCardProps>;

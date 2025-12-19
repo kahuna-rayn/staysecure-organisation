@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/components/ui/input"), require("@/components/ui/select"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/hooks/useUserRole"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/hooks/useUserDepartments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/components/ui/input", "@/components/ui/select", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/hooks/useUserRole", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/hooks/useUserDepartments", "@/components/LearningTracksTab", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.input, global.select, global.editableTable, global.dialog, global.label, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.useUserRole, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.useUserDepartments, global.LearningTracksTab, global.useUserProfileRoles, global.useUserPhysicalLocations, global.useUserRoleById, global.useProfile, global.alert, global.scrollArea));
-})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, input, select, editableTable, dialog, label, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, separator, vt, utils, command, popover, useUserRole, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, useUserDepartments, LearningTracksTab, useUserProfileRoles, useUserPhysicalLocations, useUserRoleById, useProfile, alert, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/hooks/useUserRole"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/hooks/useUserDepartments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/hooks/useUserRole", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/hooks/useUserDepartments", "@/components/LearningTracksTab", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.useUserRole, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.useUserDepartments, global.LearningTracksTab, global.useUserProfileRoles, global.useUserPhysicalLocations, global.useUserRoleById, global.useProfile, global.alert, global.scrollArea));
+})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, separator, vt, utils, command, popover, useUserRole, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, useUserDepartments, LearningTracksTab, useUserProfileRoles, useUserPhysicalLocations, useUserRoleById, useProfile, alert, scrollArea) {
   "use strict";
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -799,105 +799,6 @@
       return { success: false, error: errorMessage };
     }
   };
-  const EditableField = ({
-    value,
-    fieldKey,
-    label: label2,
-    placeholder,
-    className,
-    inputClassName,
-    locationId,
-    isEditing,
-    onEdit,
-    onSave,
-    onCancel,
-    type = "text",
-    options,
-    asyncOptions,
-    isLoading,
-    onSelectChange
-  }) => {
-    const [editValue, setEditValue] = o.useState(value);
-    o.useEffect(() => {
-      setEditValue(value);
-    }, [value, isEditing]);
-    const validatePhoneInput = (input2) => {
-      return input2.replace(/[^0-9+\s\-\(\)]/g, "");
-    };
-    const handleSave = async () => {
-      if (fieldKey) {
-        await onSave(fieldKey, editValue);
-      }
-    };
-    const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
-        handleSave();
-      } else if (e.key === "Escape") {
-        onCancel();
-      }
-    };
-    const handleInputChange = (e) => {
-      const newValue = e.target.value;
-      if (fieldKey === "phone") {
-        const validatedValue = validatePhoneInput(newValue);
-        setEditValue(validatedValue);
-      } else {
-        setEditValue(newValue);
-      }
-    };
-    if (isEditing) {
-      if (type === "select" && (options || asyncOptions)) {
-        const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
-        return /* @__PURE__ */ jsxRuntime.jsxs(
-          select.Select,
-          {
-            value: editValue,
-            onValueChange: (newValue) => {
-              setEditValue(newValue);
-              const selectedOption = selectOptions.find((opt) => opt.value === newValue);
-              if (onSelectChange && selectedOption) {
-                onSelectChange(newValue, selectedOption);
-              } else {
-                handleSave();
-              }
-            },
-            disabled: isLoading,
-            children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
-              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
-                selectOptions.map((option) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: option.value, children: option.label }, option.value))
-              ] })
-            ]
-          }
-        );
-      }
-      return /* @__PURE__ */ jsxRuntime.jsx(
-        input.Input,
-        {
-          type,
-          value: editValue,
-          placeholder,
-          onChange: handleInputChange,
-          onBlur: handleSave,
-          onKeyDown: handleKeyDown,
-          className: inputClassName || "h-6 text-sm w-32",
-          autoFocus: true
-        }
-      );
-    }
-    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className, children: [
-      label2 && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label2 }),
-      /* @__PURE__ */ jsxRuntime.jsx(
-        "span",
-        {
-          className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
-          onClick: () => fieldKey && onEdit(fieldKey),
-          children: value || placeholder
-        }
-      )
-    ] });
-  };
   const DepartmentRolePairsDisplay = ({ pairs, userId }) => {
     if (!pairs || pairs.length === 0) {
       return /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "No assignments" });
@@ -908,11 +809,9 @@
       pair.role
     ] }, index)) });
   };
-  const UserCard = ({ user, onEdit, onDelete }) => {
+  const UserCard = ({ user, onDelete }) => {
     var _a;
     const navigate = reactRouterDom.useNavigate();
-    const [editingField, setEditingField] = o.useState(null);
-    const [saving, setSaving] = o.useState(false);
     const initials = user.full_name ? user.full_name.split(" ").map((n) => n.charAt(0)).join("").slice(0, 2) : ((_a = user.username) == null ? void 0 : _a.slice(0, 2)) || "U";
     const getStatusColor = (status) => {
       switch (status) {
@@ -934,34 +833,6 @@
         return data;
       }
     });
-    const handleFieldSave = async (fieldKey, value) => {
-      setSaving(true);
-      try {
-        if (fieldKey === "email") {
-          useToast.toast({
-            title: "Email Update Limitation",
-            description: "Email addresses are managed by authentication and cannot be updated directly from this interface.",
-            variant: "destructive"
-          });
-          return;
-        }
-        const updatedUser = { ...user, [fieldKey]: value };
-        onEdit(updatedUser);
-        useToast.toast({
-          title: "Field updated",
-          description: `${fieldKey} has been updated successfully.`
-        });
-      } catch (error) {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
-      } finally {
-        setSaving(false);
-        setEditingField(null);
-      }
-    };
     const handleViewDetails = () => {
       navigate(`/admin/users/${user.id}`);
     };
@@ -982,21 +853,7 @@
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2 text-sm", children: [
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-3 w-3 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            EditableField,
-            {
-              value: user.email || "No email",
-              fieldKey: "email",
-              placeholder: "Enter email",
-              className: "flex-1",
-              inputClassName: "text-sm",
-              onSave: handleFieldSave,
-              isEditing: editingField === "email",
-              onEdit: setEditingField,
-              onCancel: () => setEditingField(null),
-              saving
-            }
-          )
+          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: user.email || "No email" })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntime.jsx(IdCard, { className: "h-3 w-3 text-muted-foreground" }),
@@ -1034,12 +891,11 @@
       ] })
     ] }) });
   };
-  const UserList = ({ profiles, onEdit, onDelete }) => {
+  const UserList = ({ profiles, onDelete }) => {
     return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", children: profiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(
       UserCard,
       {
         user,
-        onEdit,
         onDelete
       },
       user.id
@@ -1434,235 +1290,6 @@
         ] })
       ] })
     ] });
-  };
-  const EditUserDialog = ({
-    isOpen,
-    onOpenChange,
-    editingUser,
-    onUserChange,
-    onSubmit
-  }) => {
-    const { supabaseClient } = useOrganisationContext();
-    const { data: locations } = reactQuery.useQuery({
-      queryKey: ["locations"],
-      queryFn: async () => {
-        const { data } = await supabaseClient.from("locations").select("id, name").eq("status", "Active").order("name");
-        return data || [];
-      }
-    });
-    const { data: languages } = reactQuery.useQuery({
-      queryKey: ["languages"],
-      queryFn: async () => {
-        const { data } = await supabaseClient.from("languages").select("code, display_name, native_name, flag_emoji").eq("is_active", true).order("sort_order", { ascending: true });
-        return data || [];
-      }
-    });
-    if (!editingUser) return null;
-    const updateField = (field, value) => {
-      onUserChange({ ...editingUser, [field]: value });
-    };
-    const handleLocationChange = (locationId) => {
-      const selectedLocation = locations == null ? void 0 : locations.find((loc) => loc.id === locationId);
-      if (selectedLocation) {
-        onUserChange({
-          ...editingUser,
-          location_id: locationId,
-          location: selectedLocation.name
-        });
-      }
-    };
-    const getLocationId = () => {
-      if (editingUser.location_id) {
-        return editingUser.location_id;
-      }
-      if (editingUser.location && locations) {
-        const foundLocation = locations.find((loc) => loc.name === editingUser.location);
-        return (foundLocation == null ? void 0 : foundLocation.id) || "";
-      }
-      return "";
-    };
-    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl max-h-[90vh] overflow-y-auto", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
-        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Edit User" }),
-        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Update user information" })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit, className: "space-y-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_full_name", children: "Full Name" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "edit_full_name",
-                value: editingUser.full_name || "",
-                onChange: (e) => updateField("full_name", e.target.value),
-                placeholder: "Enter full name"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_username", children: "Username" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "edit_username",
-                value: editingUser.username || "",
-                onChange: (e) => updateField("username", e.target.value),
-                placeholder: "Enter username"
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_email", children: "Email" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "edit_email",
-                type: "email",
-                value: editingUser.email || "",
-                onChange: (e) => updateField("email", e.target.value),
-                placeholder: "Enter email address"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_phone", children: "Phone" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "edit_phone",
-                value: editingUser.phone || "",
-                onChange: (e) => updateField("phone", e.target.value),
-                placeholder: "Enter phone number"
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_role", children: "Role" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "edit_role",
-                value: editingUser.role || "",
-                onChange: (e) => updateField("role", e.target.value),
-                placeholder: "Enter user role"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_department", children: "Department" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "edit_department",
-                value: editingUser.department || "",
-                onChange: (e) => updateField("department", e.target.value),
-                placeholder: "Enter department"
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_employee_id", children: "Employee ID" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              input.Input,
-              {
-                id: "edit_employee_id",
-                value: editingUser.employee_id || "",
-                onChange: (e) => updateField("employee_id", e.target.value),
-                placeholder: "Enter employee ID"
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_location", children: "Location" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: getLocationId(), onValueChange: handleLocationChange, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select a location" }) }),
-              /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: locations == null ? void 0 : locations.map((location) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: location.id, children: location.name }, location.id)) })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_status", children: "Status" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              select.Select,
-              {
-                value: editingUser.status || "Active",
-                onValueChange: (value) => updateField("status", value),
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-                  /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Active", children: "Active" }),
-                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Inactive", children: "Inactive" }),
-                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Pending", children: "Pending" })
-                  ] })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_access_level", children: "Access Level" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              select.Select,
-              {
-                value: editingUser.access_level || "User",
-                onValueChange: (value) => updateField("access_level", value),
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-                  /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "User", children: "User" }),
-                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Manager", children: "Manager" }),
-                    /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Admin", children: "Admin" })
-                  ] })
-                ]
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_language", children: "Language" }),
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              select.Select,
-              {
-                value: editingUser.language || "English",
-                onValueChange: (value) => updateField("language", value),
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select language" }) }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: languages == null ? void 0 : languages.map((language) => /* @__PURE__ */ jsxRuntime.jsxs(select.SelectItem, { value: language.display_name || language.code, children: [
-                    language.flag_emoji && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "mr-2", children: language.flag_emoji }),
-                    language.native_name || language.display_name || language.code
-                  ] }, language.display_name || language.code)) })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "edit_bio", children: "Bio" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              textarea.Textarea,
-              {
-                id: "edit_bio",
-                value: editingUser.bio || "",
-                onChange: (e) => updateField("bio", e.target.value),
-                placeholder: "Enter bio (optional)",
-                rows: 3
-              }
-            )
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
-        ] })
-      ] })
-    ] }) });
   };
   const validateManager = (managerIdentifier, existingProfiles) => {
     if (!managerIdentifier || !existingProfiles) {
@@ -2372,7 +1999,7 @@
     ] });
   };
   const UserManagement = () => {
-    const { hasPermission, onUserAction, supabaseClient } = useOrganisationContext();
+    const { supabaseClient } = useOrganisationContext();
     const { profiles, loading, updateProfile, refetch } = useUserProfiles.useUserProfiles();
     const { toast } = useToast$1.useToast();
     const [viewMode, setViewMode] = useViewPreference.useViewPreference("userManagement", "cards");
@@ -2385,25 +2012,12 @@
     const [importStats, setImportStats] = o.useState({ success: 0, total: 0 });
     const [isCreatingUser, setIsCreatingUser] = o.useState(false);
     const {
-      editingUser,
-      setEditingUser,
-      isEditDialogOpen,
-      setIsEditDialogOpen,
       isCreateDialogOpen,
       setIsCreateDialogOpen,
       newUser,
       setNewUser,
-      openEditDialog,
-      closeEditDialog,
       resetNewUser
     } = useUserManagement.useUserManagement();
-    const onSaveUser = async (e) => {
-      e.preventDefault();
-      if (!editingUser) return;
-      await handleSaveUser(editingUser, async (id, updates) => {
-        await updateProfile(id, updates);
-      }, closeEditDialog);
-    };
     const onCreateUser = async (e) => {
       e.preventDefault();
       setIsCreatingUser(true);
@@ -2517,29 +2131,17 @@
             UserList,
             {
               profiles,
-              onEdit: openEditDialog,
               onDelete: onDeleteUser
             }
           ) : /* @__PURE__ */ jsxRuntime.jsx(
             UserTable,
             {
               profiles,
-              onEdit: openEditDialog,
               onDelete: onDeleteUser,
               onUpdate: onUpdateProfile
             }
           ) })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(
-          EditUserDialog,
-          {
-            isOpen: isEditDialogOpen,
-            onOpenChange: setIsEditDialogOpen,
-            editingUser,
-            onUserChange: setEditingUser,
-            onSubmit: onSaveUser
-          }
-        ),
         /* @__PURE__ */ jsxRuntime.jsx(
           deleteUserDialog.DeleteUserDialog,
           {
@@ -7622,6 +7224,105 @@
       ] })
     ] });
   };
+  const EditableField = ({
+    value,
+    fieldKey,
+    label: label2,
+    placeholder,
+    className,
+    inputClassName,
+    locationId,
+    isEditing,
+    onEdit,
+    onSave,
+    onCancel,
+    type = "text",
+    options,
+    asyncOptions,
+    isLoading,
+    onSelectChange
+  }) => {
+    const [editValue, setEditValue] = o.useState(value);
+    o.useEffect(() => {
+      setEditValue(value);
+    }, [value, isEditing]);
+    const validatePhoneInput = (input2) => {
+      return input2.replace(/[^0-9+\s\-\(\)]/g, "");
+    };
+    const handleSave = async () => {
+      if (fieldKey) {
+        await onSave(fieldKey, editValue);
+      }
+    };
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        handleSave();
+      } else if (e.key === "Escape") {
+        onCancel();
+      }
+    };
+    const handleInputChange = (e) => {
+      const newValue = e.target.value;
+      if (fieldKey === "phone") {
+        const validatedValue = validatePhoneInput(newValue);
+        setEditValue(validatedValue);
+      } else {
+        setEditValue(newValue);
+      }
+    };
+    if (isEditing) {
+      if (type === "select" && (options || asyncOptions)) {
+        const selectOptions = asyncOptions || (options == null ? void 0 : options.map((opt) => ({ value: opt, label: opt }))) || [];
+        return /* @__PURE__ */ jsxRuntime.jsxs(
+          select.Select,
+          {
+            value: editValue,
+            onValueChange: (newValue) => {
+              setEditValue(newValue);
+              const selectedOption = selectOptions.find((opt) => opt.value === newValue);
+              if (onSelectChange && selectedOption) {
+                onSelectChange(newValue, selectedOption);
+              } else {
+                handleSave();
+              }
+            },
+            disabled: isLoading,
+            children: [
+              /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: inputClassName || "w-48", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: isLoading ? "Loading..." : "Select location" }) }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                selectOptions.length === 0 && !isLoading && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", disabled: true, children: "No locations assigned" }),
+                selectOptions.map((option) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: option.value, children: option.label }, option.value))
+              ] })
+            ]
+          }
+        );
+      }
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        input.Input,
+        {
+          type,
+          value: editValue,
+          placeholder,
+          onChange: handleInputChange,
+          onBlur: handleSave,
+          onKeyDown: handleKeyDown,
+          className: inputClassName || "h-6 text-sm w-32",
+          autoFocus: true
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className, children: [
+      label2 && /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm text-muted-foreground mr-2", children: label2 }),
+      /* @__PURE__ */ jsxRuntime.jsx(
+        "span",
+        {
+          className: "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors",
+          onClick: () => fieldKey && onEdit(fieldKey),
+          children: value || placeholder
+        }
+      )
+    ] });
+  };
   const EditableProfileHeader = ({
     profile,
     onProfileUpdate,
@@ -7635,6 +7336,10 @@
     const [saving, setSaving] = o.useState(false);
     const [savingLanguage, setSavingLanguage] = o.useState(false);
     const [managerValue, setManagerValue] = o.useState(profile.manager || "");
+    const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = o.useState(false);
+    o.useEffect(() => {
+      setIsFullNameManuallyEdited(false);
+    }, [profile.id]);
     const { data: languages } = reactQuery.useQuery({
       queryKey: ["languages"],
       queryFn: async () => {
@@ -7701,7 +7406,6 @@
       setEditingField(null);
     };
     const handleNameChange = async (field, value) => {
-      var _a2;
       try {
         setSaving(true);
         const updateData = {};
@@ -7710,10 +7414,19 @@
         } else {
           updateData.last_name = value;
         }
-        if (profile.full_name === "" || ((_a2 = profile.full_name) == null ? void 0 : _a2.trim()) === "") {
+        if (!isFullNameManuallyEdited) {
           const firstName = field === "firstName" ? value : profile.firstName || "";
           const lastName = field === "lastName" ? value : profile.lastName || "";
           updateData.full_name = `${firstName} ${lastName}`.trim();
+        }
+        if (!profile.id) {
+          console.error("Profile ID is undefined. Profile object:", profile);
+          useToast.toast({
+            title: "Error",
+            description: "Profile ID is missing. Cannot update profile.",
+            variant: "destructive"
+          });
+          return;
         }
         await updateProfile(profile.id, updateData);
         useToast.toast({
@@ -7740,6 +7453,7 @@
       }
     };
     const handleFullNameChange = async (value) => {
+      setIsFullNameManuallyEdited(true);
       await handleFieldSave("full_name", value);
     };
     const filteredProfiles = profiles.filter((user) => user.id !== profile.id);
@@ -9043,7 +8757,6 @@
   exports2.CreateUserDialog = CreateUserDialog;
   exports2.DepartmentManagement = DepartmentManagement;
   exports2.DepartmentRolePairsDisplay = DepartmentRolePairsDisplay;
-  exports2.EditUserDialog = EditUserDialog;
   exports2.EditableField = EditableField;
   exports2.EditableProfileHeader = EditableProfileHeader;
   exports2.ImportErrorReport = ImportErrorReport;

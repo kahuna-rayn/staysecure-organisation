@@ -3,7 +3,6 @@ import { UserProfile } from '../../hooks/useUserProfiles';
 
 interface UserTableProps {
     profiles: UserProfile[];
-    onEdit: (user: UserProfile) => void;
     onDelete: (userId: string) => void;
     onUpdate: (id: string, updates: Partial<UserProfile>) => Promise<{
         success: boolean;

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,24 +8,19 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Edit, Trash2, Phone, MapPin, IdCard, Mail } from 'lucide-react';
-import EditableField from '../profile/EditableField';
-import { toast } from '@/components/ui/use-toast';
 import { DepartmentRolePairsDisplay } from '../organisational/DepartmentRolePairsDisplay';
 import type { UserProfile } from '@/hooks/useUserProfiles';
 
 interface UserCardProps {
   user: UserProfile;
-  onEdit: (user: UserProfile) => void;
   onDelete: (userId: string) => void;
 }
 
-const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
+const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
   const navigate = useNavigate();
-  const [editingField, setEditingField] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
 
   const initials = user.full_name 
-    ? user.full_name.split(' ').map(n => n.charAt(0)).join('').slice(0, 2)
+    ? user.full_name.split(' ').map((n: string) => n.charAt(0)).join('').slice(0, 2)
     : user.username?.slice(0, 2) || 'U';
 
   const getStatusColor = (status: string) => {
@@ -51,37 +46,6 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
       return data;
     },
   });
-
-  const handleFieldSave = async (fieldKey: string, value: string) => {
-    setSaving(true);
-    try {
-      if (fieldKey === 'email') {
-        toast({
-          title: "Email Update Limitation",
-          description: "Email addresses are managed by authentication and cannot be updated directly from this interface.",
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      const updatedUser = { ...user, [fieldKey]: value };
-      onEdit(updatedUser);
-      
-      toast({
-        title: "Field updated",
-        description: `${fieldKey} has been updated successfully.`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setSaving(false);
-      setEditingField(null);
-    }
-  };
 
   const handleViewDetails = () => {
     navigate(`/admin/users/${user.id}`);
@@ -111,18 +75,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onEdit, onDelete }) => {
         <div className="space-y-2 text-sm">
           <div className="flex items-center gap-2">
             <Mail className="h-3 w-3 text-muted-foreground" />
-            <EditableField
-              value={user.email || 'No email'}
-              fieldKey="email"
-              placeholder="Enter email"
-              className="flex-1"
-              inputClassName="text-sm"
-              onSave={handleFieldSave}
-              isEditing={editingField === 'email'}
-              onEdit={setEditingField}
-              onCancel={() => setEditingField(null)}
-              saving={saving}
-            />
+            <span className="text-muted-foreground">{user.email || 'No email'}</span>
           </div>
           <div className="flex items-center gap-2">
             <IdCard className="h-3 w-3 text-muted-foreground" />

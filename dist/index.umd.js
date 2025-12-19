@@ -1406,12 +1406,9 @@
       multiple: false
     });
     const generateSampleCSV = () => {
-      const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"];
-      const sampleData = [
-        ["john.doe@company.com", "John Doe", "John", "Doe", "+65-555-0123", "EMP-2024-001", "User", "Main Office", "Engineering", "Software Engineer", "jane.smith@company.com"],
-        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+65-555-0124", "EMP-2024-002", "Admin", "Branch Office", "Human Resources", "HR Manager", ""]
-      ];
-      const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${String(field)}"`).join(",")).join("\n");
+      const csvContent = `"Email","Full Name","First Name","Last Name","Phone","Employee ID","Access Level","Location","Department","Role","Manager"
+"john.doe@company.com","John Doe","John","Doe","+65-555-0123","EMP-2024-001","User","Main Office","Engineering","Software Engineer","jane.smith@company.com"
+"jane.smith@company.com","Jane Smith","Jane","Smith","+65-555-0124","EMP-2024-002","Admin","Branch Office","Human Resources","HR Manager",""`;
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
       const url = URL.createObjectURL(blob);

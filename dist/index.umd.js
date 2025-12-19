@@ -1296,18 +1296,51 @@
       return { isValid: false };
     }
     const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
-    const manager = existingProfiles.find((profile) => {
-      const email = (profile.email || "").toLowerCase();
-      const fullName = (profile.full_name || "").toLowerCase();
-      const username = (profile.username || "").toLowerCase();
-      return email === trimmedIdentifier || fullName === trimmedIdentifier || username === trimmedIdentifier;
+    const emailMatches = existingProfiles.filter((profile) => {
+      const email = (profile.email || profile.username || "").toLowerCase();
+      return email === trimmedIdentifier;
     });
+    if (emailMatches.length === 1) {
+      return {
+        isValid: true,
+        managerId: emailMatches[0].id
+      };
+    }
+    if (emailMatches.length > 1) {
+      return {
+        isValid: true,
+        managerId: emailMatches[0].id,
+        isAmbiguous: true,
+        ambiguityDetails: `Multiple users found with email "${managerIdentifier}"`
+      };
+    }
+    const nameMatches = existingProfiles.filter((profile) => {
+      const fullName = (profile.full_name || "").toLowerCase();
+      return fullName === trimmedIdentifier;
+    });
+    if (nameMatches.length === 0) {
+      return { isValid: false };
+    }
+    if (nameMatches.length === 1) {
+      return {
+        isValid: true,
+        managerId: nameMatches[0].id
+      };
+    }
+    const matchDetails = nameMatches.map((m) => {
+      const email = m.email || m.username || "no email";
+      return `${m.full_name} (${email})`;
+    }).join(", ");
     return {
-      isValid: !!manager,
-      managerId: manager == null ? void 0 : manager.id
+      isValid: true,
+      managerId: nameMatches[0].id,
+      // Return first match but flag as ambiguous
+      isAmbiguous: true,
+      ambiguityDetails: `Multiple users found with name "${managerIdentifier}": ${matchDetails}. Using first match. Please use email to specify the exact manager.`
     };
   };
   const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
     const [isOpen, setIsOpen] = o.useState(false);
     const [uploadedFile, setUploadedFile] = o.useState(null);
     const [isProcessing, setIsProcessing] = o.useState(false);
@@ -1315,7 +1348,7 @@
     const { data: validLocations } = reactQuery.useQuery({
       queryKey: ["locations"],
       queryFn: async () => {
-        const { data, error } = await client.supabase.from("locations").select("id, name").eq("status", "Active").order("name");
+        const { data, error } = await supabase.from("locations").select("id, name").eq("status", "Active").order("name");
         if (error) throw error;
         return data || [];
       }
@@ -1323,7 +1356,7 @@
     const { data: validDepartments } = reactQuery.useQuery({
       queryKey: ["departments"],
       queryFn: async () => {
-        const { data, error } = await client.supabase.from("departments").select("id, name").order("name");
+        const { data, error } = await supabase.from("departments").select("id, name").order("name");
         if (error) throw error;
         return data || [];
       }
@@ -1331,7 +1364,7 @@
     const { data: validRoles } = reactQuery.useQuery({
       queryKey: ["roles"],
       queryFn: async () => {
-        const { data, error } = await client.supabase.from("roles").select("role_id, name, department_id, is_active").eq("is_active", true).order("name");
+        const { data, error } = await supabase.from("roles").select("role_id, name, department_id, is_active").eq("is_active", true).order("name");
         if (error) throw error;
         return data || [];
       }
@@ -1339,9 +1372,13 @@
     const { data: existingProfiles } = reactQuery.useQuery({
       queryKey: ["profiles-for-manager-validation"],
       queryFn: async () => {
-        const { data, error } = await client.supabase.from("profiles").select("id, full_name, username").order("full_name");
+        const { data, error } = await supabase.from("profiles").select("id, full_name, username").order("full_name");
         if (error) throw error;
-        return data || [];
+        return (data || []).map((profile) => ({
+          ...profile,
+          email: profile.username
+          // username stores the email
+        }));
       }
     });
     const onDrop = o.useCallback((acceptedFiles) => {
@@ -1373,7 +1410,7 @@
       const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"];
       const sampleData = [
         ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "EMP-2024-001", "User", "Main Office", "Engineering", "Software Engineer", "jane.smith@company.com"],
-        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Manager", "Branch Office", "Human Resources", "HR Manager", ""]
+        ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Admin", "Branch Office", "Human Resources", "HR Manager", ""]
       ];
       const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -1599,11 +1636,18 @@
           };
         } else {
           managerId = managerValidation.managerId;
+          if (managerValidation.isAmbiguous) {
+            managerWarning = {
+              field: "Manager",
+              value: managerName,
+              message: managerValidation.ambiguityDetails || `Multiple users found with name "${managerName}" - using first match. Please use email to specify the exact manager.`
+            };
+          }
         }
       }
       const clientId = client.getCurrentClientId();
       const clientPath = clientId ? `/${clientId}` : "";
-      const { data: authData, error: authError } = await client.supabase.functions.invoke("create-user", {
+      const { data: authData, error: authError } = await supabase.functions.invoke("create-user", {
         body: {
           email,
           full_name: row["Full Name"] || row["full_name"] || "Unknown User",
@@ -1659,7 +1703,7 @@
               status: "Active",
               date_access_created: (/* @__PURE__ */ new Date()).toISOString()
             };
-            const { error: locationError } = await client.supabase.from("physical_location_access").insert(locationData);
+            const { error: locationError } = await supabase.from("physical_location_access").insert(locationData);
             if (locationError) {
               console.error("Error assigning location:", locationError);
               warnings.push({
@@ -1682,7 +1726,7 @@
         try {
           const pairingId = departmentId && roleId ? crypto.randomUUID() : void 0;
           if (departmentId) {
-            const { error: deptError } = await client.supabase.from("user_departments").insert({
+            const { error: deptError } = await supabase.from("user_departments").insert({
               user_id: userId,
               department_id: departmentId,
               is_primary: false,
@@ -1699,14 +1743,14 @@
                 message: `Department "${departmentName}" could not be assigned: ${deptError.message}`
               });
             } else {
-              const { data: existingDepts } = await client.supabase.from("user_departments").select("id").eq("user_id", userId);
+              const { data: existingDepts } = await supabase.from("user_departments").select("id").eq("user_id", userId);
               if (existingDepts && existingDepts.length === 1) {
-                await client.supabase.from("user_departments").update({ is_primary: true }).eq("user_id", userId).eq("department_id", departmentId);
+                await supabase.from("user_departments").update({ is_primary: true }).eq("user_id", userId).eq("department_id", departmentId);
               }
             }
           }
           if (roleId) {
-            const { error: roleError } = await client.supabase.from("user_profile_roles").insert({
+            const { error: roleError } = await supabase.from("user_profile_roles").insert({
               user_id: userId,
               role_id: roleId,
               is_primary: false,
@@ -1723,9 +1767,9 @@
                 message: `Role "${roleName}" could not be assigned: ${roleError.message}`
               });
             } else {
-              const { data: existingRoles } = await client.supabase.from("user_profile_roles").select("id").eq("user_id", userId);
+              const { data: existingRoles } = await supabase.from("user_profile_roles").select("id").eq("user_id", userId);
               if (existingRoles && existingRoles.length === 1) {
-                await client.supabase.from("user_profile_roles").update({ is_primary: true }).eq("user_id", userId).eq("role_id", roleId);
+                await supabase.from("user_profile_roles").update({ is_primary: true }).eq("user_id", userId).eq("role_id", roleId);
               }
             }
           }
@@ -1989,7 +2033,7 @@
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Manager" }),
-                " (optional) - can be identified by email, full name, or username. If manager doesn't exist, user will be created but a warning will be reported"
+                " (optional) - can be identified by email or full name. If multiple users share the same full name, email must be used to avoid ambiguity. If manager doesn't exist, user will be created but a warning will be reported"
               ] }),
               /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• All other fields are optional and will use default values if not provided" })
             ] })

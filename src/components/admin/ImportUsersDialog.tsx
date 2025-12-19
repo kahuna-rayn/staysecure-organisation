@@ -5,27 +5,26 @@ import { Badge } from '@/components/ui/badge';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
-import { useUserProfiles } from '@/hooks/useUserProfiles';
-import { supabase, getCurrentClientId } from '@/integrations/supabase/client';
+import { getCurrentClientId } from '@/integrations/supabase/client';
 import Papa from 'papaparse';
 import { ImportError } from '@/components/import/ImportErrorReport';
 import { useQuery } from '@tanstack/react-query';
 import { validateManager as validateManagerUtil } from '@/utils/managerValidation';
+import { useOrganisationContext } from '@/context/OrganisationContext';
 
 interface ImportUsersDialogProps {
   onImportComplete?: () => Promise<void>;
   onImportError?: (errors: ImportError[], warnings: ImportError[], stats: { success: number; total: number }) => void;
 }
 
-interface LocationWarning extends ImportError {
-  type: 'warning';
-}
 
 const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete, onImportError }) => {
+  // Get supabaseClient from context (provided by consuming app via OrganisationProvider)
+  // DO NOT import supabase from '@/integrations/supabase/client' - it's a stub
+  const { supabaseClient: supabase } = useOrganisationContext();
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { createProfile } = useUserProfiles();
 
   // Fetch valid locations for validation
   const { data: validLocations } = useQuery({
@@ -69,6 +68,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   });
 
   // Fetch all existing profiles for manager validation
+  // Note: username stores the email address in this system
   const { data: existingProfiles } = useQuery({
     queryKey: ['profiles-for-manager-validation'],
     queryFn: async () => {
@@ -77,7 +77,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         .select('id, full_name, username')
         .order('full_name');
       if (error) throw error;
-      return data || [];
+      // Map username to email field for validation (username = email in this system)
+      return (data || []).map(profile => ({
+        ...profile,
+        email: profile.username // username stores the email
+      }));
     },
   });
 
@@ -114,7 +118,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const headers = ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager'];
     const sampleData = [
       ['john.doe@company.com', 'John Doe', 'John', 'Doe', '+1-555-0123', 'EMP-2024-001', 'User', 'Main Office', 'Engineering', 'Software Engineer', 'jane.smith@company.com'],
-      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+1-555-0124', 'EMP-2024-002', 'Manager', 'Branch Office', 'Human Resources', 'HR Manager', '']
+      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+1-555-0124', 'EMP-2024-002', 'Admin', 'Branch Office', 'Human Resources', 'HR Manager', '']
     ];
     
     const csvContent = [headers, ...sampleData]
@@ -241,7 +245,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
 
   // Helper function to validate manager (using utility function)
-  const validateManager = (managerIdentifier: string): { isValid: boolean; managerId?: string } => {
+  const validateManager = (managerIdentifier: string): { isValid: boolean; managerId?: string; isAmbiguous?: boolean; ambiguityDetails?: string } => {
     return validateManagerUtil(managerIdentifier, existingProfiles);
   };
 
@@ -430,6 +434,14 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         };
       } else {
         managerId = managerValidation.managerId;
+        // If ambiguous (multiple matches by full name), add warning
+        if (managerValidation.isAmbiguous) {
+          managerWarning = {
+            field: 'Manager',
+            value: managerName,
+            message: managerValidation.ambiguityDetails || `Multiple users found with name "${managerName}" - using first match. Please use email to specify the exact manager.`
+          };
+        }
       }
     }
 
@@ -890,7 +902,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               <p>• <strong>Role</strong> (optional) - must match an existing active role</p>
               <p>• If both <strong>Department</strong> and <strong>Role</strong> are provided, the role must belong to that department (or be a general role)</p>
               <p>• If only <strong>Role</strong> is provided, it must be a general role (not assigned to any department)</p>
-              <p>• <strong>Manager</strong> (optional) - can be identified by email, full name, or username. If manager doesn't exist, user will be created but a warning will be reported</p>
+              <p>• <strong>Manager</strong> (optional) - can be identified by email or full name. If multiple users share the same full name, email must be used to avoid ambiguity. If manager doesn't exist, user will be created but a warning will be reported</p>
               <p>• All other fields are optional and will use default values if not provided</p>
             </div>
           </div>

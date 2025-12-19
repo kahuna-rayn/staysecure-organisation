@@ -1,5 +1,6 @@
 /**
  * Tests for manager validation logic in ImportUsersDialog
+ * Manager validation now only accepts email addresses (not full names)
  */
 
 import { validateManager, Profile } from '@/utils/managerValidation';
@@ -26,12 +27,11 @@ describe('validateManager', () => {
     }
   ];
 
-  describe('when manager exists', () => {
+  describe('when manager email exists', () => {
     it('should find manager by email (case-insensitive)', () => {
       const result = validateManager('JOHN.DOE@EXAMPLE.COM', mockProfiles);
       expect(result.isValid).toBe(true);
       expect(result.managerId).toBe('user-1');
-      expect(result.isAmbiguous).toBeUndefined();
     });
 
     it('should find manager by email when using username field (username = email)', () => {
@@ -48,14 +48,7 @@ describe('validateManager', () => {
       expect(result.managerId).toBe('user-1');
     });
 
-    it('should find manager by full name (case-insensitive)', () => {
-      const result = validateManager('jane smith', mockProfiles);
-      expect(result.isValid).toBe(true);
-      expect(result.managerId).toBe('user-2');
-      expect(result.isAmbiguous).toBeUndefined();
-    });
-
-    it('should handle whitespace in identifier', () => {
+    it('should handle whitespace in email', () => {
       const result = validateManager('  john.doe@example.com  ', mockProfiles);
       expect(result.isValid).toBe(true);
       expect(result.managerId).toBe('user-1');
@@ -69,69 +62,22 @@ describe('validateManager', () => {
       expect(result.managerId).toBeUndefined();
     });
 
-    it('should return invalid for non-existent name', () => {
-      const result = validateManager('Non Existent User', mockProfiles);
+    it('should return invalid for full name (no longer supported)', () => {
+      // Full names are no longer supported - only email addresses
+      const result = validateManager('John Doe', mockProfiles);
       expect(result.isValid).toBe(false);
       expect(result.managerId).toBeUndefined();
     });
   });
 
-  describe('when multiple users share the same full name', () => {
-    it('should return ambiguous when multiple users have same full name', () => {
-      const profilesWithDuplicateNames: Profile[] = [
-        {
-          id: 'user-1',
-          email: 'john.doe1@example.com',
-          full_name: 'John Doe',
-          username: 'john.doe1@example.com'
-        },
-        {
-          id: 'user-2',
-          email: 'john.doe2@example.com',
-          full_name: 'John Doe',
-          username: 'john.doe2@example.com'
-        }
-      ];
-      
-      const result = validateManager('John Doe', profilesWithDuplicateNames);
-      expect(result.isValid).toBe(true);
-      expect(result.isAmbiguous).toBe(true);
-      expect(result.managerId).toBe('user-1'); // Returns first match
-      expect(result.ambiguityDetails).toContain('Multiple users found with name');
-    });
-
-    it('should prefer email match over name match (no ambiguity)', () => {
-      const profilesWithDuplicateNames: Profile[] = [
-        {
-          id: 'user-1',
-          email: 'john.doe1@example.com',
-          full_name: 'John Doe',
-          username: 'john.doe1@example.com'
-        },
-        {
-          id: 'user-2',
-          email: 'john.doe2@example.com',
-          full_name: 'John Doe',
-          username: 'john.doe2@example.com'
-        }
-      ];
-      
-      // When matching by email, should not be ambiguous
-      const result = validateManager('john.doe1@example.com', profilesWithDuplicateNames);
-      expect(result.isValid).toBe(true);
-      expect(result.isAmbiguous).toBeUndefined();
-      expect(result.managerId).toBe('user-1');
-    });
-  });
-
   describe('edge cases', () => {
-    it('should return invalid when managerIdentifier is empty', () => {
+    it('should return invalid when managerEmail is empty', () => {
       const result = validateManager('', mockProfiles);
       expect(result.isValid).toBe(false);
       expect(result.managerId).toBeUndefined();
     });
 
-    it('should return invalid when managerIdentifier is whitespace only', () => {
+    it('should return invalid when managerEmail is whitespace only', () => {
       const result = validateManager('   ', mockProfiles);
       expect(result.isValid).toBe(false);
       expect(result.managerId).toBeUndefined();
@@ -149,26 +95,21 @@ describe('validateManager', () => {
       expect(result.managerId).toBeUndefined();
     });
 
-    it('should handle profiles with missing fields', () => {
+    it('should handle profiles with missing email field but username contains email', () => {
       const profilesWithMissingFields: Profile[] = [
-        { id: 'user-1', email: 'test@example.com' }, // no full_name or username
-        { id: 'user-2', full_name: 'Test User' }, // no email or username
-        { id: 'user-3', username: 'test@example.com' } // username stores email, no email field or full_name
+        { id: 'user-1', email: 'test@example.com' }, // has email field
+        { id: 'user-3', username: 'test2@example.com' } // username stores email, no email field
       ];
 
+      // Should match by email field
       const result1 = validateManager('test@example.com', profilesWithMissingFields);
       expect(result1.isValid).toBe(true);
       expect(result1.managerId).toBe('user-1');
 
-      const result2 = validateManager('Test User', profilesWithMissingFields);
+      // Should match by username field (username stores email)
+      const result2 = validateManager('test2@example.com', profilesWithMissingFields);
       expect(result2.isValid).toBe(true);
-      expect(result2.managerId).toBe('user-2');
-
-      // username stores email, so should match by email
-      const result3 = validateManager('test@example.com', profilesWithMissingFields);
-      expect(result3.isValid).toBe(true);
-      // Should match user-1 (email field) or user-3 (username field) - currently returns first match
-      expect(['user-1', 'user-3']).toContain(result3.managerId);
+      expect(result2.managerId).toBe('user-3');
     });
 
     it('should handle profiles with null/undefined fields gracefully', () => {
@@ -176,7 +117,7 @@ describe('validateManager', () => {
         { id: 'user-1', email: null as any, full_name: undefined as any, username: 'test@example.com' }
       ];
 
-      // username stores email, so should match by email
+      // username stores email, so should match by username field
       const result = validateManager('test@example.com', profilesWithNulls);
       expect(result.isValid).toBe(true);
       expect(result.managerId).toBe('user-1');

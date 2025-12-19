@@ -10,75 +10,35 @@ export interface Profile {
 }
 
 /**
- * Validates if a manager identifier matches an existing profile
- * @param managerIdentifier - Email or full name to search for (username removed since username = email)
+ * Validates if a manager email matches an existing profile
+ * @param managerEmail - Email address to search for (must be a valid email)
  * @param existingProfiles - Array of existing profiles to search
- * @returns Object with isValid flag, managerId if found, and isAmbiguous flag if multiple matches by full name
+ * @returns Object with isValid flag and managerId if found
  */
 export const validateManager = (
-  managerIdentifier: string,
+  managerEmail: string,
   existingProfiles: Profile[] | undefined
-): { isValid: boolean; managerId?: string; isAmbiguous?: boolean; ambiguityDetails?: string } => {
-  if (!managerIdentifier || !existingProfiles) {
+): { isValid: boolean; managerId?: string } => {
+  if (!managerEmail || !existingProfiles) {
     return { isValid: false };
   }
 
-  const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
+  const trimmedEmail = managerEmail.trim().toLowerCase();
   
-  // Try to find by email first (username stores email, so check both email and username fields)
-  const emailMatches = existingProfiles.filter((profile: Profile) => {
+  // Find by email (username stores email, so check both email and username fields)
+  const matchingProfile = existingProfiles.find((profile: Profile) => {
     const email = (profile.email || profile.username || '').toLowerCase();
-    return email === trimmedIdentifier;
+    return email === trimmedEmail;
   });
   
-  // If found by email, return immediately (email is unique)
-  if (emailMatches.length === 1) {
+  if (matchingProfile) {
     return {
       isValid: true,
-      managerId: emailMatches[0].id
+      managerId: matchingProfile.id
     };
   }
   
-  // If multiple email matches (shouldn't happen, but handle it)
-  if (emailMatches.length > 1) {
-    return {
-      isValid: true,
-      managerId: emailMatches[0].id,
-      isAmbiguous: true,
-      ambiguityDetails: `Multiple users found with email "${managerIdentifier}"`
-    };
-  }
-  
-  // Try to find by full name
-  const nameMatches = existingProfiles.filter((profile: Profile) => {
-    const fullName = (profile.full_name || '').toLowerCase();
-    return fullName === trimmedIdentifier;
-  });
-  
-  // If no matches by name
-  if (nameMatches.length === 0) {
-    return { isValid: false };
-  }
-  
-  // If single match by name, return it
-  if (nameMatches.length === 1) {
-    return {
-      isValid: true,
-      managerId: nameMatches[0].id
-    };
-  }
-  
-  // Multiple matches by full name - ambiguous!
-  const matchDetails = nameMatches.map(m => {
-    const email = m.email || m.username || 'no email';
-    return `${m.full_name} (${email})`;
-  }).join(', ');
-  
-  return {
-    isValid: true,
-    managerId: nameMatches[0].id, // Return first match but flag as ambiguous
-    isAmbiguous: true,
-    ambiguityDetails: `Multiple users found with name "${managerIdentifier}": ${matchDetails}. Using first match. Please use email to specify the exact manager.`
-  };
+  // No match found
+  return { isValid: false };
 };
 

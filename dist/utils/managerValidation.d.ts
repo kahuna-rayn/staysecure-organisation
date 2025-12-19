@@ -8,15 +8,13 @@ export interface Profile {
     username?: string;
 }
 /**
- * Validates if a manager identifier matches an existing profile
- * @param managerIdentifier - Email or full name to search for (username removed since username = email)
+ * Validates if a manager email matches an existing profile
+ * @param managerEmail - Email address to search for (must be a valid email)
  * @param existingProfiles - Array of existing profiles to search
- * @returns Object with isValid flag, managerId if found, and isAmbiguous flag if multiple matches by full name
+ * @returns Object with isValid flag and managerId if found
  */
-export declare const validateManager: (managerIdentifier: string, existingProfiles: Profile[] | undefined) => {
+export declare const validateManager: (managerEmail: string, existingProfiles: Profile[] | undefined) => {
     isValid: boolean;
     managerId?: string;
-    isAmbiguous?: boolean;
-    ambiguityDetails?: string;
 };
 //# sourceMappingURL=managerValidation.d.ts.map

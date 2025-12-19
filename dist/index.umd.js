@@ -1291,53 +1291,22 @@
       ] })
     ] });
   };
-  const validateManager = (managerIdentifier, existingProfiles) => {
-    if (!managerIdentifier || !existingProfiles) {
+  const validateManager = (managerEmail, existingProfiles) => {
+    if (!managerEmail || !existingProfiles) {
       return { isValid: false };
     }
-    const trimmedIdentifier = managerIdentifier.trim().toLowerCase();
-    const emailMatches = existingProfiles.filter((profile) => {
+    const trimmedEmail = managerEmail.trim().toLowerCase();
+    const matchingProfile = existingProfiles.find((profile) => {
       const email = (profile.email || profile.username || "").toLowerCase();
-      return email === trimmedIdentifier;
+      return email === trimmedEmail;
     });
-    if (emailMatches.length === 1) {
+    if (matchingProfile) {
       return {
         isValid: true,
-        managerId: emailMatches[0].id
+        managerId: matchingProfile.id
       };
     }
-    if (emailMatches.length > 1) {
-      return {
-        isValid: true,
-        managerId: emailMatches[0].id,
-        isAmbiguous: true,
-        ambiguityDetails: `Multiple users found with email "${managerIdentifier}"`
-      };
-    }
-    const nameMatches = existingProfiles.filter((profile) => {
-      const fullName = (profile.full_name || "").toLowerCase();
-      return fullName === trimmedIdentifier;
-    });
-    if (nameMatches.length === 0) {
-      return { isValid: false };
-    }
-    if (nameMatches.length === 1) {
-      return {
-        isValid: true,
-        managerId: nameMatches[0].id
-      };
-    }
-    const matchDetails = nameMatches.map((m) => {
-      const email = m.email || m.username || "no email";
-      return `${m.full_name} (${email})`;
-    }).join(", ");
-    return {
-      isValid: true,
-      managerId: nameMatches[0].id,
-      // Return first match but flag as ambiguous
-      isAmbiguous: true,
-      ambiguityDetails: `Multiple users found with name "${managerIdentifier}": ${matchDetails}. Using first match. Please use email to specify the exact manager.`
-    };
+    return { isValid: false };
   };
   const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     const { supabaseClient: supabase } = useOrganisationContext();
@@ -1619,26 +1588,19 @@
       } else if (roleName && roleDepartmentId !== null) {
         throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
       }
-      const managerName = row["Manager"] || row["manager"] || "";
+      const managerEmail = row["Manager"] || row["manager"] || "";
       let managerId;
       let managerWarning = null;
-      if (managerName) {
-        const managerValidation = validateManager$1(managerName);
+      if (managerEmail) {
+        const managerValidation = validateManager$1(managerEmail);
         if (!managerValidation.isValid) {
           managerWarning = {
             field: "Manager",
-            value: managerName,
-            message: `Manager "${managerName}" does not exist in the system - user created without manager assignment`
+            value: managerEmail,
+            message: `Manager email "${managerEmail}" does not exist in the system - user created without manager assignment`
           };
         } else {
           managerId = managerValidation.managerId;
-          if (managerValidation.isAmbiguous) {
-            managerWarning = {
-              field: "Manager",
-              value: managerName,
-              message: managerValidation.ambiguityDetails || `Multiple users found with name "${managerName}" - using first match. Please use email to specify the exact manager.`
-            };
-          }
         }
       }
       const clientId = client.getCurrentClientId();
@@ -2042,7 +2004,7 @@
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Manager" }),
-                " (optional) - can be identified by email or full name. If multiple users share the same full name, email must be used to avoid ambiguity. If manager doesn't exist, user will be created but a warning will be reported"
+                " (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported"
               ] }),
               /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• All other fields are optional and will use default values if not provided" })
             ] })

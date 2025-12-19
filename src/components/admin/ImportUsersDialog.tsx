@@ -413,29 +413,22 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
     }
 
-    // Validate manager if provided
-    const managerName = row['Manager'] || row['manager'] || '';
+    // Validate manager email if provided (manager must be specified by email address)
+    const managerEmail = row['Manager'] || row['manager'] || '';
     let managerId: string | undefined;
     let managerWarning: any = null;
-    if (managerName) {
-      const managerValidation = validateManager(managerName);
+    if (managerEmail) {
+      const managerValidation = validateManager(managerEmail);
       if (!managerValidation.isValid) {
-        // Manager doesn't exist - create user anyway but add warning
+        // Manager email doesn't exist - create user anyway but add warning
         managerWarning = {
           field: 'Manager',
-          value: managerName,
-          message: `Manager "${managerName}" does not exist in the system - user created without manager assignment`
+          value: managerEmail,
+          message: `Manager email "${managerEmail}" does not exist in the system - user created without manager assignment`
         };
       } else {
+        // Valid manager email found - assign manager
         managerId = managerValidation.managerId;
-        // If ambiguous (multiple matches by full name), add warning
-        if (managerValidation.isAmbiguous) {
-          managerWarning = {
-            field: 'Manager',
-            value: managerName,
-            message: managerValidation.ambiguityDetails || `Multiple users found with name "${managerName}" - using first match. Please use email to specify the exact manager.`
-          };
-        }
       }
     }
 
@@ -915,7 +908,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               <p>• <strong>Role</strong> (optional) - must match an existing active role</p>
               <p>• If both <strong>Department</strong> and <strong>Role</strong> are provided, the role must belong to that department (or be a general role)</p>
               <p>• If only <strong>Role</strong> is provided, it must be a general role (not assigned to any department)</p>
-              <p>• <strong>Manager</strong> (optional) - can be identified by email or full name. If multiple users share the same full name, email must be used to avoid ambiguity. If manager doesn't exist, user will be created but a warning will be reported</p>
+              <p>• <strong>Manager</strong> (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported</p>
               <p>• All other fields are optional and will use default values if not provided</p>
             </div>
           </div>

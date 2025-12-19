@@ -1395,7 +1395,6 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { createProfile } = useUserProfiles();
   const { data: validLocations } = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {
@@ -1560,7 +1559,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
       return { isValid: false };
     }
     const trimmedLevel = accessLevel.trim().toLowerCase();
-    const validLevels = ["user", "manager", "client_admin", "admin", "author"];
+    const validLevels = ["user", "client_admin"];
     const levelMapping = {
       "admin": "client_admin",
       "client admin": "client_admin"

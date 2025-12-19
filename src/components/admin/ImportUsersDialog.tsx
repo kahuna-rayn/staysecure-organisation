@@ -256,7 +256,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     }
 
     const trimmedLevel = accessLevel.trim().toLowerCase();
-    const validLevels = ['user', 'manager', 'client_admin', 'admin', 'author'];
+    const validLevels = ['user', 'client_admin'];
     
     // Map display values to backend values
     const levelMapping: { [key: string]: string } = {

@@ -1344,7 +1344,6 @@
     const [isOpen, setIsOpen] = o.useState(false);
     const [uploadedFile, setUploadedFile] = o.useState(null);
     const [isProcessing, setIsProcessing] = o.useState(false);
-    const { createProfile } = useUserProfiles.useUserProfiles();
     const { data: validLocations } = reactQuery.useQuery({
       queryKey: ["locations"],
       queryFn: async () => {
@@ -1509,7 +1508,7 @@
         return { isValid: false };
       }
       const trimmedLevel = accessLevel.trim().toLowerCase();
-      const validLevels = ["user", "manager", "client_admin", "admin", "author"];
+      const validLevels = ["user", "client_admin"];
       const levelMapping = {
         "admin": "client_admin",
         "client admin": "client_admin"

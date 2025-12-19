@@ -117,12 +117,13 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const generateSampleCSV = () => {
     const headers = ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager'];
     const sampleData = [
-      ['john.doe@company.com', 'John Doe', 'John', 'Doe', '+1-555-0123', 'EMP-2024-001', 'User', 'Main Office', 'Engineering', 'Software Engineer', 'jane.smith@company.com'],
-      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+1-555-0124', 'EMP-2024-002', 'Admin', 'Branch Office', 'Human Resources', 'HR Manager', '']
+      ['john.doe@company.com', 'John Doe', 'John', 'Doe', '+65-555-0123', 'EMP-2024-001', 'User', 'Main Office', 'Engineering', 'Software Engineer', 'jane.smith@company.com'],
+      ['jane.smith@company.com', 'Jane Smith', 'Jane', 'Smith', '+65-555-0124', 'EMP-2024-002', 'Admin', 'Branch Office', 'Human Resources', 'HR Manager', '']
     ];
     
+    // Ensure all fields are wrapped in double quotes to prevent interpretation of numbers/phone numbers
     const csvContent = [headers, ...sampleData]
-      .map(row => row.map(field => `"${field}"`).join(','))
+      .map(row => row.map(field => `"${String(field)}"`).join(','))
       .join('\n');
     
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -506,6 +507,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       const locationValidation = validateLocation(locationName);
       if (locationValidation.isValid && locationValidation.locationId) {
         try {
+          // Insert into physical_location_access table
           const locationData = {
             user_id: userId,
             location_id: locationValidation.locationId,
@@ -520,12 +522,30 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             .insert(locationData);
 
           if (locationError) {
-            console.error('Error assigning location:', locationError);
+            console.error('Error assigning location to physical_location_access:', locationError);
             warnings.push({
               field: 'Location',
               value: locationName,
               message: `Location "${locationName}" could not be assigned: ${locationError.message}`
             });
+          } else {
+            // Also update profiles table with location information
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .update({
+                location: locationName,
+                location_id: locationValidation.locationId
+              })
+              .eq('id', userId);
+
+            if (profileError) {
+              console.error('Error updating profile location:', profileError);
+              warnings.push({
+                field: 'Location',
+                value: locationName,
+                message: `Location "${locationName}" was assigned but could not be saved to profile: ${profileError.message}`
+              });
+            }
           }
         } catch (locationError: any) {
           console.error('Exception assigning location:', locationError);

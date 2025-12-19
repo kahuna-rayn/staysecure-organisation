@@ -1459,10 +1459,10 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   const generateSampleCSV = () => {
     const headers = ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"];
     const sampleData = [
-      ["john.doe@company.com", "John Doe", "John", "Doe", "+1-555-0123", "EMP-2024-001", "User", "Main Office", "Engineering", "Software Engineer", "jane.smith@company.com"],
-      ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+1-555-0124", "EMP-2024-002", "Admin", "Branch Office", "Human Resources", "HR Manager", ""]
+      ["john.doe@company.com", "John Doe", "John", "Doe", "+65-555-0123", "EMP-2024-001", "User", "Main Office", "Engineering", "Software Engineer", "jane.smith@company.com"],
+      ["jane.smith@company.com", "Jane Smith", "Jane", "Smith", "+65-555-0124", "EMP-2024-002", "Admin", "Branch Office", "Human Resources", "HR Manager", ""]
     ];
-    const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
+    const csvContent = [headers, ...sampleData].map((row) => row.map((field) => `"${String(field)}"`).join(",")).join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -1755,12 +1755,25 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
           };
           const { error: locationError } = await supabase2.from("physical_location_access").insert(locationData);
           if (locationError) {
-            console.error("Error assigning location:", locationError);
+            console.error("Error assigning location to physical_location_access:", locationError);
             warnings.push({
               field: "Location",
               value: locationName,
               message: `Location "${locationName}" could not be assigned: ${locationError.message}`
             });
+          } else {
+            const { error: profileError } = await supabase2.from("profiles").update({
+              location: locationName,
+              location_id: locationValidation.locationId
+            }).eq("id", userId);
+            if (profileError) {
+              console.error("Error updating profile location:", profileError);
+              warnings.push({
+                field: "Location",
+                value: locationName,
+                message: `Location "${locationName}" was assigned but could not be saved to profile: ${profileError.message}`
+              });
+            }
           }
         } catch (locationError) {
           console.error("Exception assigning location:", locationError);

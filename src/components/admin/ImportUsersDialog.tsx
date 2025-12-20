@@ -383,6 +383,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const accessLevelValidation = validateAccessLevel(accessLevelValue);
     
     // Validate access level - must be 'user' or 'client_admin' (reject 'author', 'manager', etc.)
+    // Note: Users see 'User' or 'Admin' in the UI, but backend uses 'user' and 'client_admin'
     if (!accessLevelValidation.isValid) {
       throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
     }

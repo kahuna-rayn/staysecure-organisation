@@ -384,7 +384,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     
     // Validate access level - must be 'user' or 'client_admin' (reject 'author', 'manager', etc.)
     if (!accessLevelValidation.isValid) {
-      throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" (or "client_admin") are allowed.`);
+      throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
     }
 
     const locationName = row['Location'] || row['location'] || '';

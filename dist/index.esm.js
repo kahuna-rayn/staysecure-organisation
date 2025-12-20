@@ -1621,7 +1621,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     const accessLevelValue = row["Access Level"] || row["access_level"] || "";
     const accessLevelValidation = validateAccessLevel(accessLevelValue);
     if (!accessLevelValidation.isValid) {
-      throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" (or "client_admin") are allowed.`);
+      throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
     }
     const locationName = row["Location"] || row["location"] || "";
     const departmentName = row["Department"] || row["department"] || "";

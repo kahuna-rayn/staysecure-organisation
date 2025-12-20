@@ -1557,6 +1557,9 @@
       console.log("Processing user:", email);
       const accessLevelValue = row["Access Level"] || row["access_level"] || "";
       const accessLevelValidation = validateAccessLevel(accessLevelValue);
+      if (!accessLevelValidation.isValid) {
+        throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" (or "client_admin") are allowed.`);
+      }
       const locationName = row["Location"] || row["location"] || "";
       const departmentName = row["Department"] || row["department"] || "";
       const roleName = row["Role"] || row["role"] || "";
@@ -1623,7 +1626,8 @@
           phone: row["Phone"] || row["phone"] || "",
           status: "Pending",
           employee_id: row["Employee ID"] || row["employee_id"] || "",
-          access_level: accessLevelValidation.isValid ? accessLevelValidation.value : "user",
+          access_level: accessLevelValidation.value,
+          // Already validated above, so safe to use !
           manager: managerId || null,
           // Include manager if validated
           clientPath

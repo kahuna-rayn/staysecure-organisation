@@ -359,6 +359,23 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error('Email address is required for all users.');
     }
 
+    // Validate required name fields
+    const fullName = row['Full Name'] || row['full_name'] || '';
+    const firstName = row['First Name'] || row['first_name'] || '';
+    const lastName = row['Last Name'] || row['last_name'] || '';
+    
+    if (!fullName || !fullName.trim()) {
+      throw new Error('Full Name is required for all users.');
+    }
+    
+    if (!firstName || !firstName.trim()) {
+      throw new Error('First Name is required for all users.');
+    }
+    
+    if (!lastName || !lastName.trim()) {
+      throw new Error('Last Name is required for all users.');
+    }
+
     console.log('Processing user:', email);
 
     // Validate all fields BEFORE creating user
@@ -447,9 +464,9 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const { data: authData, error: authError } = await supabase.functions.invoke('create-user', {
       body: {
         email: email,
-        full_name: row['Full Name'] || row['full_name'] || 'Unknown User',
-        first_name: row['First Name'] || row['first_name'] || '',
-        last_name: row['Last Name'] || row['last_name'] || '',
+        full_name: fullName.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
         username: row['Username'] || row['username'] || '',
         phone: row['Phone'] || row['phone'] || '',
         status: 'Pending',
@@ -527,7 +544,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           const locationData = {
             user_id: userId,
             location_id: locationValidation.locationId,
-            full_name: row['Full Name'] || row['full_name'] || 'Unknown User',
+            full_name: fullName.trim(),
             access_purpose: 'General Access',
             status: 'Active',
             date_access_created: new Date().toISOString()
@@ -932,15 +949,18 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             </div>
             <div className="text-sm text-blue-800 space-y-1">
               <p>• <strong>Email</strong> is required for each user</p>
+              <p>• <strong>Full Name</strong> is required for each user</p>
+              <p>• <strong>First Name</strong> is required for each user</p>
+              <p>• <strong>Last Name</strong> is required for each user</p>
               <p>• Users will be created with 'Pending' status and must activate via email</p>
-              <p>• <strong>Access Level</strong> - must be "User" or "Admin" (or "client_admin"). Other values like "Author" or "Manager" are not allowed.</p>
+              <p>• <strong>Access Level</strong> - must be "User" or "Admin". Other values are not allowed.</p>
               <p>• <strong>Location</strong> (optional) - must match an existing active location</p>
               <p>• <strong>Department</strong> (optional) - must match an existing department</p>
               <p>• <strong>Role</strong> (optional) - must match an existing active role</p>
               <p>• If both <strong>Department</strong> and <strong>Role</strong> are provided, the role must belong to that department (or be a general role)</p>
               <p>• If only <strong>Role</strong> is provided, it must be a general role (not assigned to any department)</p>
               <p>• <strong>Manager</strong> (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported</p>
-              <p>• All other fields are optional and will use default values if not provided</p>
+              <p>• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided</p>
             </div>
           </div>
         </div>

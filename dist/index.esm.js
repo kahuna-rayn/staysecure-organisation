@@ -1605,6 +1605,18 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
       console.error("Missing email for row:", row);
       throw new Error("Email address is required for all users.");
     }
+    const fullName = row["Full Name"] || row["full_name"] || "";
+    const firstName = row["First Name"] || row["first_name"] || "";
+    const lastName = row["Last Name"] || row["last_name"] || "";
+    if (!fullName || !fullName.trim()) {
+      throw new Error("Full Name is required for all users.");
+    }
+    if (!firstName || !firstName.trim()) {
+      throw new Error("First Name is required for all users.");
+    }
+    if (!lastName || !lastName.trim()) {
+      throw new Error("Last Name is required for all users.");
+    }
     console.log("Processing user:", email);
     const accessLevelValue = row["Access Level"] || row["access_level"] || "";
     const accessLevelValidation = validateAccessLevel(accessLevelValue);
@@ -1670,9 +1682,9 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     const { data: authData, error: authError } = await supabase2.functions.invoke("create-user", {
       body: {
         email,
-        full_name: row["Full Name"] || row["full_name"] || "Unknown User",
-        first_name: row["First Name"] || row["first_name"] || "",
-        last_name: row["Last Name"] || row["last_name"] || "",
+        full_name: fullName.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
         username: row["Username"] || row["username"] || "",
         phone: row["Phone"] || row["phone"] || "",
         status: "Pending",
@@ -1737,7 +1749,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
           const locationData = {
             user_id: userId,
             location_id: locationValidation.locationId,
-            full_name: row["Full Name"] || row["full_name"] || "Unknown User",
+            full_name: fullName.trim(),
             access_purpose: "General Access",
             status: "Active",
             date_access_created: (/* @__PURE__ */ new Date()).toISOString()
@@ -2054,11 +2066,26 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
               /* @__PURE__ */ jsx("strong", { children: "Email" }),
               " is required for each user"
             ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Full Name" }),
+              " is required for each user"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "First Name" }),
+              " is required for each user"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Last Name" }),
+              " is required for each user"
+            ] }),
             /* @__PURE__ */ jsx("p", { children: "• Users will be created with 'Pending' status and must activate via email" }),
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
               /* @__PURE__ */ jsx("strong", { children: "Access Level" }),
-              ' - must be "User" or "Admin" (or "client_admin"). Other values like "Author" or "Manager" are not allowed.'
+              ' - must be "User" or "Admin". Other values are not allowed.'
             ] }),
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
@@ -2092,7 +2119,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
               /* @__PURE__ */ jsx("strong", { children: "Manager" }),
               " (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported"
             ] }),
-            /* @__PURE__ */ jsx("p", { children: "• All other fields are optional and will use default values if not provided" })
+            /* @__PURE__ */ jsx("p", { children: "• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided" })
           ] })
         ] })
       ] })

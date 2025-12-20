@@ -1651,13 +1651,6 @@
         throw new Error("User created but user ID not returned");
       }
       const warnings = [];
-      if (!accessLevelValidation.isValid && accessLevelValue) {
-        warnings.push({
-          field: "Access Level",
-          value: accessLevelValue,
-          message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
-        });
-      }
       if (managerId) {
         try {
           console.log(`Updating manager for user ${userId} with managerId ${managerId}`);
@@ -2011,6 +2004,11 @@
                 " is required for each user"
               ] }),
               /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• Users will be created with 'Pending' status and must activate via email" }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Access Level" }),
+                ' - must be "User" or "Admin" (or "client_admin"). Other values like "Author" or "Manager" are not allowed.'
+              ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Location" }),

@@ -482,14 +482,6 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     // Collect all warnings
     const warnings = [];
     
-    if (!accessLevelValidation.isValid && accessLevelValue) {
-      warnings.push({
-        field: 'Access Level',
-        value: accessLevelValue,
-        message: `Access Level "${accessLevelValue}" is invalid - user created with default "User" access level`
-      });
-    }
-
     // Update manager_id in profiles table if manager was provided and validated
     if (managerId) {
       try {
@@ -941,6 +933,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             <div className="text-sm text-blue-800 space-y-1">
               <p>• <strong>Email</strong> is required for each user</p>
               <p>• Users will be created with 'Pending' status and must activate via email</p>
+              <p>• <strong>Access Level</strong> - must be "User" or "Admin" (or "client_admin"). Other values like "Author" or "Manager" are not allowed.</p>
               <p>• <strong>Location</strong> (optional) - must match an existing active location</p>
               <p>• <strong>Department</strong> (optional) - must match an existing department</p>
               <p>• <strong>Role</strong> (optional) - must match an existing active role</p>

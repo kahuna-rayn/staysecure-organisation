@@ -38,6 +38,7 @@ const fixImports = () => ({
 });
 
 export default defineConfig({
+  cacheDir: '.vite-cache', // Use a local cache dir that can be easily cleared
   plugins: [
     react(),
     dts({
@@ -48,6 +49,7 @@ export default defineConfig({
   ],
   css: false, // Disable CSS processing for library build - CSS will be handled by consuming app
   build: {
+    emptyOutDir: true, // Explicitly clear output directory before build
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
       name: 'OrganisationManagement',

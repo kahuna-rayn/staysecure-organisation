@@ -19,13 +19,15 @@ interface EditableProfileHeaderProps {
   onProfileUpdate: () => void;
   isReadOnly?: boolean;
   onOptimisticUpdate?: (field: string, value: string) => void;
+  canEditManager?: boolean; // Only client_admin and super_admin can edit manager
 }
 
 const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({ 
   profile, 
   onProfileUpdate,
   isReadOnly: _isReadOnly = false,
-  onOptimisticUpdate
+  onOptimisticUpdate,
+  canEditManager = false
 }) => {
   const { profiles, updateProfile } = useUserProfiles();
   const { supabaseClient } = useOrganisationContext();
@@ -304,7 +306,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
           <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Network className="h-4 w-4 text-muted-foreground" />
-                {editingField === 'manager' ? (
+                {canEditManager && editingField === 'manager' ? (
                   <Select
                     value={managerValue}
                     onValueChange={handleManagerChange}
@@ -320,7 +322,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
-                ) : (
+                ) : canEditManager ? (
                   <EditableField
                     value={managerName}
                     fieldKey="manager"
@@ -331,6 +333,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                     saving={saving}
                     inputClassName="text-sm h-6"
                   />
+                ) : (
+                  <span className="text-foreground">{managerName}</span>
                 )}
               </div>
               

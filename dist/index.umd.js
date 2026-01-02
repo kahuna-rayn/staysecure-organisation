@@ -7404,7 +7404,8 @@
     profile,
     onProfileUpdate,
     isReadOnly: _isReadOnly = false,
-    onOptimisticUpdate
+    onOptimisticUpdate,
+    canEditManager = false
   }) => {
     var _a, _b, _c, _d, _e, _f, _g;
     const { profiles, updateProfile } = useUserProfiles.useUserProfiles();
@@ -7645,7 +7646,7 @@
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Network, { className: "h-4 w-4 text-muted-foreground" }),
-          editingField === "manager" ? /* @__PURE__ */ jsxRuntime.jsxs(
+          canEditManager && editingField === "manager" ? /* @__PURE__ */ jsxRuntime.jsxs(
             select.Select,
             {
               value: managerValue,
@@ -7655,7 +7656,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
               ]
             }
-          ) : /* @__PURE__ */ jsxRuntime.jsx(
+          ) : canEditManager ? /* @__PURE__ */ jsxRuntime.jsx(
             EditableField,
             {
               value: managerName,
@@ -7667,7 +7668,7 @@
               saving,
               inputClassName: "text-sm h-6"
             }
-          )
+          ) : /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-foreground", children: managerName })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
@@ -7851,7 +7852,7 @@
     console.log("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
-      /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
+      /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate, canEditManager: hasAdminAccess }),
       /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: displayData, userId: (user == null ? void 0 : user.id) || "", onUpdate: handleProfileUpdate })
     ] });
   };

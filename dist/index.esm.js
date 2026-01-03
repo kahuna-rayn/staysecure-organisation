@@ -20,6 +20,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useUserDepartments } from "@/hooks/useUserDepartments";
+import { useUserDepartments as useUserDepartments2 } from "@/hooks/useUserDepartments";
+import { useUserProfileRoles } from "@/hooks/useUserProfileRoles";
+import { useUserProfileRoles as useUserProfileRoles2 } from "@/hooks/useUserProfileRoles";
 import { EditableTable } from "@/components/ui/editable-table";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -43,11 +47,7 @@ import { useInventory } from "@/hooks/useInventory";
 import { useUserAssets } from "@/hooks/useUserAssets";
 import { useUserAssets as useUserAssets2 } from "@/hooks/useUserAssets";
 import MyDocuments from "@/components/knowledge/MyDocuments";
-import { useUserDepartments } from "@/hooks/useUserDepartments";
-import { useUserDepartments as useUserDepartments2 } from "@/hooks/useUserDepartments";
 import LearningTracksTab from "@/components/LearningTracksTab";
-import { useUserProfileRoles } from "@/hooks/useUserProfileRoles";
-import { useUserProfileRoles as useUserProfileRoles2 } from "@/hooks/useUserProfileRoles";
 import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
 import { useProfile } from "@/hooks/useProfile";
@@ -850,15 +850,29 @@ const handleDeleteUser = async (supabaseClient, userId, userName, reason) => {
     return { success: false, error: errorMessage };
   }
 };
-const DepartmentRolePairsDisplay = ({ pairs, userId }) => {
-  if (!pairs || pairs.length === 0) {
+const DepartmentRolePairsDisplay = ({ userId }) => {
+  const { userDepartments, isLoading: deptLoading } = useUserDepartments(userId);
+  const { userRoles, isLoading: rolesLoading } = useUserProfileRoles(userId);
+  const isLoading = deptLoading || rolesLoading;
+  const primaryDepartment = (userDepartments || []).find((d) => d.is_primary);
+  const primaryRole = (userRoles || []).find((r) => r.is_primary);
+  const displayText = o.useMemo(() => {
+    const parts = [];
+    if (primaryDepartment == null ? void 0 : primaryDepartment.department_name) {
+      parts.push(primaryDepartment.department_name);
+    }
+    if (primaryRole == null ? void 0 : primaryRole.role_name) {
+      parts.push(primaryRole.role_name);
+    }
+    return parts.join(" - ");
+  }, [primaryDepartment, primaryRole]);
+  if (isLoading && userId) {
+    return /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Loading..." });
+  }
+  if (!displayText) {
     return /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "No assignments" });
   }
-  return /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-1", children: pairs.map((pair, index) => /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs", children: [
-    pair.department,
-    " - ",
-    pair.role
-  ] }, index)) });
+  return /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: displayText });
 };
 const UserCard = ({ user, onDelete }) => {
   var _a;

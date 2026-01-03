@@ -7404,12 +7404,12 @@
     profile,
     onProfileUpdate,
     isReadOnly: _isReadOnly = false,
-    onOptimisticUpdate,
-    canEditManager = false
+    onOptimisticUpdate
   }) => {
     var _a, _b, _c, _d, _e, _f, _g;
     const { profiles, updateProfile } = useUserProfiles.useUserProfiles();
-    const { supabaseClient } = useOrganisationContext();
+    const { supabaseClient, hasPermission } = useOrganisationContext();
+    const canEditManager = hasPermission("canEditUsers");
     const [editingField, setEditingField] = o.useState(null);
     const [saving, setSaving] = o.useState(false);
     const [savingLanguage, setSavingLanguage] = o.useState(false);
@@ -7852,7 +7852,7 @@
     console.log("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
-      /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate, canEditManager: hasAdminAccess }),
+      /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
       /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: displayData, userId: (user == null ? void 0 : user.id) || "", onUpdate: handleProfileUpdate })
     ] });
   };

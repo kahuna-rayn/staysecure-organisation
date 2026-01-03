@@ -19,18 +19,17 @@ interface EditableProfileHeaderProps {
   onProfileUpdate: () => void;
   isReadOnly?: boolean;
   onOptimisticUpdate?: (field: string, value: string) => void;
-  canEditManager?: boolean; // Only client_admin and super_admin can edit manager
 }
 
 const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({ 
   profile, 
   onProfileUpdate,
   isReadOnly: _isReadOnly = false,
-  onOptimisticUpdate,
-  canEditManager = false
+  onOptimisticUpdate
 }) => {
   const { profiles, updateProfile } = useUserProfiles();
-  const { supabaseClient } = useOrganisationContext();
+  const { supabaseClient, hasPermission } = useOrganisationContext();
+  const canEditManager = hasPermission('canEditUsers');
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [savingLanguage, setSavingLanguage] = useState(false);

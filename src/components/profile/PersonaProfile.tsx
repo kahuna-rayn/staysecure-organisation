@@ -189,7 +189,7 @@ const PersonaProfile: React.FC = () => {
           <h1 className="text-3xl font-bold">My Profile</h1>
         </div>
       )}
-      <EditableProfileHeader profile={displayData} onProfileUpdate={refetchProfile} onOptimisticUpdate={handleOptimisticUpdate} canEditManager={hasAdminAccess} />
+      <EditableProfileHeader profile={displayData} onProfileUpdate={refetchProfile} onOptimisticUpdate={handleOptimisticUpdate} />
       <PersonaDetailsTabs profile={displayData} userId={user?.id || ''} onUpdate={handleProfileUpdate} />
     </div>
   );

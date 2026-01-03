@@ -6904,7 +6904,7 @@
     const [isAssignSoftwareOpen, setIsAssignSoftwareOpen] = o.useState(false);
     const [isAddEducationOpen, setIsAddEducationOpen] = o.useState(false);
     const departmentRolesRef = o.useRef(null);
-    const isLearnMode = typeof window !== "undefined" && (window.location.hostname.includes("learn") || window.location.pathname.includes("/learn"));
+    const isLearnMode = typeof window !== "undefined" && (window.location.hostname.includes("learn") || window.location.port.startsWith("80"));
     const { hasAdminAccess } = useUserRole.useUserRole();
     const handleCertificateUpdate = (_certificateId, _updates) => {
     };

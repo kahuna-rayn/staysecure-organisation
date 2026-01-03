@@ -28,10 +28,12 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   const [isAddEducationOpen, setIsAddEducationOpen] = useState(false);
   const departmentRolesRef = useRef<UserDepartmentsRolesManagerRef>(null);
 
-  // Detect if we're in Learn app or Govern app based on URL
-  // Check if 'learn' appears in the hostname (e.g., staysecure-learn.raynsecure.com)
+  // Detect if we're in Learn app or Govern app
+  // - Production: hostname includes 'learn' (e.g., staysecure-learn.raynsecure.com)
+  // - Local dev: learn runs on port 80xx, govern runs on port 51xx
   const isLearnMode = typeof window !== 'undefined' && 
-    (window.location.hostname.includes('learn') || window.location.pathname.includes('/learn'));
+    (window.location.hostname.includes('learn') || 
+     window.location.port.startsWith('80'));
   const { hasAdminAccess } = useUserRole();
 
   const handleCertificateUpdate = (_certificateId: string, _updates: Record<string, unknown>) => {

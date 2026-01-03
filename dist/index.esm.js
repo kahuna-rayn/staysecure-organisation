@@ -6955,7 +6955,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
   const [isAssignSoftwareOpen, setIsAssignSoftwareOpen] = useState(false);
   const [isAddEducationOpen, setIsAddEducationOpen] = useState(false);
   const departmentRolesRef = useRef(null);
-  const isLearnMode = typeof window !== "undefined" && (window.location.hostname.includes("learn") || window.location.pathname.includes("/learn"));
+  const isLearnMode = typeof window !== "undefined" && (window.location.hostname.includes("learn") || window.location.port.startsWith("80"));
   const { hasAdminAccess } = useUserRole();
   const handleCertificateUpdate = (_certificateId, _updates) => {
   };

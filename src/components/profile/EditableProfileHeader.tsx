@@ -181,10 +181,23 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   };
 
   // Get manager name and filtered profiles (exclude current user and super_admins)
+  console.log('EditableProfileHeader - All profiles:', profiles.map(u => ({ 
+    id: u.id, 
+    name: u.full_name, 
+    access_level: u.access_level 
+  })));
+  
   const filteredProfiles = profiles.filter(user => 
     user.id !== profile.id && 
     user.access_level !== 'super_admin'
   );
+  
+  console.log('EditableProfileHeader - Filtered profiles (no super_admin):', filteredProfiles.map(u => ({ 
+    id: u.id, 
+    name: u.full_name, 
+    access_level: u.access_level 
+  })));
+  
   const managerProfile = profiles.find(u => u.id === profile.manager);
   const managerName = managerProfile ? (managerProfile.full_name || managerProfile.username) : 'Not assigned';
 

@@ -7585,7 +7585,9 @@ const EditableProfileHeader = ({
     setIsFullNameManuallyEdited(true);
     await handleFieldSave("full_name", value);
   };
-  const filteredProfiles = profiles.filter((user) => user.id !== profile.id);
+  const filteredProfiles = profiles.filter(
+    (user) => user.id !== profile.id && user.access_level !== "super_admin"
+  );
   const managerProfile = profiles.find((u) => u.id === profile.manager);
   const managerName = managerProfile ? managerProfile.full_name || managerProfile.username : "Not assigned";
   const { userDepartments } = useUserDepartments(profile.id);

@@ -180,8 +180,11 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     await handleFieldSave('full_name', value);
   };
 
-  // Get manager name and filtered profiles
-  const filteredProfiles = profiles.filter(user => user.id !== profile.id);
+  // Get manager name and filtered profiles (exclude current user and super_admins)
+  const filteredProfiles = profiles.filter(user => 
+    user.id !== profile.id && 
+    user.access_level !== 'super_admin'
+  );
   const managerProfile = profiles.find(u => u.id === profile.manager);
   const managerName = managerProfile ? (managerProfile.full_name || managerProfile.username) : 'Not assigned';
 

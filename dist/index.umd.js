@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/hooks/useUserRole"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/hooks/useUserDepartments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/hooks/useUserRole", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/hooks/useUserDepartments", "@/components/LearningTracksTab", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.useUserRole, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.useUserDepartments, global.LearningTracksTab, global.useUserProfileRoles, global.useUserPhysicalLocations, global.useUserRoleById, global.useProfile, global.alert, global.scrollArea));
-})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, separator, vt, utils, command, popover, useUserRole, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, useUserDepartments, LearningTracksTab, useUserProfileRoles, useUserPhysicalLocations, useUserRoleById, useProfile, alert, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/hooks/useUserDepartments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserProfileRoles"), require("@/hooks/useUserPhysicalLocations"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/hooks/useUserDepartments", "@/components/LearningTracksTab", "@/hooks/useUserProfileRoles", "@/hooks/useUserPhysicalLocations", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.useUserDepartments, global.LearningTracksTab, global.useUserProfileRoles, global.useUserPhysicalLocations, global.useUserRoleById, global.useProfile, global.alert, global.scrollArea));
+})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, separator, vt, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, useUserDepartments, LearningTracksTab, useUserProfileRoles, useUserPhysicalLocations, useUserRoleById, useProfile, alert, scrollArea) {
   "use strict";
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -2078,7 +2078,9 @@
   const UserManagement = () => {
     const { supabaseClient } = useOrganisationContext();
     const { profiles, loading, updateProfile, refetch } = useUserProfiles.useUserProfiles();
+    const { isSuperAdmin } = useUserRole.useUserRole();
     const { toast } = useToast$1.useToast();
+    const visibleProfiles = isSuperAdmin ? profiles : profiles.filter((p) => p.access_level !== "super_admin");
     const [viewMode, setViewMode] = useViewPreference.useViewPreference("userManagement", "cards");
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = o.useState(false);
     const [userToDelete, setUserToDelete] = o.useState(null);
@@ -2113,7 +2115,7 @@
       }
     };
     const onDeleteUser = (userId) => {
-      const user = profiles.find((p) => p.id === userId);
+      const user = visibleProfiles.find((p) => p.id === userId);
       setUserToDelete({ id: userId, name: (user == null ? void 0 : user.full_name) || "Unknown User" });
       setIsDeleteDialogOpen(true);
     };
@@ -2207,13 +2209,13 @@
           /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: viewMode === "cards" ? /* @__PURE__ */ jsxRuntime.jsx(
             UserList,
             {
-              profiles,
+              profiles: visibleProfiles,
               onDelete: onDeleteUser
             }
           ) : /* @__PURE__ */ jsxRuntime.jsx(
             UserTable,
             {
-              profiles,
+              profiles: visibleProfiles,
               onDelete: onDeleteUser,
               onUpdate: onUpdateProfile
             }
@@ -7534,19 +7536,12 @@
       setIsFullNameManuallyEdited(true);
       await handleFieldSave("full_name", value);
     };
-    console.log("EditableProfileHeader - All profiles:", profiles.map((u) => ({
-      id: u.id,
-      name: u.full_name,
-      access_level: u.access_level
-    })));
-    const filteredProfiles = profiles.filter(
-      (user) => user.id !== profile.id && user.access_level !== "super_admin"
-    );
-    console.log("EditableProfileHeader - Filtered profiles (no super_admin):", filteredProfiles.map((u) => ({
-      id: u.id,
-      name: u.full_name,
-      access_level: u.access_level
-    })));
+    const { isSuperAdmin } = useUserRole.useUserRole();
+    const filteredProfiles = profiles.filter((user) => {
+      if (user.id === profile.id) return false;
+      if (user.access_level === "super_admin" && !isSuperAdmin) return false;
+      return true;
+    });
     const managerProfile = profiles.find((u) => u.id === profile.manager);
     const managerName = managerProfile ? managerProfile.full_name || managerProfile.username : "Not assigned";
     const { userDepartments } = useUserDepartments.useUserDepartments(profile.id);
@@ -8817,13 +8812,13 @@
     enumerable: true,
     get: () => useUserManagement.useUserManagement
   });
-  Object.defineProperty(exports2, "useViewPreference", {
-    enumerable: true,
-    get: () => useViewPreference.useViewPreference
-  });
   Object.defineProperty(exports2, "useUserRole", {
     enumerable: true,
     get: () => useUserRole.useUserRole
+  });
+  Object.defineProperty(exports2, "useViewPreference", {
+    enumerable: true,
+    get: () => useViewPreference.useViewPreference
   });
   Object.defineProperty(exports2, "useUserAssets", {
     enumerable: true,

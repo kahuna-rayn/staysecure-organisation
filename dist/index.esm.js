@@ -7,6 +7,8 @@ import { useUserProfiles } from "@/hooks/useUserProfiles";
 import { useUserProfiles as useUserProfiles2 } from "@/hooks/useUserProfiles";
 import { useUserManagement } from "@/hooks/useUserManagement";
 import { useUserManagement as useUserManagement2 } from "@/hooks/useUserManagement";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useUserRole as useUserRole2 } from "@/hooks/useUserRole";
 import { useViewPreference } from "@/hooks/useViewPreference";
 import { useViewPreference as useViewPreference2 } from "@/hooks/useViewPreference";
 import { getCurrentClientId, supabase } from "@/integrations/supabase/client";
@@ -35,8 +37,6 @@ import * as vt from "react-dom";
 import { cn } from "@/lib/utils";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import { useUserRole } from "@/hooks/useUserRole";
-import { useUserRole as useUserRole2 } from "@/hooks/useUserRole";
 import HardwareInventory from "@/components/HardwareInventory";
 import SoftwareAccounts from "@/components/SoftwareAccounts";
 import { useInventory } from "@/hooks/useInventory";
@@ -2129,7 +2129,9 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
 const UserManagement = () => {
   const { supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
+  const { isSuperAdmin } = useUserRole();
   const { toast: toast2 } = useToast();
+  const visibleProfiles = isSuperAdmin ? profiles : profiles.filter((p) => p.access_level !== "super_admin");
   const [viewMode, setViewMode] = useViewPreference("userManagement", "cards");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -2164,7 +2166,7 @@ const UserManagement = () => {
     }
   };
   const onDeleteUser = (userId) => {
-    const user = profiles.find((p) => p.id === userId);
+    const user = visibleProfiles.find((p) => p.id === userId);
     setUserToDelete({ id: userId, name: (user == null ? void 0 : user.full_name) || "Unknown User" });
     setIsDeleteDialogOpen(true);
   };
@@ -2258,13 +2260,13 @@ const UserManagement = () => {
         /* @__PURE__ */ jsx(CardContent, { children: viewMode === "cards" ? /* @__PURE__ */ jsx(
           UserList,
           {
-            profiles,
+            profiles: visibleProfiles,
             onDelete: onDeleteUser
           }
         ) : /* @__PURE__ */ jsx(
           UserTable,
           {
-            profiles,
+            profiles: visibleProfiles,
             onDelete: onDeleteUser,
             onUpdate: onUpdateProfile
           }
@@ -7585,19 +7587,12 @@ const EditableProfileHeader = ({
     setIsFullNameManuallyEdited(true);
     await handleFieldSave("full_name", value);
   };
-  console.log("EditableProfileHeader - All profiles:", profiles.map((u) => ({
-    id: u.id,
-    name: u.full_name,
-    access_level: u.access_level
-  })));
-  const filteredProfiles = profiles.filter(
-    (user) => user.id !== profile.id && user.access_level !== "super_admin"
-  );
-  console.log("EditableProfileHeader - Filtered profiles (no super_admin):", filteredProfiles.map((u) => ({
-    id: u.id,
-    name: u.full_name,
-    access_level: u.access_level
-  })));
+  const { isSuperAdmin } = useUserRole();
+  const filteredProfiles = profiles.filter((user) => {
+    if (user.id === profile.id) return false;
+    if (user.access_level === "super_admin" && !isSuperAdmin) return false;
+    return true;
+  });
   const managerProfile = profiles.find((u) => u.id === profile.manager);
   const managerName = managerProfile ? managerProfile.full_name || managerProfile.username : "Not assigned";
   const { userDepartments } = useUserDepartments(profile.id);

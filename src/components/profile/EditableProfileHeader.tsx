@@ -8,6 +8,7 @@ import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
 import { useUserPhysicalLocations } from '@/hooks/useUserPhysicalLocations';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useOrganisationContext } from '@/context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
 import ProfileAvatar from './ProfileAvatar';
@@ -180,23 +181,17 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     await handleFieldSave('full_name', value);
   };
 
-  // Get manager name and filtered profiles (exclude current user and super_admins)
-  console.log('EditableProfileHeader - All profiles:', profiles.map(u => ({ 
-    id: u.id, 
-    name: u.full_name, 
-    access_level: u.access_level 
-  })));
+  // Get current user's role to determine if super_admins should be shown
+  const { isSuperAdmin } = useUserRole();
   
-  const filteredProfiles = profiles.filter(user => 
-    user.id !== profile.id && 
-    user.access_level !== 'super_admin'
-  );
-  
-  console.log('EditableProfileHeader - Filtered profiles (no super_admin):', filteredProfiles.map(u => ({ 
-    id: u.id, 
-    name: u.full_name, 
-    access_level: u.access_level 
-  })));
+  // Get manager name and filtered profiles
+  // - Always exclude current user (can't be your own manager)
+  // - Only show super_admin users if current user is also super_admin
+  const filteredProfiles = profiles.filter(user => {
+    if (user.id === profile.id) return false; // Exclude self
+    if (user.access_level === 'super_admin' && !isSuperAdmin) return false; // Hide super_admins from non-super_admins
+    return true;
+  });
   
   const managerProfile = profiles.find(u => u.id === profile.manager);
   const managerName = managerProfile ? (managerProfile.full_name || managerProfile.username) : 'Not assigned';

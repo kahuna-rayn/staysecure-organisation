@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserManagement } from '@/hooks/useUserManagement';
+import { useUserRole } from '@/hooks/useUserRole';
 import { useViewPreference } from '@/hooks/useViewPreference';
 import { handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +28,14 @@ const UserManagement: React.FC = () => {
   // DO NOT import supabase from '@/integrations/supabase/client' - it's a stub
   const { supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
+  const { isSuperAdmin } = useUserRole();
   const { toast } = useToast();
+  
+  // Filter out super_admin users unless current user is also super_admin
+  // super_admin is an internal role, not client-facing
+  const visibleProfiles = isSuperAdmin 
+    ? profiles 
+    : profiles.filter(p => p.access_level !== 'super_admin');
   const [viewMode, setViewMode] = useViewPreference('userManagement', 'cards');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<{ id: string; name: string } | null>(null);
@@ -71,7 +79,7 @@ const UserManagement: React.FC = () => {
   };
 
   const onDeleteUser = (userId: string) => {
-    const user = profiles.find(p => p.id === userId);
+    const user = visibleProfiles.find(p => p.id === userId);
     setUserToDelete({ id: userId, name: user?.full_name || 'Unknown User' });
     setIsDeleteDialogOpen(true);
   };
@@ -170,12 +178,12 @@ const UserManagement: React.FC = () => {
           <CardContent>
             {viewMode === 'cards' ? (
               <UserList
-                profiles={profiles}
+                profiles={visibleProfiles}
                 onDelete={onDeleteUser}
               />
             ) : (
               <UserTable
-                profiles={profiles}
+                profiles={visibleProfiles}
                 onDelete={onDeleteUser}
                 onUpdate={onUpdateProfile}
               />

@@ -7731,49 +7731,38 @@ const EditableProfileHeader = ({
     /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
         /* @__PURE__ */ jsx(Network, { className: "h-4 w-4 text-muted-foreground" }),
-        canEditManager && editingField === "manager" ? /* @__PURE__ */ jsxs(
+        canEditManager ? /* @__PURE__ */ jsxs(
           Select,
           {
-            value: managerValue,
+            value: profile.manager || "",
             onValueChange: handleManagerChange,
             children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager" }) }),
-              /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
+              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager", children: managerName }) }),
+              /* @__PURE__ */ jsxs(SelectContent, { children: [
+                /* @__PURE__ */ jsx(SelectItem, { value: "", children: "Not assigned" }),
+                filteredProfiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id))
+              ] })
             ]
-          }
-        ) : canEditManager ? /* @__PURE__ */ jsx(
-          EditableField,
-          {
-            value: managerName,
-            fieldKey: "manager",
-            onSave: handleFieldSave,
-            isEditing: editingField === "manager",
-            onEdit: handleFieldEdit,
-            onCancel: handleFieldCancel,
-            saving,
-            inputClassName: "text-sm h-6"
           }
         ) : /* @__PURE__ */ jsx("span", { className: "text-foreground", children: managerName })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
         /* @__PURE__ */ jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsx(
-          EditableField,
+        /* @__PURE__ */ jsxs(
+          Select,
           {
-            value: profile.location || "Not specified",
-            fieldKey: "location",
-            placeholder: "Select location",
-            onSave: handleFieldSave,
-            onSelectChange: handleLocationSelect,
-            isEditing: editingField === "location",
-            onEdit: handleFieldEdit,
-            onCancel: handleFieldCancel,
-            saving,
-            type: "select",
-            asyncOptions: physicalLocations,
-            isLoading: locationsLoading,
-            inputClassName: "h-6 text-sm w-48",
-            locationId: profile.locationId
+            value: profile.location || "",
+            onValueChange: async (value) => {
+              const selectedOption = physicalLocations == null ? void 0 : physicalLocations.find((loc) => loc.name === value);
+              if (selectedOption) {
+                await handleLocationSelect(value, selectedOption);
+              }
+            },
+            disabled: locationsLoading,
+            children: [
+              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: locationsLoading ? "Loading..." : "Select location" }) }),
+              /* @__PURE__ */ jsx(SelectContent, { children: physicalLocations == null ? void 0 : physicalLocations.map((loc) => /* @__PURE__ */ jsx(SelectItem, { value: loc.name, children: loc.name }, loc.id)) })
+            ]
           }
         )
       ] }),

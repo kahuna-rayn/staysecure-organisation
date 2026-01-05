@@ -7680,49 +7680,38 @@
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Network, { className: "h-4 w-4 text-muted-foreground" }),
-          canEditManager && editingField === "manager" ? /* @__PURE__ */ jsxRuntime.jsxs(
+          canEditManager ? /* @__PURE__ */ jsxRuntime.jsxs(
             select.Select,
             {
-              value: managerValue,
+              value: profile.manager || "",
               onValueChange: handleManagerChange,
               children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager" }) }),
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager", children: managerName }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "", children: "Not assigned" }),
+                  filteredProfiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id))
+                ] })
               ]
-            }
-          ) : canEditManager ? /* @__PURE__ */ jsxRuntime.jsx(
-            EditableField,
-            {
-              value: managerName,
-              fieldKey: "manager",
-              onSave: handleFieldSave,
-              isEditing: editingField === "manager",
-              onEdit: handleFieldEdit,
-              onCancel: handleFieldCancel,
-              saving,
-              inputClassName: "text-sm h-6"
             }
           ) : /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-foreground", children: managerName })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx(
-            EditableField,
+          /* @__PURE__ */ jsxRuntime.jsxs(
+            select.Select,
             {
-              value: profile.location || "Not specified",
-              fieldKey: "location",
-              placeholder: "Select location",
-              onSave: handleFieldSave,
-              onSelectChange: handleLocationSelect,
-              isEditing: editingField === "location",
-              onEdit: handleFieldEdit,
-              onCancel: handleFieldCancel,
-              saving,
-              type: "select",
-              asyncOptions: physicalLocations,
-              isLoading: locationsLoading,
-              inputClassName: "h-6 text-sm w-48",
-              locationId: profile.locationId
+              value: profile.location || "",
+              onValueChange: async (value) => {
+                const selectedOption = physicalLocations == null ? void 0 : physicalLocations.find((loc) => loc.name === value);
+                if (selectedOption) {
+                  await handleLocationSelect(value, selectedOption);
+                }
+              },
+              disabled: locationsLoading,
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: locationsLoading ? "Loading..." : "Select location" }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: physicalLocations == null ? void 0 : physicalLocations.map((loc) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: loc.name, children: loc.name }, loc.id)) })
+              ]
             }
           )
         ] }),

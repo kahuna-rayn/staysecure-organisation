@@ -336,15 +336,16 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
           <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Network className="h-4 w-4 text-muted-foreground" />
-                {canEditManager && editingField === 'manager' ? (
+                {canEditManager ? (
                   <Select
-                    value={managerValue}
+                    value={(profile.manager as string) || ''}
                     onValueChange={handleManagerChange}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select manager" />
+                    <SelectTrigger className="w-48 h-6 text-sm">
+                      <SelectValue placeholder="Select manager">{managerName}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value="">Not assigned</SelectItem>
                       {filteredProfiles.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
                           {user.full_name || user.username || 'Unnamed User'}
@@ -352,17 +353,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                       ))}
                     </SelectContent>
                   </Select>
-                ) : canEditManager ? (
-                  <EditableField
-                    value={managerName}
-                    fieldKey="manager"
-                    onSave={handleFieldSave}
-                    isEditing={editingField === 'manager'}
-                    onEdit={handleFieldEdit}
-                    onCancel={handleFieldCancel}
-                    saving={saving}
-                    inputClassName="text-sm h-6"
-                  />
                 ) : (
                   <span className="text-foreground">{managerName}</span>
                 )}
@@ -370,22 +360,27 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               
               <div className="flex items-center gap-2 text-sm">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <EditableField
-                  value={profile.location || 'Not specified'}
-                  fieldKey="location"
-                  placeholder="Select location"
-                  onSave={handleFieldSave}
-                  onSelectChange={handleLocationSelect}
-                  isEditing={editingField === 'location'}
-                  onEdit={handleFieldEdit}
-                  onCancel={handleFieldCancel}
-                  saving={saving}
-                  type="select"
-                  asyncOptions={physicalLocations}
-                  isLoading={locationsLoading}
-                  inputClassName="h-6 text-sm w-48"
-                  locationId={profile.locationId}
-                />
+                <Select
+                  value={(profile.location as string) || ''}
+                  onValueChange={async (value) => {
+                    const selectedOption = physicalLocations?.find(loc => loc.name === value);
+                    if (selectedOption) {
+                      await handleLocationSelect(value, selectedOption);
+                    }
+                  }}
+                  disabled={locationsLoading}
+                >
+                  <SelectTrigger className="w-48 h-6 text-sm">
+                    <SelectValue placeholder={locationsLoading ? "Loading..." : "Select location"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {physicalLocations?.map((loc) => (
+                      <SelectItem key={loc.id} value={loc.name}>
+                        {loc.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="flex items-center gap-2 text-sm">

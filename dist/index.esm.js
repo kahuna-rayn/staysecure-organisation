@@ -3408,6 +3408,7 @@ const DepartmentMembersDialog = ({
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["department-members", departmentId],
     queryFn: async () => {
+      debugLog$1("[DepartmentMembersDialog] Fetching members, departmentId:", departmentId);
       let query = supabaseClient.from("user_departments").select(`
           user_id,
           is_primary,
@@ -3418,13 +3419,20 @@ const DepartmentMembersDialog = ({
         query = query.eq("department_id", departmentId);
       }
       const { data: userDepts, error: userDeptsError } = await query;
+      debugLog$1("[DepartmentMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError });
       if (userDeptsError) throw userDeptsError;
       const userIds = [...new Set((userDepts || []).map((ud) => ud.user_id))];
+      debugLog$1("[DepartmentMembersDialog] Unique user IDs:", userIds.length);
+      if (userIds.length === 0) {
+        debugLog$1("[DepartmentMembersDialog] No users found in departments");
+        return [];
+      }
       const { data: userRoles, error: rolesError } = await supabaseClient.from("user_profile_roles").select(`
           user_id,
           is_primary,
           roles!inner(id, name)
         `).in("user_id", userIds);
+      debugLog$1("[DepartmentMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: rolesError });
       if (rolesError) throw rolesError;
       const roleMap = /* @__PURE__ */ new Map();
       (userRoles || []).forEach((ur) => {
@@ -3448,6 +3456,7 @@ const DepartmentMembersDialog = ({
         if (deptCompare !== 0) return deptCompare;
         return a.userName.localeCompare(b.userName);
       });
+      debugLog$1("[DepartmentMembersDialog] Final member data:", memberData.length, "members");
       return memberData;
     },
     enabled: isOpen

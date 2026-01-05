@@ -36,7 +36,7 @@ import Papa from "papaparse";
 import { ImportErrorReport as ImportErrorReport$1 } from "@/components/import/ImportErrorReport";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
-import XLSX from "xlsx";
+import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { Separator } from "@/components/ui/separator";

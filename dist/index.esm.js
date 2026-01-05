@@ -7141,10 +7141,6 @@ const ProfileAvatar = ({
   const initials = firstName && lastName ? firstName.charAt(0) + lastName.charAt(0) : (firstName == null ? void 0 : firstName.slice(0, 2)) || "U";
   const handleAvatarClick = () => {
     var _a;
-    debugLog$1("ProfileAvatar: Upload button clicked");
-    debugLog$1("ProfileAvatar: fileInputRef.current:", fileInputRef.current);
-    debugLog$1("ProfileAvatar: profileId:", profileId);
-    debugLog$1("ProfileAvatar: supabase:", supabase);
     (_a = fileInputRef.current) == null ? void 0 : _a.click();
   };
   const handleFileChange = async (event) => {

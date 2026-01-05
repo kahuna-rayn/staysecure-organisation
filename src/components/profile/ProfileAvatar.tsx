@@ -30,10 +30,6 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
     : firstName?.slice(0, 2) || 'U';
 
   const handleAvatarClick = () => {
-    debugLog('ProfileAvatar: Upload button clicked');
-    debugLog('ProfileAvatar: fileInputRef.current:', fileInputRef.current);
-    debugLog('ProfileAvatar: profileId:', profileId);
-    debugLog('ProfileAvatar: supabase:', supabase);
     fileInputRef.current?.click();
   };
 

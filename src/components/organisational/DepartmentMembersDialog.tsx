@@ -48,7 +48,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
           user_id,
           department_id,
           is_primary,
-          departments(id, name)
+          departments(name)
         `);
 
       if (departmentId) {
@@ -86,7 +86,8 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
         .select(`
           user_id,
           is_primary,
-          roles(id, name)
+          role_id,
+          roles(name)
         `)
         .in('user_id', userIds);
 

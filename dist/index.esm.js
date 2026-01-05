@@ -3413,7 +3413,7 @@ const DepartmentMembersDialog = ({
           user_id,
           department_id,
           is_primary,
-          departments(id, name)
+          departments(name)
         `);
       if (departmentId) {
         deptQuery = deptQuery.eq("department_id", departmentId);
@@ -3433,7 +3433,8 @@ const DepartmentMembersDialog = ({
       const { data: userRoles, error: rolesError } = await supabaseClient.from("user_profile_roles").select(`
           user_id,
           is_primary,
-          roles(id, name)
+          role_id,
+          roles(name)
         `).in("user_id", userIds);
       debugLog$1("[DepartmentMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: rolesError == null ? void 0 : rolesError.message });
       if (rolesError) throw rolesError;

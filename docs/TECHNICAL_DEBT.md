@@ -273,3 +273,54 @@ However, these functions are called from the **`organisation` module**:
 - `organisation/src/components/admin/ImportUsersDialog.tsx` - Uses `create-user`
 
 ---
+
+## Future Enhancement: Department Manager Scoped Visibility
+
+### Status
+**DEFERRED** - Implement when clients request it
+
+### Current Behavior
+- Binary permission model: Admins see all users, regular users see only themselves
+- No middle tier for department managers to see their team members
+- `departments.manager` field exists but is not used for visibility scoping
+
+### Data Model (Already Exists)
+```sql
+departments
+├── id
+├── name
+├── manager (user_id) ← Foundation ready
+├── ...
+```
+
+### Proposed Enhancement
+Department managers (users assigned to `departments.manager`) should be able to:
+1. View all users in departments they manage
+2. Potentially edit certain fields for their team members
+
+### Changes Required
+1. **RLS Policy**: Add policy to `profiles` table checking department manager relationship
+2. **useUserProfiles Hook**: Add filtering logic for department-scoped queries
+3. **UI**: Show appropriate users based on manager relationship
+4. **UserManagement**: Display scoped user list for department managers
+
+### Query Logic
+```sql
+-- Users visible to department managers
+SELECT DISTINCT p.* 
+FROM profiles p
+JOIN user_departments ud ON ud.user_id = p.id
+JOIN departments d ON d.id = ud.department_id
+WHERE d.manager = auth.uid()
+```
+
+### Effort Estimate
+~3-4 hours (Low-Medium complexity)
+
+### Risk Level
+Medium - Requires careful RLS policy testing to avoid data leakage
+
+### Why Deferred
+Current binary model (admin/user) is sufficient for launch. Implement when clients with large departments request team-level visibility.
+
+---

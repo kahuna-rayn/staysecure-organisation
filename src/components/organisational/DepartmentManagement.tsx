@@ -7,13 +7,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Building2, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown } from 'lucide-react';
+import { Building2, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown, Users } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { Department } from '../../types';
 import ImportDepartmentsDialog from './ImportDepartmentsDialog';
 import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
+import DepartmentMembersDialog from './DepartmentMembersDialog';
 
 interface Profile {
   id: string;
@@ -36,6 +37,8 @@ export const DepartmentManagement: React.FC = () => {
   });
   const [sortField, setSortField] = useState<'name' | 'created_at'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isMembersDialogOpen, setIsMembersDialogOpen] = useState(false);
+  const [selectedDepartmentForMembers, setSelectedDepartmentForMembers] = useState<Department | null>(null);
 
   const { data: departmentsData, isLoading: departmentsLoading } = useQuery({
     queryKey: ['departments'],
@@ -245,8 +248,20 @@ export const DepartmentManagement: React.FC = () => {
                 Manage organizational departments and assign managers
               </CardDescription>
             </div>
-            {hasPermission('canManageDepartments') && (
-              <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  setSelectedDepartmentForMembers(null);
+                  setIsMembersDialogOpen(true);
+                }}
+                title="View all members"
+              >
+                <Users className="h-4 w-4" />
+              </Button>
+              {hasPermission('canManageDepartments') && (
+              <>
                 <ImportDepartmentsDialog
                   onImportComplete={async () => {
                     await queryClient.invalidateQueries({ queryKey: ['departments'] });
@@ -320,8 +335,9 @@ export const DepartmentManagement: React.FC = () => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-              </div>
-            )}
+              </>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -383,6 +399,17 @@ export const DepartmentManagement: React.FC = () => {
                   {hasPermission('canManageDepartments') && (
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedDepartmentForMembers(department);
+                            setIsMembersDialogOpen(true);
+                          }}
+                          title="View members"
+                        >
+                          <Users className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -475,6 +502,14 @@ export const DepartmentManagement: React.FC = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      {/* Members Dialog */}
+      <DepartmentMembersDialog
+        isOpen={isMembersDialogOpen}
+        onOpenChange={setIsMembersDialogOpen}
+        departmentId={selectedDepartmentForMembers?.id}
+        departmentName={selectedDepartmentForMembers?.name}
+      />
     </div>
   );
 };

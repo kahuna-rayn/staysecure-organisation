@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.alert, global.scrollArea));
-})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, separator, vt, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, alert, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "xlsx", "jspdf", "jspdf-autotable", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.XLSX, global.jsPDF, global.autoTable, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.alert, global.scrollArea));
+})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, XLSX, jsPDF, autoTable, separator, vt, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, alert, scrollArea) {
   "use strict";
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -451,6 +451,23 @@
   const Plus = createLucideIcon("Plus", [
     ["path", { d: "M5 12h14", key: "1ays0h" }],
     ["path", { d: "M12 5v14", key: "s699le" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const Printer = createLucideIcon("Printer", [
+    [
+      "path",
+      {
+        d: "M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2",
+        key: "143wyd"
+      }
+    ],
+    ["path", { d: "M6 9V3a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6", key: "1itne7" }],
+    ["rect", { x: "6", y: "14", width: "12", height: "8", rx: "1", key: "1ue0tg" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -3326,6 +3343,156 @@
       ] })
     ] });
   };
+  const DepartmentMembersDialog = ({
+    isOpen,
+    onOpenChange,
+    departmentId,
+    departmentName
+  }) => {
+    const { supabaseClient } = useOrganisationContext();
+    const printRef = o.useRef(null);
+    const { data: members = [], isLoading } = reactQuery.useQuery({
+      queryKey: ["department-members", departmentId],
+      queryFn: async () => {
+        let query = supabaseClient.from("user_departments").select(`
+          user_id,
+          is_primary,
+          departments!inner(id, name),
+          profiles!inner(id, full_name, email, status)
+        `);
+        if (departmentId) {
+          query = query.eq("department_id", departmentId);
+        }
+        const { data: userDepts, error: userDeptsError } = await query;
+        if (userDeptsError) throw userDeptsError;
+        const userIds = [...new Set((userDepts || []).map((ud) => ud.user_id))];
+        const { data: userRoles, error: rolesError } = await supabaseClient.from("user_profile_roles").select(`
+          user_id,
+          is_primary,
+          roles!inner(id, name)
+        `).in("user_id", userIds);
+        if (rolesError) throw rolesError;
+        const roleMap = /* @__PURE__ */ new Map();
+        (userRoles || []).forEach((ur) => {
+          var _a;
+          if (ur.is_primary || !roleMap.has(ur.user_id)) {
+            roleMap.set(ur.user_id, ((_a = ur.roles) == null ? void 0 : _a.name) || "No Role");
+          }
+        });
+        const memberData = (userDepts || []).map((ud) => {
+          var _a, _b, _c, _d;
+          return {
+            departmentName: ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown",
+            userName: ((_b = ud.profiles) == null ? void 0 : _b.full_name) || "Unknown User",
+            roleName: roleMap.get(ud.user_id) || "No Role",
+            email: ((_c = ud.profiles) == null ? void 0 : _c.email) || "",
+            status: ((_d = ud.profiles) == null ? void 0 : _d.status) || "Unknown"
+          };
+        });
+        memberData.sort((a, b) => {
+          const deptCompare = a.departmentName.localeCompare(b.departmentName);
+          if (deptCompare !== 0) return deptCompare;
+          return a.userName.localeCompare(b.userName);
+        });
+        return memberData;
+      },
+      enabled: isOpen
+    });
+    const handlePrint = () => {
+      window.print();
+    };
+    const handleExportExcel = () => {
+      if (members.length === 0) return;
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(members.map((m) => ({
+        "Department": m.departmentName,
+        "User": m.userName,
+        "Role": m.roleName,
+        "Email": m.email,
+        "Status": m.status
+      })));
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Department Members");
+      const fileName = departmentName ? `${departmentName.replace(/\s+/g, "_")}_members.xlsx` : "all_department_members.xlsx";
+      XLSX.writeFile(workbook, fileName);
+    };
+    const handleExportPDF = () => {
+      if (members.length === 0) return;
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text(departmentName ? `${departmentName} Members` : "Department Members Report", 14, 20);
+      doc.setFontSize(10);
+      doc.text(`Generated: ${(/* @__PURE__ */ new Date()).toLocaleDateString()}`, 14, 28);
+      doc.text(`Total Members: ${members.length}`, 14, 34);
+      autoTable(doc, {
+        head: [["Department", "User", "Role", "Email", "Status"]],
+        body: members.map((m) => [
+          m.departmentName,
+          m.userName,
+          m.roleName,
+          m.email,
+          m.status
+        ]),
+        startY: 40,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [41, 128, 185] }
+      });
+      const fileName = departmentName ? `${departmentName.replace(/\s+/g, "_")}_members.pdf` : "all_department_members.pdf";
+      doc.save(fileName);
+    };
+    const title = departmentName ? `${departmentName} Members` : "All Department Members";
+    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-4xl max-h-[80vh] overflow-hidden flex flex-col", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogTitle, { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-5 w-5" }),
+          title
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: departmentName ? `Users assigned to ${departmentName}` : "All users grouped by department" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 py-2", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handlePrint, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Printer, { className: "h-4 w-4 mr-2" }),
+          "Print"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportExcel, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4 mr-2" }),
+          "Excel"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportPDF, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-4 w-4 mr-2" }),
+          "PDF"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { ref: printRef, className: "flex-1 overflow-auto", children: isLoading ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-32", children: /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Loading members..." }) }) : members.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-32", children: /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "No members found" }) }) : /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+          !departmentId && /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Department" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "User" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Role" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Email" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: members.map((member, index) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+          !departmentId && /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.departmentName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: member.userName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.roleName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-muted-foreground", children: member.email }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(
+            badge.Badge,
+            {
+              variant: member.status === "Active" ? "default" : "secondary",
+              className: member.status === "Active" ? "bg-green-500" : "",
+              children: member.status
+            }
+          ) })
+        ] }, index)) })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "pt-2 border-t text-sm text-muted-foreground", children: [
+        "Total: ",
+        members.length,
+        " member",
+        members.length !== 1 ? "s" : ""
+      ] })
+    ] }) });
+  };
   const DepartmentManagement = () => {
     const { supabaseClient, hasPermission } = useOrganisationContext();
     const queryClient = reactQuery.useQueryClient();
@@ -3342,6 +3509,8 @@
     });
     const [sortField, setSortField] = o.useState("name");
     const [sortDirection, setSortDirection] = o.useState("asc");
+    const [isMembersDialogOpen, setIsMembersDialogOpen] = o.useState(false);
+    const [selectedDepartmentForMembers, setSelectedDepartmentForMembers] = o.useState(null);
     const { data: departmentsData, isLoading: departmentsLoading } = reactQuery.useQuery({
       queryKey: ["departments"],
       queryFn: async () => {
@@ -3510,74 +3679,89 @@
             ] }),
             /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Manage organizational departments and assign managers" })
           ] }),
-          hasPermission("canManageDepartments") && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(
-              ImportDepartmentsDialog,
+              button.Button,
               {
-                onImportComplete: async () => {
-                  await queryClient.invalidateQueries({ queryKey: ["departments"] });
+                variant: "outline",
+                size: "icon",
+                onClick: () => {
+                  setSelectedDepartmentForMembers(null);
+                  setIsMembersDialogOpen(true);
                 },
-                onImportError: (errors, warnings, stats) => {
-                  setImportErrors(errors);
-                  setImportWarnings(warnings);
-                  setImportStats(stats);
-                  setShowImportErrorReport(true);
-                }
+                title: "View all members",
+                children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
               }
             ),
-            /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
-              /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
-                /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Department" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Add a new department to your organization" })
-                ] }),
-                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-4 py-4", children: [
-                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "name", children: "Department Name" }),
-                    /* @__PURE__ */ jsxRuntime.jsx(
-                      input.Input,
-                      {
-                        id: "name",
-                        value: formData.name,
-                        onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
-                        placeholder: "Enter department name"
-                      }
-                    )
+            hasPermission("canManageDepartments") && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(
+                ImportDepartmentsDialog,
+                {
+                  onImportComplete: async () => {
+                    await queryClient.invalidateQueries({ queryKey: ["departments"] });
+                  },
+                  onImportError: (errors, warnings, stats) => {
+                    setImportErrors(errors);
+                    setImportWarnings(warnings);
+                    setImportStats(stats);
+                    setShowImportErrorReport(true);
+                  }
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Department" }),
+                    /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Add a new department to your organization" })
                   ] }),
-                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "description", children: "Description" }),
-                    /* @__PURE__ */ jsxRuntime.jsx(
-                      textarea.Textarea,
-                      {
-                        id: "description",
-                        value: formData.description,
-                        onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
-                        placeholder: "Enter department description (optional)"
-                      }
-                    )
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-4 py-4", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "name", children: "Department Name" }),
+                      /* @__PURE__ */ jsxRuntime.jsx(
+                        input.Input,
+                        {
+                          id: "name",
+                          value: formData.name,
+                          onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
+                          placeholder: "Enter department name"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "description", children: "Description" }),
+                      /* @__PURE__ */ jsxRuntime.jsx(
+                        textarea.Textarea,
+                        {
+                          id: "description",
+                          value: formData.description,
+                          onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
+                          placeholder: "Enter department description (optional)"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "manager", children: "Manager" }),
+                      /* @__PURE__ */ jsxRuntime.jsxs(
+                        select.Select,
+                        {
+                          value: formData.manager_id,
+                          onValueChange: (value) => setFormData((prev) => ({ ...prev, manager_id: value })),
+                          children: [
+                            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager (optional)" }) }),
+                            /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", children: "No manager" }),
+                              profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: profile.id, children: profile.full_name }, profile.id))
+                            ] })
+                          ]
+                        }
+                      )
+                    ] })
                   ] }),
-                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "manager", children: "Manager" }),
-                    /* @__PURE__ */ jsxRuntime.jsxs(
-                      select.Select,
-                      {
-                        value: formData.manager_id,
-                        onValueChange: (value) => setFormData((prev) => ({ ...prev, manager_id: value })),
-                        children: [
-                          /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager (optional)" }) }),
-                          /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                            /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "none", children: "No manager" }),
-                            profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: profile.id, children: profile.full_name }, profile.id))
-                          ] })
-                        ]
-                      }
-                    )
+                  /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+                    /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
                   ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
-                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
                 ] })
               ] })
             ] })
@@ -3618,6 +3802,19 @@
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: getManagerName(department.manager_id) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: new Date(department.created_at).toLocaleDateString() }),
               hasPermission("canManageDepartments") && /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  button.Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    onClick: () => {
+                      setSelectedDepartmentForMembers(department);
+                      setIsMembersDialogOpen(true);
+                    },
+                    title: "View members",
+                    children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
+                  }
+                ),
                 /* @__PURE__ */ jsxRuntime.jsx(
                   button.Button,
                   {
@@ -3698,7 +3895,16 @@
           /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setEditingDepartment(null), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
           /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
         ] })
-      ] }) })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsx(
+        DepartmentMembersDialog,
+        {
+          isOpen: isMembersDialogOpen,
+          onOpenChange: setIsMembersDialogOpen,
+          departmentId: selectedDepartmentForMembers == null ? void 0 : selectedDepartmentForMembers.id,
+          departmentName: selectedDepartmentForMembers == null ? void 0 : selectedDepartmentForMembers.name
+        }
+      )
     ] });
   };
   const LocationManagement = () => {

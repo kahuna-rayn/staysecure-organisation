@@ -3427,7 +3427,7 @@ const DepartmentMembersDialog = ({
         debugLog$1("[DepartmentMembersDialog] No users found in departments");
         return [];
       }
-      const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, email, status").in("id", userIds);
+      const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
       debugLog$1("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
       if (profilesError) throw profilesError;
       const { data: userRoles, error: rolesError } = await supabaseClient.from("user_profile_roles").select(`
@@ -3453,7 +3453,8 @@ const DepartmentMembersDialog = ({
           departmentName: ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown",
           userName: (profile == null ? void 0 : profile.full_name) || "Unknown User",
           roleName: roleMap.get(ud.user_id) || "No Role",
-          email: (profile == null ? void 0 : profile.email) || "",
+          email: (profile == null ? void 0 : profile.username) || "",
+          // username is the email in this schema
           status: (profile == null ? void 0 : profile.status) || "Unknown"
         };
       });

@@ -73,7 +73,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
       // Get profiles for these users
       const { data: profiles, error: profilesError } = await supabaseClient
         .from('profiles')
-        .select('id, full_name, email, status')
+        .select('id, full_name, username, status')
         .in('id', userIds);
 
       debugLog('[DepartmentMembersDialog] profiles result:', { count: profiles?.length, error: profilesError?.message });
@@ -113,7 +113,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
           departmentName: ud.departments?.name || 'Unknown',
           userName: profile?.full_name || 'Unknown User',
           roleName: roleMap.get(ud.user_id) || 'No Role',
-          email: profile?.email || '',
+          email: profile?.username || '', // username is the email in this schema
           status: profile?.status || 'Unknown',
         };
       });

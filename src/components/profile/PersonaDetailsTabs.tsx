@@ -149,7 +149,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           {/* Show Location tab content in Learn mode */}
           {isLearnMode && (
             <TabsContent value="location" className="space-y-4 animate-fade-in">
-              <PhysicalLocationTab profile={profile} />
+              <PhysicalLocationTab profile={profile} isAdmin={hasAdminAccess} />
             </TabsContent>
           )}
           
@@ -185,7 +185,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
               </TabsContent>
 
               <TabsContent value="location" className="space-y-4 animate-fade-in">
-                <PhysicalLocationTab profile={profile} />
+                <PhysicalLocationTab profile={profile} isAdmin={hasAdminAccess} />
               </TabsContent>
             </>
           )}

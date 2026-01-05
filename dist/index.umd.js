@@ -5856,7 +5856,7 @@
       ] })
     ] }) });
   };
-  const PhysicalLocationTab = ({ profile }) => {
+  const PhysicalLocationTab = ({ profile, isAdmin = false }) => {
     const [isAssignDialogOpen, setIsAssignDialogOpen] = o.useState(false);
     const { data: locationAccess = [], refetch } = reactQuery.useQuery({
       queryKey: ["user-physical-location-access", profile.email],
@@ -5915,8 +5915,8 @@
         key: "date_access_revoked",
         header: "Date Revoked",
         type: "date",
-        editable: true,
-        // Only this field is editable as requested
+        editable: isAdmin,
+        // Only admins can edit this field
         sortable: true
       },
       {
@@ -5981,13 +5981,8 @@
     };
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between items-center", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-sm text-muted-foreground", children: [
-          "Manage physical location access for ",
-          profile.firstName,
-          " ",
-          profile.lastName
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-muted-foreground", children: isAdmin ? `Manage physical location access for ${profile.firstName} ${profile.lastName}` : `Physical location access for ${profile.firstName} ${profile.lastName}` }),
+        isAdmin && /* @__PURE__ */ jsxRuntime.jsx(
           button.Button,
           {
             onClick: () => setIsAssignDialogOpen(true),
@@ -6001,10 +5996,10 @@
         {
           data: locationAccess,
           columns,
-          onUpdate: handleUpdate,
-          onDelete: handleDelete,
+          onUpdate: isAdmin ? handleUpdate : void 0,
+          onDelete: isAdmin ? handleDelete : void 0,
           allowAdd: false,
-          allowDelete: true
+          allowDelete: isAdmin
         }
       ),
       /* @__PURE__ */ jsxRuntime.jsx(
@@ -7009,7 +7004,7 @@
           ) }),
           /* @__PURE__ */ jsxRuntime.jsx(UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
         ] }),
-        isLearnMode && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile }) }),
+        isLearnMode && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile, isAdmin: hasAdminAccess }) }),
         !isLearnMode && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments, { userId: typeof profile.id === "string" ? profile.id : userId }) }),
           /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "accounts", className: "space-y-4 animate-fade-in", children: [
@@ -7034,7 +7029,7 @@
             ) }),
             /* @__PURE__ */ jsxRuntime.jsx(HardwareInventory, { profile, onUpdate: handleDataChange })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile }) })
+          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile, isAdmin: hasAdminAccess }) })
         ] }),
         !isLearnMode && (profile == null ? void 0 : profile.enrolled_in_learn) && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "learn", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(LearningTracksTab, { userId: typeof profile.id === "string" ? profile.id : userId }) })
       ] }),

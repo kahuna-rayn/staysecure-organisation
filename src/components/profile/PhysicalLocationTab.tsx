@@ -10,6 +10,7 @@ import AssignPhysicalLocationDialog from '../admin/AssignPhysicalLocationDialog'
 
 interface PhysicalLocationTabProps {
   profile: any;
+  isAdmin?: boolean;
 }
 
 interface PhysicalLocationAccess {
@@ -26,7 +27,7 @@ interface PhysicalLocationAccess {
   };
 }
 
-const PhysicalLocationTab: React.FC<PhysicalLocationTabProps> = ({ profile }) => {
+const PhysicalLocationTab: React.FC<PhysicalLocationTabProps> = ({ profile, isAdmin = false }) => {
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
 
   const { data: locationAccess = [], refetch } = useQuery({
@@ -89,7 +90,7 @@ const PhysicalLocationTab: React.FC<PhysicalLocationTabProps> = ({ profile }) =>
       key: 'date_access_revoked',
       header: 'Date Revoked',
       type: 'date' as const,
-      editable: true, // Only this field is editable as requested
+      editable: isAdmin, // Only admins can edit this field
       sortable: true,
     },
     {
@@ -191,23 +192,28 @@ const PhysicalLocationTab: React.FC<PhysicalLocationTabProps> = ({ profile }) =>
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <p className="text-sm text-muted-foreground">
-          Manage physical location access for {profile.firstName} {profile.lastName}
+          {isAdmin 
+            ? `Manage physical location access for ${profile.firstName} ${profile.lastName}`
+            : `Physical location access for ${profile.firstName} ${profile.lastName}`
+          }
         </p>
-        <Button 
-          onClick={() => setIsAssignDialogOpen(true)}
-          size="icon"
-        >
-          <Plus className="h-4 w-4" />
-        </Button>
+        {isAdmin && (
+          <Button 
+            onClick={() => setIsAssignDialogOpen(true)}
+            size="icon"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       <EditableTable
         data={locationAccess}
         columns={columns}
-        onUpdate={handleUpdate}
-        onDelete={handleDelete}
+        onUpdate={isAdmin ? handleUpdate : undefined}
+        onDelete={isAdmin ? handleDelete : undefined}
         allowAdd={false}
-        allowDelete={true}
+        allowDelete={isAdmin}
       />
 
       <AssignPhysicalLocationDialog

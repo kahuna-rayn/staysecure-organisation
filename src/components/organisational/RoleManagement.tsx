@@ -9,13 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { UserCheck, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown } from 'lucide-react';
+import { UserCheck, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown, Users } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import type { Role, Department } from '../../types';
 import ImportRolesDialog from './ImportRolesDialog';
 import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
+import RoleMembersDialog from './RoleMembersDialog';
 
 export const RoleManagement: React.FC = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
@@ -34,6 +35,8 @@ export const RoleManagement: React.FC = () => {
   });
   const [sortField, setSortField] = useState<'name' | 'department' | 'status' | 'created_at'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isMembersDialogOpen, setIsMembersDialogOpen] = useState(false);
+  const [selectedRoleForMembers, setSelectedRoleForMembers] = useState<{ id?: string; name?: string } | null>(null);
 
   const { data: rolesData, isLoading: rolesLoading } = useQuery({
     queryKey: ['roles'],
@@ -267,6 +270,17 @@ export const RoleManagement: React.FC = () => {
                     setShowImportErrorReport(true);
                   }}
                 />
+                <Button 
+                  onClick={() => {
+                    setSelectedRoleForMembers(null);
+                    setIsMembersDialogOpen(true);
+                  }}
+                  size="icon"
+                  variant="outline"
+                  title="View All Members"
+                >
+                  <Users className="h-4 w-4" />
+                </Button>
                 <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                   <DialogTrigger asChild>
                     <Button size="icon">
@@ -406,6 +420,7 @@ export const RoleManagement: React.FC = () => {
                     )}
                   </div>
                 </TableHead>
+                <TableHead>Members</TableHead>
                 {hasPermission('canManageRoles') && (
                   <TableHead className="text-right">Actions</TableHead>
                 )}
@@ -430,6 +445,19 @@ export const RoleManagement: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     {new Date(role.created_at).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => {
+                        setSelectedRoleForMembers({ id: role.role_id, name: role.name });
+                        setIsMembersDialogOpen(true);
+                      }}
+                      title={`View members with ${role.name} role`}
+                    >
+                      <Users className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                   {hasPermission('canManageRoles') && (
                     <TableCell className="text-right">
@@ -465,6 +493,13 @@ export const RoleManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      <RoleMembersDialog
+        isOpen={isMembersDialogOpen}
+        onOpenChange={setIsMembersDialogOpen}
+        roleId={selectedRoleForMembers?.id}
+        roleName={selectedRoleForMembers?.name}
+      />
 
       {/* Edit Dialog */}
       {hasPermission('canManageRoles') && (

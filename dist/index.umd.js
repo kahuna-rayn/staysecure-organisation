@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "xlsx", "jspdf", "jspdf-autotable", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.XLSX, global.jsPDF, global.autoTable, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.alert, global.scrollArea));
-})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, XLSX, jsPDF, autoTable, separator, vt, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, alert, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("react-router-dom"), require("@tanstack/react-query"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/input"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/alert"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "react-router-dom", "@tanstack/react-query", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/input", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/alert", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.deleteUserDialog, global.useToast$1, global.ReactRouterDOM, global.ReactQuery, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.input, global.label, global.select, global.textarea, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.alert, global.scrollArea));
+})(this, function(exports2, jsxRuntime, o, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, deleteUserDialog, useToast$1, reactRouterDom, reactQuery, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, input, label, select, textarea, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, XLSX, jsPDF, autoTable, reactToPrint, separator, vt, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, alert, scrollArea) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -2609,6 +2609,146 @@
       ] })
     ] });
   };
+  const RoleMembersDialog = ({
+    isOpen,
+    onOpenChange,
+    roleId,
+    roleName
+  }) => {
+    const { supabaseClient } = useOrganisationContext();
+    const printRef = o.useRef(null);
+    const { data: members = [], isLoading } = reactQuery.useQuery({
+      queryKey: ["role-members", roleId],
+      queryFn: async () => {
+        debugLog$1("[RoleMembersDialog] Fetching members, roleId:", roleId);
+        let roleQuery = supabaseClient.from("user_profile_roles").select("user_id, role_id, is_primary");
+        if (roleId) {
+          roleQuery = roleQuery.eq("role_id", roleId);
+        }
+        const { data: userRoles, error: userRolesError } = await roleQuery;
+        debugLog$1("[RoleMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: userRolesError == null ? void 0 : userRolesError.message });
+        if (userRolesError) throw userRolesError;
+        const userIds = [...new Set((userRoles || []).map((ur) => ur.user_id))];
+        debugLog$1("[RoleMembersDialog] Unique user IDs:", userIds.length);
+        if (userIds.length === 0) {
+          debugLog$1("[RoleMembersDialog] No users found with roles");
+          return [];
+        }
+        const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
+        debugLog$1("[RoleMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
+        if (profilesError) throw profilesError;
+        const roleIds = [...new Set((userRoles || []).map((ur) => ur.role_id).filter(Boolean))];
+        let rolesData = [];
+        if (roleIds.length > 0) {
+          const { data: roles, error: rolesError } = await supabaseClient.from("roles").select("role_id, name").in("role_id", roleIds);
+          debugLog$1("[RoleMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
+          if (rolesError) throw rolesError;
+          rolesData = roles || [];
+        }
+        const { data: userDepts, error: userDeptsError } = await supabaseClient.from("user_departments").select("user_id, department_id, is_primary, departments(name)").in("user_id", userIds);
+        debugLog$1("[RoleMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
+        if (userDeptsError) throw userDeptsError;
+        const profileMap = /* @__PURE__ */ new Map();
+        (profiles || []).forEach((p) => profileMap.set(p.id, p));
+        const roleNameMap = /* @__PURE__ */ new Map();
+        rolesData.forEach((r) => roleNameMap.set(r.role_id, r.name));
+        const userDeptMap = /* @__PURE__ */ new Map();
+        (userDepts || []).forEach((ud) => {
+          var _a;
+          if (ud.is_primary || !userDeptMap.has(ud.user_id)) {
+            userDeptMap.set(ud.user_id, ((_a = ud.departments) == null ? void 0 : _a.name) || "No Department");
+          }
+        });
+        const memberData = (userRoles || []).map((ur) => {
+          const profile = profileMap.get(ur.user_id);
+          return {
+            roleName: roleNameMap.get(ur.role_id) || "Unknown",
+            userName: (profile == null ? void 0 : profile.full_name) || "Unknown User",
+            departmentName: userDeptMap.get(ur.user_id) || "No Department",
+            email: (profile == null ? void 0 : profile.username) || "",
+            status: (profile == null ? void 0 : profile.status) || "Unknown"
+          };
+        });
+        memberData.sort((a, b) => {
+          const roleCompare = a.roleName.localeCompare(b.roleName);
+          if (roleCompare !== 0) return roleCompare;
+          return a.userName.localeCompare(b.userName);
+        });
+        debugLog$1("[RoleMembersDialog] Processed members:", memberData.length);
+        return memberData;
+      },
+      enabled: isOpen
+    });
+    const handlePrint = reactToPrint.useReactToPrint({
+      content: () => printRef.current,
+      documentTitle: roleName ? `${roleName} Members Report` : "All Role Members Report"
+    });
+    const handleExportExcel = () => {
+      const worksheet = XLSX__namespace.utils.json_to_sheet(members.map((m) => ({
+        Role: m.roleName,
+        User: m.userName,
+        Department: m.departmentName,
+        Email: m.email,
+        Status: m.status
+      })));
+      const workbook = XLSX__namespace.utils.book_new();
+      XLSX__namespace.utils.book_append_sheet(workbook, worksheet, "Members");
+      XLSX__namespace.writeFile(workbook, `${roleName ? roleName.replace(/\s/g, "_") : "All_Roles"}_Members_Report.xlsx`);
+    };
+    const handleExportPDF = () => {
+      const doc = new jsPDF();
+      doc.text(roleName ? `${roleName} Members` : "All Role Members", 14, 15);
+      autoTable(doc, {
+        head: [["Role", "User", "Department", "Email", "Status"]],
+        body: members.map((m) => [m.roleName, m.userName, m.departmentName, m.email, m.status]),
+        startY: 20
+      });
+      doc.save(`${roleName ? roleName.replace(/\s/g, "_") : "All_Roles"}_Members_Report.pdf`);
+    };
+    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-4xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogTitle, { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-5 w-5" }),
+          roleName ? `${roleName} Members` : "All Role Members"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: roleName ? `Users assigned to the ${roleName} role.` : "All users and their assigned roles." })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-end gap-2 mb-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handlePrint, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Printer, { className: "h-4 w-4 mr-2" }),
+          " Print"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportExcel, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4 mr-2" }),
+          " Export Excel"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportPDF, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4 mr-2" }),
+          " Export PDF"
+        ] })
+      ] }),
+      isLoading ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8", children: "Loading members..." }) : members.length === 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-center py-8 text-muted-foreground", children: [
+        "No members found ",
+        roleName ? `for ${roleName}` : "",
+        "."
+      ] }) : /* @__PURE__ */ jsxRuntime.jsx("div", { ref: printRef, children: /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Role" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "User" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Department" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Email" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: members.map((member, index) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.roleName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.userName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.departmentName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.email }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.status })
+        ] }, index)) })
+      ] }) })
+    ] }) });
+  };
   const RoleManagement = () => {
     const { supabaseClient, hasPermission } = useOrganisationContext();
     const queryClient = reactQuery.useQueryClient();
@@ -2626,6 +2766,8 @@
     });
     const [sortField, setSortField] = o.useState("name");
     const [sortDirection, setSortDirection] = o.useState("asc");
+    const [isMembersDialogOpen, setIsMembersDialogOpen] = o.useState(false);
+    const [selectedRoleForMembers, setSelectedRoleForMembers] = o.useState(null);
     const { data: rolesData, isLoading: rolesLoading } = reactQuery.useQuery({
       queryKey: ["roles"],
       queryFn: async () => {
@@ -2821,6 +2963,19 @@
                 }
               }
             ),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                onClick: () => {
+                  setSelectedRoleForMembers(null);
+                  setIsMembersDialogOpen(true);
+                },
+                size: "icon",
+                variant: "outline",
+                title: "View All Members",
+                children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
+              }
+            ),
             /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
               /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
               /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
@@ -2938,6 +3093,7 @@
                   ] })
                 }
               ),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Members" }),
               hasPermission("canManageRoles") && /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { className: "text-right", children: "Actions" })
             ] }) }),
             /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: roles == null ? void 0 : roles.map((role) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
@@ -2946,6 +3102,19 @@
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: getDepartmentName(role.department_id) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: role.is_active ? "default" : "secondary", children: role.is_active ? "Active" : "Inactive" }) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: new Date(role.created_at).toLocaleDateString() }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(
+                button.Button,
+                {
+                  variant: "outline",
+                  size: "icon",
+                  onClick: () => {
+                    setSelectedRoleForMembers({ id: role.role_id, name: role.name });
+                    setIsMembersDialogOpen(true);
+                  },
+                  title: `View members with ${role.name} role`,
+                  children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
+                }
+              ) }),
               hasPermission("canManageRoles") && /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(
                   button.Button,
@@ -2975,6 +3144,15 @@
           ] })
         ] })
       ] }),
+      /* @__PURE__ */ jsxRuntime.jsx(
+        RoleMembersDialog,
+        {
+          isOpen: isMembersDialogOpen,
+          onOpenChange: setIsMembersDialogOpen,
+          roleId: selectedRoleForMembers == null ? void 0 : selectedRoleForMembers.id,
+          roleName: selectedRoleForMembers == null ? void 0 : selectedRoleForMembers.name
+        }
+      ),
       hasPermission("canManageRoles") && /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: !!editingRole, onOpenChange: (open) => !open && setEditingRole(null), children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Edit Role" }),

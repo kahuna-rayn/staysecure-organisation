@@ -7426,7 +7426,7 @@
     var _a, _b, _c, _d, _e, _f, _g;
     const { profiles, updateProfile } = useUserProfiles.useUserProfiles();
     const { supabaseClient, hasPermission } = useOrganisationContext();
-    const canEditManager = hasPermission("canEditUsers");
+    const isAdmin = hasPermission("canEditUsers");
     const [editingField, setEditingField] = o.useState(null);
     const [saving, setSaving] = o.useState(false);
     const [savingLanguage, setSavingLanguage] = o.useState(false);
@@ -7680,27 +7680,24 @@
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Network, { className: "h-4 w-4 text-muted-foreground" }),
-          canEditManager ? /* @__PURE__ */ jsxRuntime.jsxs(
+          isAdmin ? /* @__PURE__ */ jsxRuntime.jsxs(
             select.Select,
             {
-              value: profile.manager || "",
+              value: profile.manager,
               onValueChange: handleManagerChange,
               children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Select manager", children: managerName }) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "", children: "Not assigned" }),
-                  filteredProfiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id))
-                ] })
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Not assigned", children: managerName !== "Not assigned" ? managerName : void 0 }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
               ]
             }
           ) : /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-foreground", children: managerName })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsxs(
+          isAdmin ? /* @__PURE__ */ jsxRuntime.jsxs(
             select.Select,
             {
-              value: profile.location || "",
+              value: profile.location,
               onValueChange: async (value) => {
                 const selectedOption = physicalLocations == null ? void 0 : physicalLocations.find((loc) => loc.name === value);
                 if (selectedOption) {
@@ -7709,11 +7706,11 @@
               },
               disabled: locationsLoading,
               children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: locationsLoading ? "Loading..." : "Select location" }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: locationsLoading ? "Loading..." : "Not specified" }) }),
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: physicalLocations == null ? void 0 : physicalLocations.map((loc) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: loc.name, children: loc.name }, loc.id)) })
               ]
             }
-          )
+          ) : /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-foreground", children: profile.location || "Not specified" })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsxRuntime.jsx(Globe, { className: "h-4 w-4 text-muted-foreground" }),
@@ -7744,12 +7741,7 @@
                 }) })
               ]
             }
-          ),
-          (() => {
-            debugLog$1("EditableProfileHeader render - profile.language:", profile.language);
-            debugLog$1("EditableProfileHeader render - profile object:", profile);
-            return null;
-          })()
+          )
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 w-full", children: [
           /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),

@@ -31,7 +31,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
 }) => {
   const { profiles, updateProfile } = useUserProfiles();
   const { supabaseClient, hasPermission } = useOrganisationContext();
-  const canEditManager = hasPermission('canEditUsers');
+  const isAdmin = hasPermission('canEditUsers');
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [savingLanguage, setSavingLanguage] = useState(false);
@@ -336,16 +336,15 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
           <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Network className="h-4 w-4 text-muted-foreground" />
-                {canEditManager ? (
+                {isAdmin ? (
                   <Select
-                    value={(profile.manager as string) || ''}
+                    value={profile.manager as string | undefined}
                     onValueChange={handleManagerChange}
                   >
                     <SelectTrigger className="w-48 h-6 text-sm">
-                      <SelectValue placeholder="Select manager">{managerName}</SelectValue>
+                      <SelectValue placeholder="Not assigned">{managerName !== 'Not assigned' ? managerName : undefined}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Not assigned</SelectItem>
                       {filteredProfiles.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
                           {user.full_name || user.username || 'Unnamed User'}
@@ -360,27 +359,31 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
               
               <div className="flex items-center gap-2 text-sm">
                 <MapPin className="h-4 w-4 text-muted-foreground" />
-                <Select
-                  value={(profile.location as string) || ''}
-                  onValueChange={async (value) => {
-                    const selectedOption = physicalLocations?.find(loc => loc.name === value);
-                    if (selectedOption) {
-                      await handleLocationSelect(value, selectedOption);
-                    }
-                  }}
-                  disabled={locationsLoading}
-                >
-                  <SelectTrigger className="w-48 h-6 text-sm">
-                    <SelectValue placeholder={locationsLoading ? "Loading..." : "Select location"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {physicalLocations?.map((loc) => (
-                      <SelectItem key={loc.id} value={loc.name}>
-                        {loc.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {isAdmin ? (
+                  <Select
+                    value={profile.location as string | undefined}
+                    onValueChange={async (value) => {
+                      const selectedOption = physicalLocations?.find(loc => loc.name === value);
+                      if (selectedOption) {
+                        await handleLocationSelect(value, selectedOption);
+                      }
+                    }}
+                    disabled={locationsLoading}
+                  >
+                    <SelectTrigger className="w-48 h-6 text-sm">
+                      <SelectValue placeholder={locationsLoading ? "Loading..." : "Not specified"} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {physicalLocations?.map((loc) => (
+                        <SelectItem key={loc.id} value={loc.name}>
+                          {loc.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <span className="text-foreground">{profile.location || 'Not specified'}</span>
+                )}
               </div>
 
               <div className="flex items-center gap-2 text-sm">
@@ -418,11 +421,6 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                     })}
                   </SelectContent>
                 </Select>
-                {(() => {
-                  debugLog('EditableProfileHeader render - profile.language:', profile.language);
-                  debugLog('EditableProfileHeader render - profile object:', profile);
-                  return null;
-                })()}
               </div>
 
               {/* Primary Department and Role */}

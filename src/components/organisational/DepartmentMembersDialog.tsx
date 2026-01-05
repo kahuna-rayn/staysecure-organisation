@@ -80,30 +80,46 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
 
       if (profilesError) throw profilesError;
 
-      // Get roles for these users
-      const { data: userRoles, error: rolesError } = await supabaseClient
+      // Get user_profile_roles for these users
+      const { data: userProfileRoles, error: uprError } = await supabaseClient
         .from('user_profile_roles')
-        .select(`
-          user_id,
-          is_primary,
-          role_id,
-          roles(name)
-        `)
+        .select('user_id, is_primary, role_id')
         .in('user_id', userIds);
 
-      debugLog('[DepartmentMembersDialog] user_profile_roles result:', { count: userRoles?.length, error: rolesError?.message });
+      debugLog('[DepartmentMembersDialog] user_profile_roles result:', { count: userProfileRoles?.length, error: uprError?.message });
 
-      if (rolesError) throw rolesError;
+      if (uprError) throw uprError;
+
+      // Get unique role IDs and fetch role names
+      const roleIds = [...new Set((userProfileRoles || []).map((upr: any) => upr.role_id).filter(Boolean))];
+      
+      let rolesData: any[] = [];
+      if (roleIds.length > 0) {
+        const { data: roles, error: rolesError } = await supabaseClient
+          .from('roles')
+          .select('role_id, name')
+          .in('role_id', roleIds);
+        
+        debugLog('[DepartmentMembersDialog] roles result:', { count: roles?.length, error: rolesError?.message });
+        
+        if (rolesError) throw rolesError;
+        rolesData = roles || [];
+      }
 
       // Create maps for quick lookup
       const profileMap = new Map<string, any>();
       (profiles || []).forEach((p: any) => profileMap.set(p.id, p));
 
-      const roleMap = new Map<string, string>();
-      (userRoles || []).forEach((ur: any) => {
-        // Prefer primary role, otherwise use first role found
-        if (ur.is_primary || !roleMap.has(ur.user_id)) {
-          roleMap.set(ur.user_id, ur.roles?.name || 'No Role');
+      // Map role_id to role name
+      const roleNameMap = new Map<string, string>();
+      rolesData.forEach((r: any) => roleNameMap.set(r.role_id, r.name));
+
+      // Map user_id to role name (prefer primary)
+      const userRoleMap = new Map<string, string>();
+      (userProfileRoles || []).forEach((upr: any) => {
+        const roleName = roleNameMap.get(upr.role_id) || 'No Role';
+        if (upr.is_primary || !userRoleMap.has(upr.user_id)) {
+          userRoleMap.set(upr.user_id, roleName);
         }
       });
 
@@ -113,7 +129,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
         return {
           departmentName: ud.departments?.name || 'Unknown',
           userName: profile?.full_name || 'Unknown User',
-          roleName: roleMap.get(ud.user_id) || 'No Role',
+          roleName: userRoleMap.get(ud.user_id) || 'No Role',
           email: profile?.username || '', // username is the email in this schema
           status: profile?.status || 'Unknown',
         };

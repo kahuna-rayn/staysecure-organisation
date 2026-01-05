@@ -3393,21 +3393,26 @@
         const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
         debugLog$1("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
         if (profilesError) throw profilesError;
-        const { data: userRoles, error: rolesError } = await supabaseClient.from("user_profile_roles").select(`
-          user_id,
-          is_primary,
-          role_id,
-          roles(name)
-        `).in("user_id", userIds);
-        debugLog$1("[DepartmentMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: rolesError == null ? void 0 : rolesError.message });
-        if (rolesError) throw rolesError;
+        const { data: userProfileRoles, error: uprError } = await supabaseClient.from("user_profile_roles").select("user_id, is_primary, role_id").in("user_id", userIds);
+        debugLog$1("[DepartmentMembersDialog] user_profile_roles result:", { count: userProfileRoles == null ? void 0 : userProfileRoles.length, error: uprError == null ? void 0 : uprError.message });
+        if (uprError) throw uprError;
+        const roleIds = [...new Set((userProfileRoles || []).map((upr) => upr.role_id).filter(Boolean))];
+        let rolesData = [];
+        if (roleIds.length > 0) {
+          const { data: roles, error: rolesError } = await supabaseClient.from("roles").select("role_id, name").in("role_id", roleIds);
+          debugLog$1("[DepartmentMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
+          if (rolesError) throw rolesError;
+          rolesData = roles || [];
+        }
         const profileMap = /* @__PURE__ */ new Map();
         (profiles || []).forEach((p) => profileMap.set(p.id, p));
-        const roleMap = /* @__PURE__ */ new Map();
-        (userRoles || []).forEach((ur) => {
-          var _a;
-          if (ur.is_primary || !roleMap.has(ur.user_id)) {
-            roleMap.set(ur.user_id, ((_a = ur.roles) == null ? void 0 : _a.name) || "No Role");
+        const roleNameMap = /* @__PURE__ */ new Map();
+        rolesData.forEach((r) => roleNameMap.set(r.role_id, r.name));
+        const userRoleMap = /* @__PURE__ */ new Map();
+        (userProfileRoles || []).forEach((upr) => {
+          const roleName = roleNameMap.get(upr.role_id) || "No Role";
+          if (upr.is_primary || !userRoleMap.has(upr.user_id)) {
+            userRoleMap.set(upr.user_id, roleName);
           }
         });
         const memberData = (userDepts || []).map((ud) => {
@@ -3416,7 +3421,7 @@
           return {
             departmentName: ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown",
             userName: (profile == null ? void 0 : profile.full_name) || "Unknown User",
-            roleName: roleMap.get(ud.user_id) || "No Role",
+            roleName: userRoleMap.get(ud.user_id) || "No Role",
             email: (profile == null ? void 0 : profile.username) || "",
             // username is the email in this schema
             status: (profile == null ? void 0 : profile.status) || "Unknown"

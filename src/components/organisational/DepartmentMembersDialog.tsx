@@ -41,27 +41,27 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
     queryFn: async () => {
       debugLog('[DepartmentMembersDialog] Fetching members, departmentId:', departmentId);
       
-      // Query user_departments with joins to get all the data
-      let query = supabaseClient
+      // First, get user_departments with department info
+      let deptQuery = supabaseClient
         .from('user_departments')
         .select(`
           user_id,
+          department_id,
           is_primary,
-          departments!inner(id, name),
-          profiles!inner(id, full_name, email, status)
+          departments(id, name)
         `);
 
       if (departmentId) {
-        query = query.eq('department_id', departmentId);
+        deptQuery = deptQuery.eq('department_id', departmentId);
       }
 
-      const { data: userDepts, error: userDeptsError } = await query;
+      const { data: userDepts, error: userDeptsError } = await deptQuery;
 
-      debugLog('[DepartmentMembersDialog] user_departments result:', { count: userDepts?.length, error: userDeptsError });
+      debugLog('[DepartmentMembersDialog] user_departments result:', { count: userDepts?.length, error: userDeptsError?.message });
 
       if (userDeptsError) throw userDeptsError;
 
-      // Get user roles for each user
+      // Get unique user IDs
       const userIds = [...new Set((userDepts || []).map((ud: any) => ud.user_id))];
       debugLog('[DepartmentMembersDialog] Unique user IDs:', userIds.length);
       
@@ -69,36 +69,54 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
         debugLog('[DepartmentMembersDialog] No users found in departments');
         return [];
       }
-      
+
+      // Get profiles for these users
+      const { data: profiles, error: profilesError } = await supabaseClient
+        .from('profiles')
+        .select('id, full_name, email, status')
+        .in('id', userIds);
+
+      debugLog('[DepartmentMembersDialog] profiles result:', { count: profiles?.length, error: profilesError?.message });
+
+      if (profilesError) throw profilesError;
+
+      // Get roles for these users
       const { data: userRoles, error: rolesError } = await supabaseClient
         .from('user_profile_roles')
         .select(`
           user_id,
           is_primary,
-          roles!inner(id, name)
+          roles(id, name)
         `)
         .in('user_id', userIds);
 
-      debugLog('[DepartmentMembersDialog] user_profile_roles result:', { count: userRoles?.length, error: rolesError });
+      debugLog('[DepartmentMembersDialog] user_profile_roles result:', { count: userRoles?.length, error: rolesError?.message });
 
       if (rolesError) throw rolesError;
 
-      // Create a map of user_id to primary role
+      // Create maps for quick lookup
+      const profileMap = new Map<string, any>();
+      (profiles || []).forEach((p: any) => profileMap.set(p.id, p));
+
       const roleMap = new Map<string, string>();
       (userRoles || []).forEach((ur: any) => {
+        // Prefer primary role, otherwise use first role found
         if (ur.is_primary || !roleMap.has(ur.user_id)) {
           roleMap.set(ur.user_id, ur.roles?.name || 'No Role');
         }
       });
 
-      // Transform to MemberData format
-      const memberData: MemberData[] = (userDepts || []).map((ud: any) => ({
-        departmentName: ud.departments?.name || 'Unknown',
-        userName: ud.profiles?.full_name || 'Unknown User',
-        roleName: roleMap.get(ud.user_id) || 'No Role',
-        email: ud.profiles?.email || '',
-        status: ud.profiles?.status || 'Unknown',
-      }));
+      // Transform to MemberData format - one row per user-department assignment
+      const memberData: MemberData[] = (userDepts || []).map((ud: any) => {
+        const profile = profileMap.get(ud.user_id);
+        return {
+          departmentName: ud.departments?.name || 'Unknown',
+          userName: profile?.full_name || 'Unknown User',
+          roleName: roleMap.get(ud.user_id) || 'No Role',
+          email: profile?.email || '',
+          status: profile?.status || 'Unknown',
+        };
+      });
 
       // Sort by department, then by user name
       memberData.sort((a, b) => {

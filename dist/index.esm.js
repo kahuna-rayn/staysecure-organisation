@@ -3409,17 +3409,17 @@ const DepartmentMembersDialog = ({
     queryKey: ["department-members", departmentId],
     queryFn: async () => {
       debugLog$1("[DepartmentMembersDialog] Fetching members, departmentId:", departmentId);
-      let query = supabaseClient.from("user_departments").select(`
+      let deptQuery = supabaseClient.from("user_departments").select(`
           user_id,
+          department_id,
           is_primary,
-          departments!inner(id, name),
-          profiles!inner(id, full_name, email, status)
+          departments(id, name)
         `);
       if (departmentId) {
-        query = query.eq("department_id", departmentId);
+        deptQuery = deptQuery.eq("department_id", departmentId);
       }
-      const { data: userDepts, error: userDeptsError } = await query;
-      debugLog$1("[DepartmentMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError });
+      const { data: userDepts, error: userDeptsError } = await deptQuery;
+      debugLog$1("[DepartmentMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
       if (userDeptsError) throw userDeptsError;
       const userIds = [...new Set((userDepts || []).map((ud) => ud.user_id))];
       debugLog$1("[DepartmentMembersDialog] Unique user IDs:", userIds.length);
@@ -3427,13 +3427,18 @@ const DepartmentMembersDialog = ({
         debugLog$1("[DepartmentMembersDialog] No users found in departments");
         return [];
       }
+      const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, email, status").in("id", userIds);
+      debugLog$1("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
+      if (profilesError) throw profilesError;
       const { data: userRoles, error: rolesError } = await supabaseClient.from("user_profile_roles").select(`
           user_id,
           is_primary,
-          roles!inner(id, name)
+          roles(id, name)
         `).in("user_id", userIds);
-      debugLog$1("[DepartmentMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: rolesError });
+      debugLog$1("[DepartmentMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: rolesError == null ? void 0 : rolesError.message });
       if (rolesError) throw rolesError;
+      const profileMap = /* @__PURE__ */ new Map();
+      (profiles || []).forEach((p) => profileMap.set(p.id, p));
       const roleMap = /* @__PURE__ */ new Map();
       (userRoles || []).forEach((ur) => {
         var _a;
@@ -3442,13 +3447,14 @@ const DepartmentMembersDialog = ({
         }
       });
       const memberData = (userDepts || []).map((ud) => {
-        var _a, _b, _c, _d;
+        var _a;
+        const profile = profileMap.get(ud.user_id);
         return {
           departmentName: ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown",
-          userName: ((_b = ud.profiles) == null ? void 0 : _b.full_name) || "Unknown User",
+          userName: (profile == null ? void 0 : profile.full_name) || "Unknown User",
           roleName: roleMap.get(ud.user_id) || "No Role",
-          email: ((_c = ud.profiles) == null ? void 0 : _c.email) || "",
-          status: ((_d = ud.profiles) == null ? void 0 : _d.status) || "Unknown"
+          email: (profile == null ? void 0 : profile.email) || "",
+          status: (profile == null ? void 0 : profile.status) || "Unknown"
         };
       });
       memberData.sort((a, b) => {

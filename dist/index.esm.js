@@ -48,9 +48,9 @@ import { useUserAssets } from "@/hooks/useUserAssets";
 import { useUserAssets as useUserAssets2 } from "@/hooks/useUserAssets";
 import MyDocuments from "@/components/knowledge/MyDocuments";
 import LearningTracksTab from "@/components/LearningTracksTab";
-import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
 import { useProfile } from "@/hooks/useProfile";
+import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 /**
@@ -7612,7 +7612,19 @@ const EditableProfileHeader = ({
   const managerName = managerProfile ? managerProfile.full_name || managerProfile.username : "Not assigned";
   const { userDepartments } = useUserDepartments(profile.id);
   const { primaryRole } = useUserProfileRoles(profile.id);
-  const { data: physicalLocations, isLoading: locationsLoading } = useUserPhysicalLocations(profile.id);
+  const { data: physicalLocations, isLoading: locationsLoading } = useQuery({
+    queryKey: ["all-locations"],
+    queryFn: async () => {
+      const { data, error } = await supabaseClient.from("locations").select("id, name").eq("status", "Active").order("name");
+      if (error) throw error;
+      return (data || []).map((loc) => ({
+        id: loc.id,
+        name: loc.name,
+        value: loc.name,
+        label: loc.name
+      }));
+    }
+  });
   const primaryDepartment = userDepartments == null ? void 0 : userDepartments.find((dept) => dept.is_primary);
   const handleManagerChange = async (userId) => {
     setManagerValue(userId);

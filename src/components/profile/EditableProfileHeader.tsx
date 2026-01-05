@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
-import { useUserPhysicalLocations } from '@/hooks/useUserPhysicalLocations';
+// useUserPhysicalLocations removed - we fetch all locations directly for admin dropdown
 import { useUserRole } from '@/hooks/useUserRole';
 import { useOrganisationContext } from '@/context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
@@ -200,7 +200,26 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   // Get departments and roles
   const { userDepartments } = useUserDepartments(profile.id);
   const { primaryRole } = useUserProfileRoles(profile.id);
-  const { data: physicalLocations, isLoading: locationsLoading } = useUserPhysicalLocations(profile.id);
+  
+  // Fetch ALL active locations for dropdown (not just user's assigned locations)
+  const { data: physicalLocations, isLoading: locationsLoading } = useQuery({
+    queryKey: ['all-locations'],
+    queryFn: async () => {
+      const { data, error } = await supabaseClient
+        .from('locations')
+        .select('id, name')
+        .eq('status', 'Active')
+        .order('name');
+      if (error) throw error;
+      // Transform to dropdown format
+      return (data || []).map(loc => ({
+        id: loc.id,
+        name: loc.name,
+        value: loc.name,
+        label: loc.name
+      }));
+    },
+  });
   
   // Get primary department
   const primaryDepartment = userDepartments?.find(dept => dept.is_primary);

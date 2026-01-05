@@ -1,4 +1,5 @@
 
+import { debugLog } from './utils/debugLog';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface HIBClause {
@@ -103,7 +104,7 @@ export const saveHIBData = async (userId: string, clausesToSave: HIBClause[]): P
 
 export const updateHIBClause = async (userId: string, id: string, updates: Partial<HIBClause>): Promise<{ success: boolean; error?: string }> => {
   try {
-    console.log('updateHIBClause called with:', { userId, id, updates });
+    debugLog('updateHIBClause called with:', { userId, id, updates });
     
     const updateData = {
       hib_section: updates.hibSection,
@@ -118,7 +119,7 @@ export const updateHIBClause = async (userId: string, id: string, updates: Parti
       section_number: updates.sectionNumber
     };
     
-    console.log('Supabase update data:', updateData);
+    debugLog('Supabase update data:', updateData);
     
     const { data, error } = await supabase
       .from('hib_checklist')
@@ -127,7 +128,7 @@ export const updateHIBClause = async (userId: string, id: string, updates: Parti
       .eq('user_id', userId)
       .select();
 
-    console.log('Supabase update result:', { data, error });
+    debugLog('Supabase update result:', { data, error });
 
     if (error) throw error;
     return { success: true };

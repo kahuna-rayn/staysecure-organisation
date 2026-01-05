@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { debugLog } from '../../utils/debugLog';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -134,12 +135,12 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   // Helper function to validate location
   const validateLocation = (locationName: string): { isValid: boolean; locationId?: string } => {
     if (!locationName || !validLocations) {
-      console.log('Location validation: No location name or validLocations not loaded', { locationName, validLocations });
+      debugLog('Location validation: No location name or validLocations not loaded', { locationName, validLocations });
       return { isValid: false };
     }
 
     const trimmedLocation = locationName.trim();
-    console.log('Location validation: Checking location', { 
+    debugLog('Location validation: Checking location', { 
       providedLocation: trimmedLocation, 
       availableLocations: validLocations.map((l: { name: string }) => l.name) 
     });
@@ -148,7 +149,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       (loc: { name: string }) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
     );
 
-    console.log('Location validation result:', { 
+    debugLog('Location validation result:', { 
       location: trimmedLocation, 
       found: !!validLocation, 
       validLocation 
@@ -271,7 +272,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   const translateError = (error: any): string => {
     const errorMessage = error?.message || error?.error || 'Unknown error';
     
-    console.log('Translating error:', { originalError: error, errorMessage });
+    debugLog('Translating error:', { originalError: error, errorMessage });
     
     // Handle specific Supabase/Edge Function errors
     if (errorMessage.includes('Edge Function returned a non-2xx status code')) {
@@ -376,7 +377,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error('Last Name is required for all users.');
     }
 
-    console.log('Processing user:', email);
+    debugLog('Processing user:', email);
 
     // Validate all fields BEFORE creating user
     const accessLevelValue = row['Access Level'] || row['access_level'] || '';
@@ -453,7 +454,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       } else {
         // Valid manager email found - assign manager
         managerId = managerValidation.managerId;
-        console.log(`Manager validated: ${managerEmail} -> ${managerId}`);
+        debugLog(`Manager validated: ${managerEmail} -> ${managerId}`);
       }
     }
 
@@ -485,7 +486,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     }
 
     if (authData && authData.user) {
-      console.log('User created successfully:', email);
+      debugLog('User created successfully:', email);
     } else if (authData && authData.error) {
       console.error('Create user error:', authData.error);
       const friendlyError = translateError(authData.error);
@@ -503,7 +504,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     // Update manager_id in profiles table if manager was provided and validated
     if (managerId) {
       try {
-        console.log(`Updating manager for user ${userId} with managerId ${managerId}`);
+        debugLog(`Updating manager for user ${userId} with managerId ${managerId}`);
         const { error: managerUpdateError } = await supabase
           .from('profiles')
           .update({ manager: managerId })
@@ -517,7 +518,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             message: `Manager could not be assigned: ${managerUpdateError.message}`
           });
         } else {
-          console.log(`Successfully updated manager for user ${userId}`);
+          debugLog(`Successfully updated manager for user ${userId}`);
         }
       } catch (managerError: any) {
         console.error('Exception updating profile manager:', managerError);
@@ -718,7 +719,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             return;
           }
 
-          console.log('Processing', data.length, 'rows');
+          debugLog('Processing', data.length, 'rows');
           let successCount = 0;
           const errors: ImportError[] = [];
           const warnings: ImportError[] = [];
@@ -729,17 +730,17 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             
             // Skip empty rows
             if (!row['Email'] && !row['email'] && !row['Full Name'] && !row['full_name']) {
-              console.log('Skipping empty row at index', i);
+              debugLog('Skipping empty row at index', i);
               continue;
             }
 
             const email = row['Email'] || row['email'] || 'Unknown';
             
             try {
-              console.log(`Processing user ${i + 1} of ${data.length}:`, email);
+              debugLog(`Processing user ${i + 1} of ${data.length}:`, email);
               const result = await processUserImport(row);
               successCount++;
-              console.log(`Successfully processed user ${i + 1}`);
+              debugLog(`Successfully processed user ${i + 1}`);
               
               // Collect all warnings
               if (result.warnings) {
@@ -771,7 +772,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             }
           }
 
-          console.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
+          debugLog('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
 
           setUploadedFile(null);
           setIsProcessing(false);

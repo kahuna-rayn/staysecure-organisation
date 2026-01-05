@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { debugLog } from '../../utils/debugLog';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -181,7 +182,7 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
             return;
           }
 
-          console.log('Processing', data.length, 'roles');
+          debugLog('Processing', data.length, 'roles');
           let successCount = 0;
           const errors: ImportError[] = [];
           const warnings: ImportError[] = [];
@@ -192,17 +193,17 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
             
             // Skip empty rows
             if (!row['Name'] && !row['name']) {
-              console.log('Skipping empty row at index', i);
+              debugLog('Skipping empty row at index', i);
               continue;
             }
 
             const name = row['Name'] || row['name'] || 'Unknown';
             
             try {
-              console.log(`Processing role ${i + 1} of ${data.length}:`, name);
+              debugLog(`Processing role ${i + 1} of ${data.length}:`, name);
               const result = await processRoleImport(row);
               successCount++;
-              console.log(`Successfully processed role ${i + 1}`);
+              debugLog(`Successfully processed role ${i + 1}`);
               
               // Collect warnings
               if (result.warnings) {
@@ -233,7 +234,7 @@ const ImportRolesDialog: React.FC<ImportRolesDialogProps> = ({ onImportComplete,
             }
           }
 
-          console.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
+          debugLog('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
 
           setUploadedFile(null);
           setIsProcessing(false);

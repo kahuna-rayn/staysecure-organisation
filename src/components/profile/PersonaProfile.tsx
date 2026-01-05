@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { debugLog } from '../../utils/debugLog';
 import { useAuth } from 'staysecure-auth';
 import { useProfile } from "@/hooks/useProfile";
 import { useUserAssets } from "@/hooks/useUserAssets";
@@ -156,7 +157,7 @@ const PersonaProfile: React.FC = () => {
 
   // Handler for optimistic update
   const handleOptimisticUpdate = (field: string, value: string) => {
-    console.log('PersonaProfile handleOptimisticUpdate - field:', field, 'value:', value);
+    debugLog('PersonaProfile handleOptimisticUpdate - field:', field, 'value:', value);
     setOptimisticData(prev => {
       const baseData = prev || personaData;
       const updated = { ...baseData };
@@ -164,23 +165,23 @@ const PersonaProfile: React.FC = () => {
       if (field === 'avatar_url') {
         updated.avatar = value;
       } else if (field === 'language') {
-        console.log('PersonaProfile - setting language to:', value);
+        debugLog('PersonaProfile - setting language to:', value);
         updated.language = value;
       } else if (field in updated) {
         updated[field] = value;
       } else if (updated.account && field in updated.account) {
         updated.account = { ...updated.account, [field]: value };
       }
-      console.log('PersonaProfile - updated optimisticData language:', updated.language);
+      debugLog('PersonaProfile - updated optimisticData language:', updated.language);
       return updated;
     });
   };
 
 
   const displayData = optimisticData || personaData;
-  console.log('PersonaProfile render - displayData.language:', displayData.language);
-  console.log('PersonaProfile render - personaData.language:', personaData.language);
-  console.log('PersonaProfile render - optimisticData?.language:', optimisticData?.language);
+  debugLog('PersonaProfile render - displayData.language:', displayData.language);
+  debugLog('PersonaProfile render - personaData.language:', personaData.language);
+  debugLog('PersonaProfile render - optimisticData?.language:', optimisticData?.language);
 
   return (
     <div className="space-y-6">

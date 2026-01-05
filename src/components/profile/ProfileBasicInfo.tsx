@@ -1,4 +1,5 @@
 import React from "react";
+import { debugLog } from '../../utils/debugLog';
 import { Phone, MapPin, Star, User, Hash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import EditableField from "./EditableField";
@@ -46,7 +47,7 @@ const ProfileBasicInfo: React.FC<ProfileBasicInfoProps> = ({
   currentUserId,
   userId
 }) => {
-  console.log('ProfileBasicInfo rendering with userId:', userId, 'currentUserId:', currentUserId);
+  debugLog('ProfileBasicInfo rendering with userId:', userId, 'currentUserId:', currentUserId);
   const { userDepartments } = useUserDepartments(userId);
   const { primaryRole } = useUserProfileRoles(userId);
   const { data: physicalLocations, isLoading: locationsLoading } = useUserPhysicalLocations(userId);

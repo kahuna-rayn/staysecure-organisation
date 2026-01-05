@@ -675,7 +675,7 @@
       if (sessionError || !((_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token)) {
         throw new Error("Unable to determine current session. Please refresh and try again.");
       }
-      console.log("[handleCreateUser] Invoking create-user Edge Function", {
+      debugLog("[handleCreateUser] Invoking create-user Edge Function", {
         clientId,
         hasAccessToken: !!sessionData.session.access_token
       });
@@ -1311,6 +1311,11 @@
       ] })
     ] });
   };
+  const debugLog$1 = (...args) => {
+    if (typeof window !== "undefined" && window.__DEBUG__) {
+      console.log("[ORG]", ...args);
+    }
+  };
   const validateManager = (managerEmail, existingProfiles) => {
     if (!managerEmail || !existingProfiles) {
       return { isValid: false };
@@ -1410,18 +1415,18 @@
     };
     const validateLocation = (locationName) => {
       if (!locationName || !validLocations) {
-        console.log("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
+        debugLog$1("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
         return { isValid: false };
       }
       const trimmedLocation = locationName.trim();
-      console.log("Location validation: Checking location", {
+      debugLog$1("Location validation: Checking location", {
         providedLocation: trimmedLocation,
         availableLocations: validLocations.map((l) => l.name)
       });
       const validLocation = validLocations.find(
         (loc) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
       );
-      console.log("Location validation result:", {
+      debugLog$1("Location validation result:", {
         location: trimmedLocation,
         found: !!validLocation,
         validLocation
@@ -1508,7 +1513,7 @@
     };
     const translateError = (error) => {
       const errorMessage = (error == null ? void 0 : error.message) || (error == null ? void 0 : error.error) || "Unknown error";
-      console.log("Translating error:", { originalError: error, errorMessage });
+      debugLog$1("Translating error:", { originalError: error, errorMessage });
       if (errorMessage.includes("Edge Function returned a non-2xx status code")) {
         return "Server error occurred while creating user. Please try again or contact support.";
       }
@@ -1580,7 +1585,7 @@
       if (!lastName || !lastName.trim()) {
         throw new Error("Last Name is required for all users.");
       }
-      console.log("Processing user:", email);
+      debugLog$1("Processing user:", email);
       const accessLevelValue = row["Access Level"] || row["access_level"] || "";
       const accessLevelValidation = validateAccessLevel(accessLevelValue);
       if (!accessLevelValidation.isValid) {
@@ -1637,7 +1642,7 @@
           };
         } else {
           managerId = managerValidation.managerId;
-          console.log(`Manager validated: ${managerEmail} -> ${managerId}`);
+          debugLog$1(`Manager validated: ${managerEmail} -> ${managerId}`);
         }
       }
       const clientId = client.getCurrentClientId();
@@ -1666,7 +1671,7 @@
         throw new Error(friendlyError);
       }
       if (authData && authData.user) {
-        console.log("User created successfully:", email);
+        debugLog$1("User created successfully:", email);
       } else if (authData && authData.error) {
         console.error("Create user error:", authData.error);
         const friendlyError = translateError(authData.error);
@@ -1679,7 +1684,7 @@
       const warnings = [];
       if (managerId) {
         try {
-          console.log(`Updating manager for user ${userId} with managerId ${managerId}`);
+          debugLog$1(`Updating manager for user ${userId} with managerId ${managerId}`);
           const { error: managerUpdateError } = await supabase.from("profiles").update({ manager: managerId }).eq("id", userId);
           if (managerUpdateError) {
             console.error("Error updating profile manager:", managerUpdateError);
@@ -1689,7 +1694,7 @@
               message: `Manager could not be assigned: ${managerUpdateError.message}`
             });
           } else {
-            console.log(`Successfully updated manager for user ${userId}`);
+            debugLog$1(`Successfully updated manager for user ${userId}`);
           }
         } catch (managerError) {
           console.error("Exception updating profile manager:", managerError);
@@ -1840,22 +1845,22 @@
               setIsProcessing(false);
               return;
             }
-            console.log("Processing", data.length, "rows");
+            debugLog$1("Processing", data.length, "rows");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
-                console.log("Skipping empty row at index", i);
+                debugLog$1("Skipping empty row at index", i);
                 continue;
               }
               const email = row["Email"] || row["email"] || "Unknown";
               try {
-                console.log(`Processing user ${i + 1} of ${data.length}:`, email);
+                debugLog$1(`Processing user ${i + 1} of ${data.length}:`, email);
                 const result = await processUserImport(row);
                 successCount++;
-                console.log(`Successfully processed user ${i + 1}`);
+                debugLog$1(`Successfully processed user ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -1884,7 +1889,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 500));
               }
             }
-            console.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debugLog$1("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -2373,22 +2378,22 @@
               setIsProcessing(false);
               return;
             }
-            console.log("Processing", data.length, "roles");
+            debugLog$1("Processing", data.length, "roles");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Name"] && !row["name"]) {
-                console.log("Skipping empty row at index", i);
+                debugLog$1("Skipping empty row at index", i);
                 continue;
               }
               const name = row["Name"] || row["name"] || "Unknown";
               try {
-                console.log(`Processing role ${i + 1} of ${data.length}:`, name);
+                debugLog$1(`Processing role ${i + 1} of ${data.length}:`, name);
                 const result = await processRoleImport(row);
                 successCount++;
-                console.log(`Successfully processed role ${i + 1}`);
+                debugLog$1(`Successfully processed role ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -2414,7 +2419,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 300));
               }
             }
-            console.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debugLog$1("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -3129,22 +3134,22 @@
               setIsProcessing(false);
               return;
             }
-            console.log("Processing", data.length, "departments");
+            debugLog$1("Processing", data.length, "departments");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Name"] && !row["name"]) {
-                console.log("Skipping empty row at index", i);
+                debugLog$1("Skipping empty row at index", i);
                 continue;
               }
               const name = row["Name"] || row["name"] || "Unknown";
               try {
-                console.log(`Processing department ${i + 1} of ${data.length}:`, name);
+                debugLog$1(`Processing department ${i + 1} of ${data.length}:`, name);
                 const result = await processDepartmentImport(row);
                 successCount++;
-                console.log(`Successfully processed department ${i + 1}`);
+                debugLog$1(`Successfully processed department ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -3170,7 +3175,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 300));
               }
             }
-            console.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debugLog$1("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -6156,9 +6161,9 @@
     const { data: userProfile, isLoading: profileLoading, error: profileError } = reactQuery.useQuery({
       queryKey: ["user-profile-by-id", userId],
       queryFn: async () => {
-        console.log("Querying profile for userId:", userId);
+        debugLog$1("Querying profile for userId:", userId);
         const { data, error } = await client.supabase.from("profiles").select("id, full_name, username").eq("id", userId).single();
-        console.log("Profile query result:", { data, error });
+        debugLog$1("Profile query result:", { data, error });
         if (error) {
           console.error("Error fetching user profile:", error);
           throw error;
@@ -6507,15 +6512,15 @@
       queryKey: ["user-roles", userId],
       queryFn: async () => {
         if (!userId) return [];
-        console.log("UserDepartmentsRolesTable: Fetching roles for user:", userId);
+        debugLog$1("UserDepartmentsRolesTable: Fetching roles for user:", userId);
         const { data, error } = await client.supabase.from("user_profile_roles").select(`
           *,
           roles (
             name
           )
         `).eq("user_id", userId).order("is_primary", { ascending: false });
-        console.log("UserDepartmentsRolesTable: Raw roles data:", data);
-        console.log("UserDepartmentsRolesTable: Roles query error:", error);
+        debugLog$1("UserDepartmentsRolesTable: Raw roles data:", data);
+        debugLog$1("UserDepartmentsRolesTable: Roles query error:", error);
         if (error) throw error;
         const transformedData = (data || []).map((item) => {
           var _a;
@@ -6535,7 +6540,7 @@
           if (!a.is_primary && b.is_primary) return 1;
           return (a.role_name || "").localeCompare(b.role_name || "");
         });
-        console.log("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
+        debugLog$1("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
         return transformedData;
       },
       enabled: !!userId
@@ -6550,12 +6555,12 @@
     });
     const addRoleMutation = reactQuery.useMutation({
       mutationFn: async ({ roleId, pairingId }) => {
-        console.log("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
+        debugLog$1("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
         const role = allRoles.find((r) => r.role_id === roleId);
-        console.log("UserDepartmentsRolesTable: Found role:", role);
+        debugLog$1("UserDepartmentsRolesTable: Found role:", role);
         if (!role) throw new Error("Role not found");
         const isPrimary = userRoles.length === 0;
-        console.log("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
+        debugLog$1("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
         const insertData = {
           user_id: userId,
           role_id: roleId,
@@ -6563,15 +6568,15 @@
           assigned_by: user == null ? void 0 : user.id,
           pairing_id: pairingId
         };
-        console.log("UserDepartmentsRolesTable: Inserting role data:", insertData);
+        debugLog$1("UserDepartmentsRolesTable: Inserting role data:", insertData);
         const { data, error } = await client.supabase.from("user_profile_roles").insert(insertData).select();
-        console.log("UserDepartmentsRolesTable: Insert result:", data);
-        console.log("UserDepartmentsRolesTable: Insert error:", error);
+        debugLog$1("UserDepartmentsRolesTable: Insert result:", data);
+        debugLog$1("UserDepartmentsRolesTable: Insert error:", error);
         if (error) throw error;
         return role;
       },
       onSuccess: (data) => {
-        console.log("UserDepartmentsRolesTable: Role assignment successful:", data);
+        debugLog$1("UserDepartmentsRolesTable: Role assignment successful:", data);
         queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
         ue.success("Role assigned successfully");
       },
@@ -6657,15 +6662,15 @@
       return pairs;
     };
     const getAvailableRoles = (selectedDepartmentId) => {
-      console.log("getAvailableRoles called with:", selectedDepartmentId);
-      console.log("allRoles:", allRoles);
+      debugLog$1("getAvailableRoles called with:", selectedDepartmentId);
+      debugLog$1("allRoles:", allRoles);
       if (!selectedDepartmentId) {
         const generalRoles = allRoles.filter((role) => !role.department_id);
-        console.log("No department selected, showing general roles:", generalRoles);
+        debugLog$1("No department selected, showing general roles:", generalRoles);
         return generalRoles;
       }
       const departmentRoles = allRoles.filter((role) => role.department_id === selectedDepartmentId);
-      console.log(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
+      debugLog$1(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
       return departmentRoles;
     };
     const handleAddNewRow = () => {
@@ -6706,25 +6711,25 @@
     };
     const handleSaveNewRow = async (index) => {
       const row = newRows[index];
-      console.log("UserDepartmentsRolesTable: Saving new row:", row);
-      console.log("UserDepartmentsRolesTable: Current userRoles:", userRoles);
-      console.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+      debugLog$1("UserDepartmentsRolesTable: Saving new row:", row);
+      debugLog$1("UserDepartmentsRolesTable: Current userRoles:", userRoles);
+      debugLog$1("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
       if (!row.departmentId && !row.roleId) {
         ue.error("Please select at least a department or role");
         return;
       }
       try {
         const pairingId = row.departmentId && row.roleId ? crypto.randomUUID() : void 0;
-        console.log("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
+        debugLog$1("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
         if (row.departmentId) {
           const isDepartmentAlreadyAssigned = userDepartments.some((dept) => dept.department_id === row.departmentId);
-          console.log("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
-          console.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
-          console.log("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
+          debugLog$1("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
+          debugLog$1("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+          debugLog$1("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
           if (!isDepartmentAlreadyAssigned) {
             const isPrimary = userDepartments.length === 0;
-            console.log("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
-            console.log("UserDepartmentsRolesTable: Department params:", {
+            debugLog$1("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
+            debugLog$1("UserDepartmentsRolesTable: Department params:", {
               userId,
               departmentId: row.departmentId,
               isPrimary,
@@ -6738,17 +6743,17 @@
               pairingId,
               assignedBy: user == null ? void 0 : user.id
             });
-            console.log("UserDepartmentsRolesTable: Department addition completed");
+            debugLog$1("UserDepartmentsRolesTable: Department addition completed");
           } else {
-            console.log("UserDepartmentsRolesTable: Department already assigned, skipping");
+            debugLog$1("UserDepartmentsRolesTable: Department already assigned, skipping");
           }
         }
         if (row.roleId) {
           const isRoleAlreadyAssigned = userRoles.some((role) => role.role_id === row.roleId);
-          console.log("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
-          console.log("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
+          debugLog$1("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
+          debugLog$1("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
           if (!isRoleAlreadyAssigned) {
-            console.log("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
+            debugLog$1("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
             await addRoleMutation.mutateAsync({
               roleId: row.roleId,
               pairingId
@@ -7085,21 +7090,21 @@
     const initials = firstName && lastName ? firstName.charAt(0) + lastName.charAt(0) : (firstName == null ? void 0 : firstName.slice(0, 2)) || "U";
     const handleAvatarClick = () => {
       var _a;
-      console.log("ProfileAvatar: Upload button clicked");
-      console.log("ProfileAvatar: fileInputRef.current:", fileInputRef.current);
-      console.log("ProfileAvatar: profileId:", profileId);
-      console.log("ProfileAvatar: supabase:", client.supabase);
+      debugLog$1("ProfileAvatar: Upload button clicked");
+      debugLog$1("ProfileAvatar: fileInputRef.current:", fileInputRef.current);
+      debugLog$1("ProfileAvatar: profileId:", profileId);
+      debugLog$1("ProfileAvatar: supabase:", client.supabase);
       (_a = fileInputRef.current) == null ? void 0 : _a.click();
     };
     const handleFileChange = async (event) => {
       var _a;
-      console.log("ProfileAvatar: File selected:", event.target.files);
+      debugLog$1("ProfileAvatar: File selected:", event.target.files);
       const file = (_a = event.target.files) == null ? void 0 : _a[0];
       if (!file) {
-        console.log("ProfileAvatar: No file selected");
+        debugLog$1("ProfileAvatar: No file selected");
         return;
       }
-      console.log("ProfileAvatar: Processing file:", file.name, file.type, file.size);
+      debugLog$1("ProfileAvatar: Processing file:", file.name, file.type, file.size);
       const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
       if (!validTypes.includes(file.type)) {
         useToast.toast({
@@ -7720,7 +7725,7 @@
             {
               value: profile.language || "English",
               onValueChange: async (value) => {
-                console.log("Select onValueChange - value:", value);
+                debugLog$1("Select onValueChange - value:", value);
                 try {
                   setSavingLanguage(true);
                   await handleFieldSave("language", value);
@@ -7734,7 +7739,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: languages == null ? void 0 : languages.map((lang) => {
                   const langValue = lang.display_name || lang.code;
                   const langLabel = lang.native_name || lang.display_name || lang.code;
-                  console.log("langValue:", langValue, "langLabel:", langLabel);
+                  debugLog$1("langValue:", langValue, "langLabel:", langLabel);
                   return /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: langValue, children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
                     lang.flag_emoji && /* @__PURE__ */ jsxRuntime.jsx("span", { children: lang.flag_emoji }),
                     /* @__PURE__ */ jsxRuntime.jsx("span", { children: langLabel })
@@ -7744,8 +7749,8 @@
             }
           ),
           (() => {
-            console.log("EditableProfileHeader render - profile.language:", profile.language);
-            console.log("EditableProfileHeader render - profile object:", profile);
+            debugLog$1("EditableProfileHeader render - profile.language:", profile.language);
+            debugLog$1("EditableProfileHeader render - profile object:", profile);
             return null;
           })()
         ] }),
@@ -7849,28 +7854,28 @@
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8", children: /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "No profile found. Please update your profile information." }) });
     }
     const handleOptimisticUpdate = (field, value) => {
-      console.log("PersonaProfile handleOptimisticUpdate - field:", field, "value:", value);
+      debugLog$1("PersonaProfile handleOptimisticUpdate - field:", field, "value:", value);
       setOptimisticData((prev) => {
         const baseData = prev || personaData;
         const updated = { ...baseData };
         if (field === "avatar_url") {
           updated.avatar = value;
         } else if (field === "language") {
-          console.log("PersonaProfile - setting language to:", value);
+          debugLog$1("PersonaProfile - setting language to:", value);
           updated.language = value;
         } else if (field in updated) {
           updated[field] = value;
         } else if (updated.account && field in updated.account) {
           updated.account = { ...updated.account, [field]: value };
         }
-        console.log("PersonaProfile - updated optimisticData language:", updated.language);
+        debugLog$1("PersonaProfile - updated optimisticData language:", updated.language);
         return updated;
       });
     };
     const displayData = optimisticData || personaData;
-    console.log("PersonaProfile render - displayData.language:", displayData.language);
-    console.log("PersonaProfile render - personaData.language:", personaData.language);
-    console.log("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
+    debugLog$1("PersonaProfile render - displayData.language:", displayData.language);
+    debugLog$1("PersonaProfile render - personaData.language:", personaData.language);
+    debugLog$1("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
       /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
@@ -8331,7 +8336,7 @@
     currentUserId,
     userId
   }) => {
-    console.log("ProfileBasicInfo rendering with userId:", userId, "currentUserId:", currentUserId);
+    debugLog$1("ProfileBasicInfo rendering with userId:", userId, "currentUserId:", currentUserId);
     const { userDepartments } = useUserDepartments.useUserDepartments(userId);
     const { primaryRole } = useUserProfileRoles.useUserProfileRoles(userId);
     const { data: physicalLocations, isLoading: locationsLoading } = useUserPhysicalLocations.useUserPhysicalLocations(userId);

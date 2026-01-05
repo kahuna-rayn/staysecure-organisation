@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { debugLog } from '../../utils/debugLog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -373,7 +374,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 <Select 
                   value={(profile.language as string) || 'English'} 
                   onValueChange={async (value) => {
-                    console.log('Select onValueChange - value:', value);
+                    debugLog('Select onValueChange - value:', value);
                     try {
                       setSavingLanguage(true);
                       await handleFieldSave('language', value);
@@ -391,7 +392,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                       // Save display_name (e.g., 'Chinese', 'English') to match what's stored in profiles
                       const langValue = lang.display_name || lang.code;
                       const langLabel = lang.native_name || lang.display_name || lang.code;
-                      console.log('langValue:', langValue, 'langLabel:', langLabel);
+                      debugLog('langValue:', langValue, 'langLabel:', langLabel);
                       return (
                         <SelectItem key={langValue} value={langValue}>
                           <div className="flex items-center gap-2">
@@ -404,8 +405,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                   </SelectContent>
                 </Select>
                 {(() => {
-                  console.log('EditableProfileHeader render - profile.language:', profile.language);
-                  console.log('EditableProfileHeader render - profile object:', profile);
+                  debugLog('EditableProfileHeader render - profile.language:', profile.language);
+                  debugLog('EditableProfileHeader render - profile object:', profile);
                   return null;
                 })()}
               </div>

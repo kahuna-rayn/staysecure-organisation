@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { debugLog } from '../../utils/debugLog';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -192,7 +193,7 @@ const ImportDepartmentsDialog: React.FC<ImportDepartmentsDialogProps> = ({ onImp
             return;
           }
 
-          console.log('Processing', data.length, 'departments');
+          debugLog('Processing', data.length, 'departments');
           let successCount = 0;
           const errors: ImportError[] = [];
           const warnings: ImportError[] = [];
@@ -203,17 +204,17 @@ const ImportDepartmentsDialog: React.FC<ImportDepartmentsDialogProps> = ({ onImp
             
             // Skip empty rows
             if (!row['Name'] && !row['name']) {
-              console.log('Skipping empty row at index', i);
+              debugLog('Skipping empty row at index', i);
               continue;
             }
 
             const name = row['Name'] || row['name'] || 'Unknown';
             
             try {
-              console.log(`Processing department ${i + 1} of ${data.length}:`, name);
+              debugLog(`Processing department ${i + 1} of ${data.length}:`, name);
               const result = await processDepartmentImport(row);
               successCount++;
-              console.log(`Successfully processed department ${i + 1}`);
+              debugLog(`Successfully processed department ${i + 1}`);
               
               // Collect warnings
               if (result.warnings) {
@@ -244,7 +245,7 @@ const ImportDepartmentsDialog: React.FC<ImportDepartmentsDialogProps> = ({ onImp
             }
           }
 
-          console.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
+          debugLog('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
 
           setUploadedFile(null);
           setIsProcessing(false);

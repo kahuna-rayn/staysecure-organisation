@@ -143,7 +143,7 @@ const isSuperAdmin = currentUserRole === 'super_admin';
   };
 
   const handleNameChange = (field: 'first_name' | 'last_name', value: string) => {
-  //console.log('handleNameChange called:', { field, value, currentFullName: newUser.full_name, isManuallyEdited: isFullNameManuallyEdited });
+  //debugLog('handleNameChange called:', { field, value, currentFullName: newUser.full_name, isManuallyEdited: isFullNameManuallyEdited });
   const updatedUser = { ...newUser, [field]: value };
   
   // Only auto-update full_name if it has NOT been manually edited by the user
@@ -151,7 +151,7 @@ const isSuperAdmin = currentUserRole === 'super_admin';
     const firstName = field === 'first_name' ? value : updatedUser.first_name || '';
     const lastName = field === 'last_name' ? value : updatedUser.last_name || '';
     updatedUser.full_name = `${firstName} ${lastName}`.trim();
-    //console.log('Auto-generating full_name:', { firstName, lastName, fullName: updatedUser.full_name });
+    //debugLog('Auto-generating full_name:', { firstName, lastName, fullName: updatedUser.full_name });
   }
   
   onUserChange(updatedUser);

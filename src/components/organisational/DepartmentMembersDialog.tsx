@@ -272,10 +272,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
                     <TableCell>{member.roleName}</TableCell>
                     <TableCell className="text-muted-foreground">{member.email}</TableCell>
                     <TableCell>
-                      <Badge 
-                        variant={member.status === 'Active' ? 'default' : 'secondary'}
-                        className={member.status === 'Active' ? 'bg-green-500' : ''}
-                      >
+                      <Badge variant={member.status === 'Active' ? 'default' : 'secondary'}>
                         {member.status}
                       </Badge>
                     </TableCell>

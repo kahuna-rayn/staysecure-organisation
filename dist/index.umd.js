@@ -2743,8 +2743,8 @@
           /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.roleName }),
           /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.userName }),
           /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.departmentName }),
-          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.email }),
-          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.status })
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-muted-foreground", children: member.email }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
         ] }, index)) })
       ] }) })
     ] }) });
@@ -3093,7 +3093,6 @@
                   ] })
                 }
               ),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Members" }),
               hasPermission("canManageRoles") && /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { className: "text-right", children: "Actions" })
             ] }) }),
             /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: roles == null ? void 0 : roles.map((role) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
@@ -3102,20 +3101,20 @@
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: getDepartmentName(role.department_id) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: role.is_active ? "default" : "secondary", children: role.is_active ? "Active" : "Inactive" }) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: new Date(role.created_at).toLocaleDateString() }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(
-                button.Button,
-                {
-                  variant: "outline",
-                  size: "icon",
-                  onClick: () => {
-                    setSelectedRoleForMembers({ id: role.role_id, name: role.name });
-                    setIsMembersDialogOpen(true);
-                  },
-                  title: `View members with ${role.name} role`,
-                  children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
-                }
-              ) }),
               hasPermission("canManageRoles") && /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  button.Button,
+                  {
+                    variant: "outline",
+                    size: "icon",
+                    onClick: () => {
+                      setSelectedRoleForMembers({ id: role.role_id, name: role.name });
+                      setIsMembersDialogOpen(true);
+                    },
+                    title: `View members with ${role.name} role`,
+                    children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
+                  }
+                ),
                 /* @__PURE__ */ jsxRuntime.jsx(
                   button.Button,
                   {
@@ -3692,14 +3691,7 @@
           /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: member.userName }),
           /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.roleName }),
           /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-muted-foreground", children: member.email }),
-          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(
-            badge.Badge,
-            {
-              variant: member.status === "Active" ? "default" : "secondary",
-              className: member.status === "Active" ? "bg-green-500" : "",
-              children: member.status
-            }
-          ) })
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
         ] }, index)) })
       ] }) }),
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "pt-2 border-t text-sm text-muted-foreground", children: [
@@ -4017,6 +4009,7 @@
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: department.name }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: department.description || /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "No description" }) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: getManagerName(department.manager_id) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(Badge, { variant: department.is_active ? "default" : "secondary", children: department.is_active ? "Active" : "Inactive" }) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: new Date(department.created_at).toLocaleDateString() }),
               hasPermission("canManageDepartments") && /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(

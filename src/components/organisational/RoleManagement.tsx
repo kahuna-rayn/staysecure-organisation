@@ -420,7 +420,6 @@ export const RoleManagement: React.FC = () => {
                     )}
                   </div>
                 </TableHead>
-                <TableHead>Members</TableHead>
                 {hasPermission('canManageRoles') && (
                   <TableHead className="text-right">Actions</TableHead>
                 )}
@@ -446,22 +445,20 @@ export const RoleManagement: React.FC = () => {
                   <TableCell>
                     {new Date(role.created_at).toLocaleDateString()}
                   </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => {
-                        setSelectedRoleForMembers({ id: role.role_id, name: role.name });
-                        setIsMembersDialogOpen(true);
-                      }}
-                      title={`View members with ${role.name} role`}
-                    >
-                      <Users className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
                   {hasPermission('canManageRoles') && (
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => {
+                            setSelectedRoleForMembers({ id: role.role_id, name: role.name });
+                            setIsMembersDialogOpen(true);
+                          }}
+                          title={`View members with ${role.name} role`}
+                        >
+                          <Users className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"

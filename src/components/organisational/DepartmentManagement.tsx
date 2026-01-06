@@ -394,6 +394,11 @@ export const DepartmentManagement: React.FC = () => {
                     {getManagerName(department.manager_id)}
                   </TableCell>
                   <TableCell>
+                    <Badge variant={department.is_active ? "default" : "secondary"}>
+                      {department.is_active ? "Active" : "Inactive"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
                     {new Date(department.created_at).toLocaleDateString()}
                   </TableCell>
                   {hasPermission('canManageDepartments') && (

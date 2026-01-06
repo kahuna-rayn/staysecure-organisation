@@ -2,6 +2,7 @@ import React, { useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Download, Printer, Users } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
@@ -219,8 +220,12 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
                     <TableCell>{member.roleName}</TableCell>
                     <TableCell>{member.userName}</TableCell>
                     <TableCell>{member.departmentName}</TableCell>
-                    <TableCell>{member.email}</TableCell>
-                    <TableCell>{member.status}</TableCell>
+                    <TableCell className="text-muted-foreground">{member.email}</TableCell>
+                    <TableCell>
+                      <Badge variant={member.status === 'Active' ? 'default' : 'secondary'}>
+                        {member.status}
+                      </Badge>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

@@ -4009,7 +4009,6 @@
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: department.name }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: department.description || /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "No description" }) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: getManagerName(department.manager_id) }),
-              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(Badge, { variant: department.is_active ? "default" : "secondary", children: department.is_active ? "Active" : "Inactive" }) }),
               /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: new Date(department.created_at).toLocaleDateString() }),
               hasPermission("canManageDepartments") && /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-right", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(

@@ -6,7 +6,8 @@ import { useViewPreference } from '@/hooks/useViewPreference';
 import { handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { LayoutGrid, List, Users } from 'lucide-react';
+import { LayoutGrid, List, Users, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { DeleteUserDialog } from '@/components/ui/delete-user-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -36,7 +37,20 @@ const UserManagement: React.FC = () => {
   const visibleProfiles = isSuperAdmin 
     ? profiles 
     : profiles.filter(p => p.access_level !== 'super_admin');
+  
+  // Filter by search term
+  const filteredProfiles = visibleProfiles.filter(p => {
+    if (!searchTerm) return true;
+    const search = searchTerm.toLowerCase();
+    return (
+      p.full_name?.toLowerCase().includes(search) ||
+      p.username?.toLowerCase().includes(search) ||
+      p.location?.toLowerCase().includes(search) ||
+      p.status?.toLowerCase().includes(search)
+    );
+  });
   const [viewMode, setViewMode] = useViewPreference('userManagement', 'cards');
+  const [searchTerm, setSearchTerm] = useState('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -176,14 +190,25 @@ const UserManagement: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
+            {/* Search */}
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+              <Input
+                placeholder="Search users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
             {viewMode === 'cards' ? (
               <UserList
-                profiles={visibleProfiles}
+                profiles={filteredProfiles}
                 onDelete={onDeleteUser}
               />
             ) : (
               <UserTable
-                profiles={visibleProfiles}
+                profiles={filteredProfiles}
                 onDelete={onDeleteUser}
                 onUpdate={onUpdateProfile}
               />

@@ -14,6 +14,7 @@ import { useViewPreference as useViewPreference2 } from "@/hooks/useViewPreferen
 import { getCurrentClientId, supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Input } from "@/components/ui/input";
 import { DeleteUserDialog } from "@/components/ui/delete-user-dialog";
 import { toast as toast$1, useToast } from "@/hooks/use-toast";
 import { useNavigate, useParams } from "react-router-dom";
@@ -26,7 +27,6 @@ import { useUserProfileRoles } from "@/hooks/useUserProfileRoles";
 import { useUserProfileRoles as useUserProfileRoles2 } from "@/hooks/useUserProfileRoles";
 import { EditableTable } from "@/components/ui/editable-table";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
@@ -540,6 +540,16 @@ const Save = createLucideIcon("Save", [
   ],
   ["path", { d: "M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7", key: "1ydtos" }],
   ["path", { d: "M7 3v4a1 1 0 0 0 1 1h7", key: "t51u73" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Search = createLucideIcon("Search", [
+  ["circle", { cx: "11", cy: "11", r: "8", key: "4ej97u" }],
+  ["path", { d: "m21 21-4.3-4.3", key: "1qie3q" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -2172,7 +2182,14 @@ const UserManagement = () => {
   const { isSuperAdmin } = useUserRole();
   const { toast: toast2 } = useToast();
   const visibleProfiles = isSuperAdmin ? profiles : profiles.filter((p) => p.access_level !== "super_admin");
+  const filteredProfiles = visibleProfiles.filter((p) => {
+    var _a, _b, _c, _d;
+    if (!searchTerm) return true;
+    const search = searchTerm.toLowerCase();
+    return ((_a = p.full_name) == null ? void 0 : _a.toLowerCase().includes(search)) || ((_b = p.username) == null ? void 0 : _b.toLowerCase().includes(search)) || ((_c = p.location) == null ? void 0 : _c.toLowerCase().includes(search)) || ((_d = p.status) == null ? void 0 : _d.toLowerCase().includes(search));
+  });
   const [viewMode, setViewMode] = useViewPreference("userManagement", "cards");
+  const [searchTerm, setSearchTerm] = useState("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -2297,20 +2314,34 @@ const UserManagement = () => {
             )
           ] })
         ] }) }),
-        /* @__PURE__ */ jsx(CardContent, { children: viewMode === "cards" ? /* @__PURE__ */ jsx(
-          UserList,
-          {
-            profiles: visibleProfiles,
-            onDelete: onDeleteUser
-          }
-        ) : /* @__PURE__ */ jsx(
-          UserTable,
-          {
-            profiles: visibleProfiles,
-            onDelete: onDeleteUser,
-            onUpdate: onUpdateProfile
-          }
-        ) })
+        /* @__PURE__ */ jsxs(CardContent, { children: [
+          /* @__PURE__ */ jsxs("div", { className: "relative mb-4", children: [
+            /* @__PURE__ */ jsx(Search, { className: "absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" }),
+            /* @__PURE__ */ jsx(
+              Input,
+              {
+                placeholder: "Search users...",
+                value: searchTerm,
+                onChange: (e) => setSearchTerm(e.target.value),
+                className: "pl-10"
+              }
+            )
+          ] }),
+          viewMode === "cards" ? /* @__PURE__ */ jsx(
+            UserList,
+            {
+              profiles: filteredProfiles,
+              onDelete: onDeleteUser
+            }
+          ) : /* @__PURE__ */ jsx(
+            UserTable,
+            {
+              profiles: filteredProfiles,
+              onDelete: onDeleteUser,
+              onUpdate: onUpdateProfile
+            }
+          )
+        ] })
       ] }),
       /* @__PURE__ */ jsx(
         DeleteUserDialog,

@@ -2144,14 +2144,14 @@
     const { isSuperAdmin } = useUserRole.useUserRole();
     const { toast } = useToast$1.useToast();
     const visibleProfiles = isSuperAdmin ? profiles : profiles.filter((p) => p.access_level !== "super_admin");
+    const [viewMode, setViewMode] = useViewPreference.useViewPreference("userManagement", "cards");
+    const [searchTerm, setSearchTerm] = o.useState("");
     const filteredProfiles = visibleProfiles.filter((p) => {
       var _a, _b, _c, _d;
       if (!searchTerm) return true;
       const search = searchTerm.toLowerCase();
       return ((_a = p.full_name) == null ? void 0 : _a.toLowerCase().includes(search)) || ((_b = p.username) == null ? void 0 : _b.toLowerCase().includes(search)) || ((_c = p.location) == null ? void 0 : _c.toLowerCase().includes(search)) || ((_d = p.status) == null ? void 0 : _d.toLowerCase().includes(search));
     });
-    const [viewMode, setViewMode] = useViewPreference.useViewPreference("userManagement", "cards");
-    const [searchTerm, setSearchTerm] = o.useState("");
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = o.useState(false);
     const [userToDelete, setUserToDelete] = o.useState(null);
     const [isDeleting, setIsDeleting] = o.useState(false);

@@ -2182,14 +2182,14 @@ const UserManagement = () => {
   const { isSuperAdmin } = useUserRole();
   const { toast: toast2 } = useToast();
   const visibleProfiles = isSuperAdmin ? profiles : profiles.filter((p) => p.access_level !== "super_admin");
+  const [viewMode, setViewMode] = useViewPreference("userManagement", "cards");
+  const [searchTerm, setSearchTerm] = useState("");
   const filteredProfiles = visibleProfiles.filter((p) => {
     var _a, _b, _c, _d;
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return ((_a = p.full_name) == null ? void 0 : _a.toLowerCase().includes(search)) || ((_b = p.username) == null ? void 0 : _b.toLowerCase().includes(search)) || ((_c = p.location) == null ? void 0 : _c.toLowerCase().includes(search)) || ((_d = p.status) == null ? void 0 : _d.toLowerCase().includes(search));
   });
-  const [viewMode, setViewMode] = useViewPreference("userManagement", "cards");
-  const [searchTerm, setSearchTerm] = useState("");
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);

@@ -38,6 +38,9 @@ const UserManagement: React.FC = () => {
     ? profiles 
     : profiles.filter(p => p.access_level !== 'super_admin');
   
+  const [viewMode, setViewMode] = useViewPreference('userManagement', 'cards');
+  const [searchTerm, setSearchTerm] = useState('');
+  
   // Filter by search term
   const filteredProfiles = visibleProfiles.filter(p => {
     if (!searchTerm) return true;
@@ -49,8 +52,6 @@ const UserManagement: React.FC = () => {
       p.status?.toLowerCase().includes(search)
     );
   });
-  const [viewMode, setViewMode] = useViewPreference('userManagement', 'cards');
-  const [searchTerm, setSearchTerm] = useState('');
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);

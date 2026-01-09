@@ -1,8 +1,6 @@
 
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -32,20 +30,6 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
     }
   };
 
-  // Fetch physical location access for this user
-  const { data: locationAccess = [] } = useQuery({
-    queryKey: ['user-location-access', user.email],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('physical_location_access')
-        .select('access_purpose, status')
-        .eq('user_id', user.id)
-        .eq('status', 'Active');
-      
-      if (error) throw error;
-      return data;
-    },
-  });
 
   const handleViewDetails = () => {
     navigate(`/admin/users/${user.id}`);
@@ -89,28 +73,6 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
             <MapPin className="h-3 w-3 text-muted-foreground" />
             <span className="text-muted-foreground">{user.location || 'No location'}</span>
           </div>
-          
-          {/* Physical Location Access Section */}
-          {locationAccess.length > 0 && (
-            <div className="mt-3 pt-3 border-t">
-              <div className="flex items-center gap-2 mb-2">
-                <MapPin className="h-3 w-3 text-muted-foreground" />
-                <span className="text-xs font-medium text-muted-foreground">Physical Access:</span>
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {locationAccess.slice(0, 3).map((access, index) => (
-                  <Badge key={index} variant="outline" className="text-xs">
-                    {access.access_purpose || 'Unknown Purpose'}
-                  </Badge>
-                ))}
-                {locationAccess.length > 3 && (
-                  <Badge variant="outline" className="text-xs">
-                    +{locationAccess.length - 3} more
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
         </div>
 
         <div className="flex gap-2 mt-4" onClick={(e) => e.stopPropagation()}>

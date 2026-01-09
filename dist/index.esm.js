@@ -18,7 +18,6 @@ import { Input } from "@/components/ui/input";
 import { DeleteUserDialog } from "@/components/ui/delete-user-dialog";
 import { toast as toast$1, useToast } from "@/hooks/use-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserDepartments } from "@/hooks/useUserDepartments";
@@ -30,6 +29,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, Dialog
 import { Label } from "@/components/ui/label";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "staysecure-auth";
 import { useDropzone } from "react-dropzone";
 import Papa from "papaparse";
@@ -921,14 +921,6 @@ const UserCard = ({ user, onDelete }) => {
         return "bg-gray-500";
     }
   };
-  const { data: locationAccess = [] } = useQuery({
-    queryKey: ["user-location-access", user.email],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("physical_location_access").select("access_purpose, status").eq("user_id", user.id).eq("status", "Active");
-      if (error) throw error;
-      return data;
-    }
-  });
   const handleViewDetails = () => {
     navigate(`/admin/users/${user.id}`);
   };
@@ -965,20 +957,6 @@ const UserCard = ({ user, onDelete }) => {
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(MapPin, { className: "h-3 w-3 text-muted-foreground" }),
         /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: user.location || "No location" })
-      ] }),
-      locationAccess.length > 0 && /* @__PURE__ */ jsxs("div", { className: "mt-3 pt-3 border-t", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 mb-2", children: [
-          /* @__PURE__ */ jsx(MapPin, { className: "h-3 w-3 text-muted-foreground" }),
-          /* @__PURE__ */ jsx("span", { className: "text-xs font-medium text-muted-foreground", children: "Physical Access:" })
-        ] }),
-        /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap gap-1", children: [
-          locationAccess.slice(0, 3).map((access, index) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: access.access_purpose || "Unknown Purpose" }, index)),
-          locationAccess.length > 3 && /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "text-xs", children: [
-            "+",
-            locationAccess.length - 3,
-            " more"
-          ] })
-        ] })
       ] })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "flex gap-2 mt-4", onClick: (e) => e.stopPropagation(), children: [

@@ -1,5 +1,6 @@
-/**
 import { debugLog } from '../utils/debugLog';
+
+/**
  * User Management Actions
  * 
  * ARCHITECTURE PATTERN (CRITICAL - DO NOT CHANGE):
@@ -176,7 +177,7 @@ export const handleCreateUser = async (
             date_access_created: new Date().toISOString()
           };
 
-          const { data: locationDataResult, error: locationError } = await supabaseClient
+          const { error: locationError } = await supabaseClient
             .from('physical_location_access')
             .insert(locationData)
             .select();

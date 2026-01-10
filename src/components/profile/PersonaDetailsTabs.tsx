@@ -53,7 +53,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
       return "grid-cols-3"; // Certificates, Departments & Roles, and Physical Location in Learn mode
     }
     
-    if (profile?.enrolled_in_learn) {
+    if (profile?.cyber_learner) {
       return "grid-cols-7"; // All tabs including Learn
     }
     
@@ -107,7 +107,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
             )}
             
             {/* Only show Learn tab when NOT in Learn mode and user is enrolled */}
-            {!isLearnMode && profile?.enrolled_in_learn && (
+            {!isLearnMode && profile?.cyber_learner && (
               <TabsTrigger value="learn" className="flex items-center gap-2">
                 <Play className="h-4 w-4" />
                 <span className="hidden sm:inline">StaySecure LEARN</span>
@@ -191,7 +191,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           )}
 
           {/* Only show Learn tab content when NOT in Learn mode and user is enrolled */}
-          {!isLearnMode && profile?.enrolled_in_learn && (
+          {!isLearnMode && profile?.cyber_learner && (
             <TabsContent value="learn" className="space-y-4 animate-fade-in">
               <LearningTracksTab userId={typeof profile.id === 'string' ? profile.id : userId} />
             </TabsContent>

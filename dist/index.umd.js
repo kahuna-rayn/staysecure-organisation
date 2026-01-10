@@ -694,6 +694,11 @@
     }
     return context;
   };
+  const debugLog = (...args) => {
+    if (typeof window !== "undefined" && window.__DEBUG__) {
+      console.log("[ORG]", ...args);
+    }
+  };
   const handleSaveUser = async (editingUser, updateProfile, onSuccess) => {
     try {
       await updateProfile(editingUser.id, editingUser);
@@ -779,7 +784,7 @@
               status: "Active",
               date_access_created: (/* @__PURE__ */ new Date()).toISOString()
             };
-            const { data: locationDataResult, error: locationError } = await supabaseClient.from("physical_location_access").insert(locationData).select();
+            const { error: locationError } = await supabaseClient.from("physical_location_access").insert(locationData).select();
             if (locationError) {
               console.error("❌ Error assigning physical location access:", locationError);
             }
@@ -1333,11 +1338,6 @@
       ] })
     ] });
   };
-  const debugLog$1 = (...args) => {
-    if (typeof window !== "undefined" && window.__DEBUG__) {
-      console.log("[ORG]", ...args);
-    }
-  };
   const validateManager = (managerEmail, existingProfiles) => {
     if (!managerEmail || !existingProfiles) {
       return { isValid: false };
@@ -1437,18 +1437,18 @@
     };
     const validateLocation = (locationName) => {
       if (!locationName || !validLocations) {
-        debugLog$1("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
+        debugLog("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
         return { isValid: false };
       }
       const trimmedLocation = locationName.trim();
-      debugLog$1("Location validation: Checking location", {
+      debugLog("Location validation: Checking location", {
         providedLocation: trimmedLocation,
         availableLocations: validLocations.map((l) => l.name)
       });
       const validLocation = validLocations.find(
         (loc) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
       );
-      debugLog$1("Location validation result:", {
+      debugLog("Location validation result:", {
         location: trimmedLocation,
         found: !!validLocation,
         validLocation
@@ -1535,7 +1535,7 @@
     };
     const translateError = (error) => {
       const errorMessage = (error == null ? void 0 : error.message) || (error == null ? void 0 : error.error) || "Unknown error";
-      debugLog$1("Translating error:", { originalError: error, errorMessage });
+      debugLog("Translating error:", { originalError: error, errorMessage });
       if (errorMessage.includes("Edge Function returned a non-2xx status code")) {
         return "Server error occurred while creating user. Please try again or contact support.";
       }
@@ -1607,7 +1607,7 @@
       if (!lastName || !lastName.trim()) {
         throw new Error("Last Name is required for all users.");
       }
-      debugLog$1("Processing user:", email);
+      debugLog("Processing user:", email);
       const accessLevelValue = row["Access Level"] || row["access_level"] || "";
       const accessLevelValidation = validateAccessLevel(accessLevelValue);
       if (!accessLevelValidation.isValid) {
@@ -1664,7 +1664,7 @@
           };
         } else {
           managerId = managerValidation.managerId;
-          debugLog$1(`Manager validated: ${managerEmail} -> ${managerId}`);
+          debugLog(`Manager validated: ${managerEmail} -> ${managerId}`);
         }
       }
       const clientId = client.getCurrentClientId();
@@ -1693,7 +1693,7 @@
         throw new Error(friendlyError);
       }
       if (authData && authData.user) {
-        debugLog$1("User created successfully:", email);
+        debugLog("User created successfully:", email);
       } else if (authData && authData.error) {
         console.error("Create user error:", authData.error);
         const friendlyError = translateError(authData.error);
@@ -1706,7 +1706,7 @@
       const warnings = [];
       if (managerId) {
         try {
-          debugLog$1(`Updating manager for user ${userId} with managerId ${managerId}`);
+          debugLog(`Updating manager for user ${userId} with managerId ${managerId}`);
           const { error: managerUpdateError } = await supabase.from("profiles").update({ manager: managerId }).eq("id", userId);
           if (managerUpdateError) {
             console.error("Error updating profile manager:", managerUpdateError);
@@ -1716,7 +1716,7 @@
               message: `Manager could not be assigned: ${managerUpdateError.message}`
             });
           } else {
-            debugLog$1(`Successfully updated manager for user ${userId}`);
+            debugLog(`Successfully updated manager for user ${userId}`);
           }
         } catch (managerError) {
           console.error("Exception updating profile manager:", managerError);
@@ -1867,22 +1867,22 @@
               setIsProcessing(false);
               return;
             }
-            debugLog$1("Processing", data.length, "rows");
+            debugLog("Processing", data.length, "rows");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
-                debugLog$1("Skipping empty row at index", i);
+                debugLog("Skipping empty row at index", i);
                 continue;
               }
               const email = row["Email"] || row["email"] || "Unknown";
               try {
-                debugLog$1(`Processing user ${i + 1} of ${data.length}:`, email);
+                debugLog(`Processing user ${i + 1} of ${data.length}:`, email);
                 const result = await processUserImport(row);
                 successCount++;
-                debugLog$1(`Successfully processed user ${i + 1}`);
+                debugLog(`Successfully processed user ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -1911,7 +1911,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 500));
               }
             }
-            debugLog$1("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debugLog("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -2421,22 +2421,22 @@
               setIsProcessing(false);
               return;
             }
-            debugLog$1("Processing", data.length, "roles");
+            debugLog("Processing", data.length, "roles");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Name"] && !row["name"]) {
-                debugLog$1("Skipping empty row at index", i);
+                debugLog("Skipping empty row at index", i);
                 continue;
               }
               const name = row["Name"] || row["name"] || "Unknown";
               try {
-                debugLog$1(`Processing role ${i + 1} of ${data.length}:`, name);
+                debugLog(`Processing role ${i + 1} of ${data.length}:`, name);
                 const result = await processRoleImport(row);
                 successCount++;
-                debugLog$1(`Successfully processed role ${i + 1}`);
+                debugLog(`Successfully processed role ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -2462,7 +2462,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 300));
               }
             }
-            debugLog$1("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debugLog("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -2629,33 +2629,33 @@
     const { data: members = [], isLoading } = reactQuery.useQuery({
       queryKey: ["role-members", roleId],
       queryFn: async () => {
-        debugLog$1("[RoleMembersDialog] Fetching members, roleId:", roleId);
+        debugLog("[RoleMembersDialog] Fetching members, roleId:", roleId);
         let roleQuery = supabaseClient.from("user_profile_roles").select("user_id, role_id, is_primary");
         if (roleId) {
           roleQuery = roleQuery.eq("role_id", roleId);
         }
         const { data: userRoles, error: userRolesError } = await roleQuery;
-        debugLog$1("[RoleMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: userRolesError == null ? void 0 : userRolesError.message });
+        debugLog("[RoleMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: userRolesError == null ? void 0 : userRolesError.message });
         if (userRolesError) throw userRolesError;
         const userIds = [...new Set((userRoles || []).map((ur) => ur.user_id))];
-        debugLog$1("[RoleMembersDialog] Unique user IDs:", userIds.length);
+        debugLog("[RoleMembersDialog] Unique user IDs:", userIds.length);
         if (userIds.length === 0) {
-          debugLog$1("[RoleMembersDialog] No users found with roles");
+          debugLog("[RoleMembersDialog] No users found with roles");
           return [];
         }
         const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
-        debugLog$1("[RoleMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
+        debugLog("[RoleMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
         if (profilesError) throw profilesError;
         const roleIds = [...new Set((userRoles || []).map((ur) => ur.role_id).filter(Boolean))];
         let rolesData = [];
         if (roleIds.length > 0) {
           const { data: roles, error: rolesError } = await supabaseClient.from("roles").select("role_id, name").in("role_id", roleIds);
-          debugLog$1("[RoleMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
+          debugLog("[RoleMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
           if (rolesError) throw rolesError;
           rolesData = roles || [];
         }
         const { data: userDepts, error: userDeptsError } = await supabaseClient.from("user_departments").select("user_id, department_id, is_primary, departments(name)").in("user_id", userIds);
-        debugLog$1("[RoleMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
+        debugLog("[RoleMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
         if (userDeptsError) throw userDeptsError;
         const profileMap = /* @__PURE__ */ new Map();
         (profiles || []).forEach((p) => profileMap.set(p.id, p));
@@ -2683,7 +2683,7 @@
           if (roleCompare !== 0) return roleCompare;
           return a.userName.localeCompare(b.userName);
         });
-        debugLog$1("[RoleMembersDialog] Processed members:", memberData.length);
+        debugLog("[RoleMembersDialog] Processed members:", memberData.length);
         return memberData;
       },
       enabled: isOpen
@@ -3354,22 +3354,22 @@
               setIsProcessing(false);
               return;
             }
-            debugLog$1("Processing", data.length, "departments");
+            debugLog("Processing", data.length, "departments");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Name"] && !row["name"]) {
-                debugLog$1("Skipping empty row at index", i);
+                debugLog("Skipping empty row at index", i);
                 continue;
               }
               const name = row["Name"] || row["name"] || "Unknown";
               try {
-                debugLog$1(`Processing department ${i + 1} of ${data.length}:`, name);
+                debugLog(`Processing department ${i + 1} of ${data.length}:`, name);
                 const result = await processDepartmentImport(row);
                 successCount++;
-                debugLog$1(`Successfully processed department ${i + 1}`);
+                debugLog(`Successfully processed department ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -3395,7 +3395,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 300));
               }
             }
-            debugLog$1("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debugLog("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -3557,7 +3557,7 @@
     const { data: members = [], isLoading } = reactQuery.useQuery({
       queryKey: ["department-members", departmentId],
       queryFn: async () => {
-        debugLog$1("[DepartmentMembersDialog] Fetching members, departmentId:", departmentId);
+        debugLog("[DepartmentMembersDialog] Fetching members, departmentId:", departmentId);
         let deptQuery = supabaseClient.from("user_departments").select(`
           user_id,
           department_id,
@@ -3568,25 +3568,25 @@
           deptQuery = deptQuery.eq("department_id", departmentId);
         }
         const { data: userDepts, error: userDeptsError } = await deptQuery;
-        debugLog$1("[DepartmentMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
+        debugLog("[DepartmentMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
         if (userDeptsError) throw userDeptsError;
         const userIds = [...new Set((userDepts || []).map((ud) => ud.user_id))];
-        debugLog$1("[DepartmentMembersDialog] Unique user IDs:", userIds.length);
+        debugLog("[DepartmentMembersDialog] Unique user IDs:", userIds.length);
         if (userIds.length === 0) {
-          debugLog$1("[DepartmentMembersDialog] No users found in departments");
+          debugLog("[DepartmentMembersDialog] No users found in departments");
           return [];
         }
         const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
-        debugLog$1("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
+        debugLog("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
         if (profilesError) throw profilesError;
         const { data: userProfileRoles, error: uprError } = await supabaseClient.from("user_profile_roles").select("user_id, is_primary, role_id").in("user_id", userIds);
-        debugLog$1("[DepartmentMembersDialog] user_profile_roles result:", { count: userProfileRoles == null ? void 0 : userProfileRoles.length, error: uprError == null ? void 0 : uprError.message });
+        debugLog("[DepartmentMembersDialog] user_profile_roles result:", { count: userProfileRoles == null ? void 0 : userProfileRoles.length, error: uprError == null ? void 0 : uprError.message });
         if (uprError) throw uprError;
         const roleIds = [...new Set((userProfileRoles || []).map((upr) => upr.role_id).filter(Boolean))];
         let rolesData = [];
         if (roleIds.length > 0) {
           const { data: roles, error: rolesError } = await supabaseClient.from("roles").select("role_id, name").in("role_id", roleIds);
-          debugLog$1("[DepartmentMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
+          debugLog("[DepartmentMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
           if (rolesError) throw rolesError;
           rolesData = roles || [];
         }
@@ -3618,7 +3618,7 @@
           if (deptCompare !== 0) return deptCompare;
           return a.userName.localeCompare(b.userName);
         });
-        debugLog$1("[DepartmentMembersDialog] Final member data:", memberData.length, "members");
+        debugLog("[DepartmentMembersDialog] Final member data:", memberData.length, "members");
         return memberData;
       },
       enabled: isOpen
@@ -6580,9 +6580,9 @@
     const { data: userProfile, isLoading: profileLoading, error: profileError } = reactQuery.useQuery({
       queryKey: ["user-profile-by-id", userId],
       queryFn: async () => {
-        debugLog$1("Querying profile for userId:", userId);
+        debugLog("Querying profile for userId:", userId);
         const { data, error } = await client.supabase.from("profiles").select("id, full_name, username").eq("id", userId).single();
-        debugLog$1("Profile query result:", { data, error });
+        debugLog("Profile query result:", { data, error });
         if (error) {
           console.error("Error fetching user profile:", error);
           throw error;
@@ -6931,15 +6931,15 @@
       queryKey: ["user-roles", userId],
       queryFn: async () => {
         if (!userId) return [];
-        debugLog$1("UserDepartmentsRolesTable: Fetching roles for user:", userId);
+        debugLog("UserDepartmentsRolesTable: Fetching roles for user:", userId);
         const { data, error } = await client.supabase.from("user_profile_roles").select(`
           *,
           roles (
             name
           )
         `).eq("user_id", userId).order("is_primary", { ascending: false });
-        debugLog$1("UserDepartmentsRolesTable: Raw roles data:", data);
-        debugLog$1("UserDepartmentsRolesTable: Roles query error:", error);
+        debugLog("UserDepartmentsRolesTable: Raw roles data:", data);
+        debugLog("UserDepartmentsRolesTable: Roles query error:", error);
         if (error) throw error;
         const transformedData = (data || []).map((item) => {
           var _a;
@@ -6959,7 +6959,7 @@
           if (!a.is_primary && b.is_primary) return 1;
           return (a.role_name || "").localeCompare(b.role_name || "");
         });
-        debugLog$1("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
+        debugLog("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
         return transformedData;
       },
       enabled: !!userId
@@ -6974,12 +6974,12 @@
     });
     const addRoleMutation = reactQuery.useMutation({
       mutationFn: async ({ roleId, pairingId }) => {
-        debugLog$1("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
+        debugLog("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
         const role = allRoles.find((r) => r.role_id === roleId);
-        debugLog$1("UserDepartmentsRolesTable: Found role:", role);
+        debugLog("UserDepartmentsRolesTable: Found role:", role);
         if (!role) throw new Error("Role not found");
         const isPrimary = userRoles.length === 0;
-        debugLog$1("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
+        debugLog("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
         const insertData = {
           user_id: userId,
           role_id: roleId,
@@ -6987,15 +6987,15 @@
           assigned_by: user == null ? void 0 : user.id,
           pairing_id: pairingId
         };
-        debugLog$1("UserDepartmentsRolesTable: Inserting role data:", insertData);
+        debugLog("UserDepartmentsRolesTable: Inserting role data:", insertData);
         const { data, error } = await client.supabase.from("user_profile_roles").insert(insertData).select();
-        debugLog$1("UserDepartmentsRolesTable: Insert result:", data);
-        debugLog$1("UserDepartmentsRolesTable: Insert error:", error);
+        debugLog("UserDepartmentsRolesTable: Insert result:", data);
+        debugLog("UserDepartmentsRolesTable: Insert error:", error);
         if (error) throw error;
         return role;
       },
       onSuccess: (data) => {
-        debugLog$1("UserDepartmentsRolesTable: Role assignment successful:", data);
+        debugLog("UserDepartmentsRolesTable: Role assignment successful:", data);
         queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
         ue.success("Role assigned successfully");
       },
@@ -7081,15 +7081,15 @@
       return pairs;
     };
     const getAvailableRoles = (selectedDepartmentId) => {
-      debugLog$1("getAvailableRoles called with:", selectedDepartmentId);
-      debugLog$1("allRoles:", allRoles);
+      debugLog("getAvailableRoles called with:", selectedDepartmentId);
+      debugLog("allRoles:", allRoles);
       if (!selectedDepartmentId) {
         const generalRoles = allRoles.filter((role) => !role.department_id);
-        debugLog$1("No department selected, showing general roles:", generalRoles);
+        debugLog("No department selected, showing general roles:", generalRoles);
         return generalRoles;
       }
       const departmentRoles = allRoles.filter((role) => role.department_id === selectedDepartmentId);
-      debugLog$1(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
+      debugLog(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
       return departmentRoles;
     };
     const handleAddNewRow = () => {
@@ -7130,25 +7130,25 @@
     };
     const handleSaveNewRow = async (index) => {
       const row = newRows[index];
-      debugLog$1("UserDepartmentsRolesTable: Saving new row:", row);
-      debugLog$1("UserDepartmentsRolesTable: Current userRoles:", userRoles);
-      debugLog$1("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+      debugLog("UserDepartmentsRolesTable: Saving new row:", row);
+      debugLog("UserDepartmentsRolesTable: Current userRoles:", userRoles);
+      debugLog("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
       if (!row.departmentId && !row.roleId) {
         ue.error("Please select at least a department or role");
         return;
       }
       try {
         const pairingId = row.departmentId && row.roleId ? crypto.randomUUID() : void 0;
-        debugLog$1("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
+        debugLog("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
         if (row.departmentId) {
           const isDepartmentAlreadyAssigned = userDepartments.some((dept) => dept.department_id === row.departmentId);
-          debugLog$1("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
-          debugLog$1("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
-          debugLog$1("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
+          debugLog("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
+          debugLog("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+          debugLog("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
           if (!isDepartmentAlreadyAssigned) {
             const isPrimary = userDepartments.length === 0;
-            debugLog$1("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
-            debugLog$1("UserDepartmentsRolesTable: Department params:", {
+            debugLog("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
+            debugLog("UserDepartmentsRolesTable: Department params:", {
               userId,
               departmentId: row.departmentId,
               isPrimary,
@@ -7162,17 +7162,17 @@
               pairingId,
               assignedBy: user == null ? void 0 : user.id
             });
-            debugLog$1("UserDepartmentsRolesTable: Department addition completed");
+            debugLog("UserDepartmentsRolesTable: Department addition completed");
           } else {
-            debugLog$1("UserDepartmentsRolesTable: Department already assigned, skipping");
+            debugLog("UserDepartmentsRolesTable: Department already assigned, skipping");
           }
         }
         if (row.roleId) {
           const isRoleAlreadyAssigned = userRoles.some((role) => role.role_id === row.roleId);
-          debugLog$1("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
-          debugLog$1("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
+          debugLog("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
+          debugLog("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
           if (!isRoleAlreadyAssigned) {
-            debugLog$1("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
+            debugLog("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
             await addRoleMutation.mutateAsync({
               roleId: row.roleId,
               pairingId
@@ -7353,7 +7353,7 @@
       if (isLearnMode) {
         return "grid-cols-3";
       }
-      if (profile == null ? void 0 : profile.enrolled_in_learn) {
+      if (profile == null ? void 0 : profile.cyber_learner) {
         return "grid-cols-7";
       }
       return "grid-cols-6";
@@ -7391,7 +7391,7 @@
               /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Location" })
             ] })
           ] }),
-          !isLearnMode && (profile == null ? void 0 : profile.enrolled_in_learn) && /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "learn", className: "flex items-center gap-2", children: [
+          !isLearnMode && (profile == null ? void 0 : profile.cyber_learner) && /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "learn", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(Play, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "StaySecure LEARN" })
           ] })
@@ -7455,7 +7455,7 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile, isAdmin: hasAdminAccess }) })
         ] }),
-        !isLearnMode && (profile == null ? void 0 : profile.enrolled_in_learn) && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "learn", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(LearningTracksTab, { userId: typeof profile.id === "string" ? profile.id : userId }) })
+        !isLearnMode && (profile == null ? void 0 : profile.cyber_learner) && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "learn", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(LearningTracksTab, { userId: typeof profile.id === "string" ? profile.id : userId }) })
       ] }),
       !isLearnMode && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
         /* @__PURE__ */ jsxRuntime.jsx(
@@ -7513,13 +7513,13 @@
     };
     const handleFileChange = async (event) => {
       var _a;
-      debugLog$1("ProfileAvatar: File selected:", event.target.files);
+      debugLog("ProfileAvatar: File selected:", event.target.files);
       const file = (_a = event.target.files) == null ? void 0 : _a[0];
       if (!file) {
-        debugLog$1("ProfileAvatar: No file selected");
+        debugLog("ProfileAvatar: No file selected");
         return;
       }
-      debugLog$1("ProfileAvatar: Processing file:", file.name, file.type, file.size);
+      debugLog("ProfileAvatar: Processing file:", file.name, file.type, file.size);
       const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
       if (!validTypes.includes(file.type)) {
         useToast.toast({
@@ -8138,7 +8138,7 @@
             {
               value: profile.language || "English",
               onValueChange: async (value) => {
-                debugLog$1("Select onValueChange - value:", value);
+                debugLog("Select onValueChange - value:", value);
                 try {
                   setSavingLanguage(true);
                   await handleFieldSave("language", value);
@@ -8152,7 +8152,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: languages == null ? void 0 : languages.map((lang) => {
                   const langValue = lang.display_name || lang.code;
                   const langLabel = lang.native_name || lang.display_name || lang.code;
-                  debugLog$1("langValue:", langValue, "langLabel:", langLabel);
+                  debugLog("langValue:", langValue, "langLabel:", langLabel);
                   return /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: langValue, children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
                     lang.flag_emoji && /* @__PURE__ */ jsxRuntime.jsx("span", { children: lang.flag_emoji }),
                     /* @__PURE__ */ jsxRuntime.jsx("span", { children: langLabel })
@@ -8262,28 +8262,28 @@
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8", children: /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "No profile found. Please update your profile information." }) });
     }
     const handleOptimisticUpdate = (field, value) => {
-      debugLog$1("PersonaProfile handleOptimisticUpdate - field:", field, "value:", value);
+      debugLog("PersonaProfile handleOptimisticUpdate - field:", field, "value:", value);
       setOptimisticData((prev) => {
         const baseData = prev || personaData;
         const updated = { ...baseData };
         if (field === "avatar_url") {
           updated.avatar = value;
         } else if (field === "language") {
-          debugLog$1("PersonaProfile - setting language to:", value);
+          debugLog("PersonaProfile - setting language to:", value);
           updated.language = value;
         } else if (field in updated) {
           updated[field] = value;
         } else if (updated.account && field in updated.account) {
           updated.account = { ...updated.account, [field]: value };
         }
-        debugLog$1("PersonaProfile - updated optimisticData language:", updated.language);
+        debugLog("PersonaProfile - updated optimisticData language:", updated.language);
         return updated;
       });
     };
     const displayData = optimisticData || personaData;
-    debugLog$1("PersonaProfile render - displayData.language:", displayData.language);
-    debugLog$1("PersonaProfile render - personaData.language:", personaData.language);
-    debugLog$1("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
+    debugLog("PersonaProfile render - displayData.language:", displayData.language);
+    debugLog("PersonaProfile render - personaData.language:", personaData.language);
+    debugLog("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
       /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
@@ -8744,7 +8744,7 @@
     currentUserId,
     userId
   }) => {
-    debugLog$1("ProfileBasicInfo rendering with userId:", userId, "currentUserId:", currentUserId);
+    debugLog("ProfileBasicInfo rendering with userId:", userId, "currentUserId:", currentUserId);
     const { userDepartments } = useUserDepartments.useUserDepartments(userId);
     const { primaryRole } = useUserProfileRoles.useUserProfileRoles(userId);
     const { data: physicalLocations, isLoading: locationsLoading } = useUserPhysicalLocations.useUserPhysicalLocations(userId);

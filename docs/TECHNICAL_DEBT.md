@@ -324,3 +324,86 @@ Medium - Requires careful RLS policy testing to avoid data leakage
 Current binary model (admin/user) is sufficient for launch. Implement when clients with large departments request team-level visibility.
 
 ---
+
+## Missing useUserManagement Hook in Organisation Module
+
+### Current Implementation
+
+The organisation module's `UserManagement.tsx` component imports `useUserManagement` from `@/hooks/useUserManagement`:
+- **Location:** `organisation/src/components/admin/UserManagement.tsx` (line 3)
+- **Export:** `organisation/src/index.ts` exports `useUserManagement` from `@/hooks/useUserManagement` (line 45)
+
+However, the file `organisation/src/hooks/useUserManagement.ts` **does not exist**.
+
+Meanwhile, LEARN has its own implementation:
+- **Location:** `learn/src/hooks/useUserManagement.ts`
+- **Purpose:** Manages UI state for user management (dialog states, view mode, form data)
+
+### Problem
+
+**Architectural inconsistency:**
+- Organisation module claims to export `useUserManagement` but the file is missing
+- LEARN has a duplicate implementation that should be shared
+- The hook manages UI state that's common across all consuming apps
+- Creates code duplication and maintenance burden
+
+### Proposed Solution
+
+**Move LEARN's `useUserManagement` hook to the organisation module:**
+
+1. **Create the hook in organisation module:**
+   - Copy `learn/src/hooks/useUserManagement.ts` → `organisation/src/hooks/useUserManagement.ts`
+   - Remove `enrolled_in_learn` from interface (should use `cyber_learner`)
+
+2. **Update LEARN to use the organisation module's version:**
+   - Remove `learn/src/hooks/useUserManagement.ts`
+   - Update imports: `import { useUserManagement } from 'staysecure-organisation';`
+   - Verify all usages work correctly
+
+3. **Rebuild and test:**
+   - Rebuild organisation module
+   - Test in LEARN
+   - Test in GOVERN (if applicable)
+   - Update node_modules in all consuming apps
+
+### Scope of Changes
+
+**Files to create:**
+- `organisation/src/hooks/useUserManagement.ts` - Move from LEARN
+
+**Files to update:**
+- `learn/src/hooks/useUserManagement.ts` - Remove (duplicate)
+- All LEARN files importing `useUserManagement` - Update import path
+- `organisation/src/index.ts` - Already exports it (just needs the file to exist)
+
+**Files to verify:**
+- `organisation/src/components/admin/UserManagement.tsx` - Already imports it correctly
+- All consuming apps using user management features
+
+### Implementation Notes
+
+- This is a **low-risk refactoring** but requires:
+  - Careful testing across all consuming apps
+  - Coordinated deployment (rebuild organisation module first)
+  - Verification that no app-specific logic exists in LEARN's version
+- The hook is purely UI state management (no business logic)
+- Should be straightforward to move since it's already exported from organisation module's index
+
+### Priority
+
+**Low** - Not blocking current functionality:
+- LEARN's duplicate version works fine
+- Organisation module's build may be resolving it from LEARN somehow, or failing silently
+- Cleanup task to improve architecture consistency
+- Defer until after critical features and migrations are complete
+
+### Related Files
+
+- `learn/src/hooks/useUserManagement.ts` - Current LEARN implementation
+- `organisation/src/components/admin/UserManagement.tsx` - Uses the hook (imports from missing file)
+- `organisation/src/index.ts` - Exports the hook (but file doesn't exist)
+
+**Created:** 2025-01-10  
+**Status:** Deferred - Low priority cleanup task
+
+---

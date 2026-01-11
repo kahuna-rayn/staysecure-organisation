@@ -29,7 +29,7 @@ const UserDetailView: React.FC = () => {
     manager: profileObj.manager || 'Not assigned',
     startDate: profileObj.start_date || profileObj.created_at,
     language: profileObj.language || 'English',
-    enrolled_in_learn: profileObj.enrolled_in_learn || false,
+    cyber_learner: profileObj.cyber_learner || false,
     account: {
       username: profileObj.username || 'Not set',
       employeeId: profileObj.employee_id || 'Not assigned',

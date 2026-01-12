@@ -7397,7 +7397,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
     return "grid-cols-6";
   };
   return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsxs(CardContent, { className: "p-6", children: [
-    /* @__PURE__ */ jsxs(Tabs, { defaultValue: "certification", className: "w-full", children: [
+    /* @__PURE__ */ jsxs(Tabs, { defaultValue: isLearnMode ? "certification" : "knowledge", className: "w-full", children: [
       /* @__PURE__ */ jsxs(TabsList, { className: `grid w-full ${getGridClass()} mb-6`, children: [
         /* @__PURE__ */ jsxs(TabsTrigger, { value: "certification", className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsx(GraduationCap, { className: "h-4 w-4" }),
@@ -7416,6 +7416,14 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
             /* @__PURE__ */ jsx(BookOpen, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Knowledge" })
           ] }),
+          /* @__PURE__ */ jsxs(TabsTrigger, { value: "certification", className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx(GraduationCap, { className: "h-4 w-4" }),
+            /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Certificates" })
+          ] }),
+          /* @__PURE__ */ jsxs(TabsTrigger, { value: "departments", className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsx(Users, { className: "h-4 w-4" }),
+            /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Departments & Roles" })
+          ] }),
           /* @__PURE__ */ jsxs(TabsTrigger, { value: "accounts", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsx(MonitorSmartphone, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Accounts" })
@@ -7426,7 +7434,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
           ] }),
           /* @__PURE__ */ jsxs(TabsTrigger, { value: "location", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsx(MapPin, { className: "h-4 w-4" }),
-            /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Location" })
+            /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Physical Location" })
           ] })
         ] }),
         !isLearnMode && (profile == null ? void 0 : profile.cyber_learner) && /* @__PURE__ */ jsxs(TabsTrigger, { value: "learn", className: "flex items-center gap-2", children: [
@@ -7434,43 +7442,77 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
           /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "StaySecure LEARN" })
         ] })
       ] }),
-      /* @__PURE__ */ jsxs(TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
-        /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
-          Button,
-          {
-            onClick: () => setIsAddEducationOpen(true),
-            size: "icon",
-            children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
-          }
-        ) }),
-        /* @__PURE__ */ jsx(
-          EditableCertificates,
-          {
-            profile,
-            onUpdate: handleCertificateUpdate,
-            onDataChange: handleDataChange
-          }
-        )
+      isLearnMode && /* @__PURE__ */ jsxs(Fragment, { children: [
+        /* @__PURE__ */ jsxs(TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
+          /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
+            Button,
+            {
+              onClick: () => setIsAddEducationOpen(true),
+              size: "icon",
+              children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
+            }
+          ) }),
+          /* @__PURE__ */ jsx(
+            EditableCertificates,
+            {
+              profile,
+              onUpdate: handleCertificateUpdate,
+              onDataChange: handleDataChange
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs(TabsContent, { value: "departments", className: "space-y-4 animate-fade-in", children: [
+          hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
+            Button,
+            {
+              onClick: () => {
+                var _a, _b;
+                return (_b = (_a = departmentRolesRef.current) == null ? void 0 : _a.handleAddNewRow) == null ? void 0 : _b.call(_a);
+              },
+              size: "icon",
+              children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
+            }
+          ) }),
+          /* @__PURE__ */ jsx(UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
+        ] }),
+        /* @__PURE__ */ jsx(TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsx(PhysicalLocationTab, { profile, isAdmin: hasAdminAccess }) })
       ] }),
-      /* @__PURE__ */ jsxs(TabsContent, { value: "departments", className: "space-y-4 animate-fade-in", children: [
-        hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
-          Button,
-          {
-            onClick: () => {
-              var _a, _b;
-              return (_b = (_a = departmentRolesRef.current) == null ? void 0 : _a.handleAddNewRow) == null ? void 0 : _b.call(_a);
-            },
-            size: "icon",
-            children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
-          }
-        ) }),
-        /* @__PURE__ */ jsx(UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
-      ] }),
-      isLearnMode && /* @__PURE__ */ jsx(TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsx(PhysicalLocationTab, { profile, isAdmin: hasAdminAccess }) }),
       !isLearnMode && /* @__PURE__ */ jsxs(Fragment, { children: [
         /* @__PURE__ */ jsx(TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsx(MyDocuments, { userId: typeof profile.id === "string" ? profile.id : userId }) }),
-        /* @__PURE__ */ jsxs(TabsContent, { value: "accounts", className: "space-y-4 animate-fade-in", children: [
+        /* @__PURE__ */ jsxs(TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
           /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
+            Button,
+            {
+              onClick: () => setIsAddEducationOpen(true),
+              size: "icon",
+              children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
+            }
+          ) }),
+          /* @__PURE__ */ jsx(
+            EditableCertificates,
+            {
+              profile,
+              onUpdate: handleCertificateUpdate,
+              onDataChange: handleDataChange
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs(TabsContent, { value: "departments", className: "space-y-4 animate-fade-in", children: [
+          hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
+            Button,
+            {
+              onClick: () => {
+                var _a, _b;
+                return (_b = (_a = departmentRolesRef.current) == null ? void 0 : _a.handleAddNewRow) == null ? void 0 : _b.call(_a);
+              },
+              size: "icon",
+              children: /* @__PURE__ */ jsx(Plus, { className: "h-4 w-4" })
+            }
+          ) }),
+          /* @__PURE__ */ jsx(UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
+        ] }),
+        /* @__PURE__ */ jsxs(TabsContent, { value: "accounts", className: "space-y-4 animate-fade-in", children: [
+          hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
             Button,
             {
               onClick: () => setIsAssignSoftwareOpen(true),
@@ -7481,7 +7523,7 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
           /* @__PURE__ */ jsx(SoftwareAccounts, { profile })
         ] }),
         /* @__PURE__ */ jsxs(TabsContent, { value: "hardware", className: "space-y-4 animate-fade-in", children: [
-          /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
+          hasAdminAccess && /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
             Button,
             {
               onClick: () => setIsAssignHardwareOpen(true),

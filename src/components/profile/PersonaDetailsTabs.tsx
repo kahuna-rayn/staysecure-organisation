@@ -63,7 +63,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <Tabs defaultValue="certification" className="w-full">
+        <Tabs defaultValue={isLearnMode ? "certification" : "knowledge"} className="w-full">
           <TabsList className={`grid w-full ${getGridClass()} mb-6`}>
             {/* Always visible tabs */}
             <TabsTrigger value="certification" className="flex items-center gap-2">
@@ -84,12 +84,20 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
               </TabsTrigger>
             )}
             
-            {/* Only show these tabs when NOT in Learn mode */}
+            {/* Only show these tabs when NOT in Learn mode - Govern order: Knowledge, Certificates, Departments, Accounts, Hardware, Location */}
             {!isLearnMode && (
               <>
                 <TabsTrigger value="knowledge" className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
                   <span className="hidden sm:inline">Knowledge</span>
+                </TabsTrigger>
+                <TabsTrigger value="certification" className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  <span className="hidden sm:inline">Certificates</span>
+                </TabsTrigger>
+                <TabsTrigger value="departments" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Departments & Roles</span>
                 </TabsTrigger>
                 <TabsTrigger value="accounts" className="flex items-center gap-2">
                   <MonitorSmartphone className="h-4 w-4" />
@@ -101,7 +109,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                 </TabsTrigger>
                 <TabsTrigger value="location" className="flex items-center gap-2">
                   <MapPin className="h-4 w-4" />
-                  <span className="hidden sm:inline">Location</span>
+                  <span className="hidden sm:inline">Physical Location</span>
                 </TabsTrigger>
               </>
             )}
@@ -115,72 +123,109 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
             )}
           </TabsList>
 
-          {/* Always visible tab contents */}
-          <TabsContent value="certification" className="space-y-4 animate-fade-in">
-            <div className="flex justify-end">
-              <Button 
-                onClick={() => setIsAddEducationOpen(true)}
-                size="icon"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-            <EditableCertificates 
-              profile={profile} 
-              onUpdate={handleCertificateUpdate}
-              onDataChange={handleDataChange}
-            />
-          </TabsContent>
-
-          <TabsContent value="departments" className="space-y-4 animate-fade-in">
-            {hasAdminAccess && (
-              <div className="flex justify-end">
-                <Button 
-                  onClick={() => departmentRolesRef.current?.handleAddNewRow?.()}
-                  size="icon"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            )}
-            <UserDepartmentsRolesManager userId={userId} ref={departmentRolesRef} />
-          </TabsContent>
-
           {/* Show Location tab content in Learn mode */}
           {isLearnMode && (
-            <TabsContent value="location" className="space-y-4 animate-fade-in">
-              <PhysicalLocationTab profile={profile} isAdmin={hasAdminAccess} />
-            </TabsContent>
+            <>
+              <TabsContent value="certification" className="space-y-4 animate-fade-in">
+                <div className="flex justify-end">
+                  <Button 
+                    onClick={() => setIsAddEducationOpen(true)}
+                    size="icon"
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+                <EditableCertificates 
+                  profile={profile} 
+                  onUpdate={handleCertificateUpdate}
+                  onDataChange={handleDataChange}
+                />
+              </TabsContent>
+
+              <TabsContent value="departments" className="space-y-4 animate-fade-in">
+                {hasAdminAccess && (
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={() => departmentRolesRef.current?.handleAddNewRow?.()}
+                      size="icon"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                <UserDepartmentsRolesManager userId={userId} ref={departmentRolesRef} />
+              </TabsContent>
+
+              <TabsContent value="location" className="space-y-4 animate-fade-in">
+                <PhysicalLocationTab profile={profile} isAdmin={hasAdminAccess} />
+              </TabsContent>
+            </>
           )}
           
-          {/* Only show these tab contents when NOT in Learn mode */}
+          {/* Only show these tab contents when NOT in Learn mode - Govern order: Knowledge, Certificates, Departments, Accounts, Hardware, Location */}
           {!isLearnMode && (
             <>
               <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
                 <MyDocuments userId={typeof profile.id === 'string' ? profile.id : userId} />
               </TabsContent>
               
-              <TabsContent value="accounts" className="space-y-4 animate-fade-in">
+              <TabsContent value="certification" className="space-y-4 animate-fade-in">
                 <div className="flex justify-end">
                   <Button 
-                    onClick={() => setIsAssignSoftwareOpen(true)}
+                    onClick={() => setIsAddEducationOpen(true)}
                     size="icon"
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
+                <EditableCertificates 
+                  profile={profile} 
+                  onUpdate={handleCertificateUpdate}
+                  onDataChange={handleDataChange}
+                />
+              </TabsContent>
+
+              <TabsContent value="departments" className="space-y-4 animate-fade-in">
+                {hasAdminAccess && (
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={() => departmentRolesRef.current?.handleAddNewRow?.()}
+                      size="icon"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+                <UserDepartmentsRolesManager userId={userId} ref={departmentRolesRef} />
+              </TabsContent>
+              
+              <TabsContent value="accounts" className="space-y-4 animate-fade-in">
+                {/* Regular users: view-only. Admins can add accounts */}
+                {hasAdminAccess && (
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={() => setIsAssignSoftwareOpen(true)}
+                      size="icon"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
                 <SoftwareAccounts profile={profile} />
               </TabsContent>
 
               <TabsContent value="hardware" className="space-y-4 animate-fade-in">
-                <div className="flex justify-end">
-                  <Button 
-                    onClick={() => setIsAssignHardwareOpen(true)}
-                    size="icon"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
+                {/* Regular users: view-only. Admins can add hardware */}
+                {hasAdminAccess && (
+                  <div className="flex justify-end">
+                    <Button 
+                      onClick={() => setIsAssignHardwareOpen(true)}
+                      size="icon"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
                 <HardwareInventory profile={profile} onUpdate={handleDataChange} />
               </TabsContent>
 

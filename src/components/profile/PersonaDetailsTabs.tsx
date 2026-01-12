@@ -65,27 +65,26 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
       <CardContent className="p-6">
         <Tabs defaultValue={isLearnMode ? "certification" : "knowledge"} className="w-full">
           <TabsList className={`grid w-full ${getGridClass()} mb-6`}>
-            {/* Always visible tabs */}
-            <TabsTrigger value="certification" className="flex items-center gap-2">
-              <GraduationCap className="h-4 w-4" />
-              <span className="hidden sm:inline">Certificates</span>
-            </TabsTrigger>
-            
-            <TabsTrigger value="departments" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              <span className="hidden sm:inline">Departments & Roles</span>
-            </TabsTrigger>
-            
-            {/* Show Location tab in Learn mode */}
-            {isLearnMode && (
-              <TabsTrigger value="location" className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                <span className="hidden sm:inline">Physical Location</span>
-              </TabsTrigger>
-            )}
-            
-            {/* Only show these tabs when NOT in Learn mode - Govern order: Knowledge, Certificates, Departments, Accounts, Hardware, Location */}
-            {!isLearnMode && (
+            {/* ========== LEARN MODE TABS ========== */}
+            {isLearnMode ? (
+              <>
+                <TabsTrigger value="certification" className="flex items-center gap-2">
+                  <GraduationCap className="h-4 w-4" />
+                  <span className="hidden sm:inline">Certificates</span>
+                </TabsTrigger>
+                
+                <TabsTrigger value="departments" className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span className="hidden sm:inline">Departments & Roles</span>
+                </TabsTrigger>
+                
+                <TabsTrigger value="location" className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span className="hidden sm:inline">Physical Location</span>
+                </TabsTrigger>
+              </>
+            ) : (
+              /* ========== GOVERN MODE TABS ========== */
               <>
                 <TabsTrigger value="knowledge" className="flex items-center gap-2">
                   <BookOpen className="h-4 w-4" />
@@ -111,20 +110,18 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                   <MapPin className="h-4 w-4" />
                   <span className="hidden sm:inline">Physical Location</span>
                 </TabsTrigger>
+                {profile?.cyber_learner && (
+                  <TabsTrigger value="learn" className="flex items-center gap-2">
+                    <Play className="h-4 w-4" />
+                    <span className="hidden sm:inline">StaySecure LEARN</span>
+                  </TabsTrigger>
+                )}
               </>
-            )}
-            
-            {/* Only show Learn tab when NOT in Learn mode and user is enrolled */}
-            {!isLearnMode && profile?.cyber_learner && (
-              <TabsTrigger value="learn" className="flex items-center gap-2">
-                <Play className="h-4 w-4" />
-                <span className="hidden sm:inline">StaySecure LEARN</span>
-              </TabsTrigger>
             )}
           </TabsList>
 
-          {/* Show Location tab content in Learn mode */}
-          {isLearnMode && (
+          {/* ========== LEARN MODE TAB CONTENT ========== */}
+          {isLearnMode ? (
             <>
               <TabsContent value="certification" className="space-y-4 animate-fade-in">
                 <div className="flex justify-end">
@@ -160,10 +157,8 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                 <PhysicalLocationTab profile={profile} isAdmin={hasAdminAccess} />
               </TabsContent>
             </>
-          )}
-          
-          {/* Only show these tab contents when NOT in Learn mode - Govern order: Knowledge, Certificates, Departments, Accounts, Hardware, Location */}
-          {!isLearnMode && (
+          ) : (
+            /* ========== GOVERN MODE TAB CONTENT ========== */
             <>
               <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
                 <MyDocuments userId={typeof profile.id === 'string' ? profile.id : userId} />
@@ -200,7 +195,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
               </TabsContent>
               
               <TabsContent value="accounts" className="space-y-4 animate-fade-in">
-                {/* Regular users: view-only. Admins can add accounts */}
                 {hasAdminAccess && (
                   <div className="flex justify-end">
                     <Button 
@@ -215,7 +209,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
               </TabsContent>
 
               <TabsContent value="hardware" className="space-y-4 animate-fade-in">
-                {/* Regular users: view-only. Admins can add hardware */}
                 {hasAdminAccess && (
                   <div className="flex justify-end">
                     <Button 
@@ -232,14 +225,13 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
               <TabsContent value="location" className="space-y-4 animate-fade-in">
                 <PhysicalLocationTab profile={profile} isAdmin={hasAdminAccess} />
               </TabsContent>
-            </>
-          )}
 
-          {/* Only show Learn tab content when NOT in Learn mode and user is enrolled */}
-          {!isLearnMode && profile?.cyber_learner && (
-            <TabsContent value="learn" className="space-y-4 animate-fade-in">
-              <LearningTracksTab userId={typeof profile.id === 'string' ? profile.id : userId} />
-            </TabsContent>
+              {profile?.cyber_learner && (
+                <TabsContent value="learn" className="space-y-4 animate-fade-in">
+                  <LearningTracksTab userId={typeof profile.id === 'string' ? profile.id : userId} />
+                </TabsContent>
+              )}
+            </>
           )}
         </Tabs>
 

@@ -1,6 +1,6 @@
 {
   "name": "staysecure-organisation",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Reusable organisation management components for React applications",
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",

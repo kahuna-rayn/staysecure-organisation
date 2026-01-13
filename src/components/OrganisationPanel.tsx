@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -25,14 +26,42 @@ export const OrganisationPanel: React.FC<OrganisationPanelProps> = ({
   className = ""
 }) => {
   const { isTabEnabled, onNavigate } = useOrganisationContext();
-  const [activeTab, setActiveTab] = useState(() => {
-    // Find the first enabled tab as default
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  // Get default tab (first enabled tab)
+  const getDefaultTab = () => {
     const defaultTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'profile'];
     return defaultTabs.find(tab => isTabEnabled(tab)) || 'users';
+  };
+  
+  // Initialize activeTab from URL or default
+  const [activeTab, setActiveTab] = useState(() => {
+    // Try to get tab from URL first
+    const urlTab = searchParams.get('orgTab');
+    if (urlTab && isTabEnabled(urlTab)) {
+      return urlTab;
+    }
+    return getDefaultTab();
   });
+
+  // Sync with URL if it changes externally (e.g., browser back/forward)
+  useEffect(() => {
+    const urlTab = searchParams.get('orgTab');
+    const defaultTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'profile'];
+    const defaultTab = defaultTabs.find(tab => isTabEnabled(tab)) || 'users';
+    
+    if (urlTab && isTabEnabled(urlTab) && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    } else if (!urlTab && activeTab !== defaultTab) {
+      // If URL has no tab but we have a non-default tab, update URL
+      setSearchParams({ orgTab: activeTab }, { replace: true });
+    }
+  }, [searchParams, activeTab, isTabEnabled, setSearchParams]);
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
+    // Update URL to persist tab state
+    setSearchParams({ orgTab: value }, { replace: true });
     onNavigate?.(value);
   };
 

@@ -3,7 +3,7 @@
  */
 
 import React from 'react';
-import { render, renderHook } from '@testing-library/react';
+import { renderHook } from '@testing-library/react';
 import { OrganisationProvider, useOrganisationContext } from '@/context/OrganisationContext';
 import type { OrganisationConfig } from '@/types';
 import { createClient } from '@supabase/supabase-js';

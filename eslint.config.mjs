@@ -1,10 +1,9 @@
-import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import reactRefresh from "eslint-plugin-react-refresh";
 import globals from "globals";
 
-export default defineConfig([
+export default [
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -36,6 +35,7 @@ export default defineConfig([
         "error",
         {
           argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
         },
       ],
       "@typescript-eslint/no-explicit-any": "warn",
@@ -46,4 +46,4 @@ export default defineConfig([
   {
     ignores: ["dist/**", ".eslintrc.cjs"],
   },
-]);
+];

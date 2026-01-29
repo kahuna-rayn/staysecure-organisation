@@ -39,7 +39,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [savingLanguage, setSavingLanguage] = useState(false);
-  const [managerValue, setManagerValue] = useState(profile.manager || '');
+  const [_managerValue, setManagerValue] = useState(profile.manager || '');
   const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
   const isCurrentUserProfile = !!user?.id && profile.id === user.id;

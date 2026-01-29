@@ -1,5 +1,6 @@
 import { jsx, jsxs } from "react/jsx-runtime";
 import o, { Fragment, forwardRef, createElement, createContext, useContext, useState, useCallback, useRef, useMemo, useEffect, isValidElement, useImperativeHandle  } from "react";
+import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +18,6 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Input } from "@/components/ui/input";
 import { DeleteUserDialog } from "@/components/ui/delete-user-dialog";
 import { toast as toast$1, useToast } from "@/hooks/use-toast";
-import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserDepartments } from "@/hooks/useUserDepartments";
@@ -53,9 +53,10 @@ import { useUserAssets as useUserAssets2 } from "@/hooks/useUserAssets";
 import MyDocuments from "@/components/knowledge/MyDocuments";
 import LearningTracksTab from "@/components/LearningTracksTab";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
+import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ScrollArea } from "@/components/ui/scroll-area";
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -301,6 +302,46 @@ const Download = createLucideIcon("Download", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const EyeOff = createLucideIcon("EyeOff", [
+  [
+    "path",
+    {
+      d: "M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49",
+      key: "ct8e1f"
+    }
+  ],
+  ["path", { d: "M14.084 14.158a3 3 0 0 1-4.242-4.242", key: "151rxh" }],
+  [
+    "path",
+    {
+      d: "M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143",
+      key: "13bj9a"
+    }
+  ],
+  ["path", { d: "m2 2 20 20", key: "1ooewy" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Eye = createLucideIcon("Eye", [
+  [
+    "path",
+    {
+      d: "M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0",
+      key: "1nclc0"
+    }
+  ],
+  ["circle", { cx: "12", cy: "12", r: "3", key: "1v7zrd" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const FileText = createLucideIcon("FileText", [
   ["path", { d: "M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z", key: "1rqfz7" }],
   ["path", { d: "M14 2v4a2 2 0 0 0 2 2h4", key: "tnqrlb" }],
@@ -360,6 +401,22 @@ const IdCard = createLucideIcon("IdCard", [
   ["path", { d: "M6.17 15a3 3 0 0 1 5.66 0", key: "n6f512" }],
   ["circle", { cx: "9", cy: "11", r: "2", key: "yxgjnd" }],
   ["rect", { x: "2", y: "5", width: "20", height: "14", rx: "2", key: "qneu4z" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const KeyRound = createLucideIcon("KeyRound", [
+  [
+    "path",
+    {
+      d: "M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z",
+      key: "1s6t7t"
+    }
+  ],
+  ["circle", { cx: "16.5", cy: "7.5", r: ".5", fill: "currentColor", key: "w0ekpg" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -5964,12 +6021,31 @@ const OrganisationPanel = ({
   className = ""
 }) => {
   const { isTabEnabled, onNavigate } = useOrganisationContext();
-  const [activeTab, setActiveTab] = useState(() => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const getDefaultTab = () => {
     const defaultTabs = ["users", "roles", "departments", "locations", "certificates", "profile"];
     return defaultTabs.find((tab) => isTabEnabled(tab)) || "users";
+  };
+  const [activeTab, setActiveTab] = useState(() => {
+    const urlTab = searchParams.get("orgTab");
+    if (urlTab && isTabEnabled(urlTab)) {
+      return urlTab;
+    }
+    return getDefaultTab();
   });
+  useEffect(() => {
+    const urlTab = searchParams.get("orgTab");
+    const defaultTabs = ["users", "roles", "departments", "locations", "certificates", "profile"];
+    const defaultTab = defaultTabs.find((tab) => isTabEnabled(tab)) || "users";
+    if (urlTab && isTabEnabled(urlTab) && urlTab !== activeTab) {
+      setActiveTab(urlTab);
+    } else if (!urlTab && activeTab !== defaultTab) {
+      setSearchParams({ orgTab: activeTab }, { replace: true });
+    }
+  }, [searchParams, activeTab, isTabEnabled, setSearchParams]);
   const handleTabChange = (value) => {
     setActiveTab(value);
+    setSearchParams({ orgTab: value }, { replace: true });
     onNavigate == null ? void 0 : onNavigate(value);
   };
   const tabConfig = [
@@ -7920,6 +7996,221 @@ const EditableField = ({
     )
   ] });
 };
+const MIN_PASSWORD_LENGTH = 12;
+function getPasswordStrength(password) {
+  if (!password) return { score: 0, label: "" };
+  let score = 0;
+  if (password.length >= MIN_PASSWORD_LENGTH) score += 40;
+  if (password.length >= 16) score += 10;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 20;
+  if (/\d/.test(password)) score += 20;
+  if (/[^a-zA-Z0-9]/.test(password)) score += 20;
+  const label = score >= 60 ? "Strong" : score >= 40 ? "Fair" : score >= 20 ? "Weak" : "Very weak";
+  return { score: Math.min(100, score), label };
+}
+const ChangePasswordDialog = ({
+  isOpen,
+  onClose,
+  onSuccess
+}) => {
+  const { user, signIn } = useAuth();
+  const { supabaseClient } = useOrganisationContext();
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const strength = getPasswordStrength(newPassword);
+  const resetForm = useCallback(() => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+    setError(null);
+  }, []);
+  const handleClose = useCallback(() => {
+    resetForm();
+    onClose();
+  }, [onClose, resetForm]);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    if (!(user == null ? void 0 : user.id)) {
+      setError("You must be signed in to change your password.");
+      return;
+    }
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      setError(`New password must be at least ${MIN_PASSWORD_LENGTH} characters long.`);
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setError("New password and confirmation do not match.");
+      return;
+    }
+    if (currentPassword === newPassword) {
+      setError("New password must be different from your current password.");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { data, error: fnError } = await supabaseClient.functions.invoke("change-password", {
+        body: {
+          currentPassword,
+          newPassword,
+          userId: user.id,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        }
+      });
+      if (fnError) {
+        let message = fnError.message || "Something went wrong. Please try again.";
+        const context = fnError.context;
+        if (context == null ? void 0 : context.json) {
+          try {
+            const body = await context.json();
+            if ((body == null ? void 0 : body.error) && typeof body.error === "string") message = body.error;
+          } catch {
+          }
+        }
+        setError(message);
+        return;
+      }
+      if ((data == null ? void 0 : data.success) === false && (data == null ? void 0 : data.error)) {
+        setError(data.error);
+        return;
+      }
+      try {
+        if (user == null ? void 0 : user.email) {
+          await signIn(user.email, newPassword);
+        }
+      } catch {
+      }
+      toast({
+        title: "Password changed",
+        description: "Your password has been updated. A confirmation email has been sent."
+      });
+      resetForm();
+      onSuccess == null ? void 0 : onSuccess();
+      handleClose();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange: (open) => !open && handleClose(), children: /* @__PURE__ */ jsxs(DialogContent, { className: "sm:max-w-md", children: [
+    /* @__PURE__ */ jsxs(DialogHeader, { children: [
+      /* @__PURE__ */ jsx(DialogTitle, { children: "Change password" }),
+      /* @__PURE__ */ jsx(DialogDescription, { children: "Enter your current password and choose a new one. You will receive a confirmation email." })
+    ] }),
+    /* @__PURE__ */ jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+      error && /* @__PURE__ */ jsx(Alert, { variant: "destructive", children: /* @__PURE__ */ jsx(AlertDescription, { children: error }) }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "current-password", children: "Current password" }),
+        /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "current-password",
+              type: showCurrentPassword ? "text" : "password",
+              autoComplete: "current-password",
+              value: currentPassword,
+              onChange: (e) => setCurrentPassword(e.target.value),
+              placeholder: "Enter current password",
+              required: true,
+              disabled: loading,
+              className: "pr-10 bg-gray-50"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              type: "button",
+              variant: "ghost",
+              size: "sm",
+              className: "absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent",
+              onClick: () => setShowCurrentPassword(!showCurrentPassword),
+              children: showCurrentPassword ? /* @__PURE__ */ jsx(EyeOff, { className: "h-4 w-4 text-muted-foreground" }) : /* @__PURE__ */ jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "new-password", children: "New password" }),
+        /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "new-password",
+              type: showNewPassword ? "text" : "password",
+              autoComplete: "new-password",
+              value: newPassword,
+              onChange: (e) => setNewPassword(e.target.value),
+              placeholder: "At least 12 characters",
+              required: true,
+              disabled: loading,
+              className: "pr-10 bg-gray-50"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              type: "button",
+              variant: "ghost",
+              size: "sm",
+              className: "absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent",
+              onClick: () => setShowNewPassword(!showNewPassword),
+              children: showNewPassword ? /* @__PURE__ */ jsx(EyeOff, { className: "h-4 w-4 text-muted-foreground" }) : /* @__PURE__ */ jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
+            }
+          )
+        ] }),
+        newPassword && /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
+          /* @__PURE__ */ jsx(Progress, { value: strength.score, className: "h-1.5" }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: strength.label })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsx(Label, { htmlFor: "confirm-password", children: "Confirm new password" }),
+        /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+          /* @__PURE__ */ jsx(
+            Input,
+            {
+              id: "confirm-password",
+              type: showConfirmPassword ? "text" : "password",
+              autoComplete: "new-password",
+              value: confirmPassword,
+              onChange: (e) => setConfirmPassword(e.target.value),
+              placeholder: "Confirm new password",
+              required: true,
+              disabled: loading,
+              className: "pr-10 bg-gray-50"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            Button,
+            {
+              type: "button",
+              variant: "ghost",
+              size: "sm",
+              className: "absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent",
+              onClick: () => setShowConfirmPassword(!showConfirmPassword),
+              children: showConfirmPassword ? /* @__PURE__ */ jsx(EyeOff, { className: "h-4 w-4 text-muted-foreground" }) : /* @__PURE__ */ jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(DialogFooter, { children: [
+        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: handleClose, disabled: loading, children: "Cancel" }),
+        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsxs(Fragment, { children: [
+          /* @__PURE__ */ jsx(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
+          "Updating…"
+        ] }) : "Update password" })
+      ] })
+    ] })
+  ] }) });
+};
 const EditableProfileHeader = ({
   profile,
   onProfileUpdate,
@@ -7927,14 +8218,17 @@ const EditableProfileHeader = ({
   onOptimisticUpdate
 }) => {
   var _a, _b, _c, _d, _e, _f, _g;
+  const { user } = useAuth();
   const { profiles, updateProfile } = useUserProfiles();
   const { supabaseClient, hasPermission } = useOrganisationContext();
   const isAdmin = hasPermission("canEditUsers");
   const [editingField, setEditingField] = useState(null);
   const [saving, setSaving] = useState(false);
   const [savingLanguage, setSavingLanguage] = useState(false);
-  const [managerValue, setManagerValue] = useState(profile.manager || "");
+  const [_managerValue, setManagerValue] = useState(profile.manager || "");
   const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const isCurrentUserProfile = !!(user == null ? void 0 : user.id) && profile.id === user.id;
   useEffect(() => {
     setIsFullNameManuallyEdited(false);
   }, [profile.id]);
@@ -8055,9 +8349,9 @@ const EditableProfileHeader = ({
     await handleFieldSave("full_name", value);
   };
   const { isSuperAdmin } = useUserRole();
-  const filteredProfiles = profiles.filter((user) => {
-    if (user.id === profile.id) return false;
-    if (user.access_level === "super_admin" && !isSuperAdmin) return false;
+  const filteredProfiles = profiles.filter((user2) => {
+    if (user2.id === profile.id) return false;
+    if (user2.access_level === "super_admin" && !isSuperAdmin) return false;
     return true;
   });
   const managerProfile = profiles.find((u) => u.id === profile.manager);
@@ -8190,7 +8484,7 @@ const EditableProfileHeader = ({
             onValueChange: handleManagerChange,
             children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Not assigned", children: managerName !== "Not assigned" ? managerName : void 0 }) }),
-              /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
+              /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user2) => /* @__PURE__ */ jsx(SelectItem, { value: user2.id, children: user2.full_name || user2.username || "Unnamed User" }, user2.id)) })
             ]
           }
         ) : /* @__PURE__ */ jsx("span", { className: "text-foreground", children: managerName })
@@ -8254,18 +8548,41 @@ const EditableProfileHeader = ({
         ] })
       ] })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsx(
-      ProfileContactInfo,
-      {
-        startDate: profile.startDate,
-        userId: profile.id,
-        status: (_c = profile.account) == null ? void 0 : _c.status,
-        accessLevel: (_d = profile.account) == null ? void 0 : _d.accessLevel,
-        lastLogin: (_e = profile.account) == null ? void 0 : _e.lastLogin,
-        passwordLastChanged: (_f = profile.account) == null ? void 0 : _f.passwordLastChanged,
-        twoFactorEnabled: (_g = profile.account) == null ? void 0 : _g.twoFactorEnabled
-      }
-    ) })
+    /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+      /* @__PURE__ */ jsx(
+        ProfileContactInfo,
+        {
+          startDate: profile.startDate,
+          userId: profile.id,
+          status: (_c = profile.account) == null ? void 0 : _c.status,
+          accessLevel: (_d = profile.account) == null ? void 0 : _d.accessLevel,
+          lastLogin: (_e = profile.account) == null ? void 0 : _e.lastLogin,
+          passwordLastChanged: (_f = profile.account) == null ? void 0 : _f.passwordLastChanged,
+          twoFactorEnabled: (_g = profile.account) == null ? void 0 : _g.twoFactorEnabled
+        }
+      ),
+      isCurrentUserProfile && /* @__PURE__ */ jsx("div", { className: "flex items-end justify-end gap-2 pt-2 text-sm", children: /* @__PURE__ */ jsx(
+        Button,
+        {
+          type: "button",
+          variant: "outline",
+          size: "sm",
+          onClick: () => setIsChangePasswordOpen(true),
+          className: "flex items-center justify-center",
+          "aria-label": "Change password",
+          title: "Change password",
+          children: /* @__PURE__ */ jsx(KeyRound, { className: "h-5 w-5" })
+        }
+      ) }),
+      /* @__PURE__ */ jsx(
+        ChangePasswordDialog,
+        {
+          isOpen: isChangePasswordOpen,
+          onClose: () => setIsChangePasswordOpen(false),
+          onSuccess: () => setIsChangePasswordOpen(false)
+        }
+      )
+    ] })
   ] }) }) });
 };
 const PersonaProfile = () => {
@@ -9323,6 +9640,7 @@ export {
   AssignPhysicalLocationDialog,
   AssignSoftwareDialog,
   Certificates,
+  ChangePasswordDialog,
   CreateUserDialog,
   DepartmentManagement,
   DepartmentRolePairsDisplay,

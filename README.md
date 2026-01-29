@@ -17,11 +17,17 @@ A reusable React component library for organisation management, including user m
 
 **Key Pattern**: Functions receive `supabaseClient` as a parameter (from context), not from imports or environment variables.
 
-📖 **See [ARCHITECTURE.md](./ARCHITECTURE.md) for complete documentation** on:
+📖 **See [ARCHITECTURE.md](./docs/ARCHITECTURE.md) for complete documentation** on:
 - Why this pattern exists
 - How to use it correctly
 - What NOT to do
 - History of changes
+
+🔐 **See [PERMISSIONS.md](./docs/PERMISSIONS.md) for permissions documentation** on:
+- Why consuming apps must provide permissions
+- How to set up `OrganisationProvider` correctly
+- Common issues and troubleshooting
+- Best practices
 
 **Quick Reference**:
 ```tsx

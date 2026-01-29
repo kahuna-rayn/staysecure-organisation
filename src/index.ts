@@ -31,6 +31,7 @@ export { default as ProfileAvatar } from './components/profile/ProfileAvatar';
 export { default as ProfileContactInfo } from './components/profile/ProfileContactInfo';
 export { default as EditableField } from './components/profile/EditableField';
 export { default as MultipleRolesField } from './components/profile/MultipleRolesField';
+export { default as ChangePasswordDialog, type ChangePasswordDialogProps } from './components/profile/ChangePasswordDialog';
 
 // Organisational component exports
 export { DepartmentRolePairsDisplay } from './components/organisational/DepartmentRolePairsDisplay';

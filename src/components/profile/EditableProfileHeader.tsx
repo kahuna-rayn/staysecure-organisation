@@ -3,7 +3,7 @@ import { debugLog } from '../../utils/debugLog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, User, Hash, Phone, Star, Network, Globe } from 'lucide-react';
+import { MapPin, User, Hash, Phone, Star, Network, Globe, KeyRound } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
@@ -11,10 +11,13 @@ import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
 // useUserPhysicalLocations removed - we fetch all locations directly for admin dropdown
 import { useUserRole } from '@/hooks/useUserRole';
 import { useOrganisationContext } from '@/context/OrganisationContext';
+import { useAuth } from 'staysecure-auth';
 import { toast } from '@/components/ui/use-toast';
+import { Button } from '@/components/ui/button';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileContactInfo from './ProfileContactInfo';
 import EditableField from './EditableField';
+import ChangePasswordDialog from './ChangePasswordDialog';
 
 interface EditableProfileHeaderProps {
   profile: Record<string, unknown>;
@@ -29,6 +32,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   isReadOnly: _isReadOnly = false,
   onOptimisticUpdate
 }) => {
+  const { user } = useAuth();
   const { profiles, updateProfile } = useUserProfiles();
   const { supabaseClient, hasPermission } = useOrganisationContext();
   const isAdmin = hasPermission('canEditUsers');
@@ -37,6 +41,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const [savingLanguage, setSavingLanguage] = useState(false);
   const [managerValue, setManagerValue] = useState(profile.manager || '');
   const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
+  const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const isCurrentUserProfile = !!user?.id && profile.id === user.id;
 
   // Reset the manual edit flag when profile changes
   useEffect(() => {
@@ -453,6 +459,27 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 lastLogin={profile.account?.lastLogin}
                 passwordLastChanged={profile.account?.passwordLastChanged}
                 twoFactorEnabled={profile.account?.twoFactorEnabled}
+              />
+              {isCurrentUserProfile && (
+                <div className="flex items-end justify-end gap-2 pt-2 text-sm">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsChangePasswordOpen(true)}
+                    className="flex items-center justify-center"
+                    aria-label="Change password"
+                    title="Change password"
+                  >
+                    <KeyRound className="h-5 w-5" />
+                  </Button>
+                </div>
+              )}
+
+              <ChangePasswordDialog
+                isOpen={isChangePasswordOpen}
+                onClose={() => setIsChangePasswordOpen(false)}
+                onSuccess={() => setIsChangePasswordOpen(false)}
               />
           </div>
         </div>

@@ -1394,23 +1394,6 @@
       ] })
     ] });
   };
-  const validateManager = (managerEmail, existingProfiles) => {
-    if (!managerEmail || !existingProfiles) {
-      return { isValid: false };
-    }
-    const trimmedEmail = managerEmail.trim().toLowerCase();
-    const matchingProfile = existingProfiles.find((profile) => {
-      const email = (profile.email || profile.username || "").toLowerCase();
-      return email === trimmedEmail;
-    });
-    if (matchingProfile) {
-      return {
-        isValid: true,
-        managerId: matchingProfile.id
-      };
-    }
-    return { isValid: false };
-  };
   const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     const { supabaseClient: supabase } = useOrganisationContext();
     const [isOpen, setIsOpen] = o.useState(false);
@@ -1569,9 +1552,6 @@
         roleId: roleValidation.roleId
       };
     };
-    const validateManager$1 = (managerIdentifier) => {
-      return validateManager(managerIdentifier, existingProfiles);
-    };
     const validateAccessLevel = (accessLevel) => {
       if (!accessLevel) {
         return { isValid: false };
@@ -1706,23 +1686,7 @@
       } else if (roleName && roleDepartmentId !== null) {
         throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
       }
-      const managerEmail = (row["Manager"] || row["manager"] || "").trim();
-      let managerId;
-      let managerWarning = null;
-      if (managerEmail) {
-        const managerValidation = validateManager$1(managerEmail);
-        if (!managerValidation.isValid) {
-          console.warn(`Manager email "${managerEmail}" not found in existing profiles`, { existingProfilesCount: existingProfiles == null ? void 0 : existingProfiles.length });
-          managerWarning = {
-            field: "Manager",
-            value: managerEmail,
-            message: `Manager email "${managerEmail}" does not exist in the system - user created without manager assignment`
-          };
-        } else {
-          managerId = managerValidation.managerId;
-          debugLog(`Manager validated: ${managerEmail} -> ${managerId}`);
-        }
-      }
+      const managerEmail = (row["Manager"] || row["manager"] || "").trim() || void 0;
       const clientId = client.getCurrentClientId();
       const clientPath = clientId ? `/${clientId}` : "";
       const { data: authData, error: authError } = await supabase.functions.invoke("create-user", {
@@ -1737,8 +1701,8 @@
           employee_id: row["Employee ID"] || row["employee_id"] || "",
           access_level: accessLevelValidation.value,
           // Already validated above, so safe to use !
-          manager: managerId || null,
-          // Include manager if validated
+          manager: null,
+          // Manager assigned in pass 2 after all users exist
           clientPath
           // Pass client path explicitly
         }
@@ -1760,34 +1724,6 @@
         throw new Error("User created but user ID not returned");
       }
       const warnings = [];
-      if (managerId) {
-        try {
-          debugLog(`Updating manager for user ${userId} with managerId ${managerId}`);
-          const { error: managerUpdateError } = await supabase.from("profiles").update({ manager: managerId }).eq("id", userId);
-          if (managerUpdateError) {
-            console.error("Error updating profile manager:", managerUpdateError);
-            warnings.push({
-              field: "Manager",
-              value: managerEmail,
-              message: `Manager could not be assigned: ${managerUpdateError.message}`
-            });
-          } else {
-            debugLog(`Successfully updated manager for user ${userId}`);
-          }
-        } catch (managerError) {
-          console.error("Exception updating profile manager:", managerError);
-          warnings.push({
-            field: "Manager",
-            value: managerEmail,
-            message: `Manager could not be assigned: ${managerError.message}`
-          });
-        }
-      } else if (managerEmail) {
-        console.warn(`Manager email provided (${managerEmail}) but managerId is undefined - manager not assigned`);
-      }
-      if (managerWarning) {
-        warnings.push(managerWarning);
-      }
       if (locationName) {
         const locationValidation = validateLocation(locationName);
         if (locationValidation.isValid && locationValidation.locationId) {
@@ -1895,6 +1831,8 @@
       return {
         email,
         success: true,
+        userId,
+        managerEmail,
         warnings: warnings.length > 0 ? warnings : null
       };
     };
@@ -1927,6 +1865,7 @@
             let successCount = 0;
             const errors = [];
             const warnings = [];
+            const createdUsers = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
@@ -1934,16 +1873,23 @@
                 continue;
               }
               const email = row["Email"] || row["email"] || "Unknown";
+              const rowNumber = i + 2;
               try {
                 debugLog(`Processing user ${i + 1} of ${data.length}:`, email);
                 const result = await processUserImport(row);
                 successCount++;
                 debugLog(`Successfully processed user ${i + 1}`);
+                createdUsers.push({
+                  rowNumber,
+                  email,
+                  userId: result.userId,
+                  managerEmail: result.managerEmail,
+                  row
+                });
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
-                      rowNumber: i + 2,
-                      // +2 because row 1 is headers, and i is 0-indexed
+                      rowNumber,
                       identifier: email,
                       field: warning.field,
                       error: warning.message,
@@ -1955,8 +1901,7 @@
                 console.error(`Error importing user ${i + 1}:`, error);
                 const friendlyError = translateError(error);
                 errors.push({
-                  rowNumber: i + 2,
-                  // +2 because row 1 is headers, and i is 0-indexed
+                  rowNumber,
                   identifier: email,
                   field: !row["Email"] && !row["email"] ? "Email" : void 0,
                   error: friendlyError,
@@ -1965,6 +1910,51 @@
               }
               if (i < data.length - 1) {
                 await new Promise((resolve) => setTimeout(resolve, 500));
+              }
+            }
+            const emailToId = /* @__PURE__ */ new Map();
+            (existingProfiles || []).forEach((p) => {
+              const e = (p.email ?? p.username ?? "").trim().toLowerCase();
+              if (e) emailToId.set(e, p.id);
+            });
+            createdUsers.forEach((u) => {
+              const e = u.email.trim().toLowerCase();
+              if (e) emailToId.set(e, u.userId);
+            });
+            for (const u of createdUsers) {
+              if (!u.managerEmail) continue;
+              const managerId = emailToId.get(u.managerEmail.trim().toLowerCase());
+              if (managerId) {
+                try {
+                  const { error: managerUpdateError } = await supabase.from("profiles").update({ manager: managerId }).eq("id", u.userId);
+                  if (managerUpdateError) {
+                    warnings.push({
+                      rowNumber: u.rowNumber,
+                      identifier: u.email,
+                      field: "Manager",
+                      error: `Manager could not be assigned: ${managerUpdateError.message}`,
+                      rawData: u.row
+                    });
+                  } else {
+                    debugLog(`Assigned manager ${u.managerEmail} for user ${u.email}`);
+                  }
+                } catch (err) {
+                  warnings.push({
+                    rowNumber: u.rowNumber,
+                    identifier: u.email,
+                    field: "Manager",
+                    error: `Manager could not be assigned: ${(err == null ? void 0 : err.message) ?? err}`,
+                    rawData: u.row
+                  });
+                }
+              } else {
+                warnings.push({
+                  rowNumber: u.rowNumber,
+                  identifier: u.email,
+                  field: "Manager",
+                  error: `Manager email "${u.managerEmail}" does not exist in the system - user created without manager assignment`,
+                  rawData: u.row
+                });
               }
             }
             debugLog("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
@@ -3331,7 +3321,7 @@
       link.click();
       document.body.removeChild(link);
     };
-    const validateManager2 = async (managerName) => {
+    const validateManager = async (managerName) => {
       if (!managerName || !managerName.trim()) {
         return { isValid: false };
       }
@@ -3356,7 +3346,7 @@
       const warnings = [];
       let managerId = null;
       if (managerName) {
-        const managerValidation = await validateManager2(managerName);
+        const managerValidation = await validateManager(managerName);
         if (managerValidation.isValid) {
           managerId = managerValidation.managerId || null;
         } else {

@@ -10,7 +10,6 @@ import { getCurrentClientId } from '@/integrations/supabase/client';
 import Papa from 'papaparse';
 import { ImportError } from '@/components/import/ImportErrorReport';
 import { useQuery } from '@tanstack/react-query';
-import { validateManager as validateManagerUtil } from '@/utils/managerValidation';
 import { useOrganisationContext } from '@/context/OrganisationContext';
 
 interface ImportUsersDialogProps {
@@ -239,11 +238,6 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   };
 
 
-  // Helper function to validate manager (using utility function)
-  const validateManager = (managerIdentifier: string): { isValid: boolean; managerId?: string; isAmbiguous?: boolean; ambiguityDetails?: string } => {
-    return validateManagerUtil(managerIdentifier, existingProfiles);
-  };
-
   // Helper function to validate access level
   const validateAccessLevel = (accessLevel: string): { isValid: boolean; value?: string } => {
     if (!accessLevel) {
@@ -437,26 +431,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
     }
 
-    // Validate manager email if provided (manager must be specified by email address)
-    const managerEmail = (row['Manager'] || row['manager'] || '').trim();
-    let managerId: string | undefined;
-    let managerWarning: any = null;
-    if (managerEmail) {
-      const managerValidation = validateManager(managerEmail);
-      if (!managerValidation.isValid) {
-        // Manager email doesn't exist - create user anyway but add warning
-        console.warn(`Manager email "${managerEmail}" not found in existing profiles`, { existingProfilesCount: existingProfiles?.length });
-        managerWarning = {
-          field: 'Manager',
-          value: managerEmail,
-          message: `Manager email "${managerEmail}" does not exist in the system - user created without manager assignment`
-        };
-      } else {
-        // Valid manager email found - assign manager
-        managerId = managerValidation.managerId;
-        debugLog(`Manager validated: ${managerEmail} -> ${managerId}`);
-      }
-    }
+    // Manager is assigned in pass 2 (after all users created) so order in CSV doesn't matter
+    const managerEmail = (row['Manager'] || row['manager'] || '').trim() || undefined;
 
     // Extract client path using the same logic as client.ts
     const clientId = getCurrentClientId();
@@ -474,7 +450,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         status: 'Pending',
         employee_id: row['Employee ID'] || row['employee_id'] || '',
         access_level: accessLevelValidation.value!, // Already validated above, so safe to use !
-        manager: managerId || null, // Include manager if validated
+        manager: null, // Manager assigned in pass 2 after all users exist
         clientPath // Pass client path explicitly
       }
     });
@@ -498,44 +474,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error('User created but user ID not returned');
     }
 
-    // Collect all warnings
+    // Collect all warnings (manager assignment and warnings happen in pass 2)
     const warnings = [];
-    
-    // Update manager_id in profiles table if manager was provided and validated
-    if (managerId) {
-      try {
-        debugLog(`Updating manager for user ${userId} with managerId ${managerId}`);
-        const { error: managerUpdateError } = await supabase
-          .from('profiles')
-          .update({ manager: managerId })
-          .eq('id', userId);
-
-        if (managerUpdateError) {
-          console.error('Error updating profile manager:', managerUpdateError);
-          warnings.push({
-            field: 'Manager',
-            value: managerEmail,
-            message: `Manager could not be assigned: ${managerUpdateError.message}`
-          });
-        } else {
-          debugLog(`Successfully updated manager for user ${userId}`);
-        }
-      } catch (managerError: any) {
-        console.error('Exception updating profile manager:', managerError);
-        warnings.push({
-          field: 'Manager',
-          value: managerEmail,
-          message: `Manager could not be assigned: ${managerError.message}`
-        });
-      }
-    } else if (managerEmail) {
-      console.warn(`Manager email provided (${managerEmail}) but managerId is undefined - manager not assigned`);
-    }
-
-    // Add manager warning if manager doesn't exist
-    if (managerWarning) {
-      warnings.push(managerWarning);
-    }
 
     // Assign location if provided
     if (locationName) {
@@ -685,6 +625,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     return { 
       email, 
       success: true, 
+      userId,
+      managerEmail,
       warnings: warnings.length > 0 ? warnings : null
     };
   };
@@ -723,18 +665,19 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           let successCount = 0;
           const errors: ImportError[] = [];
           const warnings: ImportError[] = [];
+          const createdUsers: Array<{ rowNumber: number; email: string; userId: string; managerEmail?: string; row: any }> = [];
 
-          // Process users sequentially to avoid overwhelming the system
+          // Pass 1: Create all users (manager column is deferred to pass 2)
           for (let i = 0; i < data.length; i++) {
             const row = data[i];
             
-            // Skip empty rows
             if (!row['Email'] && !row['email'] && !row['Full Name'] && !row['full_name']) {
               debugLog('Skipping empty row at index', i);
               continue;
             }
 
             const email = row['Email'] || row['email'] || 'Unknown';
+            const rowNumber = i + 2;
             
             try {
               debugLog(`Processing user ${i + 1} of ${data.length}:`, email);
@@ -742,11 +685,18 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               successCount++;
               debugLog(`Successfully processed user ${i + 1}`);
               
-              // Collect all warnings
+              createdUsers.push({
+                rowNumber,
+                email,
+                userId: result.userId,
+                managerEmail: result.managerEmail,
+                row
+              });
+              
               if (result.warnings) {
                 result.warnings.forEach((warning: any) => {
                   warnings.push({
-                    rowNumber: i + 2, // +2 because row 1 is headers, and i is 0-indexed
+                    rowNumber,
                     identifier: email,
                     field: warning.field,
                     error: warning.message,
@@ -758,7 +708,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               console.error(`Error importing user ${i + 1}:`, error);
               const friendlyError = translateError(error);
               errors.push({
-                rowNumber: i + 2, // +2 because row 1 is headers, and i is 0-indexed
+                rowNumber,
                 identifier: email,
                 field: !row['Email'] && !row['email'] ? 'Email' : undefined,
                 error: friendlyError,
@@ -766,9 +716,59 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               });
             }
 
-            // Add a small delay between users to prevent rate limiting
             if (i < data.length - 1) {
               await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          }
+
+          // Pass 2: Assign managers (all users from CSV now exist, so order doesn't matter)
+          const emailToId = new Map<string, string>();
+          (existingProfiles || []).forEach((p: { id: string; username?: string; email?: string }) => {
+            const e = (p.email ?? p.username ?? '').trim().toLowerCase();
+            if (e) emailToId.set(e, p.id);
+          });
+          createdUsers.forEach((u) => {
+            const e = u.email.trim().toLowerCase();
+            if (e) emailToId.set(e, u.userId);
+          });
+
+          for (const u of createdUsers) {
+            if (!u.managerEmail) continue;
+            const managerId = emailToId.get(u.managerEmail.trim().toLowerCase());
+            if (managerId) {
+              try {
+                const { error: managerUpdateError } = await supabase
+                  .from('profiles')
+                  .update({ manager: managerId })
+                  .eq('id', u.userId);
+                if (managerUpdateError) {
+                  warnings.push({
+                    rowNumber: u.rowNumber,
+                    identifier: u.email,
+                    field: 'Manager',
+                    error: `Manager could not be assigned: ${managerUpdateError.message}`,
+                    rawData: u.row
+                  });
+                } else {
+                  debugLog(`Assigned manager ${u.managerEmail} for user ${u.email}`);
+                }
+              } catch (err: any) {
+                warnings.push({
+                  rowNumber: u.rowNumber,
+                  identifier: u.email,
+                  field: 'Manager',
+                  error: `Manager could not be assigned: ${err?.message ?? err}`,
+                  rawData: u.row
+                });
+              }
+            } else {
+              warnings.push({
+                rowNumber: u.rowNumber,
+                identifier: u.email,
+                field: 'Manager',
+                error: `Manager email "${u.managerEmail}" does not exist in the system - user created without manager assignment`,
+                rawData: u.row
+              });
             }
           }
 

@@ -50,7 +50,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   // Get the appropriate grid class based on mode
   const getGridClass = () => {
     if (isLearnMode) {
-      return "grid-cols-3"; // Certificates, Departments & Roles, and Physical Location in Learn mode
+      return "grid-cols-2"; // Certificates and Departments & Roles in Learn mode
     }
     
     if (profile?.cyber_learner) {
@@ -78,10 +78,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                   <span className="hidden sm:inline">Departments & Roles</span>
                 </TabsTrigger>
                 
-                <TabsTrigger value="location" className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4" />
-                  <span className="hidden sm:inline">Physical Location</span>
-                </TabsTrigger>
               </>
             ) : (
               /* ========== GOVERN MODE TABS ========== */
@@ -153,9 +149,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                 <UserDepartmentsRolesManager userId={userId} ref={departmentRolesRef} />
               </TabsContent>
 
-              <TabsContent value="location" className="space-y-4 animate-fade-in">
-                <PhysicalLocationTab profile={profile} isAdmin={hasAdminAccess} />
-              </TabsContent>
             </>
           ) : (
             /* ========== GOVERN MODE TAB CONTENT ========== */

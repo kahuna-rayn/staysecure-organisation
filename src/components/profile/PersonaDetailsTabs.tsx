@@ -50,7 +50,7 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   // Get the appropriate grid class based on mode
   const getGridClass = () => {
     if (isLearnMode) {
-      return "grid-cols-2"; // Certificates and Departments & Roles in Learn mode
+      return "grid-cols-3"; // Knowledge, Certificates, Departments & Roles in Learn mode
     }
     
     if (profile?.cyber_learner) {
@@ -63,11 +63,16 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <Tabs defaultValue={isLearnMode ? "certification" : "knowledge"} className="w-full">
+        <Tabs defaultValue="knowledge" className="w-full">
           <TabsList className={`grid w-full ${getGridClass()} mb-6`}>
             {/* ========== LEARN MODE TABS ========== */}
             {isLearnMode ? (
               <>
+                <TabsTrigger value="knowledge" className="flex items-center gap-2">
+                  <BookOpen className="h-4 w-4" />
+                  <span className="hidden sm:inline">Knowledge</span>
+                </TabsTrigger>
+
                 <TabsTrigger value="certification" className="flex items-center gap-2">
                   <GraduationCap className="h-4 w-4" />
                   <span className="hidden sm:inline">Certificates</span>
@@ -77,7 +82,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
                   <Users className="h-4 w-4" />
                   <span className="hidden sm:inline">Departments & Roles</span>
                 </TabsTrigger>
-                
               </>
             ) : (
               /* ========== GOVERN MODE TABS ========== */
@@ -119,6 +123,10 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           {/* ========== LEARN MODE TAB CONTENT ========== */}
           {isLearnMode ? (
             <>
+              <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
+                <MyDocuments userId={typeof profile.id === 'string' ? profile.id : userId} />
+              </TabsContent>
+
               <TabsContent value="certification" className="space-y-4 animate-fade-in">
                 <div className="flex justify-end">
                   <Button 

@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/progress"), require("@/components/ui/alert"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/progress", "@/components/ui/alert", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.deleteUserDialog, global.useToast$1, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments, global.LearningTracksTab, global.useUserRoleById, global.progress, global.alert, global.useProfile, global.useUserPhysicalLocations, global.scrollArea));
-})(this, function(exports2, jsxRuntime, o, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, deleteUserDialog, useToast$1, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, XLSX, jsPDF, autoTable, reactToPrint, separator, vt, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments, LearningTracksTab, useUserRoleById, progress, alert, useProfile, useUserPhysicalLocations, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("react-dom"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/knowledge/MyDocuments"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/progress"), require("@/components/ui/alert"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area"), require("@/components/ui/checkbox")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "react-dom", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/knowledge/MyDocuments", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/progress", "@/components/ui/alert", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area", "@/components/ui/checkbox"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.deleteUserDialog, global.useToast$1, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.ReactDOM, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.MyDocuments$1, global.LearningTracksTab, global.useUserRoleById, global.progress, global.alert, global.useProfile, global.useUserPhysicalLocations, global.scrollArea, global.checkbox));
+})(this, function(exports2, jsxRuntime, o, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, deleteUserDialog, useToast$1, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, XLSX, jsPDF, autoTable, reactToPrint, separator, vt, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, MyDocuments$1, LearningTracksTab, useUserRoleById, progress, alert, useProfile, useUserPhysicalLocations, scrollArea, checkbox) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -214,7 +214,28 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const ChartColumn = createLucideIcon("ChartColumn", [
+    ["path", { d: "M3 3v16a2 2 0 0 0 2 2h16", key: "c24i48" }],
+    ["path", { d: "M18 17V9", key: "2bz60n" }],
+    ["path", { d: "M13 17V5", key: "1frdt8" }],
+    ["path", { d: "M8 17v-3", key: "17ska0" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const Check = createLucideIcon("Check", [["path", { d: "M20 6 9 17l-5-5", key: "1gmf2c" }]]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const ChevronRight = createLucideIcon("ChevronRight", [
+    ["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]
+  ]);
   /**
    * @license lucide-react v0.462.0 - ISC
    *
@@ -242,6 +263,16 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const CircleCheckBig = createLucideIcon("CircleCheckBig", [
+    ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
+    ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const Clock = createLucideIcon("Clock", [
     ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
     ["polyline", { points: "12 6 12 12 16 14", key: "68esgv" }]
@@ -256,6 +287,17 @@
     ["path", { d: "M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4", key: "ih7n3h" }],
     ["polyline", { points: "7 10 12 15 17 10", key: "2ggqvy" }],
     ["line", { x1: "12", x2: "12", y1: "15", y2: "3", key: "1vk2je" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const ExternalLink = createLucideIcon("ExternalLink", [
+    ["path", { d: "M15 3h6v6", key: "1q9fwt" }],
+    ["path", { d: "M10 14 21 3", key: "gplh6r" }],
+    ["path", { d: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6", key: "a6xqqp" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -643,6 +685,16 @@
     ["path", { d: "M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2", key: "v07s0e" }],
     ["line", { x1: "10", x2: "10", y1: "11", y2: "17", key: "1uufr5" }],
     ["line", { x1: "14", x2: "14", y1: "11", y2: "17", key: "xtxkd" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const TrendingUp = createLucideIcon("TrendingUp", [
+    ["polyline", { points: "22 7 13.5 15.5 8.5 10.5 2 17", key: "126l90" }],
+    ["polyline", { points: "16 7 22 7 22 13", key: "kwv8wd" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -1563,10 +1615,10 @@
         "client admin": "client_admin"
       };
       const backendValue = levelMapping[trimmedLevel] || trimmedLevel;
-      const isValid = validLevels.includes(backendValue);
+      const isValid2 = validLevels.includes(backendValue);
       return {
-        isValid,
-        value: isValid ? backendValue : void 0
+        isValid: isValid2,
+        value: isValid2 ? backendValue : void 0
       };
     };
     const translateError = (error) => {
@@ -7424,8 +7476,12 @@
       return "grid-cols-6";
     };
     return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "p-6", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(tabs.Tabs, { defaultValue: isLearnMode ? "certification" : "knowledge", className: "w-full", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(tabs.Tabs, { defaultValue: "knowledge", className: "w-full", children: [
         /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsList, { className: `grid w-full ${getGridClass()} mb-6`, children: isLearnMode ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "knowledge", className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(BookOpen, { className: "h-4 w-4" }),
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Knowledge" })
+          ] }),
           /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "certification", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(GraduationCap, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Certificates" })
@@ -7433,10 +7489,6 @@
           /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "departments", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Departments & Roles" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "location", className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Physical Location" })
           ] })
         ] }) : (
           /* ========== GOVERN MODE TABS ========== */
@@ -7472,6 +7524,7 @@
           ] })
         ) }),
         isLearnMode ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments$1, { userId: typeof profile.id === "string" ? profile.id : userId }) }),
           /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(
               button.Button,
@@ -7503,12 +7556,11 @@
               }
             ) }),
             /* @__PURE__ */ jsxRuntime.jsx(UserDepartmentsRolesManager, { userId, ref: departmentRolesRef })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "location", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(PhysicalLocationTab, { profile, isAdmin: hasAdminAccess }) })
+          ] })
         ] }) : (
           /* ========== GOVERN MODE TAB CONTENT ========== */
           /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments, { userId: typeof profile.id === "string" ? profile.id : userId }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments$1, { userId: typeof profile.id === "string" ? profile.id : userId }) }),
             /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
               /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(
                 button.Button,
@@ -8015,16 +8067,16 @@
           }
         });
         if (fnError) {
-          let message = fnError.message || "Something went wrong. Please try again.";
+          let message2 = fnError.message || "Something went wrong. Please try again.";
           const context = fnError.context;
           if (context == null ? void 0 : context.json) {
             try {
               const body = await context.json();
-              if ((body == null ? void 0 : body.error) && typeof body.error === "string") message = body.error;
+              if ((body == null ? void 0 : body.error) && typeof body.error === "string") message2 = body.error;
             } catch {
             }
           }
-          setError(message);
+          setError(message2);
           return;
         }
         if ((data == null ? void 0 : data.success) === false && (data == null ? void 0 : data.error)) {
@@ -8045,8 +8097,8 @@
         onSuccess == null ? void 0 : onSuccess();
         handleClose();
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
-        setError(message);
+        const message2 = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+        setError(message2);
       } finally {
         setLoading(false);
       }
@@ -9583,6 +9635,4541 @@
       /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: onClose, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }) })
     ] }) });
   };
+  const DocumentManagement = ({ onNavigateToAssignments }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const queryClient = reactQuery.useQueryClient();
+    const [searchTerm, setSearchTerm] = o.useState("");
+    const [categoryFilter, setCategoryFilter] = o.useState("all");
+    const [isCreateDialogOpen, setIsCreateDialogOpen] = o.useState(false);
+    const [editingDocument, setEditingDocument] = o.useState(null);
+    const { data: documents, isLoading } = reactQuery.useQuery({
+      queryKey: ["documents"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("documents").select("*").order("created_at", { ascending: false });
+        if (error) throw error;
+        return data;
+      }
+    });
+    const createDocumentMutation = reactQuery.useMutation({
+      mutationFn: async (documentData) => {
+        const { error } = await supabase.from("documents").insert([documentData]);
+        if (error) throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["documents"] });
+        setIsCreateDialogOpen(false);
+        useToast.toast({
+          title: "Success",
+          description: "Document created successfully"
+        });
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    });
+    const updateDocumentMutation = reactQuery.useMutation({
+      mutationFn: async (documentData) => {
+        const { error } = await supabase.from("documents").update(documentData).eq("document_id", documentData.document_id);
+        if (error) throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["documents"] });
+        setEditingDocument(null);
+        useToast.toast({
+          title: "Success",
+          description: "Document updated successfully"
+        });
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    });
+    const deleteDocumentMutation = reactQuery.useMutation({
+      mutationFn: async (documentId) => {
+        const { error } = await supabase.from("documents").delete().eq("document_id", documentId);
+        if (error) throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["documents"] });
+        useToast.toast({
+          title: "Success",
+          description: "Document deleted successfully"
+        });
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    });
+    const filteredDocuments = documents == null ? void 0 : documents.filter((doc) => {
+      var _a;
+      const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) || ((_a = doc.description) == null ? void 0 : _a.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesCategory = categoryFilter === "all" || doc.category === categoryFilter;
+      return matchesSearch && matchesCategory;
+    });
+    const categories = Array.from(new Set(documents == null ? void 0 : documents.map((doc) => doc.category).filter(Boolean)));
+    const handleCreateDocument = (formData) => {
+      const documentData = {
+        title: formData.get("title"),
+        description: formData.get("description"),
+        category: formData.get("category"),
+        required: formData.get("required") === "on",
+        url: formData.get("url"),
+        version: parseInt(formData.get("version")) || 1,
+        due_days: parseInt(formData.get("due_days")) || 30
+      };
+      createDocumentMutation.mutate(documentData);
+    };
+    const handleUpdateDocument = (formData) => {
+      if (!editingDocument) return;
+      const documentData = {
+        document_id: editingDocument.document_id,
+        title: formData.get("title"),
+        description: formData.get("description"),
+        category: formData.get("category"),
+        required: formData.get("required") === "on",
+        url: formData.get("url"),
+        version: parseInt(formData.get("version")) || 1,
+        due_days: parseInt(formData.get("due_days")) || 30
+      };
+      updateDocumentMutation.mutate(documentData);
+    };
+    const handleDeleteDocument = (documentId) => {
+      if (confirm("Are you sure you want to delete this document?")) {
+        deleteDocumentMutation.mutate(documentId);
+      }
+    };
+    if (isLoading) {
+      return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-32 w-32 border-b-2 border-primary" }) });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-2xl font-bold", children: "Document Management" }),
+          /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Create and manage organizational documents" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", className: "flex items-center gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4 mr-2" }) }) }),
+          /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create New Document" }),
+              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Add a new document to the knowledge base" })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx(DocumentForm, { onSubmit: handleCreateDocument })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "search", children: "Search Documents" }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "relative", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Search, { className: "absolute left-3 top-3 h-4 w-4 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              input.Input,
+              {
+                id: "search",
+                placeholder: "Search by title or description...",
+                value: searchTerm,
+                onChange: (e) => setSearchTerm(e.target.value),
+                className: "pl-10"
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Filter by Category" }),
+          /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: categoryFilter, onValueChange: setCategoryFilter, children: [
+            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All categories" }) }),
+            /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Categories" }),
+              categories.map((category) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: category, children: category }, category))
+            ] })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: filteredDocuments == null ? void 0 : filteredDocuments.map((document2) => /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start justify-between", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: document2.title }),
+              document2.required && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Required" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
+                "v",
+                document2.version
+              ] })
+            ] }),
+            document2.description && /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { className: "mt-2", children: document2.description })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                size: "sm",
+                onClick: () => setEditingDocument(document2),
+                children: /* @__PURE__ */ jsxRuntime.jsx(SquarePen, { className: "h-4 w-4" })
+              }
+            ),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                size: "sm",
+                onClick: () => handleDeleteDocument(document2.document_id),
+                children: /* @__PURE__ */ jsxRuntime.jsx(Trash2, { className: "h-4 w-4" })
+              }
+            )
+          ] })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 text-sm text-muted-foreground", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
+              "Due in ",
+              document2.due_days,
+              " days"
+            ] }),
+            document2.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: document2.category })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+            document2.url && /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "sm", asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs("a", { href: document2.url, target: "_blank", rel: "noopener noreferrer", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-4 w-4 mr-1" }),
+              "View"
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsxs(
+              button.Button,
+              {
+                variant: "outline",
+                size: "sm",
+                onClick: onNavigateToAssignments,
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 mr-1" }),
+                  "Assign"
+                ]
+              }
+            )
+          ] })
+        ] }) })
+      ] }, document2.document_id)) }),
+      editingDocument && /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: !!editingDocument, onOpenChange: () => setEditingDocument(null), children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Edit Document" }),
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Update document information" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          DocumentForm,
+          {
+            initialData: editingDocument,
+            onSubmit: handleUpdateDocument
+          }
+        )
+      ] }) })
+    ] });
+  };
+  const DocumentForm = ({ initialData, onSubmit }) => {
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.currentTarget);
+      onSubmit(formData);
+    };
+    return /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "title", children: "Title *" }),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          input.Input,
+          {
+            id: "title",
+            name: "title",
+            defaultValue: initialData == null ? void 0 : initialData.title,
+            required: true
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "description", children: "Description" }),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          textarea.Textarea,
+          {
+            id: "description",
+            name: "description",
+            defaultValue: initialData == null ? void 0 : initialData.description
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "category", children: "Category" }),
+          /* @__PURE__ */ jsxRuntime.jsx(
+            input.Input,
+            {
+              id: "category",
+              name: "category",
+              defaultValue: initialData == null ? void 0 : initialData.category,
+              placeholder: "e.g., Policy, Training"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "version", children: "Version" }),
+          /* @__PURE__ */ jsxRuntime.jsx(
+            input.Input,
+            {
+              id: "version",
+              name: "version",
+              type: "number",
+              min: "1",
+              defaultValue: (initialData == null ? void 0 : initialData.version) || 1
+            }
+          )
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "url", children: "Document URL" }),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          input.Input,
+          {
+            id: "url",
+            name: "url",
+            type: "url",
+            defaultValue: initialData == null ? void 0 : initialData.url,
+            placeholder: "https://example.com/document.pdf"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "due_days", children: "Due Days" }),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          input.Input,
+          {
+            id: "due_days",
+            name: "due_days",
+            type: "number",
+            min: "1",
+            defaultValue: (initialData == null ? void 0 : initialData.due_days) || 30
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center space-x-2", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(
+          checkbox.Checkbox,
+          {
+            id: "required",
+            name: "required",
+            defaultChecked: initialData == null ? void 0 : initialData.required
+          }
+        ),
+        /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "required", children: "Required reading" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end space-x-2 pt-4", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) }) })
+    ] });
+  };
+  const DocumentAssignmentsDrillDown = ({
+    documentId,
+    documentTitle,
+    onBack
+  }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const [drillDownPath, setDrillDownPath] = o.useState([]);
+    const { data: profiles = [] } = reactQuery.useQuery({
+      queryKey: ["profiles"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("profiles").select("*");
+        if (error) throw error;
+        return data || [];
+      }
+    });
+    const { data: documentAssignments = [], isLoading: assignmentsLoading } = reactQuery.useQuery({
+      queryKey: ["document-assignments", documentId],
+      queryFn: async () => {
+        if (!documentId) return [];
+        const { data, error } = await supabase.from("document_assignments").select("*").eq("document_id", documentId);
+        if (error) throw error;
+        return data || [];
+      },
+      enabled: !!documentId
+    });
+    const { data: userDepartments = [] } = reactQuery.useQuery({
+      queryKey: ["user-departments"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("user_departments").select("*").eq("is_primary", true);
+        if (error) {
+          console.error("Error fetching user departments:", error);
+          throw error;
+        }
+        return data || [];
+      }
+    });
+    const { data: departmentsList = [] } = reactQuery.useQuery({
+      queryKey: ["departments"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("departments").select("*");
+        if (error) {
+          console.error("Error fetching departments:", error);
+          throw error;
+        }
+        return data || [];
+      }
+    });
+    const departmentMap = /* @__PURE__ */ new Map();
+    departmentsList.forEach((dept) => {
+      departmentMap.set(dept.id, dept.name);
+    });
+    [...new Set(profiles.map((p) => p.location).filter(Boolean))];
+    [...new Set(
+      userDepartments.map((ud) => departmentMap.get(ud.department_id)).filter(Boolean)
+    )];
+    const userDeptMap = /* @__PURE__ */ new Map();
+    userDepartments.forEach((ud) => {
+      if (!userDeptMap.has(ud.user_id)) {
+        userDeptMap.set(ud.user_id, []);
+      }
+      userDeptMap.get(ud.user_id).push(ud);
+    });
+    o.useEffect(() => {
+      if (profiles.length > 0 && documentAssignments.length > 0 && !assignmentsLoading) {
+        const assignedUserIds = new Set(documentAssignments.map((a) => a.user_id));
+        const assignedProfiles = profiles.filter((p) => assignedUserIds.has(p.id));
+        setDrillDownPath([{
+          level: 0,
+          title: "Organization Level",
+          data: assignedProfiles,
+          type: "org",
+          value: assignedProfiles.length
+        }]);
+      }
+    }, [profiles, documentAssignments, assignmentsLoading]);
+    const onDrillDown = (level, data, title, type, value) => {
+      const newPath = drillDownPath.slice(0, level + 1);
+      if (level < 3) {
+        newPath.push({ level: level + 1, title, data, type, value });
+      }
+      setDrillDownPath(newPath);
+    };
+    const getAssignmentStatus = (userId) => {
+      const assignment = documentAssignments.find((a) => a.user_id === userId);
+      if (!assignment) return "Not Assigned";
+      return assignment.status || "Not Started";
+    };
+    const getStatusBadgeProps = (status) => {
+      let variant = "secondary";
+      let className = "";
+      switch (status.toLowerCase()) {
+        case "completed":
+          variant = "default";
+          className = "bg-green-600 text-white border-green-600 hover:bg-green-700";
+          break;
+        case "in progress":
+          variant = "secondary";
+          className = "bg-blue-600 text-white border-blue-600 hover:bg-blue-700";
+          break;
+        case "not started":
+        case "not assigned":
+          variant = "destructive";
+          break;
+        default:
+          variant = "secondary";
+      }
+      return { variant, className };
+    };
+    const renderBreadcrumb = () => /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2 mb-6", children: drillDownPath.map((level, index) => /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+      /* @__PURE__ */ jsxRuntime.jsx(
+        button.Button,
+        {
+          variant: "ghost",
+          size: "sm",
+          onClick: () => onDrillDown(level.level, level.data, level.title, level.type, level.value),
+          className: "text-muted-foreground hover:text-foreground",
+          children: level.title
+        }
+      ),
+      index < drillDownPath.length - 1 && /* @__PURE__ */ jsxRuntime.jsx(ChevronRight, { className: "h-4 w-4" })
+    ] }, index)) });
+    const renderContent = () => {
+      const currentLevel = drillDownPath[drillDownPath.length - 1];
+      currentLevel.title;
+      if (currentLevel.type === "org") {
+        const overallValue = documentAssignments.length;
+        return /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-lg font-semibold mb-2", children: "Organization Level" }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "mb-6 w-1/2", children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between items-center", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "mr-2 h-5 w-5" }),
+                "Organization Overview"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-3xl font-bold text-blue-600", children: overallValue })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Total assigned staff" })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-lg font-semibold mb-4", children: "Location" }),
+          renderLocationLevel()
+        ] });
+      }
+      if (currentLevel.type === "location") {
+        const locationValue = currentLevel.value ?? currentLevel.data.length;
+        return /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "mb-6 w-1/2", children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between items-center", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "mr-2 h-5 w-5" }),
+                currentLevel.title,
+                " Overview"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-3xl font-bold text-blue-600", children: locationValue })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Total for this location" })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-lg font-semibold mb-4", children: "Departments" }),
+          (() => {
+            const locationDepartments = [...new Set(
+              currentLevel.data.map((p) => {
+                const userDepts = userDeptMap.get(p.id) || [];
+                const primaryDept = userDepts.find((ud) => ud.is_primary);
+                return primaryDept ? departmentMap.get(primaryDept.department_id) : null;
+              }).filter(Boolean)
+            )];
+            return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", children: locationDepartments.map((departmentName) => {
+              const departmentProfiles = currentLevel.data.filter((p) => {
+                const userDepts = userDeptMap.get(p.id) || [];
+                return userDepts.some((ud) => {
+                  const deptName = departmentMap.get(ud.department_id);
+                  return deptName === departmentName;
+                });
+              });
+              if (departmentProfiles.length === 0) return null;
+              return /* @__PURE__ */ jsxRuntime.jsxs(
+                card.Card,
+                {
+                  className: "cursor-pointer hover:shadow-lg transition-shadow",
+                  onClick: () => onDrillDown(currentLevel.level + 1, departmentProfiles, departmentName, "department", departmentProfiles.length),
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: departmentName }),
+                      /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4" })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-xl font-bold text-blue-600", children: departmentProfiles.length }),
+                      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-xs text-muted-foreground", children: "assigned staff" })
+                    ] }) })
+                  ]
+                },
+                departmentName
+              );
+            }).filter(Boolean) });
+          })()
+        ] });
+      }
+      if (currentLevel.type === "department") {
+        const departmentValue = currentLevel.value ?? currentLevel.data.length;
+        return /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "mb-6 w-1/2", children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between items-center", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "mr-2 h-5 w-5" }),
+                currentLevel.title,
+                " Overview"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-3xl font-bold text-blue-600", children: departmentValue })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Total for this department" })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-lg font-semibold mb-4", children: "Staff" }),
+          renderStaffList()
+        ] });
+      }
+      return renderStaffList();
+    };
+    const renderLocationLevel = () => {
+      const currentLevel = drillDownPath[drillDownPath.length - 1];
+      const overviewCard = /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { className: "mb-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "text-sm font-medium flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(MapPin, { className: "h-4 w-4" }),
+          currentLevel.title,
+          " Overview"
+        ] }) }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-xl font-bold text-blue-600", children: currentLevel.value || currentLevel.data.length }),
+          /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Total assigned staff" })
+        ] })
+      ] });
+      const locationDepartments = [...new Set(
+        currentLevel.data.map((p) => {
+          const userDepts = userDeptMap.get(p.id) || [];
+          const primaryDept = userDepts.find((ud) => ud.is_primary);
+          return primaryDept ? departmentMap.get(primaryDept.department_id) : null;
+        }).filter(Boolean)
+      )];
+      const departmentCards = locationDepartments.map((departmentName) => {
+        const departmentProfiles = currentLevel.data.filter((p) => {
+          const userDepts = userDeptMap.get(p.id) || [];
+          const matchesThisDept = userDepts.some((ud) => {
+            const deptName = departmentMap.get(ud.department_id);
+            const matches = deptName === departmentName;
+            if (matches) {
+              console.log(`User ${p.full_name} matches department ${departmentName} (dept_id: ${ud.department_id})`);
+            }
+            return matches;
+          });
+          return matchesThisDept;
+        });
+        if (departmentProfiles.length === 0) return null;
+        return /* @__PURE__ */ jsxRuntime.jsxs(
+          card.Card,
+          {
+            className: "cursor-pointer hover:shadow-lg transition-shadow",
+            onClick: () => onDrillDown(currentLevel.level + 1, departmentProfiles, departmentName, "department", departmentProfiles.length),
+            children: [
+              /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: departmentName }),
+                /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4" })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+                /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-xl font-bold text-blue-600", children: departmentProfiles.length }),
+                /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-xs text-muted-foreground", children: "assigned staff" })
+              ] }) })
+            ]
+          },
+          departmentName
+        );
+      }).filter(Boolean);
+      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
+        overviewCard,
+        /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold", children: "Departments" }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4", children: departmentCards })
+      ] });
+    };
+    const renderStaffList = () => {
+      const currentLevel = drillDownPath[drillDownPath.length - 1];
+      const allProfilesInLevel = currentLevel.data;
+      console.log("=== RENDERING STAFF LIST ===");
+      console.log("Current level:", currentLevel);
+      console.log("All profiles in level:", allProfilesInLevel);
+      return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 gap-3", children: allProfilesInLevel.map((profile) => {
+        const status = getAssignmentStatus(profile.id);
+        const badgeProps = getStatusBadgeProps(status);
+        return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { className: "p-4", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "font-medium", children: profile.full_name || "Unknown Name" }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
+                profile.location,
+                " • ",
+                currentLevel.title,
+                " • ",
+                profile.primary_role || "No Role"
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: badgeProps.variant, className: badgeProps.className, children: status })
+        ] }) }) }, profile.id);
+      }) }) });
+    };
+    if (assignmentsLoading || drillDownPath.length === 0) {
+      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full space-y-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", onClick: onBack, children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-2xl font-bold", children: documentTitle }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Document assignment breakdown" })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center py-8", children: /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Loading assignment data..." }) })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", onClick: onBack, children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-2xl font-bold", children: documentTitle }),
+          /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Document assignment breakdown" })
+        ] })
+      ] }),
+      renderBreadcrumb(),
+      renderContent()
+    ] });
+  };
+  const DocumentAssignments = () => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const queryClient = reactQuery.useQueryClient();
+    const [searchTerm, setSearchTerm] = o.useState("");
+    const [isAssignDialogOpen, setIsAssignDialogOpen] = o.useState(false);
+    const [selectedDocument, setSelectedDocument] = o.useState(null);
+    const [assignmentType, setAssignmentType] = o.useState("roles");
+    const [selectedTargets, setSelectedTargets] = o.useState([]);
+    const [selectedDocumentForDrillDown, setSelectedDocumentForDrillDown] = o.useState(null);
+    const { data: documents } = reactQuery.useQuery({
+      queryKey: ["documents"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("documents").select("*").order("title");
+        if (error) throw error;
+        return data;
+      }
+    });
+    const { data: departments } = reactQuery.useQuery({
+      queryKey: ["departments"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("departments").select("*").order("name");
+        if (error) throw error;
+        return data;
+      }
+    });
+    const { data: roles } = reactQuery.useQuery({
+      queryKey: ["roles"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("roles").select("*").order("name");
+        if (error) throw error;
+        return data;
+      }
+    });
+    const { data: users } = reactQuery.useQuery({
+      queryKey: ["users"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("profiles").select("id, full_name").order("full_name");
+        if (error) throw error;
+        return data;
+      }
+    });
+    const { data: assignments } = reactQuery.useQuery({
+      queryKey: ["document-assignments-overview"],
+      queryFn: async () => {
+        const { data: assignmentsData, error: assignmentsError } = await supabase.from("document_assignments").select("*").order("assigned_at", { ascending: false });
+        if (assignmentsError) {
+          console.error("Error fetching assignments:", assignmentsError);
+          throw assignmentsError;
+        }
+        if (!assignmentsData || assignmentsData.length === 0) {
+          return [];
+        }
+        const documentIds = [...new Set(assignmentsData.map((a) => a.document_id))];
+        const userIds = [...new Set(assignmentsData.map((a) => a.user_id))];
+        const { data: documentsData, error: documentsError } = await supabase.from("documents").select("document_id, title").in("document_id", documentIds);
+        if (documentsError) {
+          console.error("Error fetching documents:", documentsError);
+          throw documentsError;
+        }
+        const { data: profilesData, error: profilesError } = await supabase.from("profiles").select("id, full_name").in("id", userIds);
+        if (profilesError) {
+          console.error("Error fetching profiles:", profilesError);
+          throw profilesError;
+        }
+        const documentMap = new Map((documentsData == null ? void 0 : documentsData.map((d) => [d.document_id, d])) || []);
+        const profileMap = new Map((profilesData == null ? void 0 : profilesData.map((p) => [p.id, p])) || []);
+        return assignmentsData.map((assignment) => ({
+          ...assignment,
+          document: documentMap.get(assignment.document_id),
+          user: profileMap.get(assignment.user_id)
+        }));
+      }
+    });
+    const createAssignmentMutation = reactQuery.useMutation({
+      mutationFn: async () => {
+        if (!selectedDocument) return;
+        console.log("Creating assignment for document:", selectedDocument.document_id);
+        console.log("Assignment type:", assignmentType);
+        console.log("Selected targets:", selectedTargets);
+        if (assignmentType === "roles") {
+          const promises = selectedTargets.map(async (roleId) => {
+            console.log("Inserting document_roles:", {
+              document_id: selectedDocument.document_id,
+              role_id: roleId
+            });
+            const result = await supabase.from("document_roles").insert({
+              document_id: selectedDocument.document_id,
+              role_id: roleId
+            });
+            console.log("Insert result:", result);
+            if (result.error) {
+              console.error("Error inserting document_roles:", result.error);
+              throw result.error;
+            }
+            return result;
+          });
+          await Promise.all(promises);
+        } else if (assignmentType === "departments") {
+          const promises = selectedTargets.map(async (departmentId) => {
+            console.log("Inserting document_departments:", {
+              document_id: selectedDocument.document_id,
+              department_id: departmentId
+            });
+            const result = await supabase.from("document_departments").insert({
+              document_id: selectedDocument.document_id,
+              department_id: departmentId
+            });
+            console.log("Insert result:", result);
+            if (result.error) {
+              console.error("Error inserting document_departments:", result.error);
+              throw result.error;
+            }
+            return result;
+          });
+          await Promise.all(promises);
+        } else if (assignmentType === "users") {
+          const promises = selectedTargets.map(async (userId) => {
+            console.log("Inserting document_users:", {
+              document_id: selectedDocument.document_id,
+              user_id: userId
+            });
+            const result = await supabase.from("document_users").insert({
+              document_id: selectedDocument.document_id,
+              user_id: userId
+            });
+            console.log("Insert result:", result);
+            if (result.error) {
+              console.error("Error inserting document_users:", result.error);
+              throw result.error;
+            }
+            return result;
+          });
+          await Promise.all(promises);
+        }
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+        setIsAssignDialogOpen(false);
+        setSelectedDocument(null);
+        setSelectedTargets([]);
+        useToast.toast({
+          title: "Success",
+          description: "Document assignments created successfully"
+        });
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    });
+    const handleAssign = () => {
+      if (!selectedDocument || selectedTargets.length === 0) return;
+      createAssignmentMutation.mutate();
+    };
+    const handleTargetToggle = (targetId) => {
+      setSelectedTargets(
+        (prev) => prev.includes(targetId) ? prev.filter((id) => id !== targetId) : [...prev, targetId]
+      );
+    };
+    const getAssignmentTargets = () => {
+      switch (assignmentType) {
+        case "roles":
+          return roles || [];
+        case "departments":
+          return departments || [];
+        case "users":
+          return users || [];
+        default:
+          return [];
+      }
+    };
+    const getTargetLabel = (target) => {
+      if (assignmentType === "roles") return target.name;
+      if (assignmentType === "departments") return target.name;
+      if (assignmentType === "users") return target.full_name;
+      return "";
+    };
+    const getTargetId = (target) => {
+      if (assignmentType === "roles") return target.role_id;
+      if (assignmentType === "departments") return target.id;
+      if (assignmentType === "users") return target.id;
+      return "";
+    };
+    if (selectedDocumentForDrillDown) {
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        DocumentAssignmentsDrillDown,
+        {
+          documentId: selectedDocumentForDrillDown.id,
+          documentTitle: selectedDocumentForDrillDown.title,
+          onBack: () => setSelectedDocumentForDrillDown(null)
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-2xl font-bold", children: "Document Assignments" }),
+          /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Assign documents to roles, departments, or specific users" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isAssignDialogOpen, onOpenChange: setIsAssignDialogOpen, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4 mr-2" }),
+            "Create Assignment"
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Document Assignment" }),
+              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Assign a document to roles, departments, or specific users" })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "document", children: "Select Document" }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { onValueChange: (value) => {
+                  const doc = documents == null ? void 0 : documents.find((d) => d.document_id === value);
+                  setSelectedDocument(doc || null);
+                }, children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "Choose a document" }) }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: documents == null ? void 0 : documents.map((doc) => /* @__PURE__ */ jsxRuntime.jsxs(select.SelectItem, { value: doc.document_id, children: [
+                    doc.title,
+                    " (v",
+                    doc.version,
+                    ")"
+                  ] }, doc.document_id)) })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Assignment Type" }),
+                /* @__PURE__ */ jsxRuntime.jsx(tabs.Tabs, { value: assignmentType, onValueChange: (value) => {
+                  setAssignmentType(value);
+                  setSelectedTargets([]);
+                }, children: /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsList, { className: "grid w-full grid-cols-3", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "roles", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 mr-1" }),
+                    "Roles"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "departments", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 mr-1" }),
+                    "Departments"
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "users", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(User, { className: "h-4 w-4 mr-1" }),
+                    "Users"
+                  ] })
+                ] }) })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Select Targets" }),
+                /* @__PURE__ */ jsxRuntime.jsx("div", { className: "max-h-48 overflow-y-auto border rounded-md p-2 space-y-2", children: getAssignmentTargets().map((target) => /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center space-x-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(
+                    checkbox.Checkbox,
+                    {
+                      id: getTargetId(target),
+                      checked: selectedTargets.includes(getTargetId(target)),
+                      onCheckedChange: () => handleTargetToggle(getTargetId(target))
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: getTargetId(target), className: "text-sm", children: getTargetLabel(target) })
+                ] }, getTargetId(target))) })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-end space-x-2 pt-4", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsAssignDialogOpen(false), children: "Cancel" }),
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  button.Button,
+                  {
+                    onClick: handleAssign,
+                    disabled: !selectedDocument || selectedTargets.length === 0,
+                    children: "Create Assignment"
+                  }
+                )
+              ] })
+            ] })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center space-x-2", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(Search, { className: "h-4 w-4 text-muted-foreground" }),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          input.Input,
+          {
+            placeholder: "Search documents...",
+            value: searchTerm,
+            onChange: (e) => setSearchTerm(e.target.value),
+            className: "max-w-sm"
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: (() => {
+        const groupedAssignments = assignments == null ? void 0 : assignments.reduce((acc, assignment) => {
+          const docId = assignment.document_id;
+          if (!acc[docId]) {
+            acc[docId] = {
+              document: assignment.document,
+              assignments: []
+            };
+          }
+          acc[docId].assignments.push(assignment);
+          return acc;
+        }, {});
+        return Object.values(groupedAssignments || {}).map((group) => {
+          var _a;
+          return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start justify-between", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: group.document.title }),
+                /* @__PURE__ */ jsxRuntime.jsxs(card.CardDescription, { className: "flex items-center gap-2 mt-1", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" }),
+                  group.assignments.length,
+                  " staff assigned"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsxs(
+                button.Button,
+                {
+                  variant: "outline",
+                  size: "sm",
+                  onClick: () => setSelectedDocumentForDrillDown({
+                    id: group.document.document_id,
+                    title: group.document.title
+                  }),
+                  className: "flex items-center gap-2",
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(ChartColumn, { className: "h-4 w-4" }),
+                    "View Breakdown"
+                  ]
+                }
+              ) })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-4 text-sm", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx("div", { className: "w-2 h-2 rounded-full bg-green-500" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                    group.assignments.filter((a) => a.status === "Completed").length,
+                    " Completed"
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx("div", { className: "w-2 h-2 rounded-full bg-blue-500" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                    group.assignments.filter((a) => a.status === "In progress").length,
+                    " In Progress"
+                  ] })
+                ] }),
+                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx("div", { className: "w-2 h-2 rounded-full bg-orange-500" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                    group.assignments.filter((a) => a.status === "Not started").length,
+                    " Not Started"
+                  ] })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-muted-foreground", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
+                "Due: ",
+                new Date((_a = group.assignments[0]) == null ? void 0 : _a.due_date).toLocaleDateString()
+              ] }) })
+            ] }) })
+          ] }, group.document.document_id);
+        });
+      })() })
+    ] });
+  };
+  function toDate(argument) {
+    const argStr = Object.prototype.toString.call(argument);
+    if (argument instanceof Date || typeof argument === "object" && argStr === "[object Date]") {
+      return new argument.constructor(+argument);
+    } else if (typeof argument === "number" || argStr === "[object Number]" || typeof argument === "string" || argStr === "[object String]") {
+      return new Date(argument);
+    } else {
+      return /* @__PURE__ */ new Date(NaN);
+    }
+  }
+  function constructFrom(date, value) {
+    if (date instanceof Date) {
+      return new date.constructor(value);
+    } else {
+      return new Date(value);
+    }
+  }
+  const millisecondsInWeek = 6048e5;
+  const millisecondsInDay = 864e5;
+  let defaultOptions = {};
+  function getDefaultOptions() {
+    return defaultOptions;
+  }
+  function startOfWeek(date, options) {
+    var _a, _b, _c, _d;
+    const defaultOptions2 = getDefaultOptions();
+    const weekStartsOn = (options == null ? void 0 : options.weekStartsOn) ?? ((_b = (_a = options == null ? void 0 : options.locale) == null ? void 0 : _a.options) == null ? void 0 : _b.weekStartsOn) ?? defaultOptions2.weekStartsOn ?? ((_d = (_c = defaultOptions2.locale) == null ? void 0 : _c.options) == null ? void 0 : _d.weekStartsOn) ?? 0;
+    const _date = toDate(date);
+    const day = _date.getDay();
+    const diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
+    _date.setDate(_date.getDate() - diff);
+    _date.setHours(0, 0, 0, 0);
+    return _date;
+  }
+  function startOfISOWeek(date) {
+    return startOfWeek(date, { weekStartsOn: 1 });
+  }
+  function getISOWeekYear(date) {
+    const _date = toDate(date);
+    const year = _date.getFullYear();
+    const fourthOfJanuaryOfNextYear = constructFrom(date, 0);
+    fourthOfJanuaryOfNextYear.setFullYear(year + 1, 0, 4);
+    fourthOfJanuaryOfNextYear.setHours(0, 0, 0, 0);
+    const startOfNextYear = startOfISOWeek(fourthOfJanuaryOfNextYear);
+    const fourthOfJanuaryOfThisYear = constructFrom(date, 0);
+    fourthOfJanuaryOfThisYear.setFullYear(year, 0, 4);
+    fourthOfJanuaryOfThisYear.setHours(0, 0, 0, 0);
+    const startOfThisYear = startOfISOWeek(fourthOfJanuaryOfThisYear);
+    if (_date.getTime() >= startOfNextYear.getTime()) {
+      return year + 1;
+    } else if (_date.getTime() >= startOfThisYear.getTime()) {
+      return year;
+    } else {
+      return year - 1;
+    }
+  }
+  function startOfDay(date) {
+    const _date = toDate(date);
+    _date.setHours(0, 0, 0, 0);
+    return _date;
+  }
+  function getTimezoneOffsetInMilliseconds(date) {
+    const _date = toDate(date);
+    const utcDate = new Date(
+      Date.UTC(
+        _date.getFullYear(),
+        _date.getMonth(),
+        _date.getDate(),
+        _date.getHours(),
+        _date.getMinutes(),
+        _date.getSeconds(),
+        _date.getMilliseconds()
+      )
+    );
+    utcDate.setUTCFullYear(_date.getFullYear());
+    return +date - +utcDate;
+  }
+  function differenceInCalendarDays(dateLeft, dateRight) {
+    const startOfDayLeft = startOfDay(dateLeft);
+    const startOfDayRight = startOfDay(dateRight);
+    const timestampLeft = +startOfDayLeft - getTimezoneOffsetInMilliseconds(startOfDayLeft);
+    const timestampRight = +startOfDayRight - getTimezoneOffsetInMilliseconds(startOfDayRight);
+    return Math.round((timestampLeft - timestampRight) / millisecondsInDay);
+  }
+  function startOfISOWeekYear(date) {
+    const year = getISOWeekYear(date);
+    const fourthOfJanuary = constructFrom(date, 0);
+    fourthOfJanuary.setFullYear(year, 0, 4);
+    fourthOfJanuary.setHours(0, 0, 0, 0);
+    return startOfISOWeek(fourthOfJanuary);
+  }
+  function isDate(value) {
+    return value instanceof Date || typeof value === "object" && Object.prototype.toString.call(value) === "[object Date]";
+  }
+  function isValid(date) {
+    if (!isDate(date) && typeof date !== "number") {
+      return false;
+    }
+    const _date = toDate(date);
+    return !isNaN(Number(_date));
+  }
+  function startOfYear(date) {
+    const cleanDate = toDate(date);
+    const _date = constructFrom(date, 0);
+    _date.setFullYear(cleanDate.getFullYear(), 0, 1);
+    _date.setHours(0, 0, 0, 0);
+    return _date;
+  }
+  const formatDistanceLocale = {
+    lessThanXSeconds: {
+      one: "less than a second",
+      other: "less than {{count}} seconds"
+    },
+    xSeconds: {
+      one: "1 second",
+      other: "{{count}} seconds"
+    },
+    halfAMinute: "half a minute",
+    lessThanXMinutes: {
+      one: "less than a minute",
+      other: "less than {{count}} minutes"
+    },
+    xMinutes: {
+      one: "1 minute",
+      other: "{{count}} minutes"
+    },
+    aboutXHours: {
+      one: "about 1 hour",
+      other: "about {{count}} hours"
+    },
+    xHours: {
+      one: "1 hour",
+      other: "{{count}} hours"
+    },
+    xDays: {
+      one: "1 day",
+      other: "{{count}} days"
+    },
+    aboutXWeeks: {
+      one: "about 1 week",
+      other: "about {{count}} weeks"
+    },
+    xWeeks: {
+      one: "1 week",
+      other: "{{count}} weeks"
+    },
+    aboutXMonths: {
+      one: "about 1 month",
+      other: "about {{count}} months"
+    },
+    xMonths: {
+      one: "1 month",
+      other: "{{count}} months"
+    },
+    aboutXYears: {
+      one: "about 1 year",
+      other: "about {{count}} years"
+    },
+    xYears: {
+      one: "1 year",
+      other: "{{count}} years"
+    },
+    overXYears: {
+      one: "over 1 year",
+      other: "over {{count}} years"
+    },
+    almostXYears: {
+      one: "almost 1 year",
+      other: "almost {{count}} years"
+    }
+  };
+  const formatDistance = (token, count, options) => {
+    let result;
+    const tokenValue = formatDistanceLocale[token];
+    if (typeof tokenValue === "string") {
+      result = tokenValue;
+    } else if (count === 1) {
+      result = tokenValue.one;
+    } else {
+      result = tokenValue.other.replace("{{count}}", count.toString());
+    }
+    if (options == null ? void 0 : options.addSuffix) {
+      if (options.comparison && options.comparison > 0) {
+        return "in " + result;
+      } else {
+        return result + " ago";
+      }
+    }
+    return result;
+  };
+  function buildFormatLongFn(args) {
+    return (options = {}) => {
+      const width = options.width ? String(options.width) : args.defaultWidth;
+      const format2 = args.formats[width] || args.formats[args.defaultWidth];
+      return format2;
+    };
+  }
+  const dateFormats = {
+    full: "EEEE, MMMM do, y",
+    long: "MMMM do, y",
+    medium: "MMM d, y",
+    short: "MM/dd/yyyy"
+  };
+  const timeFormats = {
+    full: "h:mm:ss a zzzz",
+    long: "h:mm:ss a z",
+    medium: "h:mm:ss a",
+    short: "h:mm a"
+  };
+  const dateTimeFormats = {
+    full: "{{date}} 'at' {{time}}",
+    long: "{{date}} 'at' {{time}}",
+    medium: "{{date}}, {{time}}",
+    short: "{{date}}, {{time}}"
+  };
+  const formatLong = {
+    date: buildFormatLongFn({
+      formats: dateFormats,
+      defaultWidth: "full"
+    }),
+    time: buildFormatLongFn({
+      formats: timeFormats,
+      defaultWidth: "full"
+    }),
+    dateTime: buildFormatLongFn({
+      formats: dateTimeFormats,
+      defaultWidth: "full"
+    })
+  };
+  const formatRelativeLocale = {
+    lastWeek: "'last' eeee 'at' p",
+    yesterday: "'yesterday at' p",
+    today: "'today at' p",
+    tomorrow: "'tomorrow at' p",
+    nextWeek: "eeee 'at' p",
+    other: "P"
+  };
+  const formatRelative = (token, _date, _baseDate, _options) => formatRelativeLocale[token];
+  function buildLocalizeFn(args) {
+    return (value, options) => {
+      const context = (options == null ? void 0 : options.context) ? String(options.context) : "standalone";
+      let valuesArray;
+      if (context === "formatting" && args.formattingValues) {
+        const defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
+        const width = (options == null ? void 0 : options.width) ? String(options.width) : defaultWidth;
+        valuesArray = args.formattingValues[width] || args.formattingValues[defaultWidth];
+      } else {
+        const defaultWidth = args.defaultWidth;
+        const width = (options == null ? void 0 : options.width) ? String(options.width) : args.defaultWidth;
+        valuesArray = args.values[width] || args.values[defaultWidth];
+      }
+      const index = args.argumentCallback ? args.argumentCallback(value) : value;
+      return valuesArray[index];
+    };
+  }
+  const eraValues = {
+    narrow: ["B", "A"],
+    abbreviated: ["BC", "AD"],
+    wide: ["Before Christ", "Anno Domini"]
+  };
+  const quarterValues = {
+    narrow: ["1", "2", "3", "4"],
+    abbreviated: ["Q1", "Q2", "Q3", "Q4"],
+    wide: ["1st quarter", "2nd quarter", "3rd quarter", "4th quarter"]
+  };
+  const monthValues = {
+    narrow: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
+    abbreviated: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec"
+    ],
+    wide: [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ]
+  };
+  const dayValues = {
+    narrow: ["S", "M", "T", "W", "T", "F", "S"],
+    short: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+    abbreviated: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    wide: [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday"
+    ]
+  };
+  const dayPeriodValues = {
+    narrow: {
+      am: "a",
+      pm: "p",
+      midnight: "mi",
+      noon: "n",
+      morning: "morning",
+      afternoon: "afternoon",
+      evening: "evening",
+      night: "night"
+    },
+    abbreviated: {
+      am: "AM",
+      pm: "PM",
+      midnight: "midnight",
+      noon: "noon",
+      morning: "morning",
+      afternoon: "afternoon",
+      evening: "evening",
+      night: "night"
+    },
+    wide: {
+      am: "a.m.",
+      pm: "p.m.",
+      midnight: "midnight",
+      noon: "noon",
+      morning: "morning",
+      afternoon: "afternoon",
+      evening: "evening",
+      night: "night"
+    }
+  };
+  const formattingDayPeriodValues = {
+    narrow: {
+      am: "a",
+      pm: "p",
+      midnight: "mi",
+      noon: "n",
+      morning: "in the morning",
+      afternoon: "in the afternoon",
+      evening: "in the evening",
+      night: "at night"
+    },
+    abbreviated: {
+      am: "AM",
+      pm: "PM",
+      midnight: "midnight",
+      noon: "noon",
+      morning: "in the morning",
+      afternoon: "in the afternoon",
+      evening: "in the evening",
+      night: "at night"
+    },
+    wide: {
+      am: "a.m.",
+      pm: "p.m.",
+      midnight: "midnight",
+      noon: "noon",
+      morning: "in the morning",
+      afternoon: "in the afternoon",
+      evening: "in the evening",
+      night: "at night"
+    }
+  };
+  const ordinalNumber = (dirtyNumber, _options) => {
+    const number = Number(dirtyNumber);
+    const rem100 = number % 100;
+    if (rem100 > 20 || rem100 < 10) {
+      switch (rem100 % 10) {
+        case 1:
+          return number + "st";
+        case 2:
+          return number + "nd";
+        case 3:
+          return number + "rd";
+      }
+    }
+    return number + "th";
+  };
+  const localize = {
+    ordinalNumber,
+    era: buildLocalizeFn({
+      values: eraValues,
+      defaultWidth: "wide"
+    }),
+    quarter: buildLocalizeFn({
+      values: quarterValues,
+      defaultWidth: "wide",
+      argumentCallback: (quarter) => quarter - 1
+    }),
+    month: buildLocalizeFn({
+      values: monthValues,
+      defaultWidth: "wide"
+    }),
+    day: buildLocalizeFn({
+      values: dayValues,
+      defaultWidth: "wide"
+    }),
+    dayPeriod: buildLocalizeFn({
+      values: dayPeriodValues,
+      defaultWidth: "wide",
+      formattingValues: formattingDayPeriodValues,
+      defaultFormattingWidth: "wide"
+    })
+  };
+  function buildMatchFn(args) {
+    return (string, options = {}) => {
+      const width = options.width;
+      const matchPattern = width && args.matchPatterns[width] || args.matchPatterns[args.defaultMatchWidth];
+      const matchResult = string.match(matchPattern);
+      if (!matchResult) {
+        return null;
+      }
+      const matchedString = matchResult[0];
+      const parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
+      const key = Array.isArray(parsePatterns) ? findIndex(parsePatterns, (pattern) => pattern.test(matchedString)) : (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- I challange you to fix the type
+        findKey(parsePatterns, (pattern) => pattern.test(matchedString))
+      );
+      let value;
+      value = args.valueCallback ? args.valueCallback(key) : key;
+      value = options.valueCallback ? (
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- I challange you to fix the type
+        options.valueCallback(value)
+      ) : value;
+      const rest = string.slice(matchedString.length);
+      return { value, rest };
+    };
+  }
+  function findKey(object, predicate) {
+    for (const key in object) {
+      if (Object.prototype.hasOwnProperty.call(object, key) && predicate(object[key])) {
+        return key;
+      }
+    }
+    return void 0;
+  }
+  function findIndex(array, predicate) {
+    for (let key = 0; key < array.length; key++) {
+      if (predicate(array[key])) {
+        return key;
+      }
+    }
+    return void 0;
+  }
+  function buildMatchPatternFn(args) {
+    return (string, options = {}) => {
+      const matchResult = string.match(args.matchPattern);
+      if (!matchResult) return null;
+      const matchedString = matchResult[0];
+      const parseResult = string.match(args.parsePattern);
+      if (!parseResult) return null;
+      let value = args.valueCallback ? args.valueCallback(parseResult[0]) : parseResult[0];
+      value = options.valueCallback ? options.valueCallback(value) : value;
+      const rest = string.slice(matchedString.length);
+      return { value, rest };
+    };
+  }
+  const matchOrdinalNumberPattern = /^(\d+)(th|st|nd|rd)?/i;
+  const parseOrdinalNumberPattern = /\d+/i;
+  const matchEraPatterns = {
+    narrow: /^(b|a)/i,
+    abbreviated: /^(b\.?\s?c\.?|b\.?\s?c\.?\s?e\.?|a\.?\s?d\.?|c\.?\s?e\.?)/i,
+    wide: /^(before christ|before common era|anno domini|common era)/i
+  };
+  const parseEraPatterns = {
+    any: [/^b/i, /^(a|c)/i]
+  };
+  const matchQuarterPatterns = {
+    narrow: /^[1234]/i,
+    abbreviated: /^q[1234]/i,
+    wide: /^[1234](th|st|nd|rd)? quarter/i
+  };
+  const parseQuarterPatterns = {
+    any: [/1/i, /2/i, /3/i, /4/i]
+  };
+  const matchMonthPatterns = {
+    narrow: /^[jfmasond]/i,
+    abbreviated: /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i,
+    wide: /^(january|february|march|april|may|june|july|august|september|october|november|december)/i
+  };
+  const parseMonthPatterns = {
+    narrow: [
+      /^j/i,
+      /^f/i,
+      /^m/i,
+      /^a/i,
+      /^m/i,
+      /^j/i,
+      /^j/i,
+      /^a/i,
+      /^s/i,
+      /^o/i,
+      /^n/i,
+      /^d/i
+    ],
+    any: [
+      /^ja/i,
+      /^f/i,
+      /^mar/i,
+      /^ap/i,
+      /^may/i,
+      /^jun/i,
+      /^jul/i,
+      /^au/i,
+      /^s/i,
+      /^o/i,
+      /^n/i,
+      /^d/i
+    ]
+  };
+  const matchDayPatterns = {
+    narrow: /^[smtwf]/i,
+    short: /^(su|mo|tu|we|th|fr|sa)/i,
+    abbreviated: /^(sun|mon|tue|wed|thu|fri|sat)/i,
+    wide: /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i
+  };
+  const parseDayPatterns = {
+    narrow: [/^s/i, /^m/i, /^t/i, /^w/i, /^t/i, /^f/i, /^s/i],
+    any: [/^su/i, /^m/i, /^tu/i, /^w/i, /^th/i, /^f/i, /^sa/i]
+  };
+  const matchDayPeriodPatterns = {
+    narrow: /^(a|p|mi|n|(in the|at) (morning|afternoon|evening|night))/i,
+    any: /^([ap]\.?\s?m\.?|midnight|noon|(in the|at) (morning|afternoon|evening|night))/i
+  };
+  const parseDayPeriodPatterns = {
+    any: {
+      am: /^a/i,
+      pm: /^p/i,
+      midnight: /^mi/i,
+      noon: /^no/i,
+      morning: /morning/i,
+      afternoon: /afternoon/i,
+      evening: /evening/i,
+      night: /night/i
+    }
+  };
+  const match = {
+    ordinalNumber: buildMatchPatternFn({
+      matchPattern: matchOrdinalNumberPattern,
+      parsePattern: parseOrdinalNumberPattern,
+      valueCallback: (value) => parseInt(value, 10)
+    }),
+    era: buildMatchFn({
+      matchPatterns: matchEraPatterns,
+      defaultMatchWidth: "wide",
+      parsePatterns: parseEraPatterns,
+      defaultParseWidth: "any"
+    }),
+    quarter: buildMatchFn({
+      matchPatterns: matchQuarterPatterns,
+      defaultMatchWidth: "wide",
+      parsePatterns: parseQuarterPatterns,
+      defaultParseWidth: "any",
+      valueCallback: (index) => index + 1
+    }),
+    month: buildMatchFn({
+      matchPatterns: matchMonthPatterns,
+      defaultMatchWidth: "wide",
+      parsePatterns: parseMonthPatterns,
+      defaultParseWidth: "any"
+    }),
+    day: buildMatchFn({
+      matchPatterns: matchDayPatterns,
+      defaultMatchWidth: "wide",
+      parsePatterns: parseDayPatterns,
+      defaultParseWidth: "any"
+    }),
+    dayPeriod: buildMatchFn({
+      matchPatterns: matchDayPeriodPatterns,
+      defaultMatchWidth: "any",
+      parsePatterns: parseDayPeriodPatterns,
+      defaultParseWidth: "any"
+    })
+  };
+  const enUS = {
+    code: "en-US",
+    formatDistance,
+    formatLong,
+    formatRelative,
+    localize,
+    match,
+    options: {
+      weekStartsOn: 0,
+      firstWeekContainsDate: 1
+    }
+  };
+  function getDayOfYear(date) {
+    const _date = toDate(date);
+    const diff = differenceInCalendarDays(_date, startOfYear(_date));
+    const dayOfYear = diff + 1;
+    return dayOfYear;
+  }
+  function getISOWeek(date) {
+    const _date = toDate(date);
+    const diff = +startOfISOWeek(_date) - +startOfISOWeekYear(_date);
+    return Math.round(diff / millisecondsInWeek) + 1;
+  }
+  function getWeekYear(date, options) {
+    var _a, _b, _c, _d;
+    const _date = toDate(date);
+    const year = _date.getFullYear();
+    const defaultOptions2 = getDefaultOptions();
+    const firstWeekContainsDate = (options == null ? void 0 : options.firstWeekContainsDate) ?? ((_b = (_a = options == null ? void 0 : options.locale) == null ? void 0 : _a.options) == null ? void 0 : _b.firstWeekContainsDate) ?? defaultOptions2.firstWeekContainsDate ?? ((_d = (_c = defaultOptions2.locale) == null ? void 0 : _c.options) == null ? void 0 : _d.firstWeekContainsDate) ?? 1;
+    const firstWeekOfNextYear = constructFrom(date, 0);
+    firstWeekOfNextYear.setFullYear(year + 1, 0, firstWeekContainsDate);
+    firstWeekOfNextYear.setHours(0, 0, 0, 0);
+    const startOfNextYear = startOfWeek(firstWeekOfNextYear, options);
+    const firstWeekOfThisYear = constructFrom(date, 0);
+    firstWeekOfThisYear.setFullYear(year, 0, firstWeekContainsDate);
+    firstWeekOfThisYear.setHours(0, 0, 0, 0);
+    const startOfThisYear = startOfWeek(firstWeekOfThisYear, options);
+    if (_date.getTime() >= startOfNextYear.getTime()) {
+      return year + 1;
+    } else if (_date.getTime() >= startOfThisYear.getTime()) {
+      return year;
+    } else {
+      return year - 1;
+    }
+  }
+  function startOfWeekYear(date, options) {
+    var _a, _b, _c, _d;
+    const defaultOptions2 = getDefaultOptions();
+    const firstWeekContainsDate = (options == null ? void 0 : options.firstWeekContainsDate) ?? ((_b = (_a = options == null ? void 0 : options.locale) == null ? void 0 : _a.options) == null ? void 0 : _b.firstWeekContainsDate) ?? defaultOptions2.firstWeekContainsDate ?? ((_d = (_c = defaultOptions2.locale) == null ? void 0 : _c.options) == null ? void 0 : _d.firstWeekContainsDate) ?? 1;
+    const year = getWeekYear(date, options);
+    const firstWeek = constructFrom(date, 0);
+    firstWeek.setFullYear(year, 0, firstWeekContainsDate);
+    firstWeek.setHours(0, 0, 0, 0);
+    const _date = startOfWeek(firstWeek, options);
+    return _date;
+  }
+  function getWeek(date, options) {
+    const _date = toDate(date);
+    const diff = +startOfWeek(_date, options) - +startOfWeekYear(_date, options);
+    return Math.round(diff / millisecondsInWeek) + 1;
+  }
+  function addLeadingZeros(number, targetLength) {
+    const sign = number < 0 ? "-" : "";
+    const output = Math.abs(number).toString().padStart(targetLength, "0");
+    return sign + output;
+  }
+  const lightFormatters = {
+    // Year
+    y(date, token) {
+      const signedYear = date.getFullYear();
+      const year = signedYear > 0 ? signedYear : 1 - signedYear;
+      return addLeadingZeros(token === "yy" ? year % 100 : year, token.length);
+    },
+    // Month
+    M(date, token) {
+      const month = date.getMonth();
+      return token === "M" ? String(month + 1) : addLeadingZeros(month + 1, 2);
+    },
+    // Day of the month
+    d(date, token) {
+      return addLeadingZeros(date.getDate(), token.length);
+    },
+    // AM or PM
+    a(date, token) {
+      const dayPeriodEnumValue = date.getHours() / 12 >= 1 ? "pm" : "am";
+      switch (token) {
+        case "a":
+        case "aa":
+          return dayPeriodEnumValue.toUpperCase();
+        case "aaa":
+          return dayPeriodEnumValue;
+        case "aaaaa":
+          return dayPeriodEnumValue[0];
+        case "aaaa":
+        default:
+          return dayPeriodEnumValue === "am" ? "a.m." : "p.m.";
+      }
+    },
+    // Hour [1-12]
+    h(date, token) {
+      return addLeadingZeros(date.getHours() % 12 || 12, token.length);
+    },
+    // Hour [0-23]
+    H(date, token) {
+      return addLeadingZeros(date.getHours(), token.length);
+    },
+    // Minute
+    m(date, token) {
+      return addLeadingZeros(date.getMinutes(), token.length);
+    },
+    // Second
+    s(date, token) {
+      return addLeadingZeros(date.getSeconds(), token.length);
+    },
+    // Fraction of second
+    S(date, token) {
+      const numberOfDigits = token.length;
+      const milliseconds = date.getMilliseconds();
+      const fractionalSeconds = Math.trunc(
+        milliseconds * Math.pow(10, numberOfDigits - 3)
+      );
+      return addLeadingZeros(fractionalSeconds, token.length);
+    }
+  };
+  const dayPeriodEnum = {
+    midnight: "midnight",
+    noon: "noon",
+    morning: "morning",
+    afternoon: "afternoon",
+    evening: "evening",
+    night: "night"
+  };
+  const formatters = {
+    // Era
+    G: function(date, token, localize2) {
+      const era = date.getFullYear() > 0 ? 1 : 0;
+      switch (token) {
+        case "G":
+        case "GG":
+        case "GGG":
+          return localize2.era(era, { width: "abbreviated" });
+        case "GGGGG":
+          return localize2.era(era, { width: "narrow" });
+        case "GGGG":
+        default:
+          return localize2.era(era, { width: "wide" });
+      }
+    },
+    // Year
+    y: function(date, token, localize2) {
+      if (token === "yo") {
+        const signedYear = date.getFullYear();
+        const year = signedYear > 0 ? signedYear : 1 - signedYear;
+        return localize2.ordinalNumber(year, { unit: "year" });
+      }
+      return lightFormatters.y(date, token);
+    },
+    // Local week-numbering year
+    Y: function(date, token, localize2, options) {
+      const signedWeekYear = getWeekYear(date, options);
+      const weekYear = signedWeekYear > 0 ? signedWeekYear : 1 - signedWeekYear;
+      if (token === "YY") {
+        const twoDigitYear = weekYear % 100;
+        return addLeadingZeros(twoDigitYear, 2);
+      }
+      if (token === "Yo") {
+        return localize2.ordinalNumber(weekYear, { unit: "year" });
+      }
+      return addLeadingZeros(weekYear, token.length);
+    },
+    // ISO week-numbering year
+    R: function(date, token) {
+      const isoWeekYear = getISOWeekYear(date);
+      return addLeadingZeros(isoWeekYear, token.length);
+    },
+    // Extended year. This is a single number designating the year of this calendar system.
+    // The main difference between `y` and `u` localizers are B.C. years:
+    // | Year | `y` | `u` |
+    // |------|-----|-----|
+    // | AC 1 |   1 |   1 |
+    // | BC 1 |   1 |   0 |
+    // | BC 2 |   2 |  -1 |
+    // Also `yy` always returns the last two digits of a year,
+    // while `uu` pads single digit years to 2 characters and returns other years unchanged.
+    u: function(date, token) {
+      const year = date.getFullYear();
+      return addLeadingZeros(year, token.length);
+    },
+    // Quarter
+    Q: function(date, token, localize2) {
+      const quarter = Math.ceil((date.getMonth() + 1) / 3);
+      switch (token) {
+        case "Q":
+          return String(quarter);
+        case "QQ":
+          return addLeadingZeros(quarter, 2);
+        case "Qo":
+          return localize2.ordinalNumber(quarter, { unit: "quarter" });
+        case "QQQ":
+          return localize2.quarter(quarter, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "QQQQQ":
+          return localize2.quarter(quarter, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "QQQQ":
+        default:
+          return localize2.quarter(quarter, {
+            width: "wide",
+            context: "formatting"
+          });
+      }
+    },
+    // Stand-alone quarter
+    q: function(date, token, localize2) {
+      const quarter = Math.ceil((date.getMonth() + 1) / 3);
+      switch (token) {
+        case "q":
+          return String(quarter);
+        case "qq":
+          return addLeadingZeros(quarter, 2);
+        case "qo":
+          return localize2.ordinalNumber(quarter, { unit: "quarter" });
+        case "qqq":
+          return localize2.quarter(quarter, {
+            width: "abbreviated",
+            context: "standalone"
+          });
+        case "qqqqq":
+          return localize2.quarter(quarter, {
+            width: "narrow",
+            context: "standalone"
+          });
+        case "qqqq":
+        default:
+          return localize2.quarter(quarter, {
+            width: "wide",
+            context: "standalone"
+          });
+      }
+    },
+    // Month
+    M: function(date, token, localize2) {
+      const month = date.getMonth();
+      switch (token) {
+        case "M":
+        case "MM":
+          return lightFormatters.M(date, token);
+        case "Mo":
+          return localize2.ordinalNumber(month + 1, { unit: "month" });
+        case "MMM":
+          return localize2.month(month, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "MMMMM":
+          return localize2.month(month, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "MMMM":
+        default:
+          return localize2.month(month, { width: "wide", context: "formatting" });
+      }
+    },
+    // Stand-alone month
+    L: function(date, token, localize2) {
+      const month = date.getMonth();
+      switch (token) {
+        case "L":
+          return String(month + 1);
+        case "LL":
+          return addLeadingZeros(month + 1, 2);
+        case "Lo":
+          return localize2.ordinalNumber(month + 1, { unit: "month" });
+        case "LLL":
+          return localize2.month(month, {
+            width: "abbreviated",
+            context: "standalone"
+          });
+        case "LLLLL":
+          return localize2.month(month, {
+            width: "narrow",
+            context: "standalone"
+          });
+        case "LLLL":
+        default:
+          return localize2.month(month, { width: "wide", context: "standalone" });
+      }
+    },
+    // Local week of year
+    w: function(date, token, localize2, options) {
+      const week = getWeek(date, options);
+      if (token === "wo") {
+        return localize2.ordinalNumber(week, { unit: "week" });
+      }
+      return addLeadingZeros(week, token.length);
+    },
+    // ISO week of year
+    I: function(date, token, localize2) {
+      const isoWeek = getISOWeek(date);
+      if (token === "Io") {
+        return localize2.ordinalNumber(isoWeek, { unit: "week" });
+      }
+      return addLeadingZeros(isoWeek, token.length);
+    },
+    // Day of the month
+    d: function(date, token, localize2) {
+      if (token === "do") {
+        return localize2.ordinalNumber(date.getDate(), { unit: "date" });
+      }
+      return lightFormatters.d(date, token);
+    },
+    // Day of year
+    D: function(date, token, localize2) {
+      const dayOfYear = getDayOfYear(date);
+      if (token === "Do") {
+        return localize2.ordinalNumber(dayOfYear, { unit: "dayOfYear" });
+      }
+      return addLeadingZeros(dayOfYear, token.length);
+    },
+    // Day of week
+    E: function(date, token, localize2) {
+      const dayOfWeek = date.getDay();
+      switch (token) {
+        case "E":
+        case "EE":
+        case "EEE":
+          return localize2.day(dayOfWeek, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "EEEEE":
+          return localize2.day(dayOfWeek, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "EEEEEE":
+          return localize2.day(dayOfWeek, {
+            width: "short",
+            context: "formatting"
+          });
+        case "EEEE":
+        default:
+          return localize2.day(dayOfWeek, {
+            width: "wide",
+            context: "formatting"
+          });
+      }
+    },
+    // Local day of week
+    e: function(date, token, localize2, options) {
+      const dayOfWeek = date.getDay();
+      const localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
+      switch (token) {
+        case "e":
+          return String(localDayOfWeek);
+        case "ee":
+          return addLeadingZeros(localDayOfWeek, 2);
+        case "eo":
+          return localize2.ordinalNumber(localDayOfWeek, { unit: "day" });
+        case "eee":
+          return localize2.day(dayOfWeek, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "eeeee":
+          return localize2.day(dayOfWeek, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "eeeeee":
+          return localize2.day(dayOfWeek, {
+            width: "short",
+            context: "formatting"
+          });
+        case "eeee":
+        default:
+          return localize2.day(dayOfWeek, {
+            width: "wide",
+            context: "formatting"
+          });
+      }
+    },
+    // Stand-alone local day of week
+    c: function(date, token, localize2, options) {
+      const dayOfWeek = date.getDay();
+      const localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
+      switch (token) {
+        case "c":
+          return String(localDayOfWeek);
+        case "cc":
+          return addLeadingZeros(localDayOfWeek, token.length);
+        case "co":
+          return localize2.ordinalNumber(localDayOfWeek, { unit: "day" });
+        case "ccc":
+          return localize2.day(dayOfWeek, {
+            width: "abbreviated",
+            context: "standalone"
+          });
+        case "ccccc":
+          return localize2.day(dayOfWeek, {
+            width: "narrow",
+            context: "standalone"
+          });
+        case "cccccc":
+          return localize2.day(dayOfWeek, {
+            width: "short",
+            context: "standalone"
+          });
+        case "cccc":
+        default:
+          return localize2.day(dayOfWeek, {
+            width: "wide",
+            context: "standalone"
+          });
+      }
+    },
+    // ISO day of week
+    i: function(date, token, localize2) {
+      const dayOfWeek = date.getDay();
+      const isoDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
+      switch (token) {
+        case "i":
+          return String(isoDayOfWeek);
+        case "ii":
+          return addLeadingZeros(isoDayOfWeek, token.length);
+        case "io":
+          return localize2.ordinalNumber(isoDayOfWeek, { unit: "day" });
+        case "iii":
+          return localize2.day(dayOfWeek, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "iiiii":
+          return localize2.day(dayOfWeek, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "iiiiii":
+          return localize2.day(dayOfWeek, {
+            width: "short",
+            context: "formatting"
+          });
+        case "iiii":
+        default:
+          return localize2.day(dayOfWeek, {
+            width: "wide",
+            context: "formatting"
+          });
+      }
+    },
+    // AM or PM
+    a: function(date, token, localize2) {
+      const hours = date.getHours();
+      const dayPeriodEnumValue = hours / 12 >= 1 ? "pm" : "am";
+      switch (token) {
+        case "a":
+        case "aa":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "aaa":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "abbreviated",
+            context: "formatting"
+          }).toLowerCase();
+        case "aaaaa":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "aaaa":
+        default:
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "wide",
+            context: "formatting"
+          });
+      }
+    },
+    // AM, PM, midnight, noon
+    b: function(date, token, localize2) {
+      const hours = date.getHours();
+      let dayPeriodEnumValue;
+      if (hours === 12) {
+        dayPeriodEnumValue = dayPeriodEnum.noon;
+      } else if (hours === 0) {
+        dayPeriodEnumValue = dayPeriodEnum.midnight;
+      } else {
+        dayPeriodEnumValue = hours / 12 >= 1 ? "pm" : "am";
+      }
+      switch (token) {
+        case "b":
+        case "bb":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "bbb":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "abbreviated",
+            context: "formatting"
+          }).toLowerCase();
+        case "bbbbb":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "bbbb":
+        default:
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "wide",
+            context: "formatting"
+          });
+      }
+    },
+    // in the morning, in the afternoon, in the evening, at night
+    B: function(date, token, localize2) {
+      const hours = date.getHours();
+      let dayPeriodEnumValue;
+      if (hours >= 17) {
+        dayPeriodEnumValue = dayPeriodEnum.evening;
+      } else if (hours >= 12) {
+        dayPeriodEnumValue = dayPeriodEnum.afternoon;
+      } else if (hours >= 4) {
+        dayPeriodEnumValue = dayPeriodEnum.morning;
+      } else {
+        dayPeriodEnumValue = dayPeriodEnum.night;
+      }
+      switch (token) {
+        case "B":
+        case "BB":
+        case "BBB":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "abbreviated",
+            context: "formatting"
+          });
+        case "BBBBB":
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "narrow",
+            context: "formatting"
+          });
+        case "BBBB":
+        default:
+          return localize2.dayPeriod(dayPeriodEnumValue, {
+            width: "wide",
+            context: "formatting"
+          });
+      }
+    },
+    // Hour [1-12]
+    h: function(date, token, localize2) {
+      if (token === "ho") {
+        let hours = date.getHours() % 12;
+        if (hours === 0) hours = 12;
+        return localize2.ordinalNumber(hours, { unit: "hour" });
+      }
+      return lightFormatters.h(date, token);
+    },
+    // Hour [0-23]
+    H: function(date, token, localize2) {
+      if (token === "Ho") {
+        return localize2.ordinalNumber(date.getHours(), { unit: "hour" });
+      }
+      return lightFormatters.H(date, token);
+    },
+    // Hour [0-11]
+    K: function(date, token, localize2) {
+      const hours = date.getHours() % 12;
+      if (token === "Ko") {
+        return localize2.ordinalNumber(hours, { unit: "hour" });
+      }
+      return addLeadingZeros(hours, token.length);
+    },
+    // Hour [1-24]
+    k: function(date, token, localize2) {
+      let hours = date.getHours();
+      if (hours === 0) hours = 24;
+      if (token === "ko") {
+        return localize2.ordinalNumber(hours, { unit: "hour" });
+      }
+      return addLeadingZeros(hours, token.length);
+    },
+    // Minute
+    m: function(date, token, localize2) {
+      if (token === "mo") {
+        return localize2.ordinalNumber(date.getMinutes(), { unit: "minute" });
+      }
+      return lightFormatters.m(date, token);
+    },
+    // Second
+    s: function(date, token, localize2) {
+      if (token === "so") {
+        return localize2.ordinalNumber(date.getSeconds(), { unit: "second" });
+      }
+      return lightFormatters.s(date, token);
+    },
+    // Fraction of second
+    S: function(date, token) {
+      return lightFormatters.S(date, token);
+    },
+    // Timezone (ISO-8601. If offset is 0, output is always `'Z'`)
+    X: function(date, token, _localize) {
+      const timezoneOffset = date.getTimezoneOffset();
+      if (timezoneOffset === 0) {
+        return "Z";
+      }
+      switch (token) {
+        case "X":
+          return formatTimezoneWithOptionalMinutes(timezoneOffset);
+        case "XXXX":
+        case "XX":
+          return formatTimezone(timezoneOffset);
+        case "XXXXX":
+        case "XXX":
+        default:
+          return formatTimezone(timezoneOffset, ":");
+      }
+    },
+    // Timezone (ISO-8601. If offset is 0, output is `'+00:00'` or equivalent)
+    x: function(date, token, _localize) {
+      const timezoneOffset = date.getTimezoneOffset();
+      switch (token) {
+        case "x":
+          return formatTimezoneWithOptionalMinutes(timezoneOffset);
+        case "xxxx":
+        case "xx":
+          return formatTimezone(timezoneOffset);
+        case "xxxxx":
+        case "xxx":
+        default:
+          return formatTimezone(timezoneOffset, ":");
+      }
+    },
+    // Timezone (GMT)
+    O: function(date, token, _localize) {
+      const timezoneOffset = date.getTimezoneOffset();
+      switch (token) {
+        case "O":
+        case "OO":
+        case "OOO":
+          return "GMT" + formatTimezoneShort(timezoneOffset, ":");
+        case "OOOO":
+        default:
+          return "GMT" + formatTimezone(timezoneOffset, ":");
+      }
+    },
+    // Timezone (specific non-location)
+    z: function(date, token, _localize) {
+      const timezoneOffset = date.getTimezoneOffset();
+      switch (token) {
+        case "z":
+        case "zz":
+        case "zzz":
+          return "GMT" + formatTimezoneShort(timezoneOffset, ":");
+        case "zzzz":
+        default:
+          return "GMT" + formatTimezone(timezoneOffset, ":");
+      }
+    },
+    // Seconds timestamp
+    t: function(date, token, _localize) {
+      const timestamp = Math.trunc(date.getTime() / 1e3);
+      return addLeadingZeros(timestamp, token.length);
+    },
+    // Milliseconds timestamp
+    T: function(date, token, _localize) {
+      const timestamp = date.getTime();
+      return addLeadingZeros(timestamp, token.length);
+    }
+  };
+  function formatTimezoneShort(offset, delimiter = "") {
+    const sign = offset > 0 ? "-" : "+";
+    const absOffset = Math.abs(offset);
+    const hours = Math.trunc(absOffset / 60);
+    const minutes = absOffset % 60;
+    if (minutes === 0) {
+      return sign + String(hours);
+    }
+    return sign + String(hours) + delimiter + addLeadingZeros(minutes, 2);
+  }
+  function formatTimezoneWithOptionalMinutes(offset, delimiter) {
+    if (offset % 60 === 0) {
+      const sign = offset > 0 ? "-" : "+";
+      return sign + addLeadingZeros(Math.abs(offset) / 60, 2);
+    }
+    return formatTimezone(offset, delimiter);
+  }
+  function formatTimezone(offset, delimiter = "") {
+    const sign = offset > 0 ? "-" : "+";
+    const absOffset = Math.abs(offset);
+    const hours = addLeadingZeros(Math.trunc(absOffset / 60), 2);
+    const minutes = addLeadingZeros(absOffset % 60, 2);
+    return sign + hours + delimiter + minutes;
+  }
+  const dateLongFormatter = (pattern, formatLong2) => {
+    switch (pattern) {
+      case "P":
+        return formatLong2.date({ width: "short" });
+      case "PP":
+        return formatLong2.date({ width: "medium" });
+      case "PPP":
+        return formatLong2.date({ width: "long" });
+      case "PPPP":
+      default:
+        return formatLong2.date({ width: "full" });
+    }
+  };
+  const timeLongFormatter = (pattern, formatLong2) => {
+    switch (pattern) {
+      case "p":
+        return formatLong2.time({ width: "short" });
+      case "pp":
+        return formatLong2.time({ width: "medium" });
+      case "ppp":
+        return formatLong2.time({ width: "long" });
+      case "pppp":
+      default:
+        return formatLong2.time({ width: "full" });
+    }
+  };
+  const dateTimeLongFormatter = (pattern, formatLong2) => {
+    const matchResult = pattern.match(/(P+)(p+)?/) || [];
+    const datePattern = matchResult[1];
+    const timePattern = matchResult[2];
+    if (!timePattern) {
+      return dateLongFormatter(pattern, formatLong2);
+    }
+    let dateTimeFormat;
+    switch (datePattern) {
+      case "P":
+        dateTimeFormat = formatLong2.dateTime({ width: "short" });
+        break;
+      case "PP":
+        dateTimeFormat = formatLong2.dateTime({ width: "medium" });
+        break;
+      case "PPP":
+        dateTimeFormat = formatLong2.dateTime({ width: "long" });
+        break;
+      case "PPPP":
+      default:
+        dateTimeFormat = formatLong2.dateTime({ width: "full" });
+        break;
+    }
+    return dateTimeFormat.replace("{{date}}", dateLongFormatter(datePattern, formatLong2)).replace("{{time}}", timeLongFormatter(timePattern, formatLong2));
+  };
+  const longFormatters = {
+    p: timeLongFormatter,
+    P: dateTimeLongFormatter
+  };
+  const dayOfYearTokenRE = /^D+$/;
+  const weekYearTokenRE = /^Y+$/;
+  const throwTokens = ["D", "DD", "YY", "YYYY"];
+  function isProtectedDayOfYearToken(token) {
+    return dayOfYearTokenRE.test(token);
+  }
+  function isProtectedWeekYearToken(token) {
+    return weekYearTokenRE.test(token);
+  }
+  function warnOrThrowProtectedError(token, format2, input2) {
+    const _message = message(token, format2, input2);
+    console.warn(_message);
+    if (throwTokens.includes(token)) throw new RangeError(_message);
+  }
+  function message(token, format2, input2) {
+    const subject = token[0] === "Y" ? "years" : "days of the month";
+    return `Use \`${token.toLowerCase()}\` instead of \`${token}\` (in \`${format2}\`) for formatting ${subject} to the input \`${input2}\`; see: https://github.com/date-fns/date-fns/blob/master/docs/unicodeTokens.md`;
+  }
+  const formattingTokensRegExp = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g;
+  const longFormattingTokensRegExp = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g;
+  const escapedStringRegExp = /^'([^]*?)'?$/;
+  const doubleQuoteRegExp = /''/g;
+  const unescapedLatinCharacterRegExp = /[a-zA-Z]/;
+  function format(date, formatStr, options) {
+    var _a, _b, _c, _d;
+    const defaultOptions2 = getDefaultOptions();
+    const locale = defaultOptions2.locale ?? enUS;
+    const firstWeekContainsDate = defaultOptions2.firstWeekContainsDate ?? ((_b = (_a = defaultOptions2.locale) == null ? void 0 : _a.options) == null ? void 0 : _b.firstWeekContainsDate) ?? 1;
+    const weekStartsOn = defaultOptions2.weekStartsOn ?? ((_d = (_c = defaultOptions2.locale) == null ? void 0 : _c.options) == null ? void 0 : _d.weekStartsOn) ?? 0;
+    const originalDate = toDate(date);
+    if (!isValid(originalDate)) {
+      throw new RangeError("Invalid time value");
+    }
+    let parts = formatStr.match(longFormattingTokensRegExp).map((substring) => {
+      const firstCharacter = substring[0];
+      if (firstCharacter === "p" || firstCharacter === "P") {
+        const longFormatter = longFormatters[firstCharacter];
+        return longFormatter(substring, locale.formatLong);
+      }
+      return substring;
+    }).join("").match(formattingTokensRegExp).map((substring) => {
+      if (substring === "''") {
+        return { isToken: false, value: "'" };
+      }
+      const firstCharacter = substring[0];
+      if (firstCharacter === "'") {
+        return { isToken: false, value: cleanEscapedString(substring) };
+      }
+      if (formatters[firstCharacter]) {
+        return { isToken: true, value: substring };
+      }
+      if (firstCharacter.match(unescapedLatinCharacterRegExp)) {
+        throw new RangeError(
+          "Format string contains an unescaped latin alphabet character `" + firstCharacter + "`"
+        );
+      }
+      return { isToken: false, value: substring };
+    });
+    if (locale.localize.preprocessor) {
+      parts = locale.localize.preprocessor(originalDate, parts);
+    }
+    const formatterOptions = {
+      firstWeekContainsDate,
+      weekStartsOn,
+      locale
+    };
+    return parts.map((part) => {
+      if (!part.isToken) return part.value;
+      const token = part.value;
+      if (isProtectedWeekYearToken(token) || isProtectedDayOfYearToken(token)) {
+        warnOrThrowProtectedError(token, formatStr, String(date));
+      }
+      const formatter = formatters[token[0]];
+      return formatter(originalDate, token, locale.localize, formatterOptions);
+    }).join("");
+  }
+  function cleanEscapedString(input2) {
+    const matched = input2.match(escapedStringRegExp);
+    if (!matched) {
+      return input2;
+    }
+    return matched[1].replace(doubleQuoteRegExp, "'");
+  }
+  const ComplianceUserDetail = ({ userId, userName, department, onBack }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const { data: userAssignments, isLoading } = reactQuery.useQuery({
+      queryKey: ["user-assignments", userId],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("document_assignments").select(`
+          assignment_id,
+          document_id,
+          status,
+          due_date,
+          completed_at,
+          assigned_at,
+          documents(title, category)
+        `).eq("user_id", userId).order("due_date", { ascending: true });
+        if (error) throw error;
+        return data.map((assignment) => {
+          var _a, _b;
+          return {
+            ...assignment,
+            document_title: ((_a = assignment.documents) == null ? void 0 : _a.title) || "Unknown Document",
+            document_category: ((_b = assignment.documents) == null ? void 0 : _b.category) || "General",
+            days_overdue: assignment.status !== "Completed" && new Date(assignment.due_date) < /* @__PURE__ */ new Date() ? Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24)) : 0
+          };
+        });
+      }
+    });
+    const stats = userAssignments ? {
+      total: userAssignments.length,
+      completed: userAssignments.filter((a) => a.status === "Completed").length,
+      overdue: userAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) < /* @__PURE__ */ new Date()).length,
+      pending: userAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) >= /* @__PURE__ */ new Date()).length
+    } : { total: 0, completed: 0, overdue: 0 };
+    const complianceRate = stats.total > 0 ? stats.completed / stats.total * 100 : 0;
+    const getStatusIcon = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 text-green-600" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4 text-red-600" });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-yellow-600" });
+      }
+    };
+    const getStatusBadge = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: "bg-red-100 text-red-800", children: [
+          assignment.days_overdue,
+          "d overdue"
+        ] });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      }
+    };
+    if (isLoading) {
+      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-8 w-32 bg-muted animate-pulse rounded" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [...Array(4)].map((_, i) => /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-24 bg-muted animate-pulse rounded" }, i)) })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }),
+          "Back"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-2xl font-bold", children: userName }),
+          /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: department })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Total Assignments" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: stats.total }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Completed" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-600", children: stats.completed }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Overdue" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-600", children: stats.overdue }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Compliance Rate" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `text-2xl font-bold ${complianceRate >= 90 ? "text-green-600" : complianceRate >= 70 ? "text-yellow-600" : "text-red-600"}`, children: [
+            Math.round(complianceRate),
+            "%"
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Overall Progress" }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              stats.completed,
+              " / ",
+              stats.total,
+              " completed"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: complianceRate, className: "w-full" })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-5 w-5" }),
+            "Document Assignments"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Detailed view of all document assignments for this user" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Document" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Category" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Due Date" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Completed" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Assigned" })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: userAssignments == null ? void 0 : userAssignments.map((assignment) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                getStatusIcon(assignment),
+                getStatusBadge(assignment)
+              ] }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: assignment.document_title }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", children: assignment.document_category }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-muted-foreground", children: format(new Date(assignment.assigned_at), "MMM dd, yyyy") })
+            ] }, assignment.assignment_id)) })
+          ] }),
+          (!userAssignments || userAssignments.length === 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8 text-muted-foreground", children: "No document assignments found for this user." })
+        ] })
+      ] })
+    ] });
+  };
+  const ComplianceDocumentDetail = ({ documentId, documentTitle, onBack }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const { data: documentAssignments, isLoading } = reactQuery.useQuery({
+      queryKey: ["document-assignments", documentId],
+      queryFn: async () => {
+        const { data: assignments, error } = await supabase.from("document_assignments").select(`
+          assignment_id,
+          user_id,
+          status,
+          due_date,
+          completed_at,
+          assigned_at
+        `).eq("document_id", documentId).order("due_date", { ascending: true });
+        if (error) throw error;
+        const { data: profiles } = await supabase.from("profiles").select("id, full_name");
+        const { data: userDepartments } = await supabase.from("user_departments").select(`
+          user_id,
+          is_primary,
+          departments(name)
+        `);
+        const profileMap = new Map((profiles == null ? void 0 : profiles.map((p) => [p.id, p])) || []);
+        const departmentMap = /* @__PURE__ */ new Map();
+        userDepartments == null ? void 0 : userDepartments.forEach((ud) => {
+          var _a;
+          const deptName = ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown";
+          if (ud.is_primary || !departmentMap.has(ud.user_id)) {
+            departmentMap.set(ud.user_id, deptName);
+          }
+        });
+        return assignments.map((assignment) => {
+          var _a;
+          return {
+            ...assignment,
+            user_name: ((_a = profileMap.get(assignment.user_id)) == null ? void 0 : _a.full_name) || "Unknown User",
+            department: departmentMap.get(assignment.user_id) || "Unknown Department",
+            days_overdue: assignment.status !== "Completed" && new Date(assignment.due_date) < /* @__PURE__ */ new Date() ? Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24)) : 0
+          };
+        });
+      }
+    });
+    const { data: documentInfo } = reactQuery.useQuery({
+      queryKey: ["document-info", documentId],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("documents").select("title, description, category, required, due_days").eq("document_id", documentId).single();
+        if (error) throw error;
+        return data;
+      }
+    });
+    const stats = documentAssignments ? {
+      total: documentAssignments.length,
+      completed: documentAssignments.filter((a) => a.status === "Completed").length,
+      overdue: documentAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) < /* @__PURE__ */ new Date()).length,
+      pending: documentAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) >= /* @__PURE__ */ new Date()).length
+    } : { total: 0, completed: 0, overdue: 0 };
+    const complianceRate = stats.total > 0 ? stats.completed / stats.total * 100 : 0;
+    const getStatusIcon = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 text-green-600" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4 text-red-600" });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-yellow-600" });
+      }
+    };
+    const getStatusBadge = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: "bg-red-100 text-red-800", children: [
+          assignment.days_overdue,
+          "d overdue"
+        ] });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      }
+    };
+    if (isLoading) {
+      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-8 w-48 bg-muted animate-pulse rounded" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [...Array(4)].map((_, i) => /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-24 bg-muted animate-pulse rounded" }, i)) })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }),
+          "Back"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-2xl font-bold", children: documentTitle }),
+          documentInfo && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", children: documentInfo.category }),
+            documentInfo.required && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-red-100 text-red-800", children: "Required" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-sm text-muted-foreground", children: [
+              "Due in ",
+              documentInfo.due_days,
+              " days"
+            ] })
+          ] })
+        ] })
+      ] }),
+      (documentInfo == null ? void 0 : documentInfo.description) && /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-5 w-5" }),
+          "Document Information"
+        ] }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: documentInfo.description }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Total Assignments" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: stats.total }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Completed" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-600", children: stats.completed }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Overdue" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-600", children: stats.overdue }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Compliance Rate" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `text-2xl font-bold ${complianceRate >= 90 ? "text-green-600" : complianceRate >= 70 ? "text-yellow-600" : "text-red-600"}`, children: [
+            Math.round(complianceRate),
+            "%"
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Overall Progress" }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              stats.completed,
+              " / ",
+              stats.total,
+              " completed"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: complianceRate, className: "w-full" })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-5 w-5" }),
+            "User Assignments"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Status of all users assigned to read this document" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "User" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Department" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Due Date" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Completed" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Assigned" })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: documentAssignments == null ? void 0 : documentAssignments.map((assignment) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                getStatusIcon(assignment),
+                getStatusBadge(assignment)
+              ] }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: assignment.user_name }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", children: assignment.department }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-muted-foreground", children: format(new Date(assignment.assigned_at), "MMM dd, yyyy") })
+            ] }, assignment.assignment_id)) })
+          ] }),
+          (!documentAssignments || documentAssignments.length === 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8 text-muted-foreground", children: "No assignments found for this document." })
+        ] })
+      ] })
+    ] });
+  };
+  const ComplianceDepartmentDetail = ({ department, onBack }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const { data: departmentAssignments, isLoading } = reactQuery.useQuery({
+      queryKey: ["department-assignments", department],
+      queryFn: async () => {
+        const { data: userDepartments } = await supabase.from("user_departments").select(`
+          user_id,
+          departments!inner(name)
+        `).eq("departments.name", department);
+        if (!userDepartments || userDepartments.length === 0) {
+          return [];
+        }
+        const userIds = userDepartments.map((ud) => ud.user_id);
+        const { data: assignments, error } = await supabase.from("document_assignments").select(`
+          assignment_id,
+          user_id,
+          document_id,
+          status,
+          due_date,
+          completed_at,
+          assigned_at,
+          documents(title, category)
+        `).in("user_id", userIds).order("due_date", { ascending: true });
+        if (error) throw error;
+        const { data: profiles } = await supabase.from("profiles").select("id, full_name");
+        const profileMap = new Map((profiles == null ? void 0 : profiles.map((p) => [p.id, p])) || []);
+        return assignments.map((assignment) => {
+          var _a, _b, _c;
+          return {
+            ...assignment,
+            user_name: ((_a = profileMap.get(assignment.user_id)) == null ? void 0 : _a.full_name) || "Unknown User",
+            document_title: ((_b = assignment.documents) == null ? void 0 : _b.title) || "Unknown Document",
+            document_category: ((_c = assignment.documents) == null ? void 0 : _c.category) || "General",
+            days_overdue: assignment.status !== "Completed" && new Date(assignment.due_date) < /* @__PURE__ */ new Date() ? Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24)) : 0
+          };
+        });
+      }
+    });
+    const { data: departmentUsers } = reactQuery.useQuery({
+      queryKey: ["department-users", department],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("user_departments").select(`
+          user_id,
+          departments!inner(name),
+          profiles!inner(full_name)
+        `).eq("departments.name", department);
+        if (error) throw error;
+        return data;
+      }
+    });
+    const stats = departmentAssignments ? {
+      total: departmentAssignments.length,
+      completed: departmentAssignments.filter((a) => a.status === "Completed").length,
+      overdue: departmentAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) < /* @__PURE__ */ new Date()).length,
+      pending: departmentAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) >= /* @__PURE__ */ new Date()).length
+    } : { total: 0, completed: 0, overdue: 0 };
+    const complianceRate = stats.total > 0 ? stats.completed / stats.total * 100 : 0;
+    const userStats = departmentAssignments ? Object.entries(
+      departmentAssignments.reduce((acc, assignment) => {
+        const userId = assignment.user_id;
+        if (!acc[userId]) {
+          acc[userId] = {
+            user_id: userId,
+            user_name: assignment.user_name,
+            assignments: []
+          };
+        }
+        acc[userId].assignments.push(assignment);
+        return acc;
+      }, {})
+    ).map(([userId, data]) => {
+      const assignments = data.assignments;
+      const completed = assignments.filter((a) => a.status === "Completed").length;
+      const overdue = assignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) < /* @__PURE__ */ new Date()).length;
+      return {
+        user_id: userId,
+        user_name: data.user_name,
+        total_assignments: assignments.length,
+        completed_assignments: completed,
+        overdue_assignments: overdue,
+        compliance_rate: assignments.length > 0 ? completed / assignments.length * 100 : 0
+      };
+    }) : [];
+    const getStatusIcon = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 text-green-600" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4 text-red-600" });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-yellow-600" });
+      }
+    };
+    const getStatusBadge = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: "bg-red-100 text-red-800", children: [
+          assignment.days_overdue,
+          "d overdue"
+        ] });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      }
+    };
+    if (isLoading) {
+      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-8 w-48 bg-muted animate-pulse rounded" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [...Array(4)].map((_, i) => /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-24 bg-muted animate-pulse rounded" }, i)) })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }),
+          "Back"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-2xl font-bold", children: department }),
+          /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-muted-foreground", children: [
+            (departmentUsers == null ? void 0 : departmentUsers.length) || 0,
+            " users in department"
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Total Assignments" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: stats.total }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Completed" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-600", children: stats.completed }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Overdue" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-600", children: stats.overdue }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Compliance Rate" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `text-2xl font-bold ${complianceRate >= 90 ? "text-green-600" : complianceRate >= 70 ? "text-yellow-600" : "text-red-600"}`, children: [
+            Math.round(complianceRate),
+            "%"
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Department Progress" }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              stats.completed,
+              " / ",
+              stats.total,
+              " completed"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: complianceRate, className: "w-full" })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-5 w-5" }),
+            "User Performance"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Individual compliance performance for users in this department" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: userStats.map((user) => /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: user.user_name }),
+              /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: user.compliance_rate >= 90 ? "bg-green-100 text-green-800" : user.compliance_rate >= 70 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800", children: [
+                Math.round(user.compliance_rate),
+                "% Complete"
+              ] })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+                /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  user.completed_assignments,
+                  " / ",
+                  user.total_assignments
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: user.compliance_rate, className: "w-full" }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  "Completed: ",
+                  user.completed_assignments
+                ] }),
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  "Overdue: ",
+                  user.overdue_assignments
+                ] })
+              ] })
+            ] }) })
+          ] }, user.user_id)) }),
+          userStats.length === 0 && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8 text-muted-foreground", children: "No users found in this department." })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-5 w-5" }),
+            "All Assignments"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Detailed view of all document assignments in this department" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "User" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Document" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Category" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Due Date" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Completed" })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: departmentAssignments == null ? void 0 : departmentAssignments.map((assignment) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                getStatusIcon(assignment),
+                getStatusBadge(assignment)
+              ] }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: assignment.user_name }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: assignment.document_title }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", children: assignment.document_category }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" })
+            ] }, assignment.assignment_id)) })
+          ] }),
+          (!departmentAssignments || departmentAssignments.length === 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8 text-muted-foreground", children: "No assignments found for this department." })
+        ] })
+      ] })
+    ] });
+  };
+  const ComplianceRoleDetail = ({ role, onBack }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const { data: roleAssignments, isLoading } = reactQuery.useQuery({
+      queryKey: ["role-assignments", role],
+      queryFn: async () => {
+        const { data: userRoles } = await supabase.from("user_profile_roles").select(`
+          user_id,
+          roles!inner(name)
+        `).eq("roles.name", role);
+        if (!userRoles || userRoles.length === 0) {
+          return [];
+        }
+        const userIds = userRoles.map((ur) => ur.user_id);
+        const { data: assignments, error } = await supabase.from("document_assignments").select(`
+          assignment_id,
+          user_id,
+          document_id,
+          status,
+          due_date,
+          completed_at,
+          assigned_at,
+          documents(title, category)
+        `).in("user_id", userIds).order("due_date", { ascending: true });
+        if (error) throw error;
+        const { data: profiles } = await supabase.from("profiles").select("id, full_name");
+        const { data: userDepartments } = await supabase.from("user_departments").select(`
+          user_id,
+          is_primary,
+          departments(name)
+        `);
+        const profileMap = new Map((profiles == null ? void 0 : profiles.map((p) => [p.id, p])) || []);
+        const departmentMap = /* @__PURE__ */ new Map();
+        userDepartments == null ? void 0 : userDepartments.forEach((ud) => {
+          var _a;
+          const deptName = ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown";
+          if (ud.is_primary || !departmentMap.has(ud.user_id)) {
+            departmentMap.set(ud.user_id, deptName);
+          }
+        });
+        return assignments.map((assignment) => {
+          var _a, _b, _c;
+          return {
+            ...assignment,
+            user_name: ((_a = profileMap.get(assignment.user_id)) == null ? void 0 : _a.full_name) || "Unknown User",
+            department: departmentMap.get(assignment.user_id) || "Unknown Department",
+            document_title: ((_b = assignment.documents) == null ? void 0 : _b.title) || "Unknown Document",
+            document_category: ((_c = assignment.documents) == null ? void 0 : _c.category) || "General",
+            days_overdue: assignment.status !== "Completed" && new Date(assignment.due_date) < /* @__PURE__ */ new Date() ? Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24)) : 0
+          };
+        });
+      }
+    });
+    const { data: roleUsers } = reactQuery.useQuery({
+      queryKey: ["role-users", role],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("user_profile_roles").select(`
+          user_id,
+          roles!inner(name),
+          profiles!inner(full_name)
+        `).eq("roles.name", role);
+        if (error) throw error;
+        return data;
+      }
+    });
+    const stats = roleAssignments ? {
+      total: roleAssignments.length,
+      completed: roleAssignments.filter((a) => a.status === "Completed").length,
+      overdue: roleAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) < /* @__PURE__ */ new Date()).length,
+      pending: roleAssignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) >= /* @__PURE__ */ new Date()).length
+    } : { total: 0, completed: 0, overdue: 0 };
+    const complianceRate = stats.total > 0 ? stats.completed / stats.total * 100 : 0;
+    const userStats = roleAssignments ? Object.entries(
+      roleAssignments.reduce((acc, assignment) => {
+        const userId = assignment.user_id;
+        if (!acc[userId]) {
+          acc[userId] = {
+            user_id: userId,
+            user_name: assignment.user_name,
+            department: assignment.department,
+            assignments: []
+          };
+        }
+        acc[userId].assignments.push(assignment);
+        return acc;
+      }, {})
+    ).map(([userId, data]) => {
+      const assignments = data.assignments;
+      const completed = assignments.filter((a) => a.status === "Completed").length;
+      const overdue = assignments.filter((a) => a.status !== "Completed" && new Date(a.due_date) < /* @__PURE__ */ new Date()).length;
+      return {
+        user_id: userId,
+        user_name: data.user_name,
+        department: data.department,
+        total_assignments: assignments.length,
+        completed_assignments: completed,
+        overdue_assignments: overdue,
+        compliance_rate: assignments.length > 0 ? completed / assignments.length * 100 : 0
+      };
+    }) : [];
+    const getStatusIcon = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 text-green-600" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4 text-red-600" });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-yellow-600" });
+      }
+    };
+    const getStatusBadge = (assignment) => {
+      if (assignment.status === "Completed") {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      } else if (assignment.days_overdue > 0) {
+        return /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: "bg-red-100 text-red-800", children: [
+          assignment.days_overdue,
+          "d overdue"
+        ] });
+      } else {
+        return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      }
+    };
+    if (isLoading) {
+      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-8 w-48 bg-muted animate-pulse rounded" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [...Array(4)].map((_, i) => /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-24 bg-muted animate-pulse rounded" }, i)) })
+      ] });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "ghost", size: "sm", onClick: onBack, children: [
+          /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }),
+          "Back"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-2xl font-bold", children: role }),
+          /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-muted-foreground", children: [
+            (roleUsers == null ? void 0 : roleUsers.length) || 0,
+            " users with this role"
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Total Assignments" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: stats.total }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Completed" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-600", children: stats.completed }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Overdue" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-600", children: stats.overdue }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Compliance Rate" }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `text-2xl font-bold ${complianceRate >= 90 ? "text-green-600" : complianceRate >= 70 ? "text-yellow-600" : "text-red-600"}`, children: [
+            Math.round(complianceRate),
+            "%"
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Role Progress" }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              stats.completed,
+              " / ",
+              stats.total,
+              " completed"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: complianceRate, className: "w-full" })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-5 w-5" }),
+            "User Performance"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Individual compliance performance for users with this role" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: userStats.map((user) => /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: user.user_name }),
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: user.department })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: user.compliance_rate >= 90 ? "bg-green-100 text-green-800" : user.compliance_rate >= 70 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800", children: [
+                Math.round(user.compliance_rate),
+                "% Complete"
+              ] })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+                /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  user.completed_assignments,
+                  " / ",
+                  user.total_assignments
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: user.compliance_rate, className: "w-full" }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  "Completed: ",
+                  user.completed_assignments
+                ] }),
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  "Overdue: ",
+                  user.overdue_assignments
+                ] })
+              ] })
+            ] }) })
+          ] }, user.user_id)) }),
+          userStats.length === 0 && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8 text-muted-foreground", children: "No users found with this role." })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(UserCheck, { className: "h-5 w-5" }),
+            "All Assignments"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Detailed view of all document assignments for this role" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "User" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Department" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Document" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Category" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Due Date" }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Completed" })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: roleAssignments == null ? void 0 : roleAssignments.map((assignment) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                getStatusIcon(assignment),
+                getStatusBadge(assignment)
+              ] }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: assignment.user_name }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", children: assignment.department }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: assignment.document_title }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", children: assignment.document_category }) }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
+              /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" })
+            ] }, assignment.assignment_id)) })
+          ] }),
+          (!roleAssignments || roleAssignments.length === 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8 text-muted-foreground", children: "No assignments found for this role." })
+        ] })
+      ] })
+    ] });
+  };
+  const ComplianceTracking = () => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const [searchTerm, setSearchTerm] = o.useState("");
+    const [departmentFilter, setDepartmentFilter] = o.useState("all");
+    const [statusFilter, setStatusFilter] = o.useState("all");
+    const [activeTab, setActiveTab] = o.useState("users");
+    const [showCompletedDetails, setShowCompletedDetails] = o.useState(false);
+    const [showOverdueDetails, setShowOverdueDetails] = o.useState(false);
+    const [selectedUserDetail, setSelectedUserDetail] = o.useState(null);
+    const [selectedDocumentDetail, setSelectedDocumentDetail] = o.useState(null);
+    const [selectedDepartmentDetail, setSelectedDepartmentDetail] = o.useState(null);
+    const [selectedRoleDetail, setSelectedRoleDetail] = o.useState(null);
+    const { data: overallStats } = reactQuery.useQuery({
+      queryKey: ["compliance-stats"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("document_assignments").select("status, due_date");
+        if (error) throw error;
+        const totalAssignments = data.length;
+        const completedAssignments = data.filter((a) => a.status === "Completed").length;
+        const overdueAssignments = data.filter(
+          (a) => new Date(a.due_date) < /* @__PURE__ */ new Date() && a.status !== "Completed"
+        ).length;
+        const complianceRate = totalAssignments > 0 ? completedAssignments / totalAssignments * 100 : 0;
+        return {
+          totalAssignments,
+          completedAssignments,
+          overdueAssignments,
+          complianceRate
+        };
+      }
+    });
+    const { data: documentStats } = reactQuery.useQuery({
+      queryKey: ["document-compliance-stats"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("document_assignments").select(`
+          document_id,
+          status,
+          due_date,
+          document:documents(title)
+        `);
+        if (error) throw error;
+        const statsMap = /* @__PURE__ */ new Map();
+        data.forEach((assignment) => {
+          const key = assignment.document_id;
+          const current = statsMap.get(key) || {
+            title: assignment.document.title,
+            total: 0,
+            completed: 0,
+            overdue: 0
+          };
+          current.total++;
+          if (assignment.status === "Completed") {
+            current.completed++;
+          } else if (new Date(assignment.due_date) < /* @__PURE__ */ new Date()) {
+            current.overdue++;
+          }
+          statsMap.set(key, current);
+        });
+        return Array.from(statsMap.entries()).map(([document_id, stats]) => ({
+          document_id,
+          document_title: stats.title,
+          total_assignments: stats.total,
+          completed_assignments: stats.completed,
+          overdue_assignments: stats.overdue,
+          compliance_rate: stats.total > 0 ? stats.completed / stats.total * 100 : 0
+        }));
+      }
+    });
+    const { data: userStats } = reactQuery.useQuery({
+      queryKey: ["user-compliance-stats"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("document_assignments").select(`
+          user_id,
+          status,
+          due_date
+        `);
+        if (error) throw error;
+        const statsMap = /* @__PURE__ */ new Map();
+        const { data: profiles } = await supabase.from("profiles").select("id, full_name");
+        const { data: userDepartments } = await supabase.from("user_departments").select(`
+          user_id,
+          is_primary,
+          departments(name)
+        `);
+        const profileMap = new Map((profiles == null ? void 0 : profiles.map((p) => [p.id, p])) || []);
+        const departmentMap = /* @__PURE__ */ new Map();
+        userDepartments == null ? void 0 : userDepartments.forEach((ud) => {
+          var _a;
+          const deptName = ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown";
+          if (ud.is_primary || !departmentMap.has(ud.user_id)) {
+            departmentMap.set(ud.user_id, deptName);
+          }
+        });
+        data.forEach((assignment) => {
+          const key = assignment.user_id;
+          const profile = profileMap.get(key);
+          const department = departmentMap.get(key) || "Unknown";
+          const current = statsMap.get(key) || {
+            name: (profile == null ? void 0 : profile.full_name) || "Unknown",
+            department,
+            total: 0,
+            completed: 0,
+            overdue: 0
+          };
+          current.total++;
+          if (assignment.status === "Completed") {
+            current.completed++;
+          } else if (new Date(assignment.due_date) < /* @__PURE__ */ new Date()) {
+            current.overdue++;
+          }
+          statsMap.set(key, current);
+        });
+        return Array.from(statsMap.entries()).map(([user_id, stats]) => ({
+          user_id,
+          user_name: stats.name,
+          department: stats.department,
+          total_assignments: stats.total,
+          completed_assignments: stats.completed,
+          overdue_assignments: stats.overdue,
+          compliance_rate: stats.total > 0 ? stats.completed / stats.total * 100 : 0
+        }));
+      }
+    });
+    const { data: departmentStats } = reactQuery.useQuery({
+      queryKey: ["department-compliance-stats"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("document_assignments").select(`
+          user_id,
+          status,
+          due_date
+        `);
+        if (error) throw error;
+        const statsMap = /* @__PURE__ */ new Map();
+        const { data: userDepartments } = await supabase.from("user_departments").select(`
+          user_id,
+          is_primary,
+          departments(name)
+        `);
+        const departmentMap = /* @__PURE__ */ new Map();
+        userDepartments == null ? void 0 : userDepartments.forEach((ud) => {
+          var _a;
+          const deptName = ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown";
+          if (ud.is_primary || !departmentMap.has(ud.user_id)) {
+            departmentMap.set(ud.user_id, deptName);
+          }
+        });
+        data.forEach((assignment) => {
+          const department = departmentMap.get(assignment.user_id) || "Unknown";
+          const current = statsMap.get(department) || {
+            total: 0,
+            completed: 0,
+            overdue: 0
+          };
+          current.total++;
+          if (assignment.status === "Completed") {
+            current.completed++;
+          } else if (new Date(assignment.due_date) < /* @__PURE__ */ new Date()) {
+            current.overdue++;
+          }
+          statsMap.set(department, current);
+        });
+        return Array.from(statsMap.entries()).map(([department, stats]) => ({
+          department,
+          total_assignments: stats.total,
+          completed_assignments: stats.completed,
+          overdue_assignments: stats.overdue,
+          compliance_rate: stats.total > 0 ? stats.completed / stats.total * 100 : 0
+        }));
+      }
+    });
+    const { data: roleStats } = reactQuery.useQuery({
+      queryKey: ["role-compliance-stats"],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("document_assignments").select(`
+          user_id,
+          status,
+          due_date
+        `);
+        if (error) throw error;
+        const statsMap = /* @__PURE__ */ new Map();
+        const { data: userRoles } = await supabase.from("user_profile_roles").select(`
+          user_id,
+          is_primary,
+          roles(name)
+        `);
+        const roleMap = /* @__PURE__ */ new Map();
+        userRoles == null ? void 0 : userRoles.forEach((ur) => {
+          var _a;
+          const roleName = ((_a = ur.roles) == null ? void 0 : _a.name) || "Unknown";
+          if (ur.is_primary || !roleMap.has(ur.user_id)) {
+            roleMap.set(ur.user_id, roleName);
+          }
+        });
+        data.forEach((assignment) => {
+          const role = roleMap.get(assignment.user_id) || "Unknown";
+          const current = statsMap.get(role) || {
+            total: 0,
+            completed: 0,
+            overdue: 0
+          };
+          current.total++;
+          if (assignment.status === "Completed") {
+            current.completed++;
+          } else if (new Date(assignment.due_date) < /* @__PURE__ */ new Date()) {
+            current.overdue++;
+          }
+          statsMap.set(role, current);
+        });
+        return Array.from(statsMap.entries()).map(([role, stats]) => ({
+          role,
+          total_assignments: stats.total,
+          completed_assignments: stats.completed,
+          overdue_assignments: stats.overdue,
+          compliance_rate: stats.total > 0 ? stats.completed / stats.total * 100 : 0
+        }));
+      }
+    });
+    const getComplianceColor = (rate) => {
+      if (rate >= 90) return "text-green-600";
+      if (rate >= 70) return "text-yellow-600";
+      return "text-red-600";
+    };
+    const getComplianceBadge = (rate) => {
+      if (rate >= 90) return "bg-green-100 text-green-800";
+      if (rate >= 70) return "bg-yellow-100 text-yellow-800";
+      return "bg-red-100 text-red-800";
+    };
+    const departments = Array.from(new Set(userStats == null ? void 0 : userStats.map((u) => u.department).filter(Boolean)));
+    const filteredUserStats = userStats == null ? void 0 : userStats.filter((user) => {
+      const matchesSearch = user.user_name.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesDepartment = departmentFilter === "all" || user.department === departmentFilter;
+      const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && user.compliance_rate === 100 || statusFilter === "overdue" && user.overdue_assignments > 0 && user.compliance_rate < 100;
+      return matchesSearch && matchesDepartment && matchesStatus;
+    });
+    const filteredDocumentStats = documentStats == null ? void 0 : documentStats.filter((doc) => {
+      const matchesSearch = doc.document_title.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && doc.compliance_rate === 100 || statusFilter === "overdue" && doc.overdue_assignments > 0 && doc.compliance_rate < 100;
+      return matchesSearch && matchesStatus;
+    });
+    const filteredDepartmentStats = departmentStats == null ? void 0 : departmentStats.filter((dept) => {
+      const matchesSearch = dept.department.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesDepartment = departmentFilter === "all" || dept.department === departmentFilter;
+      const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && dept.compliance_rate === 100 || statusFilter === "overdue" && dept.overdue_assignments > 0 && dept.compliance_rate < 100;
+      return matchesSearch && matchesDepartment && matchesStatus;
+    });
+    const { data: completedDetails } = reactQuery.useQuery({
+      queryKey: ["completed-document-details"],
+      queryFn: async () => {
+        const { data: assignments, error } = await supabase.from("document_assignments").select(`
+          document_id,
+          user_id,
+          completed_at,
+          documents(title)
+        `).eq("status", "Completed");
+        if (error) throw error;
+        const { data: profiles } = await supabase.from("profiles").select("id, full_name");
+        const { data: userDepartments } = await supabase.from("user_departments").select(`
+          user_id,
+          is_primary,
+          departments(name)
+        `);
+        const profileMap = new Map((profiles == null ? void 0 : profiles.map((p) => [p.id, p])) || []);
+        const departmentMap = /* @__PURE__ */ new Map();
+        userDepartments == null ? void 0 : userDepartments.forEach((ud) => {
+          var _a;
+          const deptName = ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown";
+          if (ud.is_primary || !departmentMap.has(ud.user_id)) {
+            departmentMap.set(ud.user_id, deptName);
+          }
+        });
+        return assignments.map((assignment) => {
+          var _a, _b;
+          return {
+            document_id: assignment.document_id,
+            document_title: ((_a = assignment.documents) == null ? void 0 : _a.title) || "Unknown Document",
+            user_id: assignment.user_id,
+            user_name: ((_b = profileMap.get(assignment.user_id)) == null ? void 0 : _b.full_name) || "Unknown User",
+            department: departmentMap.get(assignment.user_id) || "Unknown Department",
+            completed_at: assignment.completed_at
+          };
+        });
+      },
+      enabled: showCompletedDetails
+    });
+    const { data: overdueDetails } = reactQuery.useQuery({
+      queryKey: ["overdue-document-details"],
+      queryFn: async () => {
+        const { data: assignments, error } = await supabase.from("document_assignments").select(`
+          assignment_id,
+          document_id,
+          user_id,
+          due_date,
+          status,
+          documents(title)
+        `).neq("status", "Completed");
+        if (error) throw error;
+        const overdueAssignments = assignments.filter(
+          (assignment) => new Date(assignment.due_date) < /* @__PURE__ */ new Date()
+        );
+        const { data: profiles } = await supabase.from("profiles").select("id, full_name");
+        const { data: userDepartments } = await supabase.from("user_departments").select(`
+          user_id,
+          is_primary,
+          departments(name)
+        `);
+        const profileMap = new Map((profiles == null ? void 0 : profiles.map((p) => [p.id, p])) || []);
+        const departmentMap = /* @__PURE__ */ new Map();
+        userDepartments == null ? void 0 : userDepartments.forEach((ud) => {
+          var _a;
+          const deptName = ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown";
+          if (ud.is_primary || !departmentMap.has(ud.user_id)) {
+            departmentMap.set(ud.user_id, deptName);
+          }
+        });
+        return overdueAssignments.map((assignment) => {
+          var _a, _b;
+          return {
+            assignment_id: assignment.assignment_id,
+            document_id: assignment.document_id,
+            document_title: ((_a = assignment.documents) == null ? void 0 : _a.title) || "Unknown Document",
+            user_id: assignment.user_id,
+            user_name: ((_b = profileMap.get(assignment.user_id)) == null ? void 0 : _b.full_name) || "Unknown User",
+            department: departmentMap.get(assignment.user_id) || "Unknown Department",
+            due_date: assignment.due_date,
+            status: assignment.status,
+            days_overdue: Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24))
+          };
+        });
+      },
+      enabled: showOverdueDetails
+    });
+    if (selectedUserDetail) {
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        ComplianceUserDetail,
+        {
+          userId: selectedUserDetail.userId,
+          userName: selectedUserDetail.userName,
+          department: selectedUserDetail.department,
+          onBack: () => setSelectedUserDetail(null)
+        }
+      );
+    }
+    if (selectedDocumentDetail) {
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        ComplianceDocumentDetail,
+        {
+          documentId: selectedDocumentDetail.documentId,
+          documentTitle: selectedDocumentDetail.documentTitle,
+          onBack: () => setSelectedDocumentDetail(null)
+        }
+      );
+    }
+    if (selectedDepartmentDetail) {
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        ComplianceDepartmentDetail,
+        {
+          department: selectedDepartmentDetail,
+          onBack: () => setSelectedDepartmentDetail(null)
+        }
+      );
+    }
+    if (selectedRoleDetail) {
+      return /* @__PURE__ */ jsxRuntime.jsx(
+        ComplianceRoleDetail,
+        {
+          role: selectedRoleDetail,
+          onBack: () => setSelectedRoleDetail(null)
+        }
+      );
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h2", { className: "text-2xl font-bold", children: "Compliance Tracking" }),
+          /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Monitor document reading compliance across the organization" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "outline", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4 mr-2" }),
+          "Export Report"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Total Assignments" }),
+            /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-4 w-4 text-muted-foreground" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold", children: (overallStats == null ? void 0 : overallStats.totalAssignments) || 0 }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { className: "cursor-pointer hover:bg-accent/50 transition-colors", onClick: () => {
+          setShowCompletedDetails(true);
+          setActiveTab("completed-details");
+        }, children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Completed" }),
+            /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 text-green-600" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-600", children: (overallStats == null ? void 0 : overallStats.completedAssignments) || 0 }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { className: "cursor-pointer hover:bg-accent/50 transition-colors", onClick: () => {
+          if (((overallStats == null ? void 0 : overallStats.overdueAssignments) || 0) > 0) {
+            setShowOverdueDetails(true);
+            setActiveTab("overdue-details");
+          } else {
+            setStatusFilter("overdue");
+            setDepartmentFilter("all");
+            setActiveTab("users");
+            ue.info("No overdue assignments found", {
+              description: "All assignments are currently on time or completed."
+            });
+          }
+        }, children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Overdue" }),
+            /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4 text-red-600" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-600", children: (overallStats == null ? void 0 : overallStats.overdueAssignments) || 0 }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-sm font-medium", children: "Compliance Rate" }),
+            /* @__PURE__ */ jsxRuntime.jsx(TrendingUp, { className: "h-4 w-4 text-muted-foreground" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: `text-2xl font-bold ${getComplianceColor((overallStats == null ? void 0 : overallStats.complianceRate) || 0)}`, children: [
+            Math.round((overallStats == null ? void 0 : overallStats.complianceRate) || 0),
+            "%"
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(tabs.Tabs, { value: activeTab, onValueChange: setActiveTab, className: "w-full", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsList, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsTrigger, { value: "users", "data-value": "users", children: "Users" }),
+          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsTrigger, { value: "documents", children: "Documents" }),
+          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsTrigger, { value: "departments", children: "Departments" }),
+          /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsTrigger, { value: "roles", children: "Roles" }),
+          showCompletedDetails && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsTrigger, { value: "completed-details", children: "Completed Details" }),
+          showOverdueDetails && /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsTrigger, { value: "overdue-details", children: "Overdue Details" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "users", className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "user-search", children: "Search Users" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  id: "user-search",
+                  placeholder: "Search by name...",
+                  value: searchTerm,
+                  onChange: (e) => setSearchTerm(e.target.value)
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Department" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: departmentFilter, onValueChange: setDepartmentFilter, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All departments" }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Departments" }),
+                  departments.map((dept) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: dept, children: dept }, dept))
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All statuses" }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Status" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Completed", children: "Completed" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "overdue", children: "Overdue" })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                onClick: () => {
+                  setSearchTerm("");
+                  setDepartmentFilter("all");
+                  setStatusFilter("all");
+                },
+                children: "Clear Filters"
+              }
+            ) })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
+            "Showing ",
+            (filteredUserStats == null ? void 0 : filteredUserStats.length) || 0,
+            " of ",
+            (userStats == null ? void 0 : userStats.length) || 0,
+            " users",
+            searchTerm && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              ' | Search: "',
+              searchTerm,
+              '"'
+            ] }),
+            departmentFilter !== "all" && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              " | Department: ",
+              departmentFilter
+            ] }),
+            statusFilter !== "all" && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              " | Status: ",
+              statusFilter
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: filteredUserStats == null ? void 0 : filteredUserStats.map((user) => /* @__PURE__ */ jsxRuntime.jsxs(
+            card.Card,
+            {
+              className: "cursor-pointer hover:bg-accent/50 transition-colors",
+              onClick: () => setSelectedUserDetail({
+                userId: user.user_id,
+                userName: user.user_name,
+                department: user.department
+              }),
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "text-lg flex items-center gap-2", children: [
+                      user.user_name,
+                      /* @__PURE__ */ jsxRuntime.jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: user.department })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: getComplianceBadge(user.compliance_rate), children: [
+                    Math.round(user.compliance_rate),
+                    "% Complete"
+                  ] })
+                ] }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      user.completed_assignments,
+                      " / ",
+                      user.total_assignments
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: user.compliance_rate, className: "w-full" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Completed: ",
+                      user.completed_assignments
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Overdue: ",
+                      user.overdue_assignments
+                    ] })
+                  ] })
+                ] }) })
+              ]
+            },
+            user.user_id
+          )) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "documents", className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "document-search", children: "Search Documents" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  id: "document-search",
+                  placeholder: "Search by document title...",
+                  value: searchTerm,
+                  onChange: (e) => setSearchTerm(e.target.value)
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All statuses" }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Status" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Completed", children: "Completed" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "overdue", children: "Overdue" })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                onClick: () => {
+                  setSearchTerm("");
+                  setStatusFilter("all");
+                },
+                children: "Clear Filters"
+              }
+            ) })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
+            "Showing ",
+            (filteredDocumentStats == null ? void 0 : filteredDocumentStats.length) || 0,
+            " of ",
+            (documentStats == null ? void 0 : documentStats.length) || 0,
+            " documents",
+            searchTerm && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              ' | Search: "',
+              searchTerm,
+              '"'
+            ] }),
+            statusFilter !== "all" && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              " | Status: ",
+              statusFilter
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: filteredDocumentStats == null ? void 0 : filteredDocumentStats.map((doc) => /* @__PURE__ */ jsxRuntime.jsxs(
+            card.Card,
+            {
+              className: "cursor-pointer hover:bg-accent/50 transition-colors",
+              onClick: () => setSelectedDocumentDetail({
+                documentId: doc.document_id,
+                documentTitle: doc.document_title
+              }),
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "text-lg flex items-center gap-2", children: [
+                      doc.document_title,
+                      /* @__PURE__ */ jsxRuntime.jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardDescription, { children: [
+                      doc.total_assignments,
+                      " assignments"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: getComplianceBadge(doc.compliance_rate), children: [
+                    Math.round(doc.compliance_rate),
+                    "% Complete"
+                  ] })
+                ] }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      doc.completed_assignments,
+                      " / ",
+                      doc.total_assignments
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: doc.compliance_rate, className: "w-full" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Completed: ",
+                      doc.completed_assignments
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Overdue: ",
+                      doc.overdue_assignments
+                    ] })
+                  ] })
+                ] }) })
+              ]
+            },
+            doc.document_id
+          )) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "departments", className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "department-search", children: "Search Departments" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  id: "department-search",
+                  placeholder: "Search by department name...",
+                  value: searchTerm,
+                  onChange: (e) => setSearchTerm(e.target.value)
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Department" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: departmentFilter, onValueChange: setDepartmentFilter, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All departments" }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Departments" }),
+                  departments.map((dept) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: dept, children: dept }, dept))
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All statuses" }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Status" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Completed", children: "Completed" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "overdue", children: "Overdue" })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                onClick: () => {
+                  setSearchTerm("");
+                  setDepartmentFilter("all");
+                  setStatusFilter("all");
+                },
+                children: "Clear Filters"
+              }
+            ) })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
+            "Showing ",
+            (filteredDepartmentStats == null ? void 0 : filteredDepartmentStats.length) || 0,
+            " of ",
+            (departmentStats == null ? void 0 : departmentStats.length) || 0,
+            " departments",
+            searchTerm && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              ' | Search: "',
+              searchTerm,
+              '"'
+            ] }),
+            departmentFilter !== "all" && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              " | Department: ",
+              departmentFilter
+            ] }),
+            statusFilter !== "all" && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              " | Status: ",
+              statusFilter
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: filteredDepartmentStats == null ? void 0 : filteredDepartmentStats.map((dept) => /* @__PURE__ */ jsxRuntime.jsxs(
+            card.Card,
+            {
+              className: "cursor-pointer hover:bg-accent/50 transition-colors",
+              onClick: () => setSelectedDepartmentDetail(dept.department),
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "text-lg flex items-center gap-2", children: [
+                      dept.department,
+                      /* @__PURE__ */ jsxRuntime.jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardDescription, { children: [
+                      dept.total_assignments,
+                      " assignments"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: getComplianceBadge(dept.compliance_rate), children: [
+                    Math.round(dept.compliance_rate),
+                    "% Complete"
+                  ] })
+                ] }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      dept.completed_assignments,
+                      " / ",
+                      dept.total_assignments
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: dept.compliance_rate, className: "w-full" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Completed: ",
+                      dept.completed_assignments
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Overdue: ",
+                      dept.overdue_assignments
+                    ] })
+                  ] })
+                ] }) })
+              ]
+            },
+            dept.department
+          )) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "roles", className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "role-search", children: "Search Roles" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  id: "role-search",
+                  placeholder: "Search by role name...",
+                  value: searchTerm,
+                  onChange: (e) => setSearchTerm(e.target.value)
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Status" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All statuses" }) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Status" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Completed", children: "Completed" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "overdue", children: "Overdue" })
+                ] })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                onClick: () => {
+                  setSearchTerm("");
+                  setStatusFilter("all");
+                },
+                children: "Clear Filters"
+              }
+            ) })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
+            "Showing ",
+            (roleStats == null ? void 0 : roleStats.filter((role) => {
+              const matchesSearch = role.role.toLowerCase().includes(searchTerm.toLowerCase());
+              const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && role.compliance_rate === 100 || statusFilter === "overdue" && role.overdue_assignments > 0 && role.compliance_rate < 100;
+              return matchesSearch && matchesStatus;
+            }).length) || 0,
+            " of ",
+            (roleStats == null ? void 0 : roleStats.length) || 0,
+            " roles",
+            searchTerm && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              ' | Search: "',
+              searchTerm,
+              '"'
+            ] }),
+            statusFilter !== "all" && /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              " | Status: ",
+              statusFilter
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: roleStats == null ? void 0 : roleStats.filter((role) => {
+            const matchesSearch = role.role.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && role.compliance_rate === 100 || statusFilter === "overdue" && role.overdue_assignments > 0 && role.compliance_rate < 100;
+            return matchesSearch && matchesStatus;
+          }).map((role) => /* @__PURE__ */ jsxRuntime.jsxs(
+            card.Card,
+            {
+              className: "cursor-pointer hover:bg-accent/50 transition-colors",
+              onClick: () => setSelectedRoleDetail(role.role),
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "text-lg flex items-center gap-2", children: [
+                      role.role,
+                      /* @__PURE__ */ jsxRuntime.jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs(card.CardDescription, { children: [
+                      role.total_assignments,
+                      " assignments"
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: getComplianceBadge(role.compliance_rate), children: [
+                    Math.round(role.compliance_rate),
+                    "% Complete"
+                  ] })
+                ] }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx("span", { children: "Progress" }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      role.completed_assignments,
+                      " / ",
+                      role.total_assignments
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: role.compliance_rate, className: "w-full" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Completed: ",
+                      role.completed_assignments
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                      "Overdue: ",
+                      role.overdue_assignments
+                    ] })
+                  ] })
+                ] }) })
+              ]
+            },
+            role.role
+          )) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "completed-details", className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold", children: "Completed Document Details" }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-muted-foreground", children: "View which documents have been completed by which users" })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                size: "icon",
+                onClick: () => {
+                  setShowCompletedDetails(false);
+                  setActiveTab("users");
+                },
+                children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" })
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: completedDetails == null ? void 0 : completedDetails.map((detail, index) => /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: detail.document_title }),
+                /* @__PURE__ */ jsxRuntime.jsxs(card.CardDescription, { children: [
+                  "Completed by ",
+                  detail.user_name,
+                  " (",
+                  detail.department,
+                  ")"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: "bg-green-100 text-green-800", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-3 w-3 mr-1" }),
+                "Completed"
+              ] })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-muted-foreground", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
+              /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                "Completed on: ",
+                detail.completed_at ? new Date(detail.completed_at).toLocaleDateString() : "Date not recorded"
+              ] })
+            ] }) }) })
+          ] }, `${detail.user_id}-${detail.document_id}-${index}`)) }),
+          (completedDetails == null ? void 0 : completedDetails.length) === 0 && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-center py-8 text-muted-foreground", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-12 w-12 mx-auto mb-4 opacity-50" }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { children: "No completed documents found." })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "overdue-details", className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "text-lg font-semibold", children: "Overdue Document Details" }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-muted-foreground", children: "View which documents are overdue and by which users" })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                size: "icon",
+                onClick: () => {
+                  setShowOverdueDetails(false);
+                  setActiveTab("users");
+                },
+                children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" })
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "grid gap-4", children: overdueDetails == null ? void 0 : overdueDetails.map((detail, index) => /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: detail.document_title }),
+                /* @__PURE__ */ jsxRuntime.jsxs(card.CardDescription, { children: [
+                  "Assigned to ",
+                  detail.user_name,
+                  " (",
+                  detail.department,
+                  ")"
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { className: "bg-red-100 text-red-800", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-3 w-3 mr-1" }),
+                detail.days_overdue,
+                " days overdue"
+              ] })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-muted-foreground", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  "Due date: ",
+                  new Date(detail.due_date).toLocaleDateString()
+                ] })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4" }),
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+                  "Status: ",
+                  detail.status
+                ] })
+              ] })
+            ] }) })
+          ] }, `${detail.user_id}-${detail.document_id}-${index}`)) }),
+          (overdueDetails == null ? void 0 : overdueDetails.length) === 0 && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-center py-8 text-muted-foreground", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-12 w-12 mx-auto mb-4 opacity-50" }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { children: "No overdue documents found." })
+          ] })
+        ] })
+      ] })
+    ] });
+  };
+  const KnowledgePanel = () => {
+    const [activeTab, setActiveTab] = o.useState("documents");
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold tracking-tight", children: "Knowledge Management" }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "Manage organizational documents, policies, and compliance tracking" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(tabs.Tabs, { value: activeTab, onValueChange: setActiveTab, className: "w-full", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsList, { className: "grid w-full grid-cols-3", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "documents", className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-4 w-4" }),
+            "Documents"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "assignments", className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" }),
+            "Assignments"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "compliance", className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4" }),
+            "Compliance"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "documents", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentManagement, { onNavigateToAssignments: () => setActiveTab("assignments") }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assignments", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentAssignments, {}) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "compliance", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(ComplianceTracking, {}) })
+      ] })
+    ] });
+  };
+  const MyDocuments = ({ userId }) => {
+    const { supabaseClient: supabase } = useOrganisationContext();
+    const { user } = staysecureAuth.useAuth();
+    const queryClient = reactQuery.useQueryClient();
+    const [searchTerm, setSearchTerm] = o.useState("");
+    const [statusFilter, setStatusFilter] = o.useState("all");
+    const [activeTab, setActiveTab] = o.useState("assigned");
+    const targetUserId = userId || (user == null ? void 0 : user.id);
+    const { data: assignments, isLoading } = reactQuery.useQuery({
+      queryKey: ["document-assignments", targetUserId],
+      queryFn: async () => {
+        const { data, error } = await supabase.from("document_assignments").select(`
+          *,
+          document:documents(*)
+        `).eq("user_id", targetUserId).order("assigned_at", { ascending: false });
+        if (error) throw error;
+        return data;
+      },
+      enabled: !!targetUserId
+    });
+    const updateStatusMutation = reactQuery.useMutation({
+      mutationFn: async ({ assignmentId, status }) => {
+        const updateData = { status };
+        if (status === "Completed") {
+          updateData.completed_at = (/* @__PURE__ */ new Date()).toISOString();
+        } else if (status === "Not started") {
+          updateData.completed_at = null;
+        }
+        const { error } = await supabase.from("document_assignments").update(updateData).eq("assignment_id", assignmentId);
+        if (error) throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
+        queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["user-compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["department-compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+        useToast.toast({
+          title: "Success",
+          description: "Document status updated successfully"
+        });
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive"
+        });
+      }
+    });
+    const handleStatusChange = (assignmentId, newStatus) => {
+      updateStatusMutation.mutate({ assignmentId, status: newStatus });
+    };
+    const filteredAssignments = assignments == null ? void 0 : assignments.filter((assignment) => {
+      var _a;
+      const matchesSearch = assignment.document.title.toLowerCase().includes(searchTerm.toLowerCase()) || ((_a = assignment.document.description) == null ? void 0 : _a.toLowerCase().includes(searchTerm.toLowerCase()));
+      const matchesStatus = statusFilter === "all" || assignment.status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+    const requiredAssignments = filteredAssignments == null ? void 0 : filteredAssignments.filter((a) => a.document.required);
+    const optionalAssignments = filteredAssignments == null ? void 0 : filteredAssignments.filter((a) => !a.document.required);
+    const completedCount = (assignments == null ? void 0 : assignments.filter((a) => a.status === "Completed").length) || 0;
+    const totalCount = (assignments == null ? void 0 : assignments.length) || 0;
+    const progressPercentage = totalCount > 0 ? Math.round(completedCount / totalCount * 100) : 0;
+    if (isLoading) {
+      return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-32 w-32 border-b-2 border-primary" }) });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-5 w-5" }),
+            "Document Progress"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Your overall document reading progress" })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm font-medium", children: "Overall Progress" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-sm text-muted-foreground", children: [
+              completedCount,
+              " of ",
+              totalCount,
+              " documents completed"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(progress.Progress, { value: progressPercentage, className: "w-full" }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              progressPercentage,
+              "% Complete"
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+              totalCount - completedCount,
+              " remaining"
+            ] })
+          ] })
+        ] }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "search", children: "Search Documents" }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "relative", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Search, { className: "absolute left-3 top-3 h-4 w-4 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              input.Input,
+              {
+                id: "search",
+                placeholder: "Search by title or description...",
+                value: searchTerm,
+                onChange: (e) => setSearchTerm(e.target.value),
+                className: "pl-10"
+              }
+            )
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "w-full sm:w-48", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Filter by Status" }),
+          /* @__PURE__ */ jsxRuntime.jsxs(select.Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+            /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, { placeholder: "All statuses" }) }),
+            /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "all", children: "All Statuses" }),
+              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Not started", children: "Not Started" }),
+              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "In progress", children: "In Progress" }),
+              /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Completed", children: "Completed" })
+            ] })
+          ] })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(tabs.Tabs, { value: activeTab, onValueChange: setActiveTab, children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsList, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "assigned", children: [
+            "All Assigned (",
+            (filteredAssignments == null ? void 0 : filteredAssignments.length) || 0,
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "required", children: [
+            "Required (",
+            (requiredAssignments == null ? void 0 : requiredAssignments.length) || 0,
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "optional", children: [
+            "Optional (",
+            (optionalAssignments == null ? void 0 : optionalAssignments.length) || 0,
+            ")"
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: filteredAssignments || [], onStatusChange: handleStatusChange }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: requiredAssignments || [], onStatusChange: handleStatusChange }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: optionalAssignments || [], onStatusChange: handleStatusChange }) })
+      ] })
+    ] });
+  };
+  const DocumentList = ({ assignments, onStatusChange }) => {
+    const getStatusIcon = (status) => {
+      switch (status) {
+        case "Completed":
+          return /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 text-green-500" });
+        case "In progress":
+          return /* @__PURE__ */ jsxRuntime.jsx(Clock, { className: "h-4 w-4 text-blue-500" });
+        default:
+          return /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4 text-orange-500" });
+      }
+    };
+    const getStatusColor = (status) => {
+      switch (status) {
+        case "Completed":
+          return "bg-green-100 text-green-800";
+        case "In progress":
+          return "bg-blue-100 text-blue-800";
+        default:
+          return "bg-orange-100 text-orange-800";
+      }
+    };
+    const isOverdue = (dueDate, status) => {
+      return new Date(dueDate) < /* @__PURE__ */ new Date() && status !== "Completed";
+    };
+    if (assignments.length === 0) {
+      return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "py-8 text-center", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-12 w-12 mx-auto text-muted-foreground mb-4" }),
+        /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "No documents found" })
+      ] }) });
+    }
+    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: assignments.map((assignment) => /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { className: isOverdue(assignment.due_date, assignment.status) ? "border-red-200" : "", children: [
+      /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start justify-between", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: assignment.document.title }),
+            assignment.document.required && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Required" }),
+            isOverdue(assignment.due_date, assignment.status) && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Overdue" })
+          ] }),
+          assignment.document.description && /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { className: "mt-2", children: assignment.document.description })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          getStatusIcon(assignment.status),
+          /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor(assignment.status), children: assignment.status })
+        ] })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 text-sm text-muted-foreground", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
+            "Due: ",
+            new Date(assignment.due_date).toLocaleDateString()
+          ] }),
+          assignment.document.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: assignment.document.category })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+          assignment.document.url && /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "sm", asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs("a", { href: assignment.document.url, target: "_blank", rel: "noopener noreferrer", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-4 w-4 mr-1" }),
+            "View"
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsxs(
+            select.Select,
+            {
+              value: assignment.status,
+              onValueChange: (value) => onStatusChange(assignment.assignment_id, value),
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
+                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Not started", children: "Not Started" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "In progress", children: "In Progress" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Completed", children: "Completed" })
+                ] })
+              ]
+            }
+          )
+        ] })
+      ] }) })
+    ] }, assignment.assignment_id)) });
+  };
   Object.defineProperty(exports2, "useUserProfiles", {
     enumerable: true,
     get: () => useUserProfiles.useUserProfiles
@@ -9626,8 +14213,10 @@
   exports2.EditableProfileHeader = EditableProfileHeader;
   exports2.ImportErrorReport = ImportErrorReport;
   exports2.ImportUsersDialog = ImportUsersDialog;
+  exports2.KnowledgePanel = KnowledgePanel;
   exports2.LocationManagement = LocationManagement;
   exports2.MultipleRolesField = MultipleRolesField;
+  exports2.MyDocuments = MyDocuments;
   exports2.OrganisationPanel = OrganisationPanel;
   exports2.OrganisationProvider = OrganisationProvider;
   exports2.OrganisationWrapper = OrganisationWrapper;

@@ -64,5 +64,9 @@ export type {
   OrgCertificate,
 } from './types';
 
+// Knowledge Management exports
+export { default as KnowledgePanel } from './components/KnowledgePanel';
+export { default as MyDocuments } from './components/knowledge/MyDocuments';
+
 // Utility exports
 export { handleSaveUser, handleCreateUser, handleDeleteUser } from './utils/userManagementActions';

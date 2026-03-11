@@ -38,5 +38,7 @@ export { useUserDepartments } from './hooks/useUserDepartments';
 export { useUserProfileRoles } from './hooks/useUserProfileRoles';
 export { useViewPreference } from './hooks/useViewPreference';
 export type { OrganisationConfig, ThemeConfig, PermissionConfig, UserProfile, NewUser, Role, Department, Location, OrgCertificate, } from './types';
+export { default as KnowledgePanel } from './components/KnowledgePanel';
+export { default as MyDocuments } from './components/knowledge/MyDocuments';
 export { handleSaveUser, handleCreateUser, handleDeleteUser } from './utils/userManagementActions';
 //# sourceMappingURL=index.d.ts.map

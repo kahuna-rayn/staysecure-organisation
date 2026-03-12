@@ -68,8 +68,27 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     }
     try {
       setIsSendingReset(true);
+      // Build redirect URL with client short name (e.g. /nexus/reset-password)
+      // The first path segment is always the client short name (e.g. /nexus/admin/...)
+      const pathParts = window.location.pathname.split('/').filter(Boolean);
+      const skipSegments = ['admin', 'activate-account', 'reset-password', 'forgot-password'];
+      const clientSegment = pathParts.length > 0 && !skipSegments.includes(pathParts[0])
+        ? '/' + pathParts[0]
+        : '';
+      const redirectUrl = `${window.location.origin}${clientSegment}/reset-password`;
+
+      const isDebug = typeof window !== 'undefined' && (window as any).__DEBUG__;
+      if (isDebug) {
+        console.debug('[EditableProfileHeader] handleSendPasswordReset debug:');
+        console.debug('  pathname       :', window.location.pathname);
+        console.debug('  pathParts      :', pathParts);
+        console.debug('  clientSegment  :', clientSegment || '(none)');
+        console.debug('  redirectUrl    :', redirectUrl);
+        console.debug('  email          :', email);
+      }
+
       const { error } = await supabaseClient.functions.invoke('send-password-reset', {
-        body: { email },
+        body: { email, redirectUrl },
       });
       if (error) throw error;
       toast.success("Password reset sent", { description: `A password reset link has been sent to ${email}.` });

@@ -8213,8 +8213,21 @@
       }
       try {
         setIsSendingReset(true);
+        const pathParts = window.location.pathname.split("/").filter(Boolean);
+        const skipSegments = ["admin", "activate-account", "reset-password", "forgot-password"];
+        const clientSegment = pathParts.length > 0 && !skipSegments.includes(pathParts[0]) ? "/" + pathParts[0] : "";
+        const redirectUrl = `${window.location.origin}${clientSegment}/reset-password`;
+        const isDebug = typeof window !== "undefined" && window.__DEBUG__;
+        if (isDebug) {
+          console.debug("[EditableProfileHeader] handleSendPasswordReset debug:");
+          console.debug("  pathname       :", window.location.pathname);
+          console.debug("  pathParts      :", pathParts);
+          console.debug("  clientSegment  :", clientSegment || "(none)");
+          console.debug("  redirectUrl    :", redirectUrl);
+          console.debug("  email          :", email);
+        }
         const { error } = await supabaseClient.functions.invoke("send-password-reset", {
-          body: { email }
+          body: { email, redirectUrl }
         });
         if (error) throw error;
         sonner.toast.success("Password reset sent", { description: `A password reset link has been sent to ${email}.` });

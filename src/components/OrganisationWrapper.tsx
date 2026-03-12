@@ -4,11 +4,16 @@ import { OrganisationProvider } from '../context/OrganisationContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useUserRole } from '@/hooks/useUserRole';
 
-export const OrganisationWrapper: React.FC = () => {
+interface OrganisationWrapperProps {
+  basePath?: string;
+}
+
+export const OrganisationWrapper: React.FC<OrganisationWrapperProps> = ({ basePath }) => {
   const { hasAdminAccess } = useUserRole();
   
   const organisationConfig = {
     supabaseClient: supabase,
+    basePath,
     enabledTabs: ['users', 'roles', 'departments', 'locations', 'certificates', 'profile'],
     permissions: {
       canCreateUsers: hasAdminAccess,

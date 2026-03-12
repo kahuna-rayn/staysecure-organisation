@@ -5865,10 +5865,11 @@ const OrganisationPanel = ({
     ] }) }) })
   ] });
 };
-const OrganisationWrapper = () => {
+const OrganisationWrapper = ({ basePath }) => {
   const { hasAdminAccess } = useUserRole();
   const organisationConfig = {
     supabaseClient: supabase,
+    basePath,
     enabledTabs: ["users", "roles", "departments", "locations", "certificates", "profile"],
     permissions: {
       canCreateUsers: hasAdminAccess,

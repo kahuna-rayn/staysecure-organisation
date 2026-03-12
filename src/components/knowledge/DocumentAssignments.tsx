@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Plus, Search, Building, User, Calendar, BarChart3 } from 'lucide-react';
+import { Users, Plus, Search, Building2, Shield, Calendar, BarChart3 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useAuth } from 'staysecure-auth';
@@ -458,16 +458,16 @@ const DocumentAssignments: React.FC = () => {
                   setSelectedTargets([]);
                 }}>
                   <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="roles">
-                      <Users className="h-4 w-4 mr-1" />
-                      Roles
-                    </TabsTrigger>
                     <TabsTrigger value="departments">
-                      <Building className="h-4 w-4 mr-1" />
+                      <Building2 className="h-4 w-4 mr-1" />
                       Departments
                     </TabsTrigger>
+                    <TabsTrigger value="roles">
+                      <Shield className="h-4 w-4 mr-1" />
+                      Roles
+                    </TabsTrigger>
                     <TabsTrigger value="users">
-                      <User className="h-4 w-4 mr-1" />
+                      <Users className="h-4 w-4 mr-1" />
                       Users
                     </TabsTrigger>
                   </TabsList>

@@ -10743,16 +10743,16 @@ const DocumentAssignments = () => {
                 setAssignmentType(value);
                 setSelectedTargets([]);
               }, children: /* @__PURE__ */ jsxs(TabsList, { className: "grid w-full grid-cols-3", children: [
-                /* @__PURE__ */ jsxs(TabsTrigger, { value: "roles", children: [
-                  /* @__PURE__ */ jsx(Users, { className: "h-4 w-4 mr-1" }),
-                  "Roles"
-                ] }),
                 /* @__PURE__ */ jsxs(TabsTrigger, { value: "departments", children: [
-                  /* @__PURE__ */ jsx(Building, { className: "h-4 w-4 mr-1" }),
+                  /* @__PURE__ */ jsx(Building2, { className: "h-4 w-4 mr-1" }),
                   "Departments"
                 ] }),
+                /* @__PURE__ */ jsxs(TabsTrigger, { value: "roles", children: [
+                  /* @__PURE__ */ jsx(Shield, { className: "h-4 w-4 mr-1" }),
+                  "Roles"
+                ] }),
                 /* @__PURE__ */ jsxs(TabsTrigger, { value: "users", children: [
-                  /* @__PURE__ */ jsx(User, { className: "h-4 w-4 mr-1" }),
+                  /* @__PURE__ */ jsx(Users, { className: "h-4 w-4 mr-1" }),
                   "Users"
                 ] })
               ] }) })

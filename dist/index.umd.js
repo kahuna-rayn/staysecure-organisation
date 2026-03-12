@@ -10702,16 +10702,16 @@
                   setAssignmentType(value);
                   setSelectedTargets([]);
                 }, children: /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsList, { className: "grid w-full grid-cols-3", children: [
-                  /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "roles", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 mr-1" }),
-                    "Roles"
-                  ] }),
                   /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "departments", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 mr-1" }),
+                    /* @__PURE__ */ jsxRuntime.jsx(Building2, { className: "h-4 w-4 mr-1" }),
                     "Departments"
                   ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "roles", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 mr-1" }),
+                    "Roles"
+                  ] }),
                   /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "users", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(User, { className: "h-4 w-4 mr-1" }),
+                    /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 mr-1" }),
                     "Users"
                   ] })
                 ] }) })

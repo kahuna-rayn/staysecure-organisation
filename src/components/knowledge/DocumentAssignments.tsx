@@ -105,8 +105,25 @@ const DocumentAssignments: React.FC = () => {
     enabled: !!user?.id,
   });
 
-  // A manager-only user has managed departments/users but no admin role
-  const isManagerOnly = !hasAdminAccess && (managedDepartmentIds?.length ?? 0) > 0;
+  // Manager scoping: roles in managed departments
+  const { data: managedRoleIds } = useQuery({
+    queryKey: ['manager-role-ids', user?.id, managedDepartmentIds],
+    queryFn: async () => {
+      if (!managedDepartmentIds || managedDepartmentIds.length === 0) return [];
+      const { data } = await supabase
+        .from('roles')
+        .select('role_id')
+        .in('department_id', managedDepartmentIds);
+      return data?.map((r: { role_id: string }) => r.role_id) || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  // Manager-only: non-admin user who manages departments OR has direct reports
+  const isManagerOnly = !hasAdminAccess && (
+    (managedDepartmentIds?.length ?? 0) > 0 ||
+    (managedUserIds?.length ?? 0) > 1   // > 1 because current user's own id is always added
+  );
 
   const { data: documents } = useQuery({
     queryKey: ['documents'],
@@ -334,6 +351,15 @@ const DocumentAssignments: React.FC = () => {
     return departments || [];
   }, [departments, isManagerOnly, managedDepartmentIds]);
 
+  // Roles in managed departments only
+  const visibleRoles = useMemo(() => {
+    if (isManagerOnly && managedRoleIds) {
+      return (roles || []).filter(r => managedRoleIds.includes(r.role_id));
+    }
+    return roles || [];
+  }, [roles, isManagerOnly, managedRoleIds]);
+
+  // All users in managed departments + users with managed roles + direct reports
   const visibleUsers = useMemo(() => {
     if (isManagerOnly && managedUserIds) {
       return (users || []).filter(u => managedUserIds.includes(u.id));
@@ -344,7 +370,7 @@ const DocumentAssignments: React.FC = () => {
   const getAssignmentTargets = () => {
     switch (assignmentType) {
       case 'roles':
-        return roles || [];
+        return visibleRoles;
       case 'departments':
         return visibleDepartments;
       case 'users':
@@ -431,13 +457,11 @@ const DocumentAssignments: React.FC = () => {
                   setAssignmentType(value as 'roles' | 'departments' | 'users');
                   setSelectedTargets([]);
                 }}>
-                  <TabsList className={`grid w-full ${isManagerOnly ? 'grid-cols-2' : 'grid-cols-3'}`}>
-                    {!isManagerOnly && (
-                      <TabsTrigger value="roles">
-                        <Users className="h-4 w-4 mr-1" />
-                        Roles
-                      </TabsTrigger>
-                    )}
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="roles">
+                      <Users className="h-4 w-4 mr-1" />
+                      Roles
+                    </TabsTrigger>
                     <TabsTrigger value="departments">
                       <Building className="h-4 w-4 mr-1" />
                       Departments

@@ -10490,7 +10490,16 @@ const DocumentAssignments = () => {
     },
     enabled: !!(user == null ? void 0 : user.id)
   });
-  const isManagerOnly = !hasAdminAccess && ((managedDepartmentIds == null ? void 0 : managedDepartmentIds.length) ?? 0) > 0;
+  const { data: managedRoleIds } = useQuery({
+    queryKey: ["manager-role-ids", user == null ? void 0 : user.id, managedDepartmentIds],
+    queryFn: async () => {
+      if (!managedDepartmentIds || managedDepartmentIds.length === 0) return [];
+      const { data } = await supabase2.from("roles").select("role_id").in("department_id", managedDepartmentIds);
+      return (data == null ? void 0 : data.map((r) => r.role_id)) || [];
+    },
+    enabled: !!(user == null ? void 0 : user.id)
+  });
+  const isManagerOnly = !hasAdminAccess && (((managedDepartmentIds == null ? void 0 : managedDepartmentIds.length) ?? 0) > 0 || ((managedUserIds == null ? void 0 : managedUserIds.length) ?? 0) > 1);
   const { data: documents } = useQuery({
     queryKey: ["documents"],
     queryFn: async () => {
@@ -10650,6 +10659,12 @@ const DocumentAssignments = () => {
     }
     return departments || [];
   }, [departments, isManagerOnly, managedDepartmentIds]);
+  const visibleRoles = useMemo(() => {
+    if (isManagerOnly && managedRoleIds) {
+      return (roles || []).filter((r) => managedRoleIds.includes(r.role_id));
+    }
+    return roles || [];
+  }, [roles, isManagerOnly, managedRoleIds]);
   const visibleUsers = useMemo(() => {
     if (isManagerOnly && managedUserIds) {
       return (users || []).filter((u) => managedUserIds.includes(u.id));
@@ -10659,7 +10674,7 @@ const DocumentAssignments = () => {
   const getAssignmentTargets = () => {
     switch (assignmentType) {
       case "roles":
-        return roles || [];
+        return visibleRoles;
       case "departments":
         return visibleDepartments;
       case "users":
@@ -10727,8 +10742,8 @@ const DocumentAssignments = () => {
               /* @__PURE__ */ jsx(Tabs, { value: assignmentType, onValueChange: (value) => {
                 setAssignmentType(value);
                 setSelectedTargets([]);
-              }, children: /* @__PURE__ */ jsxs(TabsList, { className: `grid w-full ${isManagerOnly ? "grid-cols-2" : "grid-cols-3"}`, children: [
-                !isManagerOnly && /* @__PURE__ */ jsxs(TabsTrigger, { value: "roles", children: [
+              }, children: /* @__PURE__ */ jsxs(TabsList, { className: "grid w-full grid-cols-3", children: [
+                /* @__PURE__ */ jsxs(TabsTrigger, { value: "roles", children: [
                   /* @__PURE__ */ jsx(Users, { className: "h-4 w-4 mr-1" }),
                   "Roles"
                 ] }),

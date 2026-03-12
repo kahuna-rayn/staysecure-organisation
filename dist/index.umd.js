@@ -13910,7 +13910,7 @@
       ] })
     ] });
   };
-  const KnowledgePanel = () => {
+  const KnowledgePanelInner = () => {
     const [activeTab, setActiveTab] = o.useState("documents");
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
@@ -13937,6 +13937,23 @@
         /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "compliance", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(ComplianceTracking, {}) })
       ] })
     ] });
+  };
+  const KnowledgePanel = () => {
+    const { hasAdminAccess } = useUserRole.useUserRole();
+    const config = {
+      supabaseClient: client.supabase,
+      permissions: {
+        canCreateUsers: hasAdminAccess,
+        canEditUsers: hasAdminAccess,
+        canDeleteUsers: hasAdminAccess,
+        canManageRoles: hasAdminAccess,
+        canManageDepartments: hasAdminAccess,
+        canManageLocations: hasAdminAccess,
+        canManageCertificates: hasAdminAccess,
+        canManageProfile: hasAdminAccess
+      }
+    };
+    return /* @__PURE__ */ jsxRuntime.jsx(OrganisationProvider, { config, children: /* @__PURE__ */ jsxRuntime.jsx(KnowledgePanelInner, {}) });
   };
   const MyDocuments = ({ userId }) => {
     const { supabaseClient: supabase } = useOrganisationContext();

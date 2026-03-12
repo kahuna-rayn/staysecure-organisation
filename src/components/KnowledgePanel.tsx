@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { FileText, Users, CheckCircle } from 'lucide-react';
+import { OrganisationProvider } from '../context/OrganisationContext';
+import { supabase } from '@/integrations/supabase/client';
+import { useUserRole } from '@/hooks/useUserRole';
 import DocumentManagement from './knowledge/DocumentManagement';
 import DocumentAssignments from './knowledge/DocumentAssignments';
 import ComplianceTracking from './knowledge/ComplianceTracking';
 
-const KnowledgePanel: React.FC = () => {
+const KnowledgePanelInner: React.FC = () => {
   const [activeTab, setActiveTab] = useState('documents');
 
   return (
@@ -46,6 +49,30 @@ const KnowledgePanel: React.FC = () => {
         </TabsContent>
       </Tabs>
     </div>
+  );
+};
+
+const KnowledgePanel: React.FC = () => {
+  const { hasAdminAccess } = useUserRole();
+
+  const config = {
+    supabaseClient: supabase,
+    permissions: {
+      canCreateUsers: hasAdminAccess,
+      canEditUsers: hasAdminAccess,
+      canDeleteUsers: hasAdminAccess,
+      canManageRoles: hasAdminAccess,
+      canManageDepartments: hasAdminAccess,
+      canManageLocations: hasAdminAccess,
+      canManageCertificates: hasAdminAccess,
+      canManageProfile: hasAdminAccess,
+    },
+  };
+
+  return (
+    <OrganisationProvider config={config}>
+      <KnowledgePanelInner />
+    </OrganisationProvider>
   );
 };
 

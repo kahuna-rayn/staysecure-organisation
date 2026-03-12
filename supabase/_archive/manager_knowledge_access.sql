@@ -9,7 +9,9 @@
 --
 -- Run this on each client instance, then move to _archive/.
 -- =============================================================================
-
+DROP POLICY IF EXISTS "Managers can assign documents to their team" ON document_users;
+DROP POLICY IF EXISTS "Managers can assign documents to their departments" ON document_departments;
+DROP POLICY IF EXISTS "Managers can view their team document assignments" ON document_assignments;
 -- document_users: managers can assign documents to their team members
 CREATE POLICY "Managers can assign documents to their team"
   ON document_users

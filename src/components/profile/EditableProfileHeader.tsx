@@ -44,7 +44,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
 }) => {
   const { user } = useAuth();
   const { profiles, updateProfile } = useUserProfiles();
-  const { supabaseClient, hasPermission } = useOrganisationContext();
+  const { supabaseClient, hasPermission, basePath } = useOrganisationContext();
   const isAdmin = hasPermission('canEditUsers');
   const [editingField, setEditingField] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -68,24 +68,12 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     }
     try {
       setIsSendingReset(true);
-      // Build redirect URL with client short name (e.g. /nexus/reset-password)
-      // The first path segment is always the client short name (e.g. /nexus/admin/...)
-      const pathParts = window.location.pathname.split('/').filter(Boolean);
-      const skipSegments = ['admin', 'activate-account', 'reset-password', 'forgot-password'];
-      const clientSegment = pathParts.length > 0 && !skipSegments.includes(pathParts[0])
-        ? '/' + pathParts[0]
-        : '';
-      const redirectUrl = `${window.location.origin}${clientSegment}/reset-password`;
+      // Use basePath from OrganisationProvider context (e.g. "/nexus") — reliable across all routes
+      const redirectUrl = `${window.location.origin}${basePath || ''}/reset-password`;
 
-      const isDebug = typeof window !== 'undefined' && (window as any).__DEBUG__;
-      if (isDebug) {
-        console.debug('[EditableProfileHeader] handleSendPasswordReset debug:');
-        console.debug('  pathname       :', window.location.pathname);
-        console.debug('  pathParts      :', pathParts);
-        console.debug('  clientSegment  :', clientSegment || '(none)');
-        console.debug('  redirectUrl    :', redirectUrl);
-        console.debug('  email          :', email);
-      }
+      debugLog('[handleSendPasswordReset] basePath:', basePath || '(none)');
+      debugLog('[handleSendPasswordReset] redirectUrl:', redirectUrl);
+      debugLog('[handleSendPasswordReset] email:', email);
 
       const { error } = await supabaseClient.functions.invoke('send-password-reset', {
         body: { email, redirectUrl },

@@ -1042,6 +1042,7 @@ const DepartmentRolePairsDisplay = ({ userId }) => {
 const UserCard = ({ user, onDelete }) => {
   var _a;
   const navigate = useNavigate();
+  const { basePath } = useOrganisationContext();
   const initials = user.full_name ? user.full_name.split(" ").map((n) => n.charAt(0)).join("").slice(0, 2) : ((_a = user.username) == null ? void 0 : _a.slice(0, 2)) || "U";
   const getStatusColor = (status) => {
     switch (status) {
@@ -1056,7 +1057,7 @@ const UserCard = ({ user, onDelete }) => {
     }
   };
   const handleViewDetails = () => {
-    navigate(`/admin/users/${user.id}`);
+    navigate(`${basePath || ""}/admin/users/${user.id}`);
   };
   return /* @__PURE__ */ jsx(Card, { className: "cursor-pointer hover:shadow-md transition-shadow", onClick: handleViewDetails, children: /* @__PURE__ */ jsxs(CardContent, { className: "p-4", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between mb-3", children: [
@@ -1116,6 +1117,7 @@ const UserTable = ({
   onCreate
 }) => {
   const navigate = useNavigate();
+  const { basePath } = useOrganisationContext();
   const columns = [
     {
       key: "full_name",
@@ -1167,7 +1169,7 @@ const UserTable = ({
     });
   };
   const handleViewUser = (user) => {
-    navigate(`/admin/users/${user.id}`);
+    navigate(`${basePath || ""}/admin/users/${user.id}`);
   };
   return /* @__PURE__ */ jsx("div", { className: "w-full", children: /* @__PURE__ */ jsx(
     EditableTable,
@@ -8233,7 +8235,7 @@ const EditableProfileHeader = ({
   var _a, _b, _c, _d, _e, _f, _g, _h;
   const { user } = useAuth();
   const { profiles, updateProfile } = useUserProfiles();
-  const { supabaseClient, hasPermission } = useOrganisationContext();
+  const { supabaseClient, hasPermission, basePath } = useOrganisationContext();
   const isAdmin = hasPermission("canEditUsers");
   const [editingField, setEditingField] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -8253,19 +8255,10 @@ const EditableProfileHeader = ({
     }
     try {
       setIsSendingReset(true);
-      const pathParts = window.location.pathname.split("/").filter(Boolean);
-      const skipSegments = ["admin", "activate-account", "reset-password", "forgot-password"];
-      const clientSegment = pathParts.length > 0 && !skipSegments.includes(pathParts[0]) ? "/" + pathParts[0] : "";
-      const redirectUrl = `${window.location.origin}${clientSegment}/reset-password`;
-      const isDebug = typeof window !== "undefined" && window.__DEBUG__;
-      if (isDebug) {
-        console.debug("[EditableProfileHeader] handleSendPasswordReset debug:");
-        console.debug("  pathname       :", window.location.pathname);
-        console.debug("  pathParts      :", pathParts);
-        console.debug("  clientSegment  :", clientSegment || "(none)");
-        console.debug("  redirectUrl    :", redirectUrl);
-        console.debug("  email          :", email);
-      }
+      const redirectUrl = `${window.location.origin}${basePath || ""}/reset-password`;
+      debugLog("[handleSendPasswordReset] basePath:", basePath || "(none)");
+      debugLog("[handleSendPasswordReset] redirectUrl:", redirectUrl);
+      debugLog("[handleSendPasswordReset] email:", email);
       const { error } = await supabaseClient.functions.invoke("send-password-reset", {
         body: { email, redirectUrl }
       });

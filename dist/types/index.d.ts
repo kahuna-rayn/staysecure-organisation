@@ -7,6 +7,8 @@ export interface OrganisationConfig {
     permissions?: PermissionConfig;
     onNavigate?: (tab: string) => void;
     onUserAction?: (action: string, data?: any) => void;
+    /** URL prefix for admin routes, e.g. "/nexus" — used to build correct navigation paths */
+    basePath?: string;
 }
 export interface ThemeConfig {
     primaryColor?: string;

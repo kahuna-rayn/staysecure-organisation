@@ -1002,6 +1002,7 @@
   const UserCard = ({ user, onDelete }) => {
     var _a;
     const navigate = reactRouterDom.useNavigate();
+    const { basePath } = useOrganisationContext();
     const initials = user.full_name ? user.full_name.split(" ").map((n) => n.charAt(0)).join("").slice(0, 2) : ((_a = user.username) == null ? void 0 : _a.slice(0, 2)) || "U";
     const getStatusColor = (status) => {
       switch (status) {
@@ -1016,7 +1017,7 @@
       }
     };
     const handleViewDetails = () => {
-      navigate(`/admin/users/${user.id}`);
+      navigate(`${basePath || ""}/admin/users/${user.id}`);
     };
     return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "cursor-pointer hover:shadow-md transition-shadow", onClick: handleViewDetails, children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "p-4", children: [
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start justify-between mb-3", children: [
@@ -1076,6 +1077,7 @@
     onCreate
   }) => {
     const navigate = reactRouterDom.useNavigate();
+    const { basePath } = useOrganisationContext();
     const columns = [
       {
         key: "full_name",
@@ -1127,7 +1129,7 @@
       });
     };
     const handleViewUser = (user) => {
-      navigate(`/admin/users/${user.id}`);
+      navigate(`${basePath || ""}/admin/users/${user.id}`);
     };
     return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsx(
       editableTable.EditableTable,
@@ -8193,7 +8195,7 @@
     var _a, _b, _c, _d, _e, _f, _g, _h;
     const { user } = staysecureAuth.useAuth();
     const { profiles, updateProfile } = useUserProfiles.useUserProfiles();
-    const { supabaseClient, hasPermission } = useOrganisationContext();
+    const { supabaseClient, hasPermission, basePath } = useOrganisationContext();
     const isAdmin = hasPermission("canEditUsers");
     const [editingField, setEditingField] = React.useState(null);
     const [saving, setSaving] = React.useState(false);
@@ -8213,19 +8215,10 @@
       }
       try {
         setIsSendingReset(true);
-        const pathParts = window.location.pathname.split("/").filter(Boolean);
-        const skipSegments = ["admin", "activate-account", "reset-password", "forgot-password"];
-        const clientSegment = pathParts.length > 0 && !skipSegments.includes(pathParts[0]) ? "/" + pathParts[0] : "";
-        const redirectUrl = `${window.location.origin}${clientSegment}/reset-password`;
-        const isDebug = typeof window !== "undefined" && window.__DEBUG__;
-        if (isDebug) {
-          console.debug("[EditableProfileHeader] handleSendPasswordReset debug:");
-          console.debug("  pathname       :", window.location.pathname);
-          console.debug("  pathParts      :", pathParts);
-          console.debug("  clientSegment  :", clientSegment || "(none)");
-          console.debug("  redirectUrl    :", redirectUrl);
-          console.debug("  email          :", email);
-        }
+        const redirectUrl = `${window.location.origin}${basePath || ""}/reset-password`;
+        debugLog("[handleSendPasswordReset] basePath:", basePath || "(none)");
+        debugLog("[handleSendPasswordReset] redirectUrl:", redirectUrl);
+        debugLog("[handleSendPasswordReset] email:", email);
         const { error } = await supabaseClient.functions.invoke("send-password-reset", {
           body: { email, redirectUrl }
         });

@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Edit, Trash2, Phone, MapPin, IdCard, Mail } from 'lucide-react';
 import { DepartmentRolePairsDisplay } from '../organisational/DepartmentRolePairsDisplay';
 import type { UserProfile } from '@/hooks/useUserProfiles';
+import { useOrganisationContext } from '@/context/OrganisationContext';
 
 interface UserCardProps {
   user: UserProfile;
@@ -16,6 +17,7 @@ interface UserCardProps {
 
 const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
   const navigate = useNavigate();
+  const { basePath } = useOrganisationContext();
 
   const initials = user.full_name 
     ? user.full_name.split(' ').map((n: string) => n.charAt(0)).join('').slice(0, 2)
@@ -32,7 +34,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
 
 
   const handleViewDetails = () => {
-    navigate(`/admin/users/${user.id}`);
+    navigate(`${basePath || ''}/admin/users/${user.id}`);
   };
 
   return (

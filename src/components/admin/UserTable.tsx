@@ -3,6 +3,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { EditableTable } from '@/components/ui/editable-table';
 import type { UserProfile } from '@/hooks/useUserProfiles';
+import { useOrganisationContext } from '@/context/OrganisationContext';
 
 interface UserTableProps {
   profiles: UserProfile[];
@@ -18,6 +19,7 @@ const UserTable: React.FC<UserTableProps> = ({
   onCreate 
 }) => {
   const navigate = useNavigate();
+  const { basePath } = useOrganisationContext();
 
   const columns = [
     { 
@@ -72,7 +74,7 @@ const UserTable: React.FC<UserTableProps> = ({
   };
 
   const handleViewUser = (user: UserProfile) => {
-    navigate(`/admin/users/${user.id}`);
+    navigate(`${basePath || ''}/admin/users/${user.id}`);
   };
 
   return (

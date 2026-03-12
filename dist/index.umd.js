@@ -168,6 +168,16 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const Briefcase = createLucideIcon("Briefcase", [
+    ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
+    ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const Building2 = createLucideIcon("Building2", [
     ["path", { d: "M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z", key: "1b4qmf" }],
     ["path", { d: "M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2", key: "i71pzd" }],
@@ -6996,8 +7006,7 @@
       addDepartment,
       removeDepartment,
       setPrimaryDepartment,
-      isAddingDepartment,
-      refetch: refetchUserDepartments
+      isAddingDepartment
     } = useUserDepartments.useUserDepartments(userId);
     const { data: allDepartments = [] } = reactQuery.useQuery({
       queryKey: ["departments"],
@@ -7295,7 +7304,7 @@
         }
       },
       onSuccess: () => {
-        refetchUserDepartments();
+        queryClient.invalidateQueries({ queryKey: useUserDepartments.USER_DEPARTMENTS_KEY(userId) });
         queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
         sonner.toast.success("Primary assignment updated successfully");
       },
@@ -8532,8 +8541,28 @@
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 w-full", children: [
           /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            primaryDepartment && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "default", children: primaryDepartment.department_name }),
-            primaryRole && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "default", children: primaryRole.role_name })
+            primaryDepartment && /* @__PURE__ */ jsxRuntime.jsxs(
+              badge.Badge,
+              {
+                className: "text-white flex items-center gap-1",
+                style: { backgroundColor: "#026473" },
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(Building2, { className: "h-3 w-3" }),
+                  primaryDepartment.department_name
+                ]
+              }
+            ),
+            primaryRole && /* @__PURE__ */ jsxRuntime.jsxs(
+              badge.Badge,
+              {
+                className: "text-white flex items-center gap-1",
+                style: { backgroundColor: "#359D8A" },
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(Briefcase, { className: "h-3 w-3" }),
+                  primaryRole.role_name
+                ]
+              }
+            )
           ] })
         ] })
       ] }),
@@ -8716,8 +8745,19 @@
   const UserDetailView = () => {
     const { userId } = reactRouterDom.useParams();
     const navigate = reactRouterDom.useNavigate();
+    const { supabaseClient } = useOrganisationContext();
     const { profiles, loading: profilesLoading } = useUserProfiles.useUserProfiles();
     const { hardware, software, certificates, loading: assetsLoading } = useUserAssets.useUserAssets(userId);
+    const { data: lastSignIn } = reactQuery.useQuery({
+      queryKey: ["user-last-sign-in", userId],
+      queryFn: async () => {
+        if (!userId) return null;
+        const { data, error } = await supabaseClient.rpc("get_user_last_sign_in", { target_user_id: userId });
+        if (error) return null;
+        return data;
+      },
+      enabled: !!userId
+    });
     const buildPersonaData = (profileObj) => ({
       id: profileObj.id,
       full_name: profileObj.full_name || "",
@@ -8741,7 +8781,7 @@
         employeeId: profileObj.employee_id || "Not assigned",
         status: profileObj.status || "Active",
         accessLevel: profileObj.access_level || "User",
-        lastLogin: profileObj.last_login || "",
+        lastLogin: lastSignIn || profileObj.last_login || "",
         passwordLastChanged: profileObj.password_last_changed || profileObj.created_at,
         twoFactorEnabled: profileObj.two_factor_enabled || false
       },
@@ -8779,7 +8819,7 @@
       if (userProfile2) {
         setPersonaData(buildPersonaData(userProfile2));
       }
-    }, [profiles, userId, hardware, software, certificates]);
+    }, [profiles, userId, hardware, software, certificates, lastSignIn]);
     const handleOptimisticUpdate = (field, value) => {
       setPersonaData((prev) => {
         const updated = { ...prev };

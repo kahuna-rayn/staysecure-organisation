@@ -1,8 +1,10 @@
 
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserAssets } from '@/hooks/useUserAssets';
+import { useOrganisationContext } from '../../context/OrganisationContext';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Loader2 } from 'lucide-react';
 import EditableProfileHeader from '../profile/EditableProfileHeader';
@@ -11,8 +13,22 @@ import PersonaDetailsTabs from '../profile/PersonaDetailsTabs';
 const UserDetailView: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
+  const { supabaseClient } = useOrganisationContext();
   const { profiles, loading: profilesLoading } = useUserProfiles();
   const { hardware, software, certificates, loading: assetsLoading } = useUserAssets(userId);
+
+  // Fetch last_sign_in_at directly from auth.users via security-definer RPC
+  const { data: lastSignIn } = useQuery({
+    queryKey: ['user-last-sign-in', userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const { data, error } = await supabaseClient
+        .rpc('get_user_last_sign_in', { target_user_id: userId });
+      if (error) return null;
+      return data as string | null;
+    },
+    enabled: !!userId,
+  });
 
   // Build personaData from the latest userProfile
   const buildPersonaData = (profileObj: any) => ({
@@ -35,7 +51,7 @@ const UserDetailView: React.FC = () => {
       employeeId: profileObj.employee_id || 'Not assigned',
       status: profileObj.status || 'Active',
       accessLevel: profileObj.access_level || 'User',
-      lastLogin: profileObj.last_login || '',
+      lastLogin: lastSignIn || profileObj.last_login || '',
       passwordLastChanged: profileObj.password_last_changed || profileObj.created_at,
       twoFactorEnabled: profileObj.two_factor_enabled || false,
     },
@@ -76,7 +92,7 @@ const UserDetailView: React.FC = () => {
     if (userProfile) {
       setPersonaData(buildPersonaData(userProfile));
     }
-  }, [profiles, userId, hardware, software, certificates]);
+  }, [profiles, userId, hardware, software, certificates, lastSignIn]);
 
   // Handler for optimistic update
   const handleOptimisticUpdate = (field: string, value: string) => {

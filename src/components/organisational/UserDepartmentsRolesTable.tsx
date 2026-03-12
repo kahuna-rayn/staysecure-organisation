@@ -1,14 +1,14 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { debugLog } from '../../utils/debugLog';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { useUserDepartments } from '@/hooks/useUserDepartments';
+import { useUserDepartments, USER_DEPARTMENTS_KEY } from '@/hooks/useUserDepartments';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Plus, X, Star, Users, Check } from 'lucide-react';
+import { X, Star, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from 'staysecure-auth';
 
@@ -41,9 +41,6 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
     userDepartments, 
     addDepartment, 
     removeDepartment, 
-    setPrimaryDepartment,
-    isAddingDepartment,
-    refetch: refetchUserDepartments
   } = useUserDepartments(userId);
 
   // Fetch all available departments
@@ -183,8 +180,8 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
     }
   });
 
-  // Set primary role mutation
-  const setPrimaryRoleMutation = useMutation({
+  // Set primary role mutation (kept for potential standalone use)
+  const _setPrimaryRoleMutation = useMutation({
     mutationFn: async (roleId: string) => {
       await supabase
         .from('user_profile_roles')
@@ -417,7 +414,7 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
       if (pair.roleId) {
         await removeRoleMutation.mutateAsync(pair.roleId);
       }
-    } catch (error) {
+    } catch {
       toast.error('Failed to delete assignment');
     }
   };
@@ -460,7 +457,7 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
       }
     },
     onSuccess: () => {
-      refetchUserDepartments();
+      queryClient.invalidateQueries({ queryKey: USER_DEPARTMENTS_KEY(userId) });
       queryClient.invalidateQueries({ queryKey: ['user-roles', userId] });
       toast.success('Primary assignment updated successfully');
     },

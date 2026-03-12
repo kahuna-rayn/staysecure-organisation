@@ -20,7 +20,7 @@ import { DeleteUserDialog } from "@/components/ui/delete-user-dialog";
 import { toast as toast$1, useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { useUserDepartments } from "@/hooks/useUserDepartments";
+import { useUserDepartments, USER_DEPARTMENTS_KEY } from "@/hooks/useUserDepartments";
 import { useUserDepartments as useUserDepartments2 } from "@/hooks/useUserDepartments";
 import { useUserProfileRoles } from "@/hooks/useUserProfileRoles";
 import { useUserProfileRoles as useUserProfileRoles2 } from "@/hooks/useUserProfileRoles";
@@ -201,6 +201,16 @@ const BookOpen = createLucideIcon("BookOpen", [
       key: "ruj8y"
     }
   ]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const Briefcase = createLucideIcon("Briefcase", [
+  ["path", { d: "M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16", key: "jecpp" }],
+  ["rect", { width: "20", height: "14", x: "2", y: "6", rx: "2", key: "i6l2r4" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -7036,8 +7046,7 @@ const UserDepartmentsRolesTable = forwardRef(({ userId }, ref) => {
     addDepartment,
     removeDepartment,
     setPrimaryDepartment,
-    isAddingDepartment,
-    refetch: refetchUserDepartments
+    isAddingDepartment
   } = useUserDepartments(userId);
   const { data: allDepartments = [] } = useQuery({
     queryKey: ["departments"],
@@ -7335,7 +7344,7 @@ const UserDepartmentsRolesTable = forwardRef(({ userId }, ref) => {
       }
     },
     onSuccess: () => {
-      refetchUserDepartments();
+      queryClient.invalidateQueries({ queryKey: USER_DEPARTMENTS_KEY(userId) });
       queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
       toast$2.success("Primary assignment updated successfully");
     },
@@ -8572,8 +8581,28 @@ const EditableProfileHeader = ({
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 w-full", children: [
         /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-          primaryDepartment && /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryDepartment.department_name }),
-          primaryRole && /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryRole.role_name })
+          primaryDepartment && /* @__PURE__ */ jsxs(
+            Badge,
+            {
+              className: "text-white flex items-center gap-1",
+              style: { backgroundColor: "#026473" },
+              children: [
+                /* @__PURE__ */ jsx(Building2, { className: "h-3 w-3" }),
+                primaryDepartment.department_name
+              ]
+            }
+          ),
+          primaryRole && /* @__PURE__ */ jsxs(
+            Badge,
+            {
+              className: "text-white flex items-center gap-1",
+              style: { backgroundColor: "#359D8A" },
+              children: [
+                /* @__PURE__ */ jsx(Briefcase, { className: "h-3 w-3" }),
+                primaryRole.role_name
+              ]
+            }
+          )
         ] })
       ] })
     ] }),
@@ -8756,8 +8785,19 @@ const PersonaProfile = () => {
 const UserDetailView = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const { supabaseClient } = useOrganisationContext();
   const { profiles, loading: profilesLoading } = useUserProfiles();
   const { hardware, software, certificates, loading: assetsLoading } = useUserAssets(userId);
+  const { data: lastSignIn } = useQuery({
+    queryKey: ["user-last-sign-in", userId],
+    queryFn: async () => {
+      if (!userId) return null;
+      const { data, error } = await supabaseClient.rpc("get_user_last_sign_in", { target_user_id: userId });
+      if (error) return null;
+      return data;
+    },
+    enabled: !!userId
+  });
   const buildPersonaData = (profileObj) => ({
     id: profileObj.id,
     full_name: profileObj.full_name || "",
@@ -8781,7 +8821,7 @@ const UserDetailView = () => {
       employeeId: profileObj.employee_id || "Not assigned",
       status: profileObj.status || "Active",
       accessLevel: profileObj.access_level || "User",
-      lastLogin: profileObj.last_login || "",
+      lastLogin: lastSignIn || profileObj.last_login || "",
       passwordLastChanged: profileObj.password_last_changed || profileObj.created_at,
       twoFactorEnabled: profileObj.two_factor_enabled || false
     },
@@ -8819,7 +8859,7 @@ const UserDetailView = () => {
     if (userProfile2) {
       setPersonaData(buildPersonaData(userProfile2));
     }
-  }, [profiles, userId, hardware, software, certificates]);
+  }, [profiles, userId, hardware, software, certificates, lastSignIn]);
   const handleOptimisticUpdate = (field, value) => {
     setPersonaData((prev) => {
       const updated = { ...prev };

@@ -3,7 +3,7 @@ import { debugLog } from '../../utils/debugLog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, User, Hash, Phone, Star, Network, Globe, KeyRound, Loader2 } from 'lucide-react';
+import { MapPin, User, Hash, Phone, Star, Network, Globe, KeyRound, Loader2, Building2, Briefcase } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
@@ -473,12 +473,20 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   {primaryDepartment && (
-                    <Badge variant="default">
+                    <Badge
+                      className="text-white flex items-center gap-1"
+                      style={{ backgroundColor: '#026473' }}
+                    >
+                      <Building2 className="h-3 w-3" />
                       {primaryDepartment.department_name}
                     </Badge>
                   )}
                   {primaryRole && (
-                    <Badge variant="default">
+                    <Badge
+                      className="text-white flex items-center gap-1"
+                      style={{ backgroundColor: '#359D8A' }}
+                    >
+                      <Briefcase className="h-3 w-3" />
                       {primaryRole.role_name}
                     </Badge>
                   )}

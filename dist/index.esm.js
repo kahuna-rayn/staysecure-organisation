@@ -7044,9 +7044,7 @@ const UserDepartmentsRolesTable = forwardRef(({ userId }, ref) => {
   const {
     userDepartments,
     addDepartment,
-    removeDepartment,
-    setPrimaryDepartment,
-    isAddingDepartment
+    removeDepartment
   } = useUserDepartments(userId);
   const { data: allDepartments = [] } = useQuery({
     queryKey: ["departments"],
@@ -7323,7 +7321,7 @@ const UserDepartmentsRolesTable = forwardRef(({ userId }, ref) => {
       if (pair.roleId) {
         await removeRoleMutation.mutateAsync(pair.roleId);
       }
-    } catch (error) {
+    } catch {
       toast$2.error("Failed to delete assignment");
     }
   };
@@ -10430,12 +10428,46 @@ const DocumentAssignmentsDrillDown = ({
 const DocumentAssignments = () => {
   const { supabaseClient: supabase2 } = useOrganisationContext();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState(null);
-  const [assignmentType, setAssignmentType] = useState("roles");
+  const [assignmentType, setAssignmentType] = useState("departments");
   const [selectedTargets, setSelectedTargets] = useState([]);
   const [selectedDocumentForDrillDown, setSelectedDocumentForDrillDown] = useState(null);
+  const { data: currentUserRoles } = useQuery({
+    queryKey: ["current-user-roles-doc", user == null ? void 0 : user.id],
+    queryFn: async () => {
+      const { data } = await supabase2.from("user_roles").select("role").eq("user_id", user.id);
+      return (data == null ? void 0 : data.map((r) => r.role)) || [];
+    },
+    enabled: !!(user == null ? void 0 : user.id)
+  });
+  const hasAdminAccess = currentUserRoles ? currentUserRoles.some((r) => ["super_admin", "client_admin"].includes(r)) : true;
+  const { data: managedDepartmentIds } = useQuery({
+    queryKey: ["manager-dept-ids", user == null ? void 0 : user.id],
+    queryFn: async () => {
+      const { data } = await supabase2.from("departments").select("id").eq("manager_id", user.id);
+      return (data == null ? void 0 : data.map((d) => d.id)) || [];
+    },
+    enabled: !!(user == null ? void 0 : user.id)
+  });
+  const { data: managedUserIds } = useQuery({
+    queryKey: ["manager-user-ids", user == null ? void 0 : user.id, managedDepartmentIds],
+    queryFn: async () => {
+      const ids = /* @__PURE__ */ new Set();
+      if (user == null ? void 0 : user.id) ids.add(user.id);
+      if (managedDepartmentIds && managedDepartmentIds.length > 0) {
+        const { data: udData } = await supabase2.from("user_departments").select("user_id").in("department_id", managedDepartmentIds);
+        (udData || []).forEach((r) => ids.add(r.user_id));
+      }
+      const { data: directReports } = await supabase2.from("profiles").select("id").eq("manager", user.id);
+      (directReports || []).forEach((r) => ids.add(r.id));
+      return [...ids];
+    },
+    enabled: !!(user == null ? void 0 : user.id)
+  });
+  const isManagerOnly = !hasAdminAccess && ((managedDepartmentIds == null ? void 0 : managedDepartmentIds.length) ?? 0) > 0;
   const { data: documents } = useQuery({
     queryKey: ["documents"],
     queryFn: async () => {
@@ -10589,14 +10621,26 @@ const DocumentAssignments = () => {
       (prev) => prev.includes(targetId) ? prev.filter((id) => id !== targetId) : [...prev, targetId]
     );
   };
+  const visibleDepartments = useMemo(() => {
+    if (isManagerOnly && managedDepartmentIds) {
+      return (departments || []).filter((d) => managedDepartmentIds.includes(d.id));
+    }
+    return departments || [];
+  }, [departments, isManagerOnly, managedDepartmentIds]);
+  const visibleUsers = useMemo(() => {
+    if (isManagerOnly && managedUserIds) {
+      return (users || []).filter((u) => managedUserIds.includes(u.id));
+    }
+    return users || [];
+  }, [users, isManagerOnly, managedUserIds]);
   const getAssignmentTargets = () => {
     switch (assignmentType) {
       case "roles":
         return roles || [];
       case "departments":
-        return departments || [];
+        return visibleDepartments;
       case "users":
-        return users || [];
+        return visibleUsers;
       default:
         return [];
     }
@@ -10660,8 +10704,8 @@ const DocumentAssignments = () => {
               /* @__PURE__ */ jsx(Tabs, { value: assignmentType, onValueChange: (value) => {
                 setAssignmentType(value);
                 setSelectedTargets([]);
-              }, children: /* @__PURE__ */ jsxs(TabsList, { className: "grid w-full grid-cols-3", children: [
-                /* @__PURE__ */ jsxs(TabsTrigger, { value: "roles", children: [
+              }, children: /* @__PURE__ */ jsxs(TabsList, { className: `grid w-full ${isManagerOnly ? "grid-cols-2" : "grid-cols-3"}`, children: [
+                !isManagerOnly && /* @__PURE__ */ jsxs(TabsTrigger, { value: "roles", children: [
                   /* @__PURE__ */ jsx(Users, { className: "h-4 w-4 mr-1" }),
                   "Roles"
                 ] }),

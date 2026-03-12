@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, Plus, Search, Building, User, Calendar, BarChart3 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
+import { useAuth } from 'staysecure-auth';
 import { toast } from '@/components/ui/use-toast';
 import DocumentAssignmentsDrillDown from './DocumentAssignmentsDrillDown';
 
@@ -44,12 +45,68 @@ interface UserProfile {
 const DocumentAssignments: React.FC = () => {
   const { supabaseClient: supabase } = useOrganisationContext();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAssignDialogOpen, setIsAssignDialogOpen] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
-  const [assignmentType, setAssignmentType] = useState<'roles' | 'departments' | 'users'>('roles');
+  const [assignmentType, setAssignmentType] = useState<'roles' | 'departments' | 'users'>('departments');
   const [selectedTargets, setSelectedTargets] = useState<string[]>([]);
   const [selectedDocumentForDrillDown, setSelectedDocumentForDrillDown] = useState<{id: string, title: string} | null>(null);
+
+  // Determine if the current user has admin access (super_admin or client_admin)
+  const { data: currentUserRoles } = useQuery({
+    queryKey: ['current-user-roles-doc', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from('user_roles').select('role').eq('user_id', user!.id);
+      return data?.map((r: { role: string }) => r.role) || [];
+    },
+    enabled: !!user?.id,
+  });
+  const hasAdminAccess = currentUserRoles
+    ? currentUserRoles.some((r: string) => ['super_admin', 'client_admin'].includes(r))
+    : true; // default to admin access until roles are loaded
+
+  // Manager scoping: departments this user manages
+  const { data: managedDepartmentIds } = useQuery({
+    queryKey: ['manager-dept-ids', user?.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('departments')
+        .select('id')
+        .eq('manager_id', user!.id);
+      return data?.map((d: { id: string }) => d.id) || [];
+    },
+    enabled: !!user?.id,
+  });
+
+  // Manager scoping: users in managed departments + direct reports
+  const { data: managedUserIds } = useQuery({
+    queryKey: ['manager-user-ids', user?.id, managedDepartmentIds],
+    queryFn: async () => {
+      const ids = new Set<string>();
+      if (user?.id) ids.add(user.id);
+
+      if (managedDepartmentIds && managedDepartmentIds.length > 0) {
+        const { data: udData } = await supabase
+          .from('user_departments')
+          .select('user_id')
+          .in('department_id', managedDepartmentIds);
+        (udData || []).forEach((r: { user_id: string }) => ids.add(r.user_id));
+      }
+
+      const { data: directReports } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('manager', user!.id);
+      (directReports || []).forEach((r: { id: string }) => ids.add(r.id));
+
+      return [...ids];
+    },
+    enabled: !!user?.id,
+  });
+
+  // A manager-only user has managed departments/users but no admin role
+  const isManagerOnly = !hasAdminAccess && (managedDepartmentIds?.length ?? 0) > 0;
 
   const { data: documents } = useQuery({
     queryKey: ['documents'],
@@ -269,14 +326,29 @@ const DocumentAssignments: React.FC = () => {
     );
   };
 
+  // Scope lists to manager's team when user is manager-only
+  const visibleDepartments = useMemo(() => {
+    if (isManagerOnly && managedDepartmentIds) {
+      return (departments || []).filter(d => managedDepartmentIds.includes(d.id));
+    }
+    return departments || [];
+  }, [departments, isManagerOnly, managedDepartmentIds]);
+
+  const visibleUsers = useMemo(() => {
+    if (isManagerOnly && managedUserIds) {
+      return (users || []).filter(u => managedUserIds.includes(u.id));
+    }
+    return users || [];
+  }, [users, isManagerOnly, managedUserIds]);
+
   const getAssignmentTargets = () => {
     switch (assignmentType) {
       case 'roles':
         return roles || [];
       case 'departments':
-        return departments || [];
+        return visibleDepartments;
       case 'users':
-        return users || [];
+        return visibleUsers;
       default:
         return [];
     }
@@ -359,11 +431,13 @@ const DocumentAssignments: React.FC = () => {
                   setAssignmentType(value as 'roles' | 'departments' | 'users');
                   setSelectedTargets([]);
                 }}>
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="roles">
-                      <Users className="h-4 w-4 mr-1" />
-                      Roles
-                    </TabsTrigger>
+                  <TabsList className={`grid w-full ${isManagerOnly ? 'grid-cols-2' : 'grid-cols-3'}`}>
+                    {!isManagerOnly && (
+                      <TabsTrigger value="roles">
+                        <Users className="h-4 w-4 mr-1" />
+                        Roles
+                      </TabsTrigger>
+                    )}
                     <TabsTrigger value="departments">
                       <Building className="h-4 w-4 mr-1" />
                       Departments

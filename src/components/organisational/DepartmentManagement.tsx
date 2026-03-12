@@ -11,6 +11,7 @@ import { Building2, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown, Users } fro
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
+import { useManagerPermissions } from '@/hooks/useManagerPermissions';
 import type { Department } from '../../types';
 import ImportDepartmentsDialog from './ImportDepartmentsDialog';
 import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
@@ -23,6 +24,8 @@ interface Profile {
 
 export const DepartmentManagement: React.FC = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
+  const { hasManagerAccess, hasAdminAccess, managedDepartments: managedDeptList } = useManagerPermissions();
+  const isManagerOnly = hasManagerAccess && !hasAdminAccess;
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState<Department | null>(null);
@@ -52,11 +55,17 @@ export const DepartmentManagement: React.FC = () => {
     },
   });
 
-  // Sort departments based on current sort configuration
+  // Sort departments based on current sort configuration, scoped to managed depts for managers
   const departments = useMemo(() => {
     if (!departmentsData) return [];
+
+    let data = departmentsData;
+    if (isManagerOnly) {
+      const managedIds = new Set(managedDeptList.map(d => d.id));
+      data = data.filter(dept => managedIds.has(dept.id));
+    }
     
-    return [...departmentsData].sort((a, b) => {
+    return [...data].sort((a, b) => {
       let aValue: string | Date;
       let bValue: string | Date;
       
@@ -72,7 +81,7 @@ export const DepartmentManagement: React.FC = () => {
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [departmentsData, sortField, sortDirection]);
+  }, [departmentsData, isManagerOnly, managedDeptList, sortField, sortDirection]);
 
   const handleSort = (field: 'name' | 'created_at') => {
     if (sortField === field) {

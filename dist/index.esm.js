@@ -36,6 +36,7 @@ import Papa from "papaparse";
 import { ImportErrorReport as ImportErrorReport$1 } from "@/components/import/ImportErrorReport";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
+import { useManagerPermissions } from "@/hooks/useManagerPermissions";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -2919,6 +2920,9 @@ const RoleMembersDialog = ({
 };
 const RoleManagement = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
+  const { hasManagerAccess, hasAdminAccess, managedDepartments } = useManagerPermissions();
+  const isManagerOnly = hasManagerAccess && !hasAdminAccess;
+  const managedDeptIds = useMemo(() => new Set(managedDepartments.map((d) => d.id)), [managedDepartments]);
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
@@ -2954,7 +2958,11 @@ const RoleManagement = () => {
   });
   const roles = useMemo(() => {
     if (!rolesData) return [];
-    return [...rolesData].sort((a, b) => {
+    let data = rolesData;
+    if (isManagerOnly) {
+      data = data.filter((role) => role.department_id && managedDeptIds.has(role.department_id));
+    }
+    return [...data].sort((a, b) => {
       let aValue;
       let bValue;
       if (sortField === "name") {
@@ -2976,7 +2984,7 @@ const RoleManagement = () => {
       if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [rolesData, sortField, sortDirection, departments]);
+  }, [rolesData, isManagerOnly, managedDeptIds, sortField, sortDirection, departments]);
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -3872,6 +3880,8 @@ const DepartmentMembersDialog = ({
 };
 const DepartmentManagement = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
+  const { hasManagerAccess, hasAdminAccess, managedDepartments: managedDeptList } = useManagerPermissions();
+  const isManagerOnly = hasManagerAccess && !hasAdminAccess;
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingDepartment, setEditingDepartment] = useState(null);
@@ -3898,7 +3908,12 @@ const DepartmentManagement = () => {
   });
   const departments = useMemo(() => {
     if (!departmentsData) return [];
-    return [...departmentsData].sort((a, b) => {
+    let data = departmentsData;
+    if (isManagerOnly) {
+      const managedIds = new Set(managedDeptList.map((d) => d.id));
+      data = data.filter((dept) => managedIds.has(dept.id));
+    }
+    return [...data].sort((a, b) => {
       let aValue;
       let bValue;
       if (sortField === "name") {
@@ -3912,7 +3927,7 @@ const DepartmentManagement = () => {
       if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
       return 0;
     });
-  }, [departmentsData, sortField, sortDirection]);
+  }, [departmentsData, isManagerOnly, managedDeptList, sortField, sortDirection]);
   const handleSort = (field) => {
     if (sortField === field) {
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -5866,11 +5881,12 @@ const OrganisationPanel = ({
   ] });
 };
 const OrganisationWrapper = ({ basePath }) => {
-  const { hasAdminAccess } = useUserRole();
+  const { hasAdminAccess, hasManagerAccess } = useUserRole();
+  const enabledTabs = hasAdminAccess ? ["users", "roles", "departments", "locations", "certificates", "profile"] : hasManagerAccess ? ["users", "departments", "roles"] : ["users"];
   const organisationConfig = {
     supabaseClient: supabase,
     basePath,
-    enabledTabs: ["users", "roles", "departments", "locations", "certificates", "profile"],
+    enabledTabs,
     permissions: {
       canCreateUsers: hasAdminAccess,
       canEditUsers: hasAdminAccess,

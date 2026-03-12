@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/alert"), require("@/components/ui/alert-dialog"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area"), require("@/components/ui/checkbox")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/alert", "@/components/ui/alert-dialog", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area", "@/components/ui/checkbox"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.deleteUserDialog, global.useToast$1, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.LearningTracksTab, global.useUserRoleById, global.alert, global.alertDialog, global.useProfile, global.useUserPhysicalLocations, global.scrollArea, global.checkbox));
-})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, deleteUserDialog, useToast$1, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, LearningTracksTab, useUserRoleById, alert, alertDialog, useProfile, useUserPhysicalLocations, scrollArea, checkbox) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/alert"), require("@/components/ui/alert-dialog"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area"), require("@/components/ui/checkbox")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/alert", "@/components/ui/alert-dialog", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area", "@/components/ui/checkbox"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.deleteUserDialog, global.useToast$1, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.LearningTracksTab, global.useUserRoleById, global.alert, global.alertDialog, global.useProfile, global.useUserPhysicalLocations, global.scrollArea, global.checkbox));
+})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, deleteUserDialog, useToast$1, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, LearningTracksTab, useUserRoleById, alert, alertDialog, useProfile, useUserPhysicalLocations, scrollArea, checkbox) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -2879,6 +2879,9 @@
   };
   const RoleManagement = () => {
     const { supabaseClient, hasPermission } = useOrganisationContext();
+    const { hasManagerAccess, hasAdminAccess, managedDepartments } = useManagerPermissions.useManagerPermissions();
+    const isManagerOnly = hasManagerAccess && !hasAdminAccess;
+    const managedDeptIds = React.useMemo(() => new Set(managedDepartments.map((d) => d.id)), [managedDepartments]);
     const queryClient = reactQuery.useQueryClient();
     const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
     const [editingRole, setEditingRole] = React.useState(null);
@@ -2914,7 +2917,11 @@
     });
     const roles = React.useMemo(() => {
       if (!rolesData) return [];
-      return [...rolesData].sort((a, b) => {
+      let data = rolesData;
+      if (isManagerOnly) {
+        data = data.filter((role) => role.department_id && managedDeptIds.has(role.department_id));
+      }
+      return [...data].sort((a, b) => {
         let aValue;
         let bValue;
         if (sortField === "name") {
@@ -2936,7 +2943,7 @@
         if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
         return 0;
       });
-    }, [rolesData, sortField, sortDirection, departments]);
+    }, [rolesData, isManagerOnly, managedDeptIds, sortField, sortDirection, departments]);
     const handleSort = (field) => {
       if (sortField === field) {
         setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -3832,6 +3839,8 @@
   };
   const DepartmentManagement = () => {
     const { supabaseClient, hasPermission } = useOrganisationContext();
+    const { hasManagerAccess, hasAdminAccess, managedDepartments: managedDeptList } = useManagerPermissions.useManagerPermissions();
+    const isManagerOnly = hasManagerAccess && !hasAdminAccess;
     const queryClient = reactQuery.useQueryClient();
     const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
     const [editingDepartment, setEditingDepartment] = React.useState(null);
@@ -3858,7 +3867,12 @@
     });
     const departments = React.useMemo(() => {
       if (!departmentsData) return [];
-      return [...departmentsData].sort((a, b) => {
+      let data = departmentsData;
+      if (isManagerOnly) {
+        const managedIds = new Set(managedDeptList.map((d) => d.id));
+        data = data.filter((dept) => managedIds.has(dept.id));
+      }
+      return [...data].sort((a, b) => {
         let aValue;
         let bValue;
         if (sortField === "name") {
@@ -3872,7 +3886,7 @@
         if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
         return 0;
       });
-    }, [departmentsData, sortField, sortDirection]);
+    }, [departmentsData, isManagerOnly, managedDeptList, sortField, sortDirection]);
     const handleSort = (field) => {
       if (sortField === field) {
         setSortDirection(sortDirection === "asc" ? "desc" : "asc");
@@ -5826,11 +5840,12 @@
     ] });
   };
   const OrganisationWrapper = ({ basePath }) => {
-    const { hasAdminAccess } = useUserRole.useUserRole();
+    const { hasAdminAccess, hasManagerAccess } = useUserRole.useUserRole();
+    const enabledTabs = hasAdminAccess ? ["users", "roles", "departments", "locations", "certificates", "profile"] : hasManagerAccess ? ["users", "departments", "roles"] : ["users"];
     const organisationConfig = {
       supabaseClient: client.supabase,
       basePath,
-      enabledTabs: ["users", "roles", "departments", "locations", "certificates", "profile"],
+      enabledTabs,
       permissions: {
         canCreateUsers: hasAdminAccess,
         canEditUsers: hasAdminAccess,

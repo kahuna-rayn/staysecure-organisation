@@ -9,12 +9,19 @@ interface OrganisationWrapperProps {
 }
 
 export const OrganisationWrapper: React.FC<OrganisationWrapperProps> = ({ basePath }) => {
-  const { hasAdminAccess } = useUserRole();
-  
+  const { hasAdminAccess, hasManagerAccess } = useUserRole();
+
+  // Managers see only their own users, departments, and roles — not org-wide config tabs
+  const enabledTabs = hasAdminAccess
+    ? ['users', 'roles', 'departments', 'locations', 'certificates', 'profile']
+    : hasManagerAccess
+    ? ['users', 'departments', 'roles']
+    : ['users'];
+
   const organisationConfig = {
     supabaseClient: supabase,
     basePath,
-    enabledTabs: ['users', 'roles', 'departments', 'locations', 'certificates', 'profile'],
+    enabledTabs,
     permissions: {
       canCreateUsers: hasAdminAccess,
       canEditUsers: hasAdminAccess,

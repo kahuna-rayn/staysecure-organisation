@@ -13,6 +13,7 @@ import { UserCheck, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown, Users } fro
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
+import { useManagerPermissions } from '@/hooks/useManagerPermissions';
 import type { Role, Department } from '../../types';
 import ImportRolesDialog from './ImportRolesDialog';
 import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
@@ -20,6 +21,9 @@ import RoleMembersDialog from './RoleMembersDialog';
 
 export const RoleManagement: React.FC = () => {
   const { supabaseClient, hasPermission } = useOrganisationContext();
+  const { hasManagerAccess, hasAdminAccess, managedDepartments } = useManagerPermissions();
+  const isManagerOnly = hasManagerAccess && !hasAdminAccess;
+  const managedDeptIds = useMemo(() => new Set(managedDepartments.map(d => d.id)), [managedDepartments]);
   const queryClient = useQueryClient();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<Role | null>(null);
@@ -63,11 +67,16 @@ export const RoleManagement: React.FC = () => {
     },
   });
 
-  // Sort roles based on current sort configuration
+  // Sort roles, scoped to managed departments for managers
   const roles = useMemo(() => {
     if (!rolesData) return [];
+
+    let data = rolesData;
+    if (isManagerOnly) {
+      data = data.filter(role => role.department_id && managedDeptIds.has(role.department_id));
+    }
     
-    return [...rolesData].sort((a, b) => {
+    return [...data].sort((a, b) => {
       let aValue: string | Date | number;
       let bValue: string | Date | number;
       
@@ -91,7 +100,7 @@ export const RoleManagement: React.FC = () => {
       if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
-  }, [rolesData, sortField, sortDirection, departments]);
+  }, [rolesData, isManagerOnly, managedDeptIds, sortField, sortDirection, departments]);
 
   const handleSort = (field: 'name' | 'department' | 'status' | 'created_at') => {
     if (sortField === field) {

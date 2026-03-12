@@ -28,14 +28,10 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
   const { supabaseClient: supabase } = useOrganisationContext();
   const [drillDownPath, setDrillDownPath] = useState<DrillDownLevel[]>([]);
 
-  // Fetch all required data
   const { data: profiles = [] } = useQuery({
     queryKey: ['profiles'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*');
-      
+      const { data, error } = await supabase.from('profiles').select('*');
       if (error) throw error;
       return data || [];
     },
@@ -45,12 +41,10 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
     queryKey: ['document-assignments', documentId],
     queryFn: async () => {
       if (!documentId) return [];
-      
       const { data, error } = await supabase
         .from('document_assignments')
         .select('*')
         .eq('document_id', documentId);
-      
       if (error) throw error;
       return data || [];
     },
@@ -64,11 +58,7 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
         .from('user_departments')
         .select('*')
         .eq('is_primary', true);
-      
-      if (error) {
-        console.error('Error fetching user departments:', error);
-        throw error;
-      }
+      if (error) throw error;
       return data || [];
     },
   });
@@ -76,47 +66,30 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
   const { data: departmentsList = [] } = useQuery({
     queryKey: ['departments'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('departments')
-        .select('*');
-      
-      if (error) {
-        console.error('Error fetching departments:', error);
-        throw error;
-      }
+      const { data, error } = await supabase.from('departments').select('*');
+      if (error) throw error;
       return data || [];
     },
   });
 
-  // Create department lookup map
-  const departmentMap = new Map();
-  departmentsList.forEach(dept => {
+  const departmentMap = new Map<string, string>();
+  departmentsList.forEach((dept: Record<string, string>) => {
     departmentMap.set(dept.id, dept.name);
   });
 
-  // Get unique locations and departments  
-  const locations = [...new Set(profiles.map(p => p.location).filter(Boolean))];
-  const _departments = [...new Set(
-    userDepartments
-      .map(ud => departmentMap.get(ud.department_id))
-      .filter(Boolean)
-  )];
-
-  // Create user-department mapping
-  const userDeptMap = new Map();
-  userDepartments.forEach(ud => {
+  const userDeptMap = new Map<string, any[]>();
+  userDepartments.forEach((ud: Record<string, string>) => {
     if (!userDeptMap.has(ud.user_id)) {
       userDeptMap.set(ud.user_id, []);
     }
-    userDeptMap.get(ud.user_id).push(ud);
+    userDeptMap.get(ud.user_id)!.push(ud);
   });
 
-  // Initialize organization level
   useEffect(() => {
     if (profiles.length > 0 && documentAssignments.length > 0 && !assignmentsLoading) {
-      const assignedUserIds = new Set(documentAssignments.map(a => a.user_id));
-      const assignedProfiles = profiles.filter(p => assignedUserIds.has(p.id));
-      
+      const assignedUserIds = new Set(documentAssignments.map((a: Record<string, string>) => a.user_id));
+      const assignedProfiles = profiles.filter((p: Record<string, string>) => assignedUserIds.has(p.id));
+
       setDrillDownPath([{
         level: 0,
         title: 'Organization Level',
@@ -127,16 +100,21 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
     }
   }, [profiles, documentAssignments, assignmentsLoading]);
 
-  const onDrillDown = (level: number, data: any[], title: string, type: 'org' | 'location' | 'department' | 'staff', value?: number) => {
-    const newPath = drillDownPath.slice(0, level + 1);
-    if (level < 3) { // Can drill down up to staff level
-      newPath.push({ level: level + 1, title, data, type, value });
-    }
-    setDrillDownPath(newPath);
+  const onDrillDown = (
+    data: any[],
+    title: string,
+    type: 'org' | 'location' | 'department' | 'staff',
+    value?: number
+  ) => {
+    setDrillDownPath(prev => [...prev, { level: prev.length, title, data, type, value }]);
+  };
+
+  const onBreadcrumbClick = (index: number) => {
+    setDrillDownPath(prev => prev.slice(0, index + 1));
   };
 
   const getAssignmentStatus = (userId: string): string => {
-    const assignment = documentAssignments.find(a => a.user_id === userId);
+    const assignment = documentAssignments.find((a: Record<string, string>) => a.user_id === userId);
     if (!assignment) return 'Not Assigned';
     return assignment.status || 'Not Started';
   };
@@ -158,8 +136,6 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
       case 'not assigned':
         variant = 'destructive';
         break;
-      default:
-        variant = 'secondary';
     }
 
     return { variant, className };
@@ -169,286 +145,139 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
     <div className="flex items-center gap-2 mb-6">
       {drillDownPath.map((level, index) => (
         <div key={index} className="flex items-center gap-2">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="sm"
-            onClick={() => onDrillDown(level.level, level.data, level.title, level.type, level.value)}
-            className="text-muted-foreground hover:text-foreground"
+            onClick={() => onBreadcrumbClick(index)}
+            className={
+              index === drillDownPath.length - 1
+                ? 'text-foreground font-medium'
+                : 'text-muted-foreground hover:text-foreground'
+            }
           >
             {level.title}
           </Button>
-          {index < drillDownPath.length - 1 && <ChevronRight className="h-4 w-4" />}
+          {index < drillDownPath.length - 1 && (
+            <ChevronRight className="h-4 w-4 text-muted-foreground" />
+          )}
         </div>
       ))}
     </div>
   );
 
-  const renderContent = () => {
+  const renderOrganizationLevel = () => {
     const currentLevel = drillDownPath[drillDownPath.length - 1];
-    const _levelName = currentLevel.title;
+    const assignedProfiles = currentLevel.data;
 
-    if (currentLevel.type === 'org') {
-      const overallValue = documentAssignments.length;
-      return (
-        <div>
-          <h2 className="text-lg font-semibold mb-2">Organization Level</h2>
-          <Card className="mb-6 w-1/2">
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="flex items-center">
-                  <Building className="mr-2 h-5 w-5" />
-                  Organization Overview
-                </CardTitle>
-                <div className="text-3xl font-bold text-blue-600">
-                  {overallValue}
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">Total assigned staff</p>
-            </CardHeader>
-          </Card>
+    // Group by location
+    const locationGroups = new Map<string, any[]>();
+    assignedProfiles.forEach(p => {
+      const loc = (p.location as string) || null;
+      if (loc) {
+        if (!locationGroups.has(loc)) locationGroups.set(loc, []);
+        locationGroups.get(loc)!.push(p);
+      }
+    });
 
-          <h2 className="text-lg font-semibold mb-4">Location</h2>
-          {renderLocationLevel()}
-        </div>
-      );
-    }
+    // Group by primary department
+    const deptGroups = new Map<string, any[]>();
+    assignedProfiles.forEach(p => {
+      const userDepts = userDeptMap.get(p.id) || [];
+      const primaryDept = userDepts.find((ud: any) => ud.is_primary);
+      const deptName = primaryDept ? departmentMap.get(primaryDept.department_id) : null;
+      const key = deptName || '__no_dept__';
+      if (!deptGroups.has(key)) deptGroups.set(key, []);
+      deptGroups.get(key)!.push(p);
+    });
 
-    if (currentLevel.type === 'location') {
-      const locationValue = currentLevel.value ?? currentLevel.data.length;
-      return (
-        <div>
-          <Card className="mb-6 w-1/2">
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="flex items-center">
-                  <MapPin className="mr-2 h-5 w-5" />
-                  {currentLevel.title} Overview
-                </CardTitle>
-                <div className="text-3xl font-bold text-blue-600">
-                  {locationValue}
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">Total for this location</p>
-            </CardHeader>
-          </Card>
-          <h2 className="text-lg font-semibold mb-4">Departments</h2>
-          {(() => {
-            // Get departments that actually have users in this location
-            const locationDepartments = [...new Set(
-              currentLevel.data
-                .map(p => {
-                  const userDepts = userDeptMap.get(p.id) || [];
-                  const primaryDept = userDepts.find(ud => ud.is_primary);
-                  return primaryDept ? departmentMap.get(primaryDept.department_id) : null;
-                })
-                .filter(Boolean)
-            )];
-
-            return (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {locationDepartments.map(departmentName => {
-                  const departmentProfiles = currentLevel.data.filter(p => {
-                    const userDepts = userDeptMap.get(p.id) || [];
-                    return userDepts.some(ud => {
-                      const deptName = departmentMap.get(ud.department_id);
-                      return deptName === departmentName;
-                    });
-                  });
-                  
-                  if (departmentProfiles.length === 0) return null;
-
-                  return (
-                    <Card key={departmentName} className="cursor-pointer hover:shadow-lg transition-shadow"
-                          onClick={() => onDrillDown(currentLevel.level + 1, departmentProfiles, departmentName, 'department', departmentProfiles.length)}>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">{departmentName}</CardTitle>
-                        <Building className="h-4 w-4" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="flex items-center justify-between">
-                          <div className="text-xl font-bold text-blue-600">
-                            {departmentProfiles.length}
-                          </div>
-                          <div className="text-xs text-muted-foreground">
-                            assigned staff
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                }).filter(Boolean)}
-              </div>
-            );
-          })()}
-        </div>
-      );
-    }
-
-    if (currentLevel.type === 'department') {
-      const departmentValue = currentLevel.value ?? currentLevel.data.length;
-      return (
-        <div>
-          <Card className="mb-6 w-1/2">
-            <CardHeader>
-              <div className="flex justify-between items-center">
-                <CardTitle className="flex items-center">
-                  <Building className="mr-2 h-5 w-5" />
-                  {currentLevel.title} Overview
-                </CardTitle>
-                <div className="text-3xl font-bold text-blue-600">
-                  {departmentValue}
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground">Total for this department</p>
-            </CardHeader>
-          </Card>
-          <h2 className="text-lg font-semibold mb-4">Staff</h2>
-          {renderStaffList()}
-        </div>
-      );
-    }
-    
-    return renderStaffList();
-  };
-
-  const _renderOrganizationLevel = () => {
-    const currentLevel = drillDownPath[drillDownPath.length - 1];
-    
-    // Overview card
-    const overviewCard = (
-      <Card className="mb-6">
+    const locationCards = [...locationGroups.entries()].map(([locName, profs]) => (
+      <Card
+        key={locName}
+        className="cursor-pointer hover:shadow-lg transition-shadow"
+        onClick={() => onDrillDown(profs, locName, 'location', profs.length)}
+      >
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <Building className="h-4 w-4" />
-            Organization Overview
-          </CardTitle>
+          <CardTitle className="text-sm font-medium">{locName}</CardTitle>
+          <MapPin className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-xl font-bold text-blue-600">
-            {currentLevel.value || currentLevel.data.length}
+          <div className="flex items-center justify-between">
+            <div className="text-xl font-bold text-blue-600">{profs.length}</div>
+            <div className="text-xs text-muted-foreground">assigned staff</div>
           </div>
-          <p className="text-xs text-muted-foreground">Total assigned staff</p>
         </CardContent>
       </Card>
-    );
+    ));
 
-    // Location breakdown
-    const locationCards = locations.map(location => {
-      const locationProfiles = currentLevel.data.filter(p => p.location === location);
-      
-      if (locationProfiles.length === 0) return null;
-      
-      return (
-        <Card key={location} className="cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => onDrillDown(currentLevel.level + 1, locationProfiles, location, 'location', locationProfiles.length)}>
+    const noDeptProfiles = deptGroups.get('__no_dept__') || [];
+    const departmentCards = [
+      ...[...deptGroups.entries()]
+        .filter(([key]) => key !== '__no_dept__')
+        .map(([deptName, profs]) => (
+          <Card
+            key={deptName}
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => onDrillDown(profs, deptName, 'department', profs.length)}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{deptName}</CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="text-xl font-bold text-blue-600">{profs.length}</div>
+                <div className="text-xs text-muted-foreground">assigned staff</div>
+              </div>
+            </CardContent>
+          </Card>
+        )),
+      noDeptProfiles.length > 0 && (
+        <Card
+          key="no-department"
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => onDrillDown(noDeptProfiles, 'No Department', 'department', noDeptProfiles.length)}
+        >
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{location || 'Unknown Location'}</CardTitle>
-            <MapPin className="h-4 w-4" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">No Department</CardTitle>
+            <Building className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="text-xl font-bold text-blue-600">
-                {locationProfiles.length}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                assigned staff
-              </div>
+              <div className="text-xl font-bold text-blue-600">{noDeptProfiles.length}</div>
+              <div className="text-xs text-muted-foreground">assigned staff</div>
             </div>
           </CardContent>
         </Card>
-      );
-    }).filter(Boolean);
+      ),
+    ].filter(Boolean);
 
     return (
       <div className="space-y-4">
-        {overviewCard}
-        <h3 className="text-lg font-semibold">Locations</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {locationCards}
-        </div>
-      </div>
-    );
-  };
-
-  const renderLocationLevel = () => {
-    const currentLevel = drillDownPath[drillDownPath.length - 1];
-    
-    // Overview card
-    const overviewCard = (
-      <Card className="mb-6">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            {currentLevel.title} Overview
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-xl font-bold text-blue-600">
-            {currentLevel.value || currentLevel.data.length}
-          </div>
-          <p className="text-xs text-muted-foreground">Total assigned staff</p>
-        </CardContent>
-      </Card>
-    );
-
-    // Get departments that actually have users in this location
-    const locationDepartments = [...new Set(
-      currentLevel.data
-        .map(p => {
-          const userDepts = userDeptMap.get(p.id) || [];
-          const primaryDept = userDepts.find(ud => ud.is_primary);
-          return primaryDept ? departmentMap.get(primaryDept.department_id) : null;
-        })
-        .filter(Boolean)
-    )];
-
-
-
-    // Department breakdown
-    const departmentCards = locationDepartments.map(departmentName => {
-      const departmentProfiles = currentLevel.data.filter(p => {
-        const userDepts = userDeptMap.get(p.id) || [];
-        const matchesThisDept = userDepts.some(ud => {
-          const deptName = departmentMap.get(ud.department_id);
-          const matches = deptName === departmentName;
-          if (matches) {
-            console.log(`User ${p.full_name} matches department ${departmentName} (dept_id: ${ud.department_id})`);
-          }
-          return matches;
-        });
-        return matchesThisDept;
-      });
-      
-      if (departmentProfiles.length === 0) return null;
-
-      return (
-        <Card key={departmentName} className="cursor-pointer hover:shadow-lg transition-shadow"
-              onClick={() => onDrillDown(currentLevel.level + 1, departmentProfiles, departmentName, 'department', departmentProfiles.length)}>
+        <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">{departmentName}</CardTitle>
-            <Building className="h-4 w-4" />
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Building className="h-4 w-4" />
+              Organization Overview
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="text-xl font-bold text-blue-600">
-                {departmentProfiles.length}
-              </div>
-              <div className="text-xs text-muted-foreground">
-                assigned staff
-              </div>
+            <div className="text-xl font-bold text-blue-600">
+              {currentLevel.value ?? currentLevel.data.length}
             </div>
+            <p className="text-xs text-muted-foreground">Total assigned staff</p>
           </CardContent>
         </Card>
-      );
-    }).filter(Boolean);
 
-    return (
-      <div className="space-y-4">
-        {overviewCard}
+        {locationCards.length > 0 && (
+          <>
+            <h3 className="text-lg font-semibold">Locations</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {locationCards}
+            </div>
+          </>
+        )}
+
         <h3 className="text-lg font-semibold">Departments</h3>
-        
-
-        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {departmentCards}
         </div>
@@ -456,36 +285,153 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
     );
   };
 
+  const renderLocationLevel = () => {
+    const currentLevel = drillDownPath[drillDownPath.length - 1];
+
+    const locationDepartments = [...new Set(
+      currentLevel.data
+        .map(p => {
+          const userDepts = userDeptMap.get(p.id) || [];
+          const primaryDept = userDepts.find((ud: any) => ud.is_primary);
+          return primaryDept ? departmentMap.get(primaryDept.department_id) : null;
+        })
+        .filter(Boolean)
+    )];
+
+    const noDeptProfiles = currentLevel.data.filter(p => {
+      const userDepts = userDeptMap.get(p.id) || [];
+      return userDepts.length === 0;
+    });
+
+    const departmentCards = [
+      ...locationDepartments.map(departmentName => {
+        const departmentProfiles = currentLevel.data.filter(p => {
+          const userDepts = userDeptMap.get(p.id) || [];
+          return userDepts.some((ud: any) => departmentMap.get(ud.department_id) === departmentName);
+        });
+
+        if (departmentProfiles.length === 0) return null;
+
+        return (
+          <Card
+            key={departmentName as string}
+            className="cursor-pointer hover:shadow-lg transition-shadow"
+            onClick={() => onDrillDown(departmentProfiles, departmentName as string, 'department', departmentProfiles.length)}
+          >
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{departmentName as string}</CardTitle>
+              <Building className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div className="text-xl font-bold text-blue-600">{departmentProfiles.length}</div>
+                <div className="text-xs text-muted-foreground">assigned staff</div>
+              </div>
+            </CardContent>
+          </Card>
+        );
+      }).filter(Boolean),
+      noDeptProfiles.length > 0 && (
+        <Card
+          key="no-department"
+          className="cursor-pointer hover:shadow-lg transition-shadow"
+          onClick={() => onDrillDown(noDeptProfiles, 'No Department', 'department', noDeptProfiles.length)}
+        >
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">No Department</CardTitle>
+            <Building className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center justify-between">
+              <div className="text-xl font-bold text-blue-600">{noDeptProfiles.length}</div>
+              <div className="text-xs text-muted-foreground">assigned staff</div>
+            </div>
+          </CardContent>
+        </Card>
+      ),
+    ].filter(Boolean);
+
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              {currentLevel.title} Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-blue-600">
+              {currentLevel.value ?? currentLevel.data.length}
+            </div>
+            <p className="text-xs text-muted-foreground">Total assigned staff</p>
+          </CardContent>
+        </Card>
+
+        <h3 className="text-lg font-semibold">Departments</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {departmentCards}
+        </div>
+      </div>
+    );
+  };
+
+  const renderDepartmentLevel = () => {
+    const currentLevel = drillDownPath[drillDownPath.length - 1];
+
+    return (
+      <div className="space-y-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2">
+              <Building className="h-4 w-4" />
+              {currentLevel.title} Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-xl font-bold text-blue-600">
+              {currentLevel.value ?? currentLevel.data.length}
+            </div>
+            <p className="text-xs text-muted-foreground">Total assigned staff</p>
+          </CardContent>
+        </Card>
+
+        <h3 className="text-lg font-semibold">Staff</h3>
+        {renderStaffList()}
+      </div>
+    );
+  };
+
   const renderStaffList = () => {
-    // For staff list, show all the profiles passed down from the previous level
-    // These should already be filtered to relevant users
     const currentLevel = drillDownPath[drillDownPath.length - 1];
     const allProfilesInLevel = currentLevel.data;
-    
-    console.log('=== RENDERING STAFF LIST ===');
-    console.log('Current level:', currentLevel);
-    console.log('All profiles in level:', allProfilesInLevel);
-    
+
     return (
       <div className="space-y-4">
         <div className="grid grid-cols-1 gap-3">
           {allProfilesInLevel.map((profile: any) => {
             const status = getAssignmentStatus(profile.id);
             const badgeProps = getStatusBadgeProps(status);
+            const userDepts = userDeptMap.get(profile.id) || [];
+            const primaryDept = userDepts.find((ud: any) => ud.is_primary);
+            const deptName = primaryDept ? departmentMap.get(primaryDept.department_id) : 'No Department';
+
             return (
               <Card key={profile.id}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Users className="h-4 w-4" />
+                      <Users className="h-4 w-4 text-muted-foreground" />
                       <div>
                         <div className="font-medium">{profile.full_name || 'Unknown Name'}</div>
                         <div className="text-sm text-muted-foreground">
-                          {profile.location} • {currentLevel.title} • {profile.primary_role || 'No Role'}
+                          {profile.location} • {deptName} • {profile.primary_role || 'No Role'}
                         </div>
                       </div>
                     </div>
-                    <Badge variant={badgeProps.variant} className={badgeProps.className}>{status}</Badge>
+                    <Badge variant={badgeProps.variant} className={badgeProps.className}>
+                      {status}
+                    </Badge>
                   </div>
                 </CardContent>
               </Card>
@@ -496,16 +442,14 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
     );
   };
 
-  const renderDepartmentLevel = () => {
+  const renderContent = () => {
+    const currentLevel = drillDownPath[drillDownPath.length - 1];
+    if (currentLevel.type === 'org') return renderOrganizationLevel();
+    if (currentLevel.type === 'location') return renderLocationLevel();
+    if (currentLevel.type === 'department') return renderDepartmentLevel();
     return renderStaffList();
   };
 
-  const _renderStaffLevel = () => {
-    // This would be the final level - individual staff member details
-    return renderDepartmentLevel(); // For now, same as department level
-  };
-
-  // Show loading state while data is being fetched
   if (assignmentsLoading || drillDownPath.length === 0) {
     return (
       <div className="w-full space-y-6">
@@ -536,11 +480,11 @@ const DocumentAssignmentsDrillDown: React.FC<DocumentAssignmentsDrillDownProps> 
           <p className="text-muted-foreground">Document assignment breakdown</p>
         </div>
       </div>
-      
+
       {renderBreadcrumb()}
       {renderContent()}
     </div>
   );
 };
 
-export default DocumentAssignmentsDrillDown; 
+export default DocumentAssignmentsDrillDown;

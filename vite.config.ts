@@ -71,6 +71,7 @@ export default defineConfig({
         'xlsx',
         'jspdf',
         'jspdf-autotable',
+        'sonner',
         'staysecure-auth',
         /^@\/hooks\//,
         /^@\/components\//,

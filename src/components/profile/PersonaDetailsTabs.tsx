@@ -12,7 +12,7 @@ import AssignHardwareDialog from "../admin/AssignHardwareDialog";
 import AssignSoftwareDialog from "../admin/AssignSoftwareDialog";
 import AddCertificatesDialog from "../certificates/AddCertificatesDialog";
 import { Laptop, MonitorSmartphone, GraduationCap, MapPin, Plus, BookOpen, Users, Play } from "lucide-react";
-import MyDocuments from "@/components/knowledge/MyDocuments";
+import MyDocuments from "../knowledge/MyDocuments";
 import { UserDepartmentsRolesManager, UserDepartmentsRolesManagerRef } from "../organisational/UserDepartmentsRolesManager";
 import LearningTracksTab from "@/components/LearningTracksTab";
 

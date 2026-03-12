@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Calendar, AlertCircle, CheckCircle, Clock, ExternalLink, Search } from 'lucide-react';
+import { FileText, Calendar, Circle, CheckCircle, Clock, ExternalLink, Search } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
@@ -46,6 +46,8 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
 
   // Use provided userId or fall back to current user
   const targetUserId = userId || user?.id;
+  // Only the user themselves can update their own document status
+  const isOwnDocuments = !userId || userId === user?.id;
 
   const { data: assignments, isLoading } = useQuery({
     queryKey: ['document-assignments', targetUserId],
@@ -205,15 +207,15 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
         </TabsList>
 
         <TabsContent value="assigned" className="space-y-4">
-          <DocumentList assignments={filteredAssignments || []} onStatusChange={handleStatusChange} />
+          <DocumentList assignments={filteredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} />
         </TabsContent>
 
         <TabsContent value="required" className="space-y-4">
-          <DocumentList assignments={requiredAssignments || []} onStatusChange={handleStatusChange} />
+          <DocumentList assignments={requiredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} />
         </TabsContent>
 
         <TabsContent value="optional" className="space-y-4">
-          <DocumentList assignments={optionalAssignments || []} onStatusChange={handleStatusChange} />
+          <DocumentList assignments={optionalAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} />
         </TabsContent>
       </Tabs>
     </div>
@@ -223,9 +225,10 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
 interface DocumentListProps {
   assignments: DocumentAssignment[];
   onStatusChange: (assignmentId: string, status: string) => void;
+  isReadOnly?: boolean;
 }
 
-const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange }) => {
+const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange, isReadOnly = false }) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -233,7 +236,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
       case 'In progress':
         return <Clock className="h-4 w-4 text-blue-500" />;
       default:
-        return <AlertCircle className="h-4 w-4 text-orange-500" />;
+        return <Circle className="h-4 w-4 text-muted-foreground" />;
     }
   };
 
@@ -287,9 +290,6 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
               </div>
               <div className="flex items-center gap-2">
                 {getStatusIcon(assignment.status)}
-                <Badge className={getStatusColor(assignment.status)}>
-                  {assignment.status}
-                </Badge>
               </div>
             </div>
           </CardHeader>
@@ -315,19 +315,25 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
                     </a>
                   </Button>
                 )}
-                <Select 
-                  value={assignment.status} 
-                  onValueChange={(value) => onStatusChange(assignment.assignment_id, value)}
-                >
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Not started">Not Started</SelectItem>
-                    <SelectItem value="In progress">In Progress</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                  </SelectContent>
-                </Select>
+                {isReadOnly ? (
+                  <Badge className={getStatusColor(assignment.status)}>
+                    {assignment.status}
+                  </Badge>
+                ) : (
+                  <Select
+                    value={assignment.status}
+                    onValueChange={(value) => onStatusChange(assignment.assignment_id, value)}
+                  >
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Not started">Not Started</SelectItem>
+                      <SelectItem value="In progress">In Progress</SelectItem>
+                      <SelectItem value="Completed">Completed</SelectItem>
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
             </div>
           </CardContent>

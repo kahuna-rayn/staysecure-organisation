@@ -3,7 +3,7 @@ import { debugLog } from '../../utils/debugLog';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MapPin, User, Hash, Phone, Star, Network, Globe, KeyRound } from 'lucide-react';
+import { MapPin, User, Hash, Phone, Star, Network, Globe, KeyRound, Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserDepartments } from '@/hooks/useUserDepartments';
@@ -12,12 +12,22 @@ import { useUserProfileRoles } from '@/hooks/useUserProfileRoles';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useOrganisationContext } from '@/context/OrganisationContext';
 import { useAuth } from 'staysecure-auth';
-import { toast } from '@/components/ui/use-toast';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import ProfileAvatar from './ProfileAvatar';
 import ProfileContactInfo from './ProfileContactInfo';
 import EditableField from './EditableField';
 import ChangePasswordDialog from './ChangePasswordDialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface EditableProfileHeaderProps {
   profile: Record<string, unknown>;
@@ -42,7 +52,34 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const [_managerValue, setManagerValue] = useState(profile.manager || '');
   const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
   const isCurrentUserProfile = !!user?.id && profile.id === user.id;
+
+  const handleSendPasswordReset = async () => {
+    // username (= email) may be at top-level or nested under account depending on the caller
+    const account = profile.account as Record<string, unknown> | undefined;
+    const email = (account?.username as string)
+      || (profile.username as string)
+      || (profile.email as string);
+    if (!email) {
+      toast.error("No email address found for this user.");
+      return;
+    }
+    try {
+      setIsSendingReset(true);
+      const { error } = await supabaseClient.functions.invoke('send-password-reset', {
+        body: { email },
+      });
+      if (error) throw error;
+      toast.success("Password reset sent", { description: `A password reset link has been sent to ${email}.` });
+    } catch (err: any) {
+      toast.error("Failed to send password reset", { description: err.message });
+    } finally {
+      setIsSendingReset(false);
+      setIsResetPasswordOpen(false);
+    }
+  };
 
   // Reset the manual edit flag when profile changes
   useEffect(() => {
@@ -460,8 +497,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 passwordLastChanged={profile.account?.passwordLastChanged}
                 twoFactorEnabled={profile.account?.twoFactorEnabled}
               />
-              {isCurrentUserProfile && (
-                <div className="flex items-end justify-end gap-2 pt-2 text-sm">
+              <div className="flex items-end justify-end gap-2 pt-2 text-sm">
+                {isCurrentUserProfile && (
                   <Button
                     type="button"
                     variant="outline"
@@ -473,14 +510,54 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                   >
                     <KeyRound className="h-5 w-5" />
                   </Button>
-                </div>
-              )}
+                )}
+                {!isCurrentUserProfile && isAdmin && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setIsResetPasswordOpen(true)}
+                    disabled={isSendingReset}
+                    className="flex items-center justify-center"
+                    aria-label="Send password reset"
+                    title="Send password reset email"
+                  >
+                    {isSendingReset
+                      ? <Loader2 className="h-5 w-5 animate-spin" />
+                      : <KeyRound className="h-5 w-5" />
+                    }
+                  </Button>
+                )}
+              </div>
 
               <ChangePasswordDialog
                 isOpen={isChangePasswordOpen}
                 onClose={() => setIsChangePasswordOpen(false)}
                 onSuccess={() => setIsChangePasswordOpen(false)}
               />
+
+              <AlertDialog open={isResetPasswordOpen} onOpenChange={setIsResetPasswordOpen}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Send password reset?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      A password reset link will be emailed to <strong>
+                        {((profile.account as Record<string, unknown>)?.username as string)
+                          || (profile.username as string)
+                          || (profile.email as string)
+                          || 'this user'}
+                      </strong>. They will be able to set a new password using that link.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isSendingReset}>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleSendPasswordReset} disabled={isSendingReset}>
+                      {isSendingReset ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                      Send reset email
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
           </div>
         </div>
       </CardContent>

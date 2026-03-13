@@ -7760,7 +7760,7 @@
             console.warn("Could not delete old avatar:", error2);
           }
         }
-        const { data, error } = await client.supabase.storage.from("avatars").upload(fileName, file, {
+        const { data: _data, error } = await client.supabase.storage.from("avatars").upload(fileName, file, {
           cacheControl: "3600",
           upsert: false
         });
@@ -8340,18 +8340,11 @@
         }
         if (!profile.id) {
           console.error("Profile ID is undefined. Profile object:", profile);
-          sonner.toast({
-            title: "Error",
-            description: "Profile ID is missing. Cannot update profile.",
-            variant: "destructive"
-          });
+          sonner.toast.error("Profile ID is missing. Cannot update profile.");
           return;
         }
         await updateProfile(profile.id, updateData);
-        sonner.toast({
-          title: "Profile updated",
-          description: "Your profile has been successfully updated."
-        });
+        sonner.toast.success("Profile updated");
         setEditingField(null);
         if (onOptimisticUpdate) {
           onOptimisticUpdate(field, value);
@@ -8360,11 +8353,7 @@
       } catch (error) {
         console.error("Save error:", error);
         const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
-        sonner.toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive"
-        });
+        sonner.toast.error(errorMessage);
       } finally {
         setSaving(false);
       }
@@ -8388,18 +8377,11 @@
         }
         if (!profile.id) {
           console.error("Profile ID is undefined. Profile object:", profile);
-          sonner.toast({
-            title: "Error",
-            description: "Profile ID is missing. Cannot update profile.",
-            variant: "destructive"
-          });
+          sonner.toast.error("Profile ID is missing. Cannot update profile.");
           return;
         }
         await updateProfile(profile.id, updateData);
-        sonner.toast({
-          title: "Profile updated",
-          description: "Your profile has been successfully updated."
-        });
+        sonner.toast.success("Profile updated");
         setEditingField(null);
         if (onOptimisticUpdate) {
           onOptimisticUpdate(field, value);
@@ -8410,11 +8392,7 @@
         onProfileUpdate();
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
-        sonner.toast({
-          title: "Error",
-          description: errorMessage,
-          variant: "destructive"
-        });
+        sonner.toast.error(errorMessage);
       } finally {
         setSaving(false);
       }

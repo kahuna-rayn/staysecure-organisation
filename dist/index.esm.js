@@ -7801,7 +7801,7 @@ const ProfileAvatar = ({
           console.warn("Could not delete old avatar:", error2);
         }
       }
-      const { data, error } = await supabase.storage.from("avatars").upload(fileName, file, {
+      const { data: _data, error } = await supabase.storage.from("avatars").upload(fileName, file, {
         cacheControl: "3600",
         upsert: false
       });
@@ -8381,18 +8381,11 @@ const EditableProfileHeader = ({
       }
       if (!profile.id) {
         console.error("Profile ID is undefined. Profile object:", profile);
-        toast$2({
-          title: "Error",
-          description: "Profile ID is missing. Cannot update profile.",
-          variant: "destructive"
-        });
+        toast$2.error("Profile ID is missing. Cannot update profile.");
         return;
       }
       await updateProfile(profile.id, updateData);
-      toast$2({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated."
-      });
+      toast$2.success("Profile updated");
       setEditingField(null);
       if (onOptimisticUpdate) {
         onOptimisticUpdate(field, value);
@@ -8401,11 +8394,7 @@ const EditableProfileHeader = ({
     } catch (error) {
       console.error("Save error:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
-      toast$2({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive"
-      });
+      toast$2.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -8429,18 +8418,11 @@ const EditableProfileHeader = ({
       }
       if (!profile.id) {
         console.error("Profile ID is undefined. Profile object:", profile);
-        toast$2({
-          title: "Error",
-          description: "Profile ID is missing. Cannot update profile.",
-          variant: "destructive"
-        });
+        toast$2.error("Profile ID is missing. Cannot update profile.");
         return;
       }
       await updateProfile(profile.id, updateData);
-      toast$2({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated."
-      });
+      toast$2.success("Profile updated");
       setEditingField(null);
       if (onOptimisticUpdate) {
         onOptimisticUpdate(field, value);
@@ -8451,11 +8433,7 @@ const EditableProfileHeader = ({
       onProfileUpdate();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to update profile";
-      toast$2({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive"
-      });
+      toast$2.error(errorMessage);
     } finally {
       setSaving(false);
     }

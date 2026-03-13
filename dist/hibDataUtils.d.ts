@@ -12,7 +12,7 @@ export interface HIBClause {
     sectionNumber?: number;
 }
 export declare const getInitialClauses: () => HIBClause[];
-export declare const loadHIBData: (userId: string) => Promise<HIBClause[]>;
+export declare const loadHIBData: (_userId: string) => Promise<HIBClause[]>;
 export declare const saveHIBData: (userId: string, clausesToSave: HIBClause[]) => Promise<void>;
 export declare const updateHIBClause: (userId: string, id: string, updates: Partial<HIBClause>) => Promise<{
     success: boolean;

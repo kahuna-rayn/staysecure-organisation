@@ -134,20 +134,13 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
       
       if (!profile.id) {
         console.error('Profile ID is undefined. Profile object:', profile);
-        toast({
-          title: "Error",
-          description: "Profile ID is missing. Cannot update profile.",
-          variant: "destructive",
-        });
+        toast.error("Profile ID is missing. Cannot update profile.");
         return;
       }
       
       await updateProfile(profile.id, updateData);
       
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
-      });
+      toast.success("Profile updated");
       setEditingField(null);
       if (onOptimisticUpdate) {
         onOptimisticUpdate(field, value);
@@ -156,11 +149,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
     } catch (error: unknown) {
       console.error('Save error:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -191,20 +180,13 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
       
       if (!profile.id) {
         console.error('Profile ID is undefined. Profile object:', profile);
-        toast({
-          title: "Error",
-          description: "Profile ID is missing. Cannot update profile.",
-          variant: "destructive",
-        });
+        toast.error("Profile ID is missing. Cannot update profile.");
         return;
       }
       
       await updateProfile(profile.id as string, updateData);
       
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been successfully updated.",
-      });
+      toast.success("Profile updated");
       
       setEditingField(null);
       if (onOptimisticUpdate) {
@@ -216,11 +198,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
       onProfileUpdate();
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update profile';
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }

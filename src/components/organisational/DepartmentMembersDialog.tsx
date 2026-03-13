@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Printer, Download, FileText, Users } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -39,7 +39,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['department-members', departmentId],
     queryFn: async () => {
-      debugLog('[DepartmentMembersDialog] Fetching members, departmentId:', departmentId);
+      debug.log('[DepartmentMembersDialog] Fetching members, departmentId:', departmentId);
       
       // First, get user_departments with department info
       let deptQuery = supabaseClient
@@ -57,16 +57,16 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
 
       const { data: userDepts, error: userDeptsError } = await deptQuery;
 
-      debugLog('[DepartmentMembersDialog] user_departments result:', { count: userDepts?.length, error: userDeptsError?.message });
+      debug.log('[DepartmentMembersDialog] user_departments result:', { count: userDepts?.length, error: userDeptsError?.message });
 
       if (userDeptsError) throw userDeptsError;
 
       // Get unique user IDs
       const userIds = [...new Set((userDepts || []).map((ud: any) => ud.user_id))];
-      debugLog('[DepartmentMembersDialog] Unique user IDs:', userIds.length);
+      debug.log('[DepartmentMembersDialog] Unique user IDs:', userIds.length);
       
       if (userIds.length === 0) {
-        debugLog('[DepartmentMembersDialog] No users found in departments');
+        debug.log('[DepartmentMembersDialog] No users found in departments');
         return [];
       }
 
@@ -76,7 +76,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
         .select('id, full_name, username, status')
         .in('id', userIds);
 
-      debugLog('[DepartmentMembersDialog] profiles result:', { count: profiles?.length, error: profilesError?.message });
+      debug.log('[DepartmentMembersDialog] profiles result:', { count: profiles?.length, error: profilesError?.message });
 
       if (profilesError) throw profilesError;
 
@@ -86,7 +86,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
         .select('user_id, is_primary, role_id')
         .in('user_id', userIds);
 
-      debugLog('[DepartmentMembersDialog] user_profile_roles result:', { count: userProfileRoles?.length, error: uprError?.message });
+      debug.log('[DepartmentMembersDialog] user_profile_roles result:', { count: userProfileRoles?.length, error: uprError?.message });
 
       if (uprError) throw uprError;
 
@@ -100,7 +100,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
           .select('role_id, name')
           .in('role_id', roleIds);
         
-        debugLog('[DepartmentMembersDialog] roles result:', { count: roles?.length, error: rolesError?.message });
+        debug.log('[DepartmentMembersDialog] roles result:', { count: roles?.length, error: rolesError?.message });
         
         if (rolesError) throw rolesError;
         rolesData = roles || [];
@@ -142,7 +142,7 @@ export const DepartmentMembersDialog: React.FC<DepartmentMembersDialogProps> = (
         return a.userName.localeCompare(b.userName);
       });
 
-      debugLog('[DepartmentMembersDialog] Final member data:', memberData.length, 'members');
+      debug.log('[DepartmentMembersDialog] Final member data:', memberData.length, 'members');
 
       return memberData;
     },

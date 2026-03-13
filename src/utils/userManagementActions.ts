@@ -1,4 +1,4 @@
-import { debugLog } from '../utils/debugLog';
+import debug from '../utils/debug';
 
 /**
  * User Management Actions
@@ -107,7 +107,7 @@ export const handleCreateUser = async (
     // Call the create-user Edge Function using supabaseClient.functions.invoke()
     // This is consistent with handleDeleteUser and ImportUsersDialog
     // No need to extract URL - the client handles it automatically
-    debugLog('[handleCreateUser] Invoking create-user Edge Function', {
+    debug.log('[handleCreateUser] Invoking create-user Edge Function', {
       clientId,
       hasAccessToken: !!sessionData.session.access_token,
     });

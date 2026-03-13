@@ -1,5 +1,5 @@
 
-import { debugLog } from './utils/debugLog';
+import debug from './utils/debug';
 import { supabase } from '@/integrations/supabase/client';
 
 export interface HIBClause {
@@ -45,7 +45,7 @@ export const getInitialClauses = (): HIBClause[] => [
   }
 ];
 
-export const loadHIBData = async (userId: string): Promise<HIBClause[]> => {
+export const loadHIBData = async (_userId: string): Promise<HIBClause[]> => {
   const { data, error } = await supabase
     .from('hib_checklist')
     .select('*')
@@ -104,7 +104,7 @@ export const saveHIBData = async (userId: string, clausesToSave: HIBClause[]): P
 
 export const updateHIBClause = async (userId: string, id: string, updates: Partial<HIBClause>): Promise<{ success: boolean; error?: string }> => {
   try {
-    debugLog('updateHIBClause called with:', { userId, id, updates });
+    debug.log('updateHIBClause called with:', { userId, id, updates });
     
     const updateData = {
       hib_section: updates.hibSection,
@@ -119,7 +119,7 @@ export const updateHIBClause = async (userId: string, id: string, updates: Parti
       section_number: updates.sectionNumber
     };
     
-    debugLog('Supabase update data:', updateData);
+    debug.log('Supabase update data:', updateData);
     
     const { data, error } = await supabase
       .from('hib_checklist')
@@ -128,7 +128,7 @@ export const updateHIBClause = async (userId: string, id: string, updates: Parti
       .eq('user_id', userId)
       .select();
 
-    debugLog('Supabase update result:', { data, error });
+    debug.log('Supabase update result:', { data, error });
 
     if (error) throw error;
     return { success: true };

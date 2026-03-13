@@ -1,5 +1,5 @@
 
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -43,7 +43,7 @@ const AssignSoftwareDialog: React.FC<AssignSoftwareDialogProps> = ({
   const { data: userProfile, isLoading: profileLoading, error: profileError } = useQuery({
     queryKey: ['user-profile-by-id', userId],
     queryFn: async () => {
-      debugLog('Querying profile for userId:', userId);
+      debug.log('Querying profile for userId:', userId);
       
       const { data, error } = await supabase
         .from('profiles')
@@ -51,7 +51,7 @@ const AssignSoftwareDialog: React.FC<AssignSoftwareDialogProps> = ({
         .eq('id', userId)
         .single();
       
-      debugLog('Profile query result:', { data, error });
+      debug.log('Profile query result:', { data, error });
       
       if (error) {
         console.error('Error fetching user profile:', error);

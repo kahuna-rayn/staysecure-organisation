@@ -484,6 +484,16 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const Link = createLucideIcon("Link", [
+    ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
+    ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const List = createLucideIcon("List", [
     ["path", { d: "M3 12h.01", key: "nlz23k" }],
     ["path", { d: "M3 18h.01", key: "1tta3j" }],
@@ -821,9 +831,23 @@
     }
     return context;
   };
-  const debugLog = (...args) => {
-    if (typeof window !== "undefined" && window.__DEBUG__) {
-      console.log("[ORG]", ...args);
+  const isEnabled = () => typeof window !== "undefined" && !!window.__DEBUG__;
+  const debug = {
+    /** Log a debug message (only when debug mode is on) */
+    log: (...args) => {
+      if (isEnabled()) console.debug("[ORG]", ...args);
+    },
+    /** Log a warning (only when debug mode is on) */
+    warn: (...args) => {
+      if (isEnabled()) console.warn("[ORG]", ...args);
+    },
+    /** Log an error (always logs — errors are always important) */
+    error: (...args) => {
+      console.error("[ORG]", ...args);
+    },
+    /** Log a state change (only when debug mode is on) */
+    state: (label2, value) => {
+      if (isEnabled()) console.debug("[ORG:state]", label2, value);
     }
   };
   const handleSaveUser = async (editingUser, updateProfile, onSuccess) => {
@@ -851,7 +875,7 @@
       if (sessionError || !((_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token)) {
         throw new Error("Unable to determine current session. Please refresh and try again.");
       }
-      debugLog("[handleCreateUser] Invoking create-user Edge Function", {
+      debug.log("[handleCreateUser] Invoking create-user Edge Function", {
         clientId,
         hasAccessToken: !!sessionData.session.access_token
       });
@@ -1549,18 +1573,18 @@
     };
     const validateLocation = (locationName) => {
       if (!locationName || !validLocations) {
-        debugLog("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
+        debug.log("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
         return { isValid: false };
       }
       const trimmedLocation = locationName.trim();
-      debugLog("Location validation: Checking location", {
+      debug.log("Location validation: Checking location", {
         providedLocation: trimmedLocation,
         availableLocations: validLocations.map((l) => l.name)
       });
       const validLocation = validLocations.find(
         (loc) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
       );
-      debugLog("Location validation result:", {
+      debug.log("Location validation result:", {
         location: trimmedLocation,
         found: !!validLocation,
         validLocation
@@ -1644,7 +1668,7 @@
     };
     const translateError = (error) => {
       const errorMessage = (error == null ? void 0 : error.message) || (error == null ? void 0 : error.error) || "Unknown error";
-      debugLog("Translating error:", { originalError: error, errorMessage });
+      debug.log("Translating error:", { originalError: error, errorMessage });
       if (errorMessage.includes("Edge Function returned a non-2xx status code")) {
         return "Server error occurred while creating user. Please try again or contact support.";
       }
@@ -1716,7 +1740,7 @@
       if (!lastName || !lastName.trim()) {
         throw new Error("Last Name is required for all users.");
       }
-      debugLog("Processing user:", email);
+      debug.log("Processing user:", email);
       const accessLevelValue = row["Access Level"] || row["access_level"] || "";
       const accessLevelValidation = validateAccessLevel(accessLevelValue);
       if (!accessLevelValidation.isValid) {
@@ -1786,7 +1810,7 @@
         throw new Error(friendlyError);
       }
       if (authData && authData.user) {
-        debugLog("User created successfully:", email);
+        debug.log("User created successfully:", email);
       } else if (authData && authData.error) {
         console.error("Create user error:", authData.error);
         const friendlyError = translateError(authData.error);
@@ -1934,7 +1958,7 @@
               setIsProcessing(false);
               return;
             }
-            debugLog("Processing", data.length, "rows");
+            debug.log("Processing", data.length, "rows");
             let successCount = 0;
             const errors = [];
             const warnings = [];
@@ -1942,16 +1966,16 @@
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
-                debugLog("Skipping empty row at index", i);
+                debug.log("Skipping empty row at index", i);
                 continue;
               }
               const email = row["Email"] || row["email"] || "Unknown";
               const rowNumber = i + 2;
               try {
-                debugLog(`Processing user ${i + 1} of ${data.length}:`, email);
+                debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
                 const result = await processUserImport(row);
                 successCount++;
-                debugLog(`Successfully processed user ${i + 1}`);
+                debug.log(`Successfully processed user ${i + 1}`);
                 createdUsers.push({
                   rowNumber,
                   email,
@@ -2009,7 +2033,7 @@
                       rawData: u.row
                     });
                   } else {
-                    debugLog(`Assigned manager ${u.managerEmail} for user ${u.email}`);
+                    debug.log(`Assigned manager ${u.managerEmail} for user ${u.email}`);
                   }
                 } catch (err) {
                   warnings.push({
@@ -2030,7 +2054,7 @@
                 });
               }
             }
-            debugLog("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debug.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -2540,22 +2564,22 @@
               setIsProcessing(false);
               return;
             }
-            debugLog("Processing", data.length, "roles");
+            debug.log("Processing", data.length, "roles");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Name"] && !row["name"]) {
-                debugLog("Skipping empty row at index", i);
+                debug.log("Skipping empty row at index", i);
                 continue;
               }
               const name = row["Name"] || row["name"] || "Unknown";
               try {
-                debugLog(`Processing role ${i + 1} of ${data.length}:`, name);
+                debug.log(`Processing role ${i + 1} of ${data.length}:`, name);
                 const result = await processRoleImport(row);
                 successCount++;
-                debugLog(`Successfully processed role ${i + 1}`);
+                debug.log(`Successfully processed role ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -2581,7 +2605,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 300));
               }
             }
-            debugLog("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debug.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -2748,33 +2772,33 @@
     const { data: members = [], isLoading } = reactQuery.useQuery({
       queryKey: ["role-members", roleId],
       queryFn: async () => {
-        debugLog("[RoleMembersDialog] Fetching members, roleId:", roleId);
+        debug.log("[RoleMembersDialog] Fetching members, roleId:", roleId);
         let roleQuery = supabaseClient.from("user_profile_roles").select("user_id, role_id, is_primary");
         if (roleId) {
           roleQuery = roleQuery.eq("role_id", roleId);
         }
         const { data: userRoles, error: userRolesError } = await roleQuery;
-        debugLog("[RoleMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: userRolesError == null ? void 0 : userRolesError.message });
+        debug.log("[RoleMembersDialog] user_profile_roles result:", { count: userRoles == null ? void 0 : userRoles.length, error: userRolesError == null ? void 0 : userRolesError.message });
         if (userRolesError) throw userRolesError;
         const userIds = [...new Set((userRoles || []).map((ur) => ur.user_id))];
-        debugLog("[RoleMembersDialog] Unique user IDs:", userIds.length);
+        debug.log("[RoleMembersDialog] Unique user IDs:", userIds.length);
         if (userIds.length === 0) {
-          debugLog("[RoleMembersDialog] No users found with roles");
+          debug.log("[RoleMembersDialog] No users found with roles");
           return [];
         }
         const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
-        debugLog("[RoleMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
+        debug.log("[RoleMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
         if (profilesError) throw profilesError;
         const roleIds = [...new Set((userRoles || []).map((ur) => ur.role_id).filter(Boolean))];
         let rolesData = [];
         if (roleIds.length > 0) {
           const { data: roles, error: rolesError } = await supabaseClient.from("roles").select("role_id, name").in("role_id", roleIds);
-          debugLog("[RoleMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
+          debug.log("[RoleMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
           if (rolesError) throw rolesError;
           rolesData = roles || [];
         }
         const { data: userDepts, error: userDeptsError } = await supabaseClient.from("user_departments").select("user_id, department_id, is_primary, departments(name)").in("user_id", userIds);
-        debugLog("[RoleMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
+        debug.log("[RoleMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
         if (userDeptsError) throw userDeptsError;
         const profileMap = /* @__PURE__ */ new Map();
         (profiles || []).forEach((p) => profileMap.set(p.id, p));
@@ -2802,7 +2826,7 @@
           if (roleCompare !== 0) return roleCompare;
           return a.userName.localeCompare(b.userName);
         });
-        debugLog("[RoleMembersDialog] Processed members:", memberData.length);
+        debug.log("[RoleMembersDialog] Processed members:", memberData.length);
         return memberData;
       },
       enabled: isOpen
@@ -3480,22 +3504,22 @@
               setIsProcessing(false);
               return;
             }
-            debugLog("Processing", data.length, "departments");
+            debug.log("Processing", data.length, "departments");
             let successCount = 0;
             const errors = [];
             const warnings = [];
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Name"] && !row["name"]) {
-                debugLog("Skipping empty row at index", i);
+                debug.log("Skipping empty row at index", i);
                 continue;
               }
               const name = row["Name"] || row["name"] || "Unknown";
               try {
-                debugLog(`Processing department ${i + 1} of ${data.length}:`, name);
+                debug.log(`Processing department ${i + 1} of ${data.length}:`, name);
                 const result = await processDepartmentImport(row);
                 successCount++;
-                debugLog(`Successfully processed department ${i + 1}`);
+                debug.log(`Successfully processed department ${i + 1}`);
                 if (result.warnings) {
                   result.warnings.forEach((warning) => {
                     warnings.push({
@@ -3521,7 +3545,7 @@
                 await new Promise((resolve) => setTimeout(resolve, 300));
               }
             }
-            debugLog("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            debug.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
             setUploadedFile(null);
             setIsProcessing(false);
             setIsOpen(false);
@@ -3683,7 +3707,7 @@
     const { data: members = [], isLoading } = reactQuery.useQuery({
       queryKey: ["department-members", departmentId],
       queryFn: async () => {
-        debugLog("[DepartmentMembersDialog] Fetching members, departmentId:", departmentId);
+        debug.log("[DepartmentMembersDialog] Fetching members, departmentId:", departmentId);
         let deptQuery = supabaseClient.from("user_departments").select(`
           user_id,
           department_id,
@@ -3694,25 +3718,25 @@
           deptQuery = deptQuery.eq("department_id", departmentId);
         }
         const { data: userDepts, error: userDeptsError } = await deptQuery;
-        debugLog("[DepartmentMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
+        debug.log("[DepartmentMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
         if (userDeptsError) throw userDeptsError;
         const userIds = [...new Set((userDepts || []).map((ud) => ud.user_id))];
-        debugLog("[DepartmentMembersDialog] Unique user IDs:", userIds.length);
+        debug.log("[DepartmentMembersDialog] Unique user IDs:", userIds.length);
         if (userIds.length === 0) {
-          debugLog("[DepartmentMembersDialog] No users found in departments");
+          debug.log("[DepartmentMembersDialog] No users found in departments");
           return [];
         }
         const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
-        debugLog("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
+        debug.log("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
         if (profilesError) throw profilesError;
         const { data: userProfileRoles, error: uprError } = await supabaseClient.from("user_profile_roles").select("user_id, is_primary, role_id").in("user_id", userIds);
-        debugLog("[DepartmentMembersDialog] user_profile_roles result:", { count: userProfileRoles == null ? void 0 : userProfileRoles.length, error: uprError == null ? void 0 : uprError.message });
+        debug.log("[DepartmentMembersDialog] user_profile_roles result:", { count: userProfileRoles == null ? void 0 : userProfileRoles.length, error: uprError == null ? void 0 : uprError.message });
         if (uprError) throw uprError;
         const roleIds = [...new Set((userProfileRoles || []).map((upr) => upr.role_id).filter(Boolean))];
         let rolesData = [];
         if (roleIds.length > 0) {
           const { data: roles, error: rolesError } = await supabaseClient.from("roles").select("role_id, name").in("role_id", roleIds);
-          debugLog("[DepartmentMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
+          debug.log("[DepartmentMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
           if (rolesError) throw rolesError;
           rolesData = roles || [];
         }
@@ -3744,7 +3768,7 @@
           if (deptCompare !== 0) return deptCompare;
           return a.userName.localeCompare(b.userName);
         });
-        debugLog("[DepartmentMembersDialog] Final member data:", memberData.length, "members");
+        debug.log("[DepartmentMembersDialog] Final member data:", memberData.length, "members");
         return memberData;
       },
       enabled: isOpen
@@ -6458,9 +6482,9 @@
     const { data: userProfile, isLoading: profileLoading, error: profileError } = reactQuery.useQuery({
       queryKey: ["user-profile-by-id", userId],
       queryFn: async () => {
-        debugLog("Querying profile for userId:", userId);
+        debug.log("Querying profile for userId:", userId);
         const { data, error } = await client.supabase.from("profiles").select("id, full_name, username").eq("id", userId).single();
-        debugLog("Profile query result:", { data, error });
+        debug.log("Profile query result:", { data, error });
         if (error) {
           console.error("Error fetching user profile:", error);
           throw error;
@@ -6792,6 +6816,7 @@
     const [searchTerm, setSearchTerm] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState("all");
     const [activeTab, setActiveTab] = React.useState("assigned");
+    const [openingDocId, setOpeningDocId] = React.useState(null);
     const targetUserId = userId || (user == null ? void 0 : user.id);
     const isOwnDocuments = !userId || userId === (user == null ? void 0 : user.id);
     const { data: assignments, isLoading } = reactQuery.useQuery({
@@ -6839,6 +6864,25 @@
     });
     const handleStatusChange = (assignmentId, newStatus) => {
       updateStatusMutation.mutate({ assignmentId, status: newStatus });
+    };
+    const handleOpenDocument = async (documentId, url, fileName) => {
+      if (!fileName && url) {
+        window.open(url, "_blank", "noopener,noreferrer");
+        return;
+      }
+      if (!fileName) return;
+      setOpeningDocId(documentId);
+      try {
+        const { data, error } = await supabase.functions.invoke("get-document-url", {
+          body: { document_id: documentId }
+        });
+        if (error) throw error;
+        window.open(data.url, "_blank", "noopener,noreferrer");
+      } catch (err) {
+        useToast.toast({ title: "Error", description: err.message, variant: "destructive" });
+      } finally {
+        setOpeningDocId(null);
+      }
     };
     const filteredAssignments = assignments == null ? void 0 : assignments.filter((assignment) => {
       var _a;
@@ -6934,13 +6978,13 @@
             ")"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: filteredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: requiredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: optionalAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments }) })
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: filteredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: requiredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: optionalAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) })
       ] })
     ] });
   };
-  const DocumentList = ({ assignments, onStatusChange, isReadOnly = false }) => {
+  const DocumentList = ({ assignments, onStatusChange, onOpenDocument, openingDocId, isReadOnly = false }) => {
     const getStatusIcon = (status) => {
       switch (status) {
         case "Completed":
@@ -6992,10 +7036,23 @@
           assignment.document.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: assignment.document.category })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-          assignment.document.url && /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "sm", asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs("a", { href: assignment.document.url, target: "_blank", rel: "noopener noreferrer", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-4 w-4 mr-1" }),
-            "View"
-          ] }) }),
+          (assignment.document.url || assignment.document.file_name) && /* @__PURE__ */ jsxRuntime.jsxs(
+            button.Button,
+            {
+              variant: "outline",
+              size: "sm",
+              onClick: () => onOpenDocument(
+                assignment.document_id,
+                assignment.document.url,
+                assignment.document.file_name
+              ),
+              disabled: openingDocId === assignment.document_id,
+              children: [
+                openingDocId === assignment.document_id ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 mr-1 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-4 w-4 mr-1" }),
+                "View"
+              ]
+            }
+          ),
           isReadOnly ? /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor(assignment.status), children: assignment.status }) : /* @__PURE__ */ jsxRuntime.jsxs(
             select.Select,
             {
@@ -7036,15 +7093,15 @@
       queryKey: ["user-roles", userId],
       queryFn: async () => {
         if (!userId) return [];
-        debugLog("UserDepartmentsRolesTable: Fetching roles for user:", userId);
+        debug.log("UserDepartmentsRolesTable: Fetching roles for user:", userId);
         const { data, error } = await client.supabase.from("user_profile_roles").select(`
           *,
           roles (
             name
           )
         `).eq("user_id", userId).order("is_primary", { ascending: false });
-        debugLog("UserDepartmentsRolesTable: Raw roles data:", data);
-        debugLog("UserDepartmentsRolesTable: Roles query error:", error);
+        debug.log("UserDepartmentsRolesTable: Raw roles data:", data);
+        debug.log("UserDepartmentsRolesTable: Roles query error:", error);
         if (error) throw error;
         const transformedData = (data || []).map((item) => {
           var _a;
@@ -7064,7 +7121,7 @@
           if (!a.is_primary && b.is_primary) return 1;
           return (a.role_name || "").localeCompare(b.role_name || "");
         });
-        debugLog("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
+        debug.log("UserDepartmentsRolesTable: Transformed roles data:", transformedData);
         return transformedData;
       },
       enabled: !!userId
@@ -7079,12 +7136,12 @@
     });
     const addRoleMutation = reactQuery.useMutation({
       mutationFn: async ({ roleId, pairingId }) => {
-        debugLog("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
+        debug.log("UserDepartmentsRolesTable: addRoleMutation called with roleId:", roleId, "pairingId:", pairingId);
         const role = allRoles.find((r) => r.role_id === roleId);
-        debugLog("UserDepartmentsRolesTable: Found role:", role);
+        debug.log("UserDepartmentsRolesTable: Found role:", role);
         if (!role) throw new Error("Role not found");
         const isPrimary = userRoles.length === 0;
-        debugLog("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
+        debug.log("UserDepartmentsRolesTable: isPrimary:", isPrimary, "userRoles.length:", userRoles.length);
         const insertData = {
           user_id: userId,
           role_id: roleId,
@@ -7092,15 +7149,15 @@
           assigned_by: user == null ? void 0 : user.id,
           pairing_id: pairingId
         };
-        debugLog("UserDepartmentsRolesTable: Inserting role data:", insertData);
+        debug.log("UserDepartmentsRolesTable: Inserting role data:", insertData);
         const { data, error } = await client.supabase.from("user_profile_roles").insert(insertData).select();
-        debugLog("UserDepartmentsRolesTable: Insert result:", data);
-        debugLog("UserDepartmentsRolesTable: Insert error:", error);
+        debug.log("UserDepartmentsRolesTable: Insert result:", data);
+        debug.log("UserDepartmentsRolesTable: Insert error:", error);
         if (error) throw error;
         return role;
       },
       onSuccess: (data) => {
-        debugLog("UserDepartmentsRolesTable: Role assignment successful:", data);
+        debug.log("UserDepartmentsRolesTable: Role assignment successful:", data);
         queryClient.invalidateQueries({ queryKey: ["user-roles", userId] });
         sonner.toast.success("Role assigned successfully");
       },
@@ -7186,15 +7243,15 @@
       return pairs;
     };
     const getAvailableRoles = (selectedDepartmentId) => {
-      debugLog("getAvailableRoles called with:", selectedDepartmentId);
-      debugLog("allRoles:", allRoles);
+      debug.log("getAvailableRoles called with:", selectedDepartmentId);
+      debug.log("allRoles:", allRoles);
       if (!selectedDepartmentId) {
         const generalRoles = allRoles.filter((role) => !role.department_id);
-        debugLog("No department selected, showing general roles:", generalRoles);
+        debug.log("No department selected, showing general roles:", generalRoles);
         return generalRoles;
       }
       const departmentRoles = allRoles.filter((role) => role.department_id === selectedDepartmentId);
-      debugLog(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
+      debug.log(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
       return departmentRoles;
     };
     const handleAddNewRow = () => {
@@ -7235,25 +7292,25 @@
     };
     const handleSaveNewRow = async (index) => {
       const row = newRows[index];
-      debugLog("UserDepartmentsRolesTable: Saving new row:", row);
-      debugLog("UserDepartmentsRolesTable: Current userRoles:", userRoles);
-      debugLog("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+      debug.log("UserDepartmentsRolesTable: Saving new row:", row);
+      debug.log("UserDepartmentsRolesTable: Current userRoles:", userRoles);
+      debug.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
       if (!row.departmentId && !row.roleId) {
         sonner.toast.error("Please select at least a department or role");
         return;
       }
       try {
         const pairingId = row.departmentId && row.roleId ? crypto.randomUUID() : void 0;
-        debugLog("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
+        debug.log("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
         if (row.departmentId) {
           const isDepartmentAlreadyAssigned = userDepartments.some((dept) => dept.department_id === row.departmentId);
-          debugLog("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
-          debugLog("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
-          debugLog("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
+          debug.log("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
+          debug.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
+          debug.log("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
           if (!isDepartmentAlreadyAssigned) {
             const isPrimary = userDepartments.length === 0;
-            debugLog("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
-            debugLog("UserDepartmentsRolesTable: Department params:", {
+            debug.log("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
+            debug.log("UserDepartmentsRolesTable: Department params:", {
               userId,
               departmentId: row.departmentId,
               isPrimary,
@@ -7267,17 +7324,17 @@
               pairingId,
               assignedBy: user == null ? void 0 : user.id
             });
-            debugLog("UserDepartmentsRolesTable: Department addition completed");
+            debug.log("UserDepartmentsRolesTable: Department addition completed");
           } else {
-            debugLog("UserDepartmentsRolesTable: Department already assigned, skipping");
+            debug.log("UserDepartmentsRolesTable: Department already assigned, skipping");
           }
         }
         if (row.roleId) {
           const isRoleAlreadyAssigned = userRoles.some((role) => role.role_id === row.roleId);
-          debugLog("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
-          debugLog("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
+          debug.log("UserDepartmentsRolesTable: Role already assigned?", isRoleAlreadyAssigned);
+          debug.log("UserDepartmentsRolesTable: Checking roleId", row.roleId, "against userRoles:", userRoles.map((r) => r.role_id));
           if (!isRoleAlreadyAssigned) {
-            debugLog("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
+            debug.log("UserDepartmentsRolesTable: Adding role with roleId:", row.roleId);
             await addRoleMutation.mutateAsync({
               roleId: row.roleId,
               pairingId
@@ -7664,13 +7721,13 @@
     };
     const handleFileChange = async (event) => {
       var _a;
-      debugLog("ProfileAvatar: File selected:", event.target.files);
+      debug.log("ProfileAvatar: File selected:", event.target.files);
       const file = (_a = event.target.files) == null ? void 0 : _a[0];
       if (!file) {
-        debugLog("ProfileAvatar: No file selected");
+        debug.log("ProfileAvatar: No file selected");
         return;
       }
-      debugLog("ProfileAvatar: Processing file:", file.name, file.type, file.size);
+      debug.log("ProfileAvatar: Processing file:", file.name, file.type, file.size);
       const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
       if (!validTypes.includes(file.type)) {
         useToast.toast({
@@ -8232,9 +8289,9 @@
       try {
         setIsSendingReset(true);
         const redirectUrl = `${window.location.origin}${basePath || ""}/reset-password`;
-        debugLog("[handleSendPasswordReset] basePath:", basePath || "(none)");
-        debugLog("[handleSendPasswordReset] redirectUrl:", redirectUrl);
-        debugLog("[handleSendPasswordReset] email:", email);
+        debug.log("[EditableProfileHeader.handleSendPasswordReset] basePath:", basePath || "(none)");
+        debug.log("[EditableProfileHeader.handleSendPasswordReset] redirectUrl:", redirectUrl);
+        debug.log("[EditableProfileHeader.handleSendPasswordReset] email:", email);
         const { error } = await supabaseClient.functions.invoke("send-password-reset", {
           body: { email, redirectUrl }
         });
@@ -8534,7 +8591,7 @@
             {
               value: profile.language || "English",
               onValueChange: async (value) => {
-                debugLog("Select onValueChange - value:", value);
+                debug.log("[EditableProfileHeader] Select onValueChange - value:", value);
                 try {
                   setSavingLanguage(true);
                   await handleFieldSave("language", value);
@@ -8548,7 +8605,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectContent, { children: languages == null ? void 0 : languages.map((lang) => {
                   const langValue = lang.display_name || lang.code;
                   const langLabel = lang.native_name || lang.display_name || lang.code;
-                  debugLog("langValue:", langValue, "langLabel:", langLabel);
+                  debug.log("[EditableProfileHeader] langValue:", langValue, "langLabel:", langLabel);
                   return /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: langValue, children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
                     lang.flag_emoji && /* @__PURE__ */ jsxRuntime.jsx("span", { children: lang.flag_emoji }),
                     /* @__PURE__ */ jsxRuntime.jsx("span", { children: langLabel })
@@ -8734,28 +8791,28 @@
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-center py-8", children: /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "No profile found. Please update your profile information." }) });
     }
     const handleOptimisticUpdate = (field, value) => {
-      debugLog("PersonaProfile handleOptimisticUpdate - field:", field, "value:", value);
+      debug.log("PersonaProfile handleOptimisticUpdate - field:", field, "value:", value);
       setOptimisticData((prev) => {
         const baseData = prev || personaData;
         const updated = { ...baseData };
         if (field === "avatar_url") {
           updated.avatar = value;
         } else if (field === "language") {
-          debugLog("PersonaProfile - setting language to:", value);
+          debug.log("PersonaProfile - setting language to:", value);
           updated.language = value;
         } else if (field in updated) {
           updated[field] = value;
         } else if (updated.account && field in updated.account) {
           updated.account = { ...updated.account, [field]: value };
         }
-        debugLog("PersonaProfile - updated optimisticData language:", updated.language);
+        debug.log("PersonaProfile - updated optimisticData language:", updated.language);
         return updated;
       });
     };
     const displayData = optimisticData || personaData;
-    debugLog("PersonaProfile render - displayData.language:", displayData.language);
-    debugLog("PersonaProfile render - personaData.language:", personaData.language);
-    debugLog("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
+    debug.log("PersonaProfile render - displayData.language:", displayData.language);
+    debug.log("PersonaProfile render - personaData.language:", personaData.language);
+    debug.log("PersonaProfile render - optimisticData?.language:", optimisticData == null ? void 0 : optimisticData.language);
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       !hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntime.jsx("h1", { className: "text-3xl font-bold", children: "My Profile" }) }),
       /* @__PURE__ */ jsxRuntime.jsx(EditableProfileHeader, { profile: displayData, onProfileUpdate: refetchProfile, onOptimisticUpdate: handleOptimisticUpdate }),
@@ -9227,7 +9284,7 @@
     currentUserId,
     userId
   }) => {
-    debugLog("ProfileBasicInfo rendering with userId:", userId, "currentUserId:", currentUserId);
+    debug.log("ProfileBasicInfo rendering with userId:", userId, "currentUserId:", currentUserId);
     const { userDepartments } = useUserDepartments.useUserDepartments(userId);
     const { primaryRole } = useUserProfileRoles.useUserProfileRoles(userId);
     const { data: physicalLocations, isLoading: locationsLoading } = useUserPhysicalLocations.useUserPhysicalLocations(userId);
@@ -9714,13 +9771,14 @@
       /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: onClose, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }) })
     ] }) });
   };
-  const DocumentManagement = ({ onNavigateToAssignments }) => {
+  const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments }) => {
     const { supabaseClient: supabase } = useOrganisationContext();
     const queryClient = reactQuery.useQueryClient();
     const [searchTerm, setSearchTerm] = React.useState("");
     const [categoryFilter, setCategoryFilter] = React.useState("all");
     const [isCreateDialogOpen, setIsCreateDialogOpen] = React.useState(false);
     const [editingDocument, setEditingDocument] = React.useState(null);
+    const [openingDocId, setOpeningDocId] = React.useState(null);
     const { data: documents, isLoading } = reactQuery.useQuery({
       queryKey: ["documents"],
       queryFn: async () => {
@@ -9737,17 +9795,10 @@
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["documents"] });
         setIsCreateDialogOpen(false);
-        useToast.toast({
-          title: "Success",
-          description: "Document created successfully"
-        });
+        useToast.toast({ title: "Success", description: "Document created successfully" });
       },
       onError: (error) => {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
+        useToast.toast({ title: "Error", description: error.message, variant: "destructive" });
       }
     });
     const updateDocumentMutation = reactQuery.useMutation({
@@ -9758,39 +9809,55 @@
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["documents"] });
         setEditingDocument(null);
-        useToast.toast({
-          title: "Success",
-          description: "Document updated successfully"
-        });
+        useToast.toast({ title: "Success", description: "Document updated successfully" });
       },
       onError: (error) => {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
+        useToast.toast({ title: "Error", description: error.message, variant: "destructive" });
       }
     });
     const deleteDocumentMutation = reactQuery.useMutation({
-      mutationFn: async (documentId) => {
-        const { error } = await supabase.from("documents").delete().eq("document_id", documentId);
+      mutationFn: async (doc) => {
+        if (doc.file_name) {
+          await supabase.storage.from("documents").remove([doc.file_name]);
+        }
+        const { error } = await supabase.from("documents").delete().eq("document_id", doc.document_id);
         if (error) throw error;
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["documents"] });
-        useToast.toast({
-          title: "Success",
-          description: "Document deleted successfully"
-        });
+        useToast.toast({ title: "Success", description: "Document deleted successfully" });
       },
       onError: (error) => {
-        useToast.toast({
-          title: "Error",
-          description: error.message,
-          variant: "destructive"
-        });
+        useToast.toast({ title: "Error", description: error.message, variant: "destructive" });
       }
     });
+    const handleOpenDocument = async (doc) => {
+      var _a;
+      if (!doc.file_name && doc.url) {
+        window.open(doc.url, "_blank", "noopener,noreferrer");
+        return;
+      }
+      if (!doc.file_name) return;
+      setOpeningDocId(doc.document_id);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        debug.log("[DocumentManagement.handleOpenDocument] session present:", !!session);
+        debug.log("[DocumentManagement.handleOpenDocument] token prefix:", ((_a = session == null ? void 0 : session.access_token) == null ? void 0 : _a.substring(0, 20)) ?? "none");
+        debug.log("[DocumentManagement.handleOpenDocument] supabase.functions available:", !!supabase.functions);
+        debug.log("[DocumentManagement.handleOpenDocument] document_id:", doc.document_id);
+        const { data, error } = await supabase.functions.invoke("get-document-url", {
+          body: { document_id: doc.document_id }
+        });
+        debug.log("[DocumentManagement.handleOpenDocument] invoke result — data:", data, "| error:", error);
+        if (error) throw error;
+        window.open(data.url, "_blank", "noopener,noreferrer");
+      } catch (err) {
+        debug.error("[DocumentManagement.handleOpenDocument] error:", err);
+        useToast.toast({ title: "Error", description: err.message, variant: "destructive" });
+      } finally {
+        setOpeningDocId(null);
+      }
+    };
     const filteredDocuments = documents == null ? void 0 : documents.filter((doc) => {
       var _a;
       const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) || ((_a = doc.description) == null ? void 0 : _a.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -9798,37 +9865,6 @@
       return matchesSearch && matchesCategory;
     });
     const categories = Array.from(new Set(documents == null ? void 0 : documents.map((doc) => doc.category).filter(Boolean)));
-    const handleCreateDocument = (formData) => {
-      const documentData = {
-        title: formData.get("title"),
-        description: formData.get("description"),
-        category: formData.get("category"),
-        required: formData.get("required") === "on",
-        url: formData.get("url"),
-        version: parseInt(formData.get("version")) || 1,
-        due_days: parseInt(formData.get("due_days")) || 30
-      };
-      createDocumentMutation.mutate(documentData);
-    };
-    const handleUpdateDocument = (formData) => {
-      if (!editingDocument) return;
-      const documentData = {
-        document_id: editingDocument.document_id,
-        title: formData.get("title"),
-        description: formData.get("description"),
-        category: formData.get("category"),
-        required: formData.get("required") === "on",
-        url: formData.get("url"),
-        version: parseInt(formData.get("version")) || 1,
-        due_days: parseInt(formData.get("due_days")) || 30
-      };
-      updateDocumentMutation.mutate(documentData);
-    };
-    const handleDeleteDocument = (documentId) => {
-      if (confirm("Are you sure you want to delete this document?")) {
-        deleteDocumentMutation.mutate(documentId);
-      }
-    };
     if (isLoading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-32 w-32 border-b-2 border-primary" }) });
     }
@@ -9845,7 +9881,14 @@
               /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create New Document" }),
               /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Add a new document to the knowledge base" })
             ] }),
-            /* @__PURE__ */ jsxRuntime.jsx(DocumentForm, { onSubmit: handleCreateDocument })
+            /* @__PURE__ */ jsxRuntime.jsx(
+              DocumentForm,
+              {
+                supabase,
+                onSubmit: (data) => createDocumentMutation.mutate(data),
+                isSubmitting: createDocumentMutation.isPending
+              }
+            )
           ] })
         ] })
       ] }),
@@ -9886,17 +9929,36 @@
               /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
                 "v",
                 document2.version
-              ] })
+              ] }),
+              document2.file_name ? /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs gap-1", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-3 w-3" }),
+                "File"
+              ] }) : document2.url ? /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs gap-1", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Link, { className: "h-3 w-3" }),
+                "URL"
+              ] }) : null
             ] }),
             document2.description && /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { className: "mt-2", children: document2.description })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+            (document2.url || document2.file_name) && /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                size: "icon",
+                onClick: () => handleOpenDocument(document2),
+                disabled: openingDocId === document2.document_id,
+                title: "View document",
+                children: openingDocId === document2.document_id ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Eye, { className: "h-4 w-4" })
+              }
+            ),
             /* @__PURE__ */ jsxRuntime.jsx(
               button.Button,
               {
                 variant: "outline",
-                size: "sm",
+                size: "icon",
                 onClick: () => setEditingDocument(document2),
+                title: "Edit document",
                 children: /* @__PURE__ */ jsxRuntime.jsx(SquarePen, { className: "h-4 w-4" })
               }
             ),
@@ -9904,41 +9966,26 @@
               button.Button,
               {
                 variant: "outline",
-                size: "sm",
-                onClick: () => handleDeleteDocument(document2.document_id),
+                size: "icon",
+                onClick: () => {
+                  if (confirm("Are you sure you want to delete this document?")) {
+                    deleteDocumentMutation.mutate(document2);
+                  }
+                },
+                title: "Delete document",
                 children: /* @__PURE__ */ jsxRuntime.jsx(Trash2, { className: "h-4 w-4" })
               }
             )
           ] })
         ] }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 text-sm text-muted-foreground", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
-              "Due in ",
-              document2.due_days,
-              " days"
-            ] }),
-            document2.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: document2.category })
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 text-sm text-muted-foreground", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
+            "Due in ",
+            document2.due_days,
+            " days"
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            document2.url && /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "sm", asChild: true, children: /* @__PURE__ */ jsxRuntime.jsxs("a", { href: document2.url, target: "_blank", rel: "noopener noreferrer", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-4 w-4 mr-1" }),
-              "View"
-            ] }) }),
-            /* @__PURE__ */ jsxRuntime.jsxs(
-              button.Button,
-              {
-                variant: "outline",
-                size: "sm",
-                onClick: onNavigateToAssignments,
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 mr-1" }),
-                  "Assign"
-                ]
-              }
-            )
-          ] })
+          document2.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: document2.category })
         ] }) })
       ] }, document2.document_id)) }),
       editingDocument && /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: !!editingDocument, onOpenChange: () => setEditingDocument(null), children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-2xl", children: [
@@ -9949,19 +9996,89 @@
         /* @__PURE__ */ jsxRuntime.jsx(
           DocumentForm,
           {
+            supabase,
             initialData: editingDocument,
-            onSubmit: handleUpdateDocument
+            onSubmit: (data) => updateDocumentMutation.mutate({ ...data, document_id: editingDocument.document_id }),
+            isSubmitting: updateDocumentMutation.isPending
           }
         )
       ] }) })
     ] });
   };
-  const DocumentForm = ({ initialData, onSubmit }) => {
-    const handleSubmit = (e) => {
-      e.preventDefault();
-      const formData = new FormData(e.currentTarget);
-      onSubmit(formData);
+  const ACCEPTED_TYPES = [
+    "application/pdf",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "text/plain",
+    "text/csv",
+    "image/png",
+    "image/jpeg"
+  ];
+  const DocumentForm = ({ supabase, initialData, onSubmit, isSubmitting }) => {
+    const [title, setTitle] = React.useState((initialData == null ? void 0 : initialData.title) ?? "");
+    const [description, setDescription] = React.useState((initialData == null ? void 0 : initialData.description) ?? "");
+    const [category, setCategory] = React.useState((initialData == null ? void 0 : initialData.category) ?? "");
+    const [required, setRequired] = React.useState((initialData == null ? void 0 : initialData.required) ?? false);
+    const [version, setVersion] = React.useState((initialData == null ? void 0 : initialData.version) ?? 1);
+    const [dueDays, setDueDays] = React.useState((initialData == null ? void 0 : initialData.due_days) ?? 30);
+    const [sourceType, setSourceType] = React.useState(
+      (initialData == null ? void 0 : initialData.file_name) ? "file" : "url"
+    );
+    const [url, setUrl] = React.useState((initialData == null ? void 0 : initialData.url) ?? "");
+    const [selectedFile, setSelectedFile] = React.useState(null);
+    const existingFileName = initialData == null ? void 0 : initialData.file_name;
+    const [isUploading, setIsUploading] = React.useState(false);
+    const fileInputRef = React.useRef(null);
+    const handleFileChange = (e) => {
+      var _a;
+      const file = ((_a = e.target.files) == null ? void 0 : _a[0]) ?? null;
+      setSelectedFile(file);
     };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      let file_name = sourceType === "file" ? existingFileName : void 0;
+      let file_type = sourceType === "file" ? initialData == null ? void 0 : initialData.file_type : void 0;
+      let finalUrl = sourceType === "url" ? url : void 0;
+      if (sourceType === "file" && selectedFile) {
+        setIsUploading(true);
+        try {
+          if (existingFileName) {
+            await supabase.storage.from("documents").remove([existingFileName]);
+          }
+          const ext = selectedFile.name.split(".").pop();
+          const storagePath = `${crypto.randomUUID()}.${ext}`;
+          const { error: uploadError } = await supabase.storage.from("documents").upload(storagePath, selectedFile, {
+            contentType: selectedFile.type,
+            upsert: false
+          });
+          if (uploadError) throw uploadError;
+          file_name = storagePath;
+          file_type = selectedFile.type;
+          finalUrl = void 0;
+        } catch (err) {
+          useToast.toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+          return;
+        } finally {
+          setIsUploading(false);
+        }
+      }
+      onSubmit({
+        title,
+        description,
+        category,
+        required,
+        url: finalUrl,
+        file_name,
+        file_type,
+        version,
+        due_days: dueDays
+      });
+    };
+    const busy = isUploading || isSubmitting;
     return /* @__PURE__ */ jsxRuntime.jsxs("form", { onSubmit: handleSubmit, className: "space-y-4", children: [
       /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "title", children: "Title *" }),
@@ -9969,8 +10086,8 @@
           input.Input,
           {
             id: "title",
-            name: "title",
-            defaultValue: initialData == null ? void 0 : initialData.title,
+            value: title,
+            onChange: (e) => setTitle(e.target.value),
             required: true
           }
         )
@@ -9981,8 +10098,8 @@
           textarea.Textarea,
           {
             id: "description",
-            name: "description",
-            defaultValue: initialData == null ? void 0 : initialData.description
+            value: description,
+            onChange: (e) => setDescription(e.target.value)
           }
         )
       ] }),
@@ -9993,8 +10110,8 @@
             input.Input,
             {
               id: "category",
-              name: "category",
-              defaultValue: initialData == null ? void 0 : initialData.category,
+              value: category,
+              onChange: (e) => setCategory(e.target.value),
               placeholder: "e.g., Policy, Training"
             }
           )
@@ -10005,24 +10122,87 @@
             input.Input,
             {
               id: "version",
-              name: "version",
               type: "number",
               min: "1",
-              defaultValue: (initialData == null ? void 0 : initialData.version) || 1
+              value: version,
+              onChange: (e) => setVersion(parseInt(e.target.value) || 1)
             }
           )
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Document Source" }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 mt-1", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(
+            button.Button,
+            {
+              type: "button",
+              variant: sourceType === "url" ? "default" : "outline",
+              size: "sm",
+              onClick: () => setSourceType("url"),
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Link, { className: "h-4 w-4 mr-1" }),
+                "External URL"
+              ]
+            }
+          ),
+          /* @__PURE__ */ jsxRuntime.jsxs(
+            button.Button,
+            {
+              type: "button",
+              variant: sourceType === "file" ? "default" : "outline",
+              size: "sm",
+              onClick: () => setSourceType("file"),
+              children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4 mr-1" }),
+                "Upload File"
+              ]
+            }
+          )
+        ] })
+      ] }),
+      sourceType === "url" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "url", children: "Document URL" }),
         /* @__PURE__ */ jsxRuntime.jsx(
           input.Input,
           {
             id: "url",
-            name: "url",
             type: "url",
-            defaultValue: initialData == null ? void 0 : initialData.url,
+            value: url,
+            onChange: (e) => setUrl(e.target.value),
             placeholder: "https://example.com/document.pdf"
+          }
+        )
+      ] }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "file", children: "Upload File" }),
+        existingFileName && !selectedFile && /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-sm text-muted-foreground mb-1 flex items-center gap-1", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-4 w-4" }),
+          "Current file: ",
+          existingFileName.split("/").pop()
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          "div",
+          {
+            className: "border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors",
+            onClick: () => {
+              var _a;
+              return (_a = fileInputRef.current) == null ? void 0 : _a.click();
+            },
+            children: selectedFile ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm font-medium", children: selectedFile.name }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-8 w-8 mx-auto text-muted-foreground" }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm text-muted-foreground", children: "Click to select a file" }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "PDF, Word, Excel, PowerPoint, TXT, CSV (max 50 MB)" })
+            ] })
+          }
+        ),
+        /* @__PURE__ */ jsxRuntime.jsx(
+          "input",
+          {
+            ref: fileInputRef,
+            type: "file",
+            className: "hidden",
+            accept: ACCEPTED_TYPES.join(","),
+            onChange: handleFileChange
           }
         )
       ] }),
@@ -10032,10 +10212,10 @@
           input.Input,
           {
             id: "due_days",
-            name: "due_days",
             type: "number",
             min: "1",
-            defaultValue: (initialData == null ? void 0 : initialData.due_days) || 30
+            value: dueDays,
+            onChange: (e) => setDueDays(parseInt(e.target.value) || 30)
           }
         )
       ] }),
@@ -10044,13 +10224,16 @@
           checkbox.Checkbox,
           {
             id: "required",
-            name: "required",
-            defaultChecked: initialData == null ? void 0 : initialData.required
+            checked: required,
+            onCheckedChange: (val) => setRequired(!!val)
           }
         ),
         /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "required", children: "Required reading" })
       ] }),
-      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end space-x-2 pt-4", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) }) })
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end space-x-2 pt-4", children: /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { type: "submit", size: "sm", disabled: busy, children: [
+        busy ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 mr-1 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4 mr-1" }),
+        isUploading ? "Uploading…" : "Save"
+      ] }) })
     ] });
   };
   const DocumentAssignmentsDrillDown = ({

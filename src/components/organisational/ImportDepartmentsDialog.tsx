@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +7,6 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Download, Trash2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
-import { useQuery } from '@tanstack/react-query';
 import Papa from 'papaparse';
 import { ImportError } from '../import/ImportErrorReport';
 
@@ -193,7 +192,7 @@ const ImportDepartmentsDialog: React.FC<ImportDepartmentsDialogProps> = ({ onImp
             return;
           }
 
-          debugLog('Processing', data.length, 'departments');
+          debug.log('Processing', data.length, 'departments');
           let successCount = 0;
           const errors: ImportError[] = [];
           const warnings: ImportError[] = [];
@@ -204,17 +203,17 @@ const ImportDepartmentsDialog: React.FC<ImportDepartmentsDialogProps> = ({ onImp
             
             // Skip empty rows
             if (!row['Name'] && !row['name']) {
-              debugLog('Skipping empty row at index', i);
+              debug.log('Skipping empty row at index', i);
               continue;
             }
 
             const name = row['Name'] || row['name'] || 'Unknown';
             
             try {
-              debugLog(`Processing department ${i + 1} of ${data.length}:`, name);
+              debug.log(`Processing department ${i + 1} of ${data.length}:`, name);
               const result = await processDepartmentImport(row);
               successCount++;
-              debugLog(`Successfully processed department ${i + 1}`);
+              debug.log(`Successfully processed department ${i + 1}`);
               
               // Collect warnings
               if (result.warnings) {
@@ -245,7 +244,7 @@ const ImportDepartmentsDialog: React.FC<ImportDepartmentsDialogProps> = ({ onImp
             }
           }
 
-          debugLog('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
+          debug.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
 
           setUploadedFile(null);
           setIsProcessing(false);

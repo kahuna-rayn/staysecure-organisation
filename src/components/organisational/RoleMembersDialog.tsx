@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Download, Printer, Users } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
@@ -40,7 +40,7 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
   const { data: members = [], isLoading } = useQuery({
     queryKey: ['role-members', roleId],
     queryFn: async () => {
-      debugLog('[RoleMembersDialog] Fetching members, roleId:', roleId);
+      debug.log('[RoleMembersDialog] Fetching members, roleId:', roleId);
       
       // Get user_profile_roles
       let roleQuery = supabaseClient
@@ -53,16 +53,16 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
 
       const { data: userRoles, error: userRolesError } = await roleQuery;
 
-      debugLog('[RoleMembersDialog] user_profile_roles result:', { count: userRoles?.length, error: userRolesError?.message });
+      debug.log('[RoleMembersDialog] user_profile_roles result:', { count: userRoles?.length, error: userRolesError?.message });
 
       if (userRolesError) throw userRolesError;
 
       // Get unique user IDs
       const userIds = [...new Set((userRoles || []).map((ur: any) => ur.user_id))];
-      debugLog('[RoleMembersDialog] Unique user IDs:', userIds.length);
+      debug.log('[RoleMembersDialog] Unique user IDs:', userIds.length);
       
       if (userIds.length === 0) {
-        debugLog('[RoleMembersDialog] No users found with roles');
+        debug.log('[RoleMembersDialog] No users found with roles');
         return [];
       }
 
@@ -72,7 +72,7 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
         .select('id, full_name, username, status')
         .in('id', userIds);
 
-      debugLog('[RoleMembersDialog] profiles result:', { count: profiles?.length, error: profilesError?.message });
+      debug.log('[RoleMembersDialog] profiles result:', { count: profiles?.length, error: profilesError?.message });
 
       if (profilesError) throw profilesError;
 
@@ -86,7 +86,7 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
           .select('role_id, name')
           .in('role_id', roleIds);
         
-        debugLog('[RoleMembersDialog] roles result:', { count: roles?.length, error: rolesError?.message });
+        debug.log('[RoleMembersDialog] roles result:', { count: roles?.length, error: rolesError?.message });
         
         if (rolesError) throw rolesError;
         rolesData = roles || [];
@@ -98,7 +98,7 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
         .select('user_id, department_id, is_primary, departments(name)')
         .in('user_id', userIds);
 
-      debugLog('[RoleMembersDialog] user_departments result:', { count: userDepts?.length, error: userDeptsError?.message });
+      debug.log('[RoleMembersDialog] user_departments result:', { count: userDepts?.length, error: userDeptsError?.message });
 
       if (userDeptsError) throw userDeptsError;
 
@@ -136,7 +136,7 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
         return a.userName.localeCompare(b.userName);
       });
 
-      debugLog('[RoleMembersDialog] Processed members:', memberData.length);
+      debug.log('[RoleMembersDialog] Processed members:', memberData.length);
       return memberData;
     },
     enabled: isOpen,

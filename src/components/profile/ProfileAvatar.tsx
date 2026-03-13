@@ -1,5 +1,5 @@
 
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import React, { useRef, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -34,13 +34,13 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
   };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    debugLog('ProfileAvatar: File selected:', event.target.files);
+    debug.log('ProfileAvatar: File selected:', event.target.files);
     const file = event.target.files?.[0];
     if (!file) {
-      debugLog('ProfileAvatar: No file selected');
+      debug.log('ProfileAvatar: No file selected');
       return;
     }
-    debugLog('ProfileAvatar: Processing file:', file.name, file.type, file.size);
+    debug.log('ProfileAvatar: Processing file:', file.name, file.type, file.size);
 
     // Check file type - only images
     const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -89,7 +89,7 @@ const ProfileAvatar: React.FC<ProfileAvatarProps> = ({
       }
 
       // Upload to Supabase Storage
-      const { data, error } = await supabase.storage
+      const { data: _data, error } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, {
           cacheControl: '3600',

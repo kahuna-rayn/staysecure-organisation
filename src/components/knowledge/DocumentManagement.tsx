@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,10 +8,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Plus, Search, Edit, Trash2, Users, Calendar, ExternalLink, Save } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Calendar, Eye, Save, Upload, Link, Loader2, FileText } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
+import debug from '../../utils/debug';
+
 interface Document {
   document_id: string;
   title: string;
@@ -27,17 +29,30 @@ interface Document {
   updated_at: string;
 }
 
-interface DocumentManagementProps {
-  onNavigateToAssignments: () => void;
+interface DocumentFormData {
+  title: string;
+  description: string;
+  category: string;
+  required: boolean;
+  url?: string;
+  file_name?: string;
+  file_type?: string;
+  version: number;
+  due_days: number;
 }
 
-const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAssignments }) => {
+interface DocumentManagementProps {
+  onNavigateToAssignments?: () => void;
+}
+
+const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAssignments: _onNavigateToAssignments }) => {
   const { supabaseClient: supabase } = useOrganisationContext();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
+  const [openingDocId, setOpeningDocId] = useState<string | null>(null);
 
   const { data: documents, isLoading } = useQuery({
     queryKey: ['documents'],
@@ -53,7 +68,7 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
   });
 
   const createDocumentMutation = useMutation({
-    mutationFn: async (documentData: Omit<Document, 'document_id' | 'created_at' | 'updated_at'>) => {
+    mutationFn: async (documentData: DocumentFormData) => {
       const { error } = await supabase
         .from('documents')
         .insert([documentData]);
@@ -63,22 +78,15 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       setIsCreateDialogOpen(false);
-      toast({
-        title: "Success",
-        description: "Document created successfully",
-      });
+      toast({ title: "Success", description: "Document created successfully" });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 
   const updateDocumentMutation = useMutation({
-    mutationFn: async (documentData: Partial<Document> & { document_id: string }) => {
+    mutationFn: async (documentData: Partial<DocumentFormData> & { document_id: string }) => {
       const { error } = await supabase
         .from('documents')
         .update(documentData)
@@ -89,90 +97,75 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
       setEditingDocument(null);
-      toast({
-        title: "Success",
-        description: "Document updated successfully",
-      });
+      toast({ title: "Success", description: "Document updated successfully" });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 
   const deleteDocumentMutation = useMutation({
-    mutationFn: async (documentId: string) => {
+    mutationFn: async (doc: Document) => {
+      // Remove the stored file from Storage if present
+      if (doc.file_name) {
+        await supabase.storage.from('documents').remove([doc.file_name]);
+      }
       const { error } = await supabase
         .from('documents')
         .delete()
-        .eq('document_id', documentId);
+        .eq('document_id', doc.document_id);
 
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['documents'] });
-      toast({
-        title: "Success",
-        description: "Document deleted successfully",
-      });
+      toast({ title: "Success", description: "Document deleted successfully" });
     },
     onError: (error: any) => {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     },
   });
 
-  const filteredDocuments = documents?.filter(doc => {
+  const handleOpenDocument = async (doc: Document) => {
+    // External URL — open directly without edge function
+    if (!doc.file_name && doc.url) {
+      window.open(doc.url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (!doc.file_name) return;
+
+    setOpeningDocId(doc.document_id);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      debug.log('[DocumentManagement.handleOpenDocument] session present:', !!session);
+      debug.log('[DocumentManagement.handleOpenDocument] token prefix:', session?.access_token?.substring(0, 20) ?? 'none');
+      debug.log('[DocumentManagement.handleOpenDocument] supabase.functions available:', !!(supabase as any).functions);
+      debug.log('[DocumentManagement.handleOpenDocument] document_id:', doc.document_id);
+
+      const { data, error } = await supabase.functions.invoke('get-document-url', {
+        body: { document_id: doc.document_id },
+      });
+
+      debug.log('[DocumentManagement.handleOpenDocument] invoke result — data:', data, '| error:', error);
+      if (error) throw error;
+      window.open(data.url, '_blank', 'noopener,noreferrer');
+    } catch (err: any) {
+      debug.error('[DocumentManagement.handleOpenDocument] error:', err);
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setOpeningDocId(null);
+    }
+  };
+
+  const filteredDocuments = documents?.filter((doc: Document) => {
     const matchesSearch = doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doc.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || doc.category === categoryFilter;
     return matchesSearch && matchesCategory;
   });
 
-  const categories = Array.from(new Set(documents?.map(doc => doc.category).filter(Boolean)));
-
-  const handleCreateDocument = (formData: FormData) => {
-    const documentData = {
-      title: formData.get('title') as string,
-      description: formData.get('description') as string,
-      category: formData.get('category') as string,
-      required: formData.get('required') === 'on',
-      url: formData.get('url') as string,
-      version: parseInt(formData.get('version') as string) || 1,
-      due_days: parseInt(formData.get('due_days') as string) || 30,
-    };
-
-    createDocumentMutation.mutate(documentData);
-  };
-
-  const handleUpdateDocument = (formData: FormData) => {
-    if (!editingDocument) return;
-
-    const documentData = {
-      document_id: editingDocument.document_id,
-      title: formData.get('title') as string,
-      description: formData.get('description') as string,
-      category: formData.get('category') as string,
-      required: formData.get('required') === 'on',
-      url: formData.get('url') as string,
-      version: parseInt(formData.get('version') as string) || 1,
-      due_days: parseInt(formData.get('due_days') as string) || 30,
-    };
-
-    updateDocumentMutation.mutate(documentData);
-  };
-
-  const handleDeleteDocument = (documentId: string) => {
-    if (confirm('Are you sure you want to delete this document?')) {
-      deleteDocumentMutation.mutate(documentId);
-    }
-  };
+  const categories = Array.from(new Set(documents?.map((doc: Document) => doc.category).filter(Boolean)));
 
   if (isLoading) {
     return (
@@ -205,7 +198,11 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
                 Add a new document to the knowledge base
               </DialogDescription>
             </DialogHeader>
-            <DocumentForm onSubmit={handleCreateDocument} />
+            <DocumentForm
+              supabase={supabase}
+              onSubmit={(data) => createDocumentMutation.mutate(data)}
+              isSubmitting={createDocumentMutation.isPending}
+            />
           </DialogContent>
         </Dialog>
       </div>
@@ -220,7 +217,7 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
               id="search"
               placeholder="Search by title or description..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -245,7 +242,7 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
 
       {/* Document List */}
       <div className="grid gap-4">
-        {filteredDocuments?.map((document) => (
+        {filteredDocuments?.map((document: Document) => (
           <Card key={document.document_id}>
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -258,6 +255,17 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
                     <Badge variant="outline" className="text-xs">
                       v{document.version}
                     </Badge>
+                    {document.file_name ? (
+                      <Badge variant="secondary" className="text-xs gap-1">
+                        <FileText className="h-3 w-3" />
+                        File
+                      </Badge>
+                    ) : document.url ? (
+                      <Badge variant="secondary" className="text-xs gap-1">
+                        <Link className="h-3 w-3" />
+                        URL
+                      </Badge>
+                    ) : null}
                   </div>
                   {document.description && (
                     <CardDescription className="mt-2">
@@ -266,17 +274,38 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  {(document.url || document.file_name) && (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      onClick={() => handleOpenDocument(document)}
+                      disabled={openingDocId === document.document_id}
+                      title="View document"
+                    >
+                      {openingDocId === document.document_id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
                   <Button
                     variant="outline"
-                    size="sm"
+                    size="icon"
                     onClick={() => setEditingDocument(document)}
+                    title="Edit document"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
                     variant="outline"
-                    size="sm"
-                    onClick={() => handleDeleteDocument(document.document_id)}
+                    size="icon"
+                    onClick={() => {
+                      if (confirm('Are you sure you want to delete this document?')) {
+                        deleteDocumentMutation.mutate(document);
+                      }
+                    }}
+                    title="Delete document"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -284,36 +313,16 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    Due in {document.due_days} days
-                  </div>
-                  {document.category && (
-                    <Badge variant="outline" className="text-xs">
-                      {document.category}
-                    </Badge>
-                  )}
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  Due in {document.due_days} days
                 </div>
-                <div className="flex items-center gap-2">
-                  {document.url && (
-                    <Button variant="outline" size="sm" asChild>
-                      <a href={document.url} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        View
-                      </a>
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onNavigateToAssignments}
-                  >
-                    <Users className="h-4 w-4 mr-1" />
-                    Assign
-                  </Button>
-                </div>
+                {document.category && (
+                  <Badge variant="outline" className="text-xs">
+                    {document.category}
+                  </Badge>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -331,8 +340,10 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
               </DialogDescription>
             </DialogHeader>
             <DocumentForm
+              supabase={supabase}
               initialData={editingDocument}
-              onSubmit={handleUpdateDocument}
+              onSubmit={(data) => updateDocumentMutation.mutate({ ...data, document_id: editingDocument.document_id })}
+              isSubmitting={updateDocumentMutation.isPending}
             />
           </DialogContent>
         </Dialog>
@@ -341,17 +352,108 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
   );
 };
 
+// ---------------------------------------------------------------------------
+// DocumentForm
+// ---------------------------------------------------------------------------
+
 interface DocumentFormProps {
+  supabase: any;
   initialData?: Document;
-  onSubmit: (formData: FormData) => void;
+  onSubmit: (data: DocumentFormData) => void;
+  isSubmitting?: boolean;
 }
 
-const DocumentForm: React.FC<DocumentFormProps> = ({ initialData, onSubmit }) => {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    onSubmit(formData);
+const ACCEPTED_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/vnd.ms-powerpoint',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'text/plain',
+  'text/csv',
+  'image/png',
+  'image/jpeg',
+];
+
+const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSubmit, isSubmitting }) => {
+  const [title, setTitle] = useState(initialData?.title ?? '');
+  const [description, setDescription] = useState(initialData?.description ?? '');
+  const [category, setCategory] = useState(initialData?.category ?? '');
+  const [required, setRequired] = useState(initialData?.required ?? false);
+  const [version, setVersion] = useState(initialData?.version ?? 1);
+  const [dueDays, setDueDays] = useState(initialData?.due_days ?? 30);
+
+  // Source: 'url' or 'file'. Default to 'file' if doc already has a file_name.
+  const [sourceType, setSourceType] = useState<'url' | 'file'>(
+    initialData?.file_name ? 'file' : 'url'
+  );
+  const [url, setUrl] = useState(initialData?.url ?? '');
+
+  // File upload state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const existingFileName = initialData?.file_name;
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0] ?? null;
+    setSelectedFile(file);
   };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    let file_name = sourceType === 'file' ? existingFileName : undefined;
+    let file_type = sourceType === 'file' ? initialData?.file_type : undefined;
+    let finalUrl = sourceType === 'url' ? url : undefined;
+
+    if (sourceType === 'file' && selectedFile) {
+      setIsUploading(true);
+      try {
+        // Remove old file if replacing
+        if (existingFileName) {
+          await supabase.storage.from('documents').remove([existingFileName]);
+        }
+
+        const ext = selectedFile.name.split('.').pop();
+        const storagePath = `${crypto.randomUUID()}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('documents')
+          .upload(storagePath, selectedFile, {
+            contentType: selectedFile.type,
+            upsert: false,
+          });
+
+        if (uploadError) throw uploadError;
+
+        file_name = storagePath;
+        file_type = selectedFile.type;
+        finalUrl = undefined;
+      } catch (err: any) {
+        toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+        return;
+      } finally {
+        setIsUploading(false);
+      }
+    }
+
+    onSubmit({
+      title,
+      description,
+      category,
+      required,
+      url: finalUrl,
+      file_name,
+      file_type,
+      version,
+      due_days: dueDays,
+    });
+  };
+
+  const busy = isUploading || isSubmitting;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -359,8 +461,8 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ initialData, onSubmit }) =>
         <Label htmlFor="title">Title *</Label>
         <Input
           id="title"
-          name="title"
-          defaultValue={initialData?.title}
+          value={title}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
           required
         />
       </div>
@@ -369,8 +471,8 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ initialData, onSubmit }) =>
         <Label htmlFor="description">Description</Label>
         <Textarea
           id="description"
-          name="description"
-          defaultValue={initialData?.description}
+          value={description}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setDescription(e.target.value)}
         />
       </div>
 
@@ -379,8 +481,8 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ initialData, onSubmit }) =>
           <Label htmlFor="category">Category</Label>
           <Input
             id="category"
-            name="category"
-            defaultValue={initialData?.category}
+            value={category}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCategory(e.target.value)}
             placeholder="e.g., Policy, Training"
           />
         </div>
@@ -388,48 +490,111 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ initialData, onSubmit }) =>
           <Label htmlFor="version">Version</Label>
           <Input
             id="version"
-            name="version"
             type="number"
             min="1"
-            defaultValue={initialData?.version || 1}
+            value={version}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVersion(parseInt(e.target.value) || 1)}
           />
         </div>
       </div>
 
+      {/* Document source toggle */}
       <div>
-        <Label htmlFor="url">Document URL</Label>
-        <Input
-          id="url"
-          name="url"
-          type="url"
-          defaultValue={initialData?.url}
-          placeholder="https://example.com/document.pdf"
-        />
+        <Label>Document Source</Label>
+        <div className="flex gap-2 mt-1">
+          <Button
+            type="button"
+            variant={sourceType === 'url' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setSourceType('url')}
+          >
+            <Link className="h-4 w-4 mr-1" />
+            External URL
+          </Button>
+          <Button
+            type="button"
+            variant={sourceType === 'file' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setSourceType('file')}
+          >
+            <Upload className="h-4 w-4 mr-1" />
+            Upload File
+          </Button>
+        </div>
       </div>
+
+      {sourceType === 'url' ? (
+        <div>
+          <Label htmlFor="url">Document URL</Label>
+          <Input
+            id="url"
+            type="url"
+            value={url}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
+            placeholder="https://example.com/document.pdf"
+          />
+        </div>
+      ) : (
+        <div>
+          <Label htmlFor="file">Upload File</Label>
+          {existingFileName && !selectedFile && (
+            <p className="text-sm text-muted-foreground mb-1 flex items-center gap-1">
+              <FileText className="h-4 w-4" />
+              Current file: {existingFileName.split('/').pop()}
+            </p>
+          )}
+          <div
+            className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {selectedFile ? (
+              <p className="text-sm font-medium">{selectedFile.name}</p>
+            ) : (
+              <div className="space-y-1">
+                <Upload className="h-8 w-8 mx-auto text-muted-foreground" />
+                <p className="text-sm text-muted-foreground">Click to select a file</p>
+                <p className="text-xs text-muted-foreground">PDF, Word, Excel, PowerPoint, TXT, CSV (max 50 MB)</p>
+              </div>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="hidden"
+            accept={ACCEPTED_TYPES.join(',')}
+            onChange={handleFileChange}
+          />
+        </div>
+      )}
 
       <div>
         <Label htmlFor="due_days">Due Days</Label>
         <Input
           id="due_days"
-          name="due_days"
           type="number"
           min="1"
-          defaultValue={initialData?.due_days || 30}
+          value={dueDays}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setDueDays(parseInt(e.target.value) || 30)}
         />
       </div>
 
       <div className="flex items-center space-x-2">
         <Checkbox
           id="required"
-          name="required"
-          defaultChecked={initialData?.required}
+          checked={required}
+          onCheckedChange={(val: boolean | 'indeterminate') => setRequired(!!val)}
         />
         <Label htmlFor="required">Required reading</Label>
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
-        <Button type="submit" size="icon">
-          <Save className="h-4 w-4" />
+        <Button type="submit" size="sm" disabled={busy}>
+          {busy ? (
+            <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4 mr-1" />
+          )}
+          {isUploading ? 'Uploading…' : 'Save'}
         </Button>
       </div>
     </form>

@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Calendar, Circle, CheckCircle, Clock, ExternalLink, Search } from 'lucide-react';
+import { FileText, Calendar, Circle, CheckCircle, Clock, ExternalLink, Search, Loader2 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
@@ -43,6 +43,7 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [activeTab, setActiveTab] = useState('assigned');
+  const [openingDocId, setOpeningDocId] = useState<string | null>(null);
 
   // Use provided userId or fall back to current user
   const targetUserId = userId || user?.id;
@@ -109,17 +110,41 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
     updateStatusMutation.mutate({ assignmentId, status: newStatus });
   };
 
-  const filteredAssignments = assignments?.filter(assignment => {
+  const handleOpenDocument = async (documentId: string, url?: string, fileName?: string) => {
+    // External URL — open directly without edge function
+    if (!fileName && url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    if (!fileName) return;
+
+    setOpeningDocId(documentId);
+    try {
+      const { data, error } = await supabase.functions.invoke('get-document-url', {
+        body: { document_id: documentId },
+      });
+
+      if (error) throw error;
+      window.open(data.url, '_blank', 'noopener,noreferrer');
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setOpeningDocId(null);
+    }
+  };
+
+  const filteredAssignments = assignments?.filter((assignment: DocumentAssignment) => {
     const matchesSearch = assignment.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          assignment.document.description?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || assignment.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
-  const requiredAssignments = filteredAssignments?.filter(a => a.document.required);
-  const optionalAssignments = filteredAssignments?.filter(a => !a.document.required);
+  const requiredAssignments = filteredAssignments?.filter((a: DocumentAssignment) => a.document.required);
+  const optionalAssignments = filteredAssignments?.filter((a: DocumentAssignment) => !a.document.required);
 
-  const completedCount = assignments?.filter(a => a.status === 'Completed').length || 0;
+  const completedCount = assignments?.filter((a: DocumentAssignment) => a.status === 'Completed').length || 0;
   const totalCount = assignments?.length || 0;
   const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -171,7 +196,7 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
               id="search"
               placeholder="Search by title or description..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               className="pl-10"
             />
           </div>
@@ -207,15 +232,15 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
         </TabsList>
 
         <TabsContent value="assigned" className="space-y-4">
-          <DocumentList assignments={filteredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} />
+          <DocumentList assignments={filteredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} onOpenDocument={handleOpenDocument} openingDocId={openingDocId} />
         </TabsContent>
 
         <TabsContent value="required" className="space-y-4">
-          <DocumentList assignments={requiredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} />
+          <DocumentList assignments={requiredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} onOpenDocument={handleOpenDocument} openingDocId={openingDocId} />
         </TabsContent>
 
         <TabsContent value="optional" className="space-y-4">
-          <DocumentList assignments={optionalAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} />
+          <DocumentList assignments={optionalAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} onOpenDocument={handleOpenDocument} openingDocId={openingDocId} />
         </TabsContent>
       </Tabs>
     </div>
@@ -225,10 +250,12 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
 interface DocumentListProps {
   assignments: DocumentAssignment[];
   onStatusChange: (assignmentId: string, status: string) => void;
+  onOpenDocument: (documentId: string, url?: string, fileName?: string) => void;
+  openingDocId: string | null;
   isReadOnly?: boolean;
 }
 
-const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange, isReadOnly = false }) => {
+const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange, onOpenDocument, openingDocId, isReadOnly = false }) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -307,12 +334,23 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
                 )}
               </div>
               <div className="flex items-center gap-2">
-                {assignment.document.url && (
-                  <Button variant="outline" size="sm" asChild>
-                    <a href={assignment.document.url} target="_blank" rel="noopener noreferrer">
+                {(assignment.document.url || assignment.document.file_name) && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onOpenDocument(
+                      assignment.document_id,
+                      assignment.document.url,
+                      assignment.document.file_name,
+                    )}
+                    disabled={openingDocId === assignment.document_id}
+                  >
+                    {openingDocId === assignment.document_id ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
                       <ExternalLink className="h-4 w-4 mr-1" />
-                      View
-                    </a>
+                    )}
+                    View
                   </Button>
                 )}
                 {isReadOnly ? (
@@ -322,7 +360,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
                 ) : (
                   <Select
                     value={assignment.status}
-                    onValueChange={(value) => onStatusChange(assignment.assignment_id, value)}
+                    onValueChange={(value: string) => onStatusChange(assignment.assignment_id, value)}
                   >
                     <SelectTrigger className="w-[140px]">
                       <SelectValue />

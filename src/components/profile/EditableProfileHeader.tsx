@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -71,9 +71,9 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
       // Use basePath from OrganisationProvider context (e.g. "/nexus") — reliable across all routes
       const redirectUrl = `${window.location.origin}${basePath || ''}/reset-password`;
 
-      debugLog('[handleSendPasswordReset] basePath:', basePath || '(none)');
-      debugLog('[handleSendPasswordReset] redirectUrl:', redirectUrl);
-      debugLog('[handleSendPasswordReset] email:', email);
+      debug.log('[EditableProfileHeader.handleSendPasswordReset] basePath:', basePath || '(none)');
+      debug.log('[EditableProfileHeader.handleSendPasswordReset] redirectUrl:', redirectUrl);
+      debug.log('[EditableProfileHeader.handleSendPasswordReset] email:', email);
 
       const { error } = await supabaseClient.functions.invoke('send-password-reset', {
         body: { email, redirectUrl },
@@ -441,7 +441,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 <Select 
                   value={(profile.language as string) || 'English'} 
                   onValueChange={async (value) => {
-                    debugLog('Select onValueChange - value:', value);
+                    debug.log('[EditableProfileHeader] Select onValueChange - value:', value);
                     try {
                       setSavingLanguage(true);
                       await handleFieldSave('language', value);
@@ -459,7 +459,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                       // Save display_name (e.g., 'Chinese', 'English') to match what's stored in profiles
                       const langValue = lang.display_name || lang.code;
                       const langLabel = lang.native_name || lang.display_name || lang.code;
-                      debugLog('langValue:', langValue, 'langLabel:', langLabel);
+                      debug.log('[EditableProfileHeader] langValue:', langValue, 'langLabel:', langLabel);
                       return (
                         <SelectItem key={langValue} value={langValue}>
                           <div className="flex items-center gap-2">

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -134,12 +134,12 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   // Helper function to validate location
   const validateLocation = (locationName: string): { isValid: boolean; locationId?: string } => {
     if (!locationName || !validLocations) {
-      debugLog('Location validation: No location name or validLocations not loaded', { locationName, validLocations });
+      debug.log('Location validation: No location name or validLocations not loaded', { locationName, validLocations });
       return { isValid: false };
     }
 
     const trimmedLocation = locationName.trim();
-    debugLog('Location validation: Checking location', { 
+    debug.log('Location validation: Checking location', { 
       providedLocation: trimmedLocation, 
       availableLocations: validLocations.map((l: { name: string }) => l.name) 
     });
@@ -148,7 +148,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       (loc: { name: string }) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
     );
 
-    debugLog('Location validation result:', { 
+    debug.log('Location validation result:', { 
       location: trimmedLocation, 
       found: !!validLocation, 
       validLocation 
@@ -266,7 +266,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   const translateError = (error: any): string => {
     const errorMessage = error?.message || error?.error || 'Unknown error';
     
-    debugLog('Translating error:', { originalError: error, errorMessage });
+    debug.log('Translating error:', { originalError: error, errorMessage });
     
     // Handle specific Supabase/Edge Function errors
     if (errorMessage.includes('Edge Function returned a non-2xx status code')) {
@@ -371,7 +371,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error('Last Name is required for all users.');
     }
 
-    debugLog('Processing user:', email);
+    debug.log('Processing user:', email);
 
     // Validate all fields BEFORE creating user
     const accessLevelValue = row['Access Level'] || row['access_level'] || '';
@@ -462,7 +462,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     }
 
     if (authData && authData.user) {
-      debugLog('User created successfully:', email);
+      debug.log('User created successfully:', email);
     } else if (authData && authData.error) {
       console.error('Create user error:', authData.error);
       const friendlyError = translateError(authData.error);
@@ -661,7 +661,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             return;
           }
 
-          debugLog('Processing', data.length, 'rows');
+          debug.log('Processing', data.length, 'rows');
           let successCount = 0;
           const errors: ImportError[] = [];
           const warnings: ImportError[] = [];
@@ -672,7 +672,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             const row = data[i];
             
             if (!row['Email'] && !row['email'] && !row['Full Name'] && !row['full_name']) {
-              debugLog('Skipping empty row at index', i);
+              debug.log('Skipping empty row at index', i);
               continue;
             }
 
@@ -680,10 +680,10 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             const rowNumber = i + 2;
             
             try {
-              debugLog(`Processing user ${i + 1} of ${data.length}:`, email);
+              debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
               const result = await processUserImport(row);
               successCount++;
-              debugLog(`Successfully processed user ${i + 1}`);
+              debug.log(`Successfully processed user ${i + 1}`);
               
               createdUsers.push({
                 rowNumber,
@@ -750,7 +750,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                     rawData: u.row
                   });
                 } else {
-                  debugLog(`Assigned manager ${u.managerEmail} for user ${u.email}`);
+                  debug.log(`Assigned manager ${u.managerEmail} for user ${u.email}`);
                 }
               } catch (err: any) {
                 warnings.push({
@@ -772,7 +772,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             }
           }
 
-          debugLog('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
+          debug.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
 
           setUploadedFile(null);
           setIsProcessing(false);

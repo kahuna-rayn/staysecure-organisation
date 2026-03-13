@@ -1,5 +1,5 @@
 import React, { useState, forwardRef, useImperativeHandle } from 'react';
-import { debugLog } from '../../utils/debugLog';
+import debug from '../../utils/debug';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -62,7 +62,7 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
     queryFn: async () => {
       if (!userId) return [];
       
-      debugLog('UserDepartmentsRolesTable: Fetching roles for user:', userId);
+      debug.log('UserDepartmentsRolesTable: Fetching roles for user:', userId);
       const { data, error } = await supabase
         .from('user_profile_roles')
         .select(`
@@ -74,8 +74,8 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
         .eq('user_id', userId)
         .order('is_primary', { ascending: false });
       
-      debugLog('UserDepartmentsRolesTable: Raw roles data:', data);
-      debugLog('UserDepartmentsRolesTable: Roles query error:', error);
+      debug.log('UserDepartmentsRolesTable: Raw roles data:', data);
+      debug.log('UserDepartmentsRolesTable: Roles query error:', error);
       
       if (error) throw error;
       
@@ -98,7 +98,7 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
         return (a.role_name || '').localeCompare(b.role_name || '');
       });
       
-      debugLog('UserDepartmentsRolesTable: Transformed roles data:', transformedData);
+      debug.log('UserDepartmentsRolesTable: Transformed roles data:', transformedData);
       return transformedData;
     },
     enabled: !!userId,
@@ -122,13 +122,13 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
   // Add role mutation
   const addRoleMutation = useMutation({
     mutationFn: async ({ roleId, pairingId }: { roleId: string; pairingId?: string }) => {
-      debugLog('UserDepartmentsRolesTable: addRoleMutation called with roleId:', roleId, 'pairingId:', pairingId);
+      debug.log('UserDepartmentsRolesTable: addRoleMutation called with roleId:', roleId, 'pairingId:', pairingId);
       const role = allRoles.find(r => r.role_id === roleId);
-      debugLog('UserDepartmentsRolesTable: Found role:', role);
+      debug.log('UserDepartmentsRolesTable: Found role:', role);
       if (!role) throw new Error('Role not found');
 
       const isPrimary = userRoles.length === 0;
-      debugLog('UserDepartmentsRolesTable: isPrimary:', isPrimary, 'userRoles.length:', userRoles.length);
+      debug.log('UserDepartmentsRolesTable: isPrimary:', isPrimary, 'userRoles.length:', userRoles.length);
       
       const insertData = {
         user_id: userId,
@@ -137,21 +137,21 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
         assigned_by: user?.id,
         pairing_id: pairingId
       };
-      debugLog('UserDepartmentsRolesTable: Inserting role data:', insertData);
+      debug.log('UserDepartmentsRolesTable: Inserting role data:', insertData);
       
       const { data, error } = await supabase
         .from('user_profile_roles')
         .insert(insertData)
         .select();
       
-      debugLog('UserDepartmentsRolesTable: Insert result:', data);
-      debugLog('UserDepartmentsRolesTable: Insert error:', error);
+      debug.log('UserDepartmentsRolesTable: Insert result:', data);
+      debug.log('UserDepartmentsRolesTable: Insert error:', error);
       
       if (error) throw error;
       return role;
     },
     onSuccess: (data) => {
-      debugLog('UserDepartmentsRolesTable: Role assignment successful:', data);
+      debug.log('UserDepartmentsRolesTable: Role assignment successful:', data);
       queryClient.invalidateQueries({ queryKey: ['user-roles', userId] });
       toast.success('Role assigned successfully');
     },
@@ -267,19 +267,19 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
   };
 
   const getAvailableRoles = (selectedDepartmentId?: string) => {
-    debugLog('getAvailableRoles called with:', selectedDepartmentId);
-    debugLog('allRoles:', allRoles);
+    debug.log('getAvailableRoles called with:', selectedDepartmentId);
+    debug.log('allRoles:', allRoles);
     
     if (!selectedDepartmentId) {
       // Show only roles without departments (general roles)
       const generalRoles = allRoles.filter(role => !role.department_id);
-      debugLog('No department selected, showing general roles:', generalRoles);
+      debug.log('No department selected, showing general roles:', generalRoles);
       return generalRoles;
     }
     
     // Show ONLY roles from the selected department (not general roles)
     const departmentRoles = allRoles.filter(role => role.department_id === selectedDepartmentId);
-    debugLog(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
+    debug.log(`Department ${selectedDepartmentId} selected, showing ONLY department roles:`, departmentRoles);
     
     return departmentRoles;
   };
@@ -336,9 +336,9 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
   const handleSaveNewRow = async (index: number) => {
     const row = newRows[index];
     
-    debugLog('UserDepartmentsRolesTable: Saving new row:', row);
-    debugLog('UserDepartmentsRolesTable: Current userRoles:', userRoles);
-    debugLog('UserDepartmentsRolesTable: Current userDepartments:', userDepartments);
+    debug.log('UserDepartmentsRolesTable: Saving new row:', row);
+    debug.log('UserDepartmentsRolesTable: Current userRoles:', userRoles);
+    debug.log('UserDepartmentsRolesTable: Current userDepartments:', userDepartments);
     
     // Ensure at least one field is selected
     if (!row.departmentId && !row.roleId) {
@@ -349,18 +349,18 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
     try {
       // Generate pairing_id if both department and role are selected
       const pairingId = (row.departmentId && row.roleId) ? crypto.randomUUID() : undefined;
-      debugLog('UserDepartmentsRolesTable: Generated pairingId:', pairingId);
+      debug.log('UserDepartmentsRolesTable: Generated pairingId:', pairingId);
       
       // Add department if selected and not already assigned
       if (row.departmentId) {
         const isDepartmentAlreadyAssigned = userDepartments.some(dept => dept.department_id === row.departmentId);
-        debugLog('UserDepartmentsRolesTable: Department already assigned?', isDepartmentAlreadyAssigned);
-        debugLog('UserDepartmentsRolesTable: Current userDepartments:', userDepartments);
-        debugLog('UserDepartmentsRolesTable: Looking for departmentId:', row.departmentId);
+        debug.log('UserDepartmentsRolesTable: Department already assigned?', isDepartmentAlreadyAssigned);
+        debug.log('UserDepartmentsRolesTable: Current userDepartments:', userDepartments);
+        debug.log('UserDepartmentsRolesTable: Looking for departmentId:', row.departmentId);
         if (!isDepartmentAlreadyAssigned) {
           const isPrimary = userDepartments.length === 0;
-          debugLog('UserDepartmentsRolesTable: Adding department with isPrimary:', isPrimary);
-          debugLog('UserDepartmentsRolesTable: Department params:', { 
+          debug.log('UserDepartmentsRolesTable: Adding department with isPrimary:', isPrimary);
+          debug.log('UserDepartmentsRolesTable: Department params:', { 
             userId, 
             departmentId: row.departmentId, 
             isPrimary,
@@ -374,19 +374,19 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
             pairingId,
             assignedBy: user?.id
           });
-          debugLog('UserDepartmentsRolesTable: Department addition completed');
+          debug.log('UserDepartmentsRolesTable: Department addition completed');
         } else {
-          debugLog('UserDepartmentsRolesTable: Department already assigned, skipping');
+          debug.log('UserDepartmentsRolesTable: Department already assigned, skipping');
         }
       }
       
       // Add role if selected and not already assigned
       if (row.roleId) {
         const isRoleAlreadyAssigned = userRoles.some(role => role.role_id === row.roleId);
-        debugLog('UserDepartmentsRolesTable: Role already assigned?', isRoleAlreadyAssigned);
-        debugLog('UserDepartmentsRolesTable: Checking roleId', row.roleId, 'against userRoles:', userRoles.map(r => r.role_id));
+        debug.log('UserDepartmentsRolesTable: Role already assigned?', isRoleAlreadyAssigned);
+        debug.log('UserDepartmentsRolesTable: Checking roleId', row.roleId, 'against userRoles:', userRoles.map(r => r.role_id));
         if (!isRoleAlreadyAssigned) {
-          debugLog('UserDepartmentsRolesTable: Adding role with roleId:', row.roleId);
+          debug.log('UserDepartmentsRolesTable: Adding role with roleId:', row.roleId);
           await addRoleMutation.mutateAsync({ 
             roleId: row.roleId,
             pairingId

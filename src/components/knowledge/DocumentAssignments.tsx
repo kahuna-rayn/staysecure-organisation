@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useAuth } from 'staysecure-auth';
 import { toast } from '@/components/ui/use-toast';
+import { sendNotificationByEvent } from 'staysecure-notifications';
 import DocumentAssignmentsDrillDown from './DocumentAssignmentsDrillDown';
 
 interface Document {
@@ -43,7 +44,8 @@ interface UserProfile {
 }
 
 const DocumentAssignments: React.FC = () => {
-  const { supabaseClient: supabase } = useOrganisationContext();
+  const { supabaseClient: supabase, basePath } = useOrganisationContext();
+  const clientId = basePath ? basePath.replace(/^\//, '') : 'default';
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
@@ -250,10 +252,10 @@ const DocumentAssignments: React.FC = () => {
             role_id: roleId
           });
           
-          const result = await supabase.from('document_roles').insert({
+          const result = await supabase.from('document_roles').upsert({
             document_id: selectedDocument.document_id,
             role_id: roleId
-          });
+          }, { ignoreDuplicates: true });
           
           console.log('Insert result:', result);
           
@@ -272,10 +274,10 @@ const DocumentAssignments: React.FC = () => {
             department_id: departmentId
           });
           
-          const result = await supabase.from('document_departments').insert({
+          const result = await supabase.from('document_departments').upsert({
             document_id: selectedDocument.document_id,
             department_id: departmentId
-          });
+          }, { ignoreDuplicates: true });
           
           console.log('Insert result:', result);
           
@@ -294,10 +296,10 @@ const DocumentAssignments: React.FC = () => {
             user_id: userId
           });
           
-          const result = await supabase.from('document_users').insert({
+          const result = await supabase.from('document_users').upsert({
             document_id: selectedDocument.document_id,
             user_id: userId
-          });
+          }, { ignoreDuplicates: true });
           
           console.log('Insert result:', result);
           
@@ -313,6 +315,44 @@ const DocumentAssignments: React.FC = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['document-assignments-overview'] });
+
+      // Resolve user IDs and fire a notification per user (fire-and-forget)
+      if (selectedDocument && selectedTargets.length > 0) {
+        const docTitle = selectedDocument.title;
+        const dueDays = selectedDocument.due_days;
+        const targets = [...selectedTargets];
+        const type = assignmentType;
+
+        const fireNotifications = async () => {
+          let userIds: string[] = [];
+          if (type === 'users') {
+            userIds = targets;
+          } else if (type === 'departments') {
+            const { data } = await supabase
+              .from('user_departments').select('user_id').in('department_id', targets);
+            userIds = (data || []).map((r: { user_id: string }) => r.user_id);
+          } else if (type === 'roles') {
+            const { data } = await supabase
+              .from('user_departments').select('user_id').in('role_id', targets);
+            userIds = (data || []).map((r: { user_id: string }) => r.user_id);
+          }
+          await Promise.all(
+            [...new Set(userIds)].map(userId =>
+              sendNotificationByEvent(supabase, 'document_assigned', {
+                user_id: userId,
+                document_title: docTitle,
+                due_days: dueDays,
+                clientId,
+              })
+            )
+          );
+        };
+
+        fireNotifications().catch(err =>
+          console.error('[DocumentAssignments] notification error:', err)
+        );
+      }
+
       setIsAssignDialogOpen(false);
       setSelectedDocument(null);
       setSelectedTargets([]);

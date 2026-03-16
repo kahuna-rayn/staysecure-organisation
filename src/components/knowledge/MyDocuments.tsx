@@ -12,6 +12,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from 'staysecure-auth';
+import { sendNotificationByEvent } from 'staysecure-notifications';
 
 interface DocumentAssignment {
   assignment_id: string;
@@ -37,7 +38,7 @@ interface MyDocumentsProps {
 }
 
 const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
-  const { supabaseClient: supabase } = useOrganisationContext();
+  const { supabaseClient: supabase, basePath } = useOrganisationContext();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,10 +70,11 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ assignmentId, status }: { assignmentId: string; status: string }) => {
+    mutationFn: async ({ assignmentId, status, documentTitle }: { assignmentId: string; status: string; documentTitle: string }) => {
+      const completedAt = status === 'Completed' ? new Date().toISOString() : null;
       const updateData: any = { status };
       if (status === 'Completed') {
-        updateData.completed_at = new Date().toISOString();
+        updateData.completed_at = completedAt;
       } else if (status === 'Not started') {
         updateData.completed_at = null;
       }
@@ -83,9 +85,9 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
         .eq('assignment_id', assignmentId);
 
       if (error) throw error;
+      return { status, documentTitle, completedAt };
     },
-    onSuccess: () => {
-      // Invalidate all related queries
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ['document-assignments'] });
       queryClient.invalidateQueries({ queryKey: ['compliance-stats'] });
       queryClient.invalidateQueries({ queryKey: ['document-compliance-stats'] });
@@ -96,6 +98,27 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
         title: "Success",
         description: "Document status updated successfully",
       });
+
+      // Notify manager when user marks a document as completed (fire-and-forget)
+      if (result?.status === 'Completed') {
+        const clientId = basePath ? basePath.replace(/^\//, '') : 'default';
+        supabase
+          .from('profiles')
+          .select('manager')
+          .eq('id', targetUserId)
+          .maybeSingle()
+          .then(({ data: profile }) => {
+            if (profile?.manager) {
+              sendNotificationByEvent(supabase, 'document_completed_manager', {
+                user_id: profile.manager,
+                employee_user_id: targetUserId,
+                document_title: result.documentTitle,
+                completed_at: result.completedAt,
+                clientId,
+              }).catch(err => console.error('[MyDocuments] manager notification error:', err));
+            }
+          });
+      }
     },
     onError: (error: any) => {
       toast({
@@ -106,8 +129,8 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
     },
   });
 
-  const handleStatusChange = (assignmentId: string, newStatus: string) => {
-    updateStatusMutation.mutate({ assignmentId, status: newStatus });
+  const handleStatusChange = (assignmentId: string, newStatus: string, documentTitle: string) => {
+    updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle });
   };
 
   const handleOpenDocument = async (documentId: string, url?: string, fileName?: string) => {
@@ -249,7 +272,7 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
 
 interface DocumentListProps {
   assignments: DocumentAssignment[];
-  onStatusChange: (assignmentId: string, status: string) => void;
+  onStatusChange: (assignmentId: string, status: string, documentTitle: string) => void;
   onOpenDocument: (documentId: string, url?: string, fileName?: string) => void;
   openingDocId: string | null;
   isReadOnly?: boolean;
@@ -360,7 +383,7 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
                 ) : (
                   <Select
                     value={assignment.status}
-                    onValueChange={(value: string) => onStatusChange(assignment.assignment_id, value)}
+                    onValueChange={(value: string) => onStatusChange(assignment.assignment_id, value, assignment.document.title)}
                   >
                     <SelectTrigger className="w-[140px]">
                       <SelectValue />

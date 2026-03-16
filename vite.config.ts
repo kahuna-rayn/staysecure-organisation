@@ -73,6 +73,7 @@ export default defineConfig({
         'jspdf-autotable',
         'sonner',
         'staysecure-auth',
+        'staysecure-notifications',
         /^@\/hooks\//,
         /^@\/components\//,
         /^@\/integrations\//,
@@ -87,7 +88,8 @@ export default defineConfig({
           '@supabase/supabase-js': 'Supabase',
           '@tanstack/react-query': 'ReactQuery',
           'react-router-dom': 'ReactRouterDOM',
-          'staysecure-auth': 'StaySecureAuth'
+          'staysecure-auth': 'StaySecureAuth',
+          'staysecure-notifications': 'StaySecureNotifications'
         }
       }
     },

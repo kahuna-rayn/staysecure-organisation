@@ -162,7 +162,7 @@ export const handleCreateUser = async (
         language: newUser.language,
         bio: newUser.bio,
         employee_id: newUser.employee_id,
-        manager: newUser.manager || null,
+        manager: (newUser as any).manager || null,
       });
 
             // Assign physical location access if location is selected

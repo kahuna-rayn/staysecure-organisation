@@ -39,6 +39,7 @@
   "license": "MIT",
   "peerDependencies": {
     "@supabase/supabase-js": "^2.0.0",
+    "staysecure-notifications": "*",
     "@tanstack/react-query": "^5.0.0",
     "jspdf": "^3.0.0",
     "jspdf-autotable": "^5.0.0",

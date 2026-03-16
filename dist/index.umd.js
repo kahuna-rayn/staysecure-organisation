@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/alert"), require("@/components/ui/alert-dialog"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area"), require("@/components/ui/checkbox")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/alert", "@/components/ui/alert-dialog", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area", "@/components/ui/checkbox"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.deleteUserDialog, global.useToast$1, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.LearningTracksTab, global.useUserRoleById, global.alert, global.alertDialog, global.useProfile, global.useUserPhysicalLocations, global.scrollArea, global.checkbox));
-})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, deleteUserDialog, useToast$1, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, LearningTracksTab, useUserRoleById, alert, alertDialog, useProfile, useUserPhysicalLocations, scrollArea, checkbox) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("staysecure-notifications"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/alert"), require("@/components/ui/alert-dialog"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area"), require("@/components/ui/checkbox")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "staysecure-notifications", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/alert", "@/components/ui/alert-dialog", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area", "@/components/ui/checkbox"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.deleteUserDialog, global.useToast$1, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.StaySecureNotifications, global.LearningTracksTab, global.useUserRoleById, global.alert, global.alertDialog, global.useProfile, global.useUserPhysicalLocations, global.scrollArea, global.checkbox));
+})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, deleteUserDialog, useToast$1, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, staysecureNotifications, LearningTracksTab, useUserRoleById, alert, alertDialog, useProfile, useUserPhysicalLocations, scrollArea, checkbox) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -6810,7 +6810,7 @@
     ] }) });
   };
   const MyDocuments = ({ userId }) => {
-    const { supabaseClient: supabase } = useOrganisationContext();
+    const { supabaseClient: supabase, basePath } = useOrganisationContext();
     const { user } = staysecureAuth.useAuth();
     const queryClient = reactQuery.useQueryClient();
     const [searchTerm, setSearchTerm] = React.useState("");
@@ -6832,17 +6832,19 @@
       enabled: !!targetUserId
     });
     const updateStatusMutation = reactQuery.useMutation({
-      mutationFn: async ({ assignmentId, status }) => {
+      mutationFn: async ({ assignmentId, status, documentTitle }) => {
+        const completedAt = status === "Completed" ? (/* @__PURE__ */ new Date()).toISOString() : null;
         const updateData = { status };
         if (status === "Completed") {
-          updateData.completed_at = (/* @__PURE__ */ new Date()).toISOString();
+          updateData.completed_at = completedAt;
         } else if (status === "Not started") {
           updateData.completed_at = null;
         }
         const { error } = await supabase.from("document_assignments").update(updateData).eq("assignment_id", assignmentId);
         if (error) throw error;
+        return { status, documentTitle, completedAt };
       },
-      onSuccess: () => {
+      onSuccess: (result) => {
         queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
         queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
         queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
@@ -6853,6 +6855,20 @@
           title: "Success",
           description: "Document status updated successfully"
         });
+        if ((result == null ? void 0 : result.status) === "Completed") {
+          const clientId = basePath ? basePath.replace(/^\//, "") : "default";
+          supabase.from("profiles").select("manager").eq("id", targetUserId).maybeSingle().then(({ data: profile }) => {
+            if (profile == null ? void 0 : profile.manager) {
+              staysecureNotifications.sendNotificationByEvent(supabase, "document_completed_manager", {
+                user_id: profile.manager,
+                employee_user_id: targetUserId,
+                document_title: result.documentTitle,
+                completed_at: result.completedAt,
+                clientId
+              }).catch((err) => console.error("[MyDocuments] manager notification error:", err));
+            }
+          });
+        }
       },
       onError: (error) => {
         useToast.toast({
@@ -6862,8 +6878,8 @@
         });
       }
     });
-    const handleStatusChange = (assignmentId, newStatus) => {
-      updateStatusMutation.mutate({ assignmentId, status: newStatus });
+    const handleStatusChange = (assignmentId, newStatus, documentTitle) => {
+      updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle });
     };
     const handleOpenDocument = async (documentId, url, fileName) => {
       if (!fileName && url) {
@@ -7057,7 +7073,7 @@
             select.Select,
             {
               value: assignment.status,
-              onValueChange: (value) => onStatusChange(assignment.assignment_id, value),
+              onValueChange: (value) => onStatusChange(assignment.assignment_id, value, assignment.document.title),
               children: [
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
                 /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
@@ -10569,7 +10585,8 @@
     ] });
   };
   const DocumentAssignments = () => {
-    const { supabaseClient: supabase } = useOrganisationContext();
+    const { supabaseClient: supabase, basePath } = useOrganisationContext();
+    const clientId = basePath ? basePath.replace(/^\//, "") : "default";
     const queryClient = reactQuery.useQueryClient();
     const { user } = staysecureAuth.useAuth();
     const [searchTerm, setSearchTerm] = React.useState("");
@@ -10696,10 +10713,10 @@
               document_id: selectedDocument.document_id,
               role_id: roleId
             });
-            const result = await supabase.from("document_roles").insert({
+            const result = await supabase.from("document_roles").upsert({
               document_id: selectedDocument.document_id,
               role_id: roleId
-            });
+            }, { ignoreDuplicates: true });
             console.log("Insert result:", result);
             if (result.error) {
               console.error("Error inserting document_roles:", result.error);
@@ -10714,10 +10731,10 @@
               document_id: selectedDocument.document_id,
               department_id: departmentId
             });
-            const result = await supabase.from("document_departments").insert({
+            const result = await supabase.from("document_departments").upsert({
               document_id: selectedDocument.document_id,
               department_id: departmentId
-            });
+            }, { ignoreDuplicates: true });
             console.log("Insert result:", result);
             if (result.error) {
               console.error("Error inserting document_departments:", result.error);
@@ -10732,10 +10749,10 @@
               document_id: selectedDocument.document_id,
               user_id: userId
             });
-            const result = await supabase.from("document_users").insert({
+            const result = await supabase.from("document_users").upsert({
               document_id: selectedDocument.document_id,
               user_id: userId
-            });
+            }, { ignoreDuplicates: true });
             console.log("Insert result:", result);
             if (result.error) {
               console.error("Error inserting document_users:", result.error);
@@ -10748,6 +10765,37 @@
       },
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+        if (selectedDocument && selectedTargets.length > 0) {
+          const docTitle = selectedDocument.title;
+          const dueDays = selectedDocument.due_days;
+          const targets = [...selectedTargets];
+          const type = assignmentType;
+          const fireNotifications = async () => {
+            let userIds = [];
+            if (type === "users") {
+              userIds = targets;
+            } else if (type === "departments") {
+              const { data } = await supabase.from("user_departments").select("user_id").in("department_id", targets);
+              userIds = (data || []).map((r) => r.user_id);
+            } else if (type === "roles") {
+              const { data } = await supabase.from("user_departments").select("user_id").in("role_id", targets);
+              userIds = (data || []).map((r) => r.user_id);
+            }
+            await Promise.all(
+              [...new Set(userIds)].map(
+                (userId) => staysecureNotifications.sendNotificationByEvent(supabase, "document_assigned", {
+                  user_id: userId,
+                  document_title: docTitle,
+                  due_days: dueDays,
+                  clientId
+                })
+              )
+            );
+          };
+          fireNotifications().catch(
+            (err) => console.error("[DocumentAssignments] notification error:", err)
+          );
+        }
         setIsAssignDialogOpen(false);
         setSelectedDocument(null);
         setSelectedTargets([]);

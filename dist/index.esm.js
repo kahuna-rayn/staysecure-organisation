@@ -52,6 +52,7 @@ import { useInventory } from "@/hooks/useInventory";
 import { useUserAssets } from "@/hooks/useUserAssets";
 import { useUserAssets as useUserAssets2 } from "@/hooks/useUserAssets";
 import { Progress } from "@/components/ui/progress";
+import { sendNotificationByEvent } from "staysecure-notifications";
 import LearningTracksTab from "@/components/LearningTracksTab";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -6851,7 +6852,7 @@ const AddEducationDialog = ({
   ] }) });
 };
 const MyDocuments = ({ userId }) => {
-  const { supabaseClient: supabase2 } = useOrganisationContext();
+  const { supabaseClient: supabase2, basePath } = useOrganisationContext();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
@@ -6873,17 +6874,19 @@ const MyDocuments = ({ userId }) => {
     enabled: !!targetUserId
   });
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ assignmentId, status }) => {
+    mutationFn: async ({ assignmentId, status, documentTitle }) => {
+      const completedAt = status === "Completed" ? (/* @__PURE__ */ new Date()).toISOString() : null;
       const updateData = { status };
       if (status === "Completed") {
-        updateData.completed_at = (/* @__PURE__ */ new Date()).toISOString();
+        updateData.completed_at = completedAt;
       } else if (status === "Not started") {
         updateData.completed_at = null;
       }
       const { error } = await supabase2.from("document_assignments").update(updateData).eq("assignment_id", assignmentId);
       if (error) throw error;
+      return { status, documentTitle, completedAt };
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
       queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
       queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
@@ -6894,6 +6897,20 @@ const MyDocuments = ({ userId }) => {
         title: "Success",
         description: "Document status updated successfully"
       });
+      if ((result == null ? void 0 : result.status) === "Completed") {
+        const clientId = basePath ? basePath.replace(/^\//, "") : "default";
+        supabase2.from("profiles").select("manager").eq("id", targetUserId).maybeSingle().then(({ data: profile }) => {
+          if (profile == null ? void 0 : profile.manager) {
+            sendNotificationByEvent(supabase2, "document_completed_manager", {
+              user_id: profile.manager,
+              employee_user_id: targetUserId,
+              document_title: result.documentTitle,
+              completed_at: result.completedAt,
+              clientId
+            }).catch((err) => console.error("[MyDocuments] manager notification error:", err));
+          }
+        });
+      }
     },
     onError: (error) => {
       toast({
@@ -6903,8 +6920,8 @@ const MyDocuments = ({ userId }) => {
       });
     }
   });
-  const handleStatusChange = (assignmentId, newStatus) => {
-    updateStatusMutation.mutate({ assignmentId, status: newStatus });
+  const handleStatusChange = (assignmentId, newStatus, documentTitle) => {
+    updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle });
   };
   const handleOpenDocument = async (documentId, url, fileName) => {
     if (!fileName && url) {
@@ -7098,7 +7115,7 @@ const DocumentList = ({ assignments, onStatusChange, onOpenDocument, openingDocI
           Select,
           {
             value: assignment.status,
-            onValueChange: (value) => onStatusChange(assignment.assignment_id, value),
+            onValueChange: (value) => onStatusChange(assignment.assignment_id, value, assignment.document.title),
             children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
               /* @__PURE__ */ jsxs(SelectContent, { children: [
@@ -10610,7 +10627,8 @@ const DocumentAssignmentsDrillDown = ({
   ] });
 };
 const DocumentAssignments = () => {
-  const { supabaseClient: supabase2 } = useOrganisationContext();
+  const { supabaseClient: supabase2, basePath } = useOrganisationContext();
+  const clientId = basePath ? basePath.replace(/^\//, "") : "default";
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
@@ -10737,10 +10755,10 @@ const DocumentAssignments = () => {
             document_id: selectedDocument.document_id,
             role_id: roleId
           });
-          const result = await supabase2.from("document_roles").insert({
+          const result = await supabase2.from("document_roles").upsert({
             document_id: selectedDocument.document_id,
             role_id: roleId
-          });
+          }, { ignoreDuplicates: true });
           console.log("Insert result:", result);
           if (result.error) {
             console.error("Error inserting document_roles:", result.error);
@@ -10755,10 +10773,10 @@ const DocumentAssignments = () => {
             document_id: selectedDocument.document_id,
             department_id: departmentId
           });
-          const result = await supabase2.from("document_departments").insert({
+          const result = await supabase2.from("document_departments").upsert({
             document_id: selectedDocument.document_id,
             department_id: departmentId
-          });
+          }, { ignoreDuplicates: true });
           console.log("Insert result:", result);
           if (result.error) {
             console.error("Error inserting document_departments:", result.error);
@@ -10773,10 +10791,10 @@ const DocumentAssignments = () => {
             document_id: selectedDocument.document_id,
             user_id: userId
           });
-          const result = await supabase2.from("document_users").insert({
+          const result = await supabase2.from("document_users").upsert({
             document_id: selectedDocument.document_id,
             user_id: userId
-          });
+          }, { ignoreDuplicates: true });
           console.log("Insert result:", result);
           if (result.error) {
             console.error("Error inserting document_users:", result.error);
@@ -10789,6 +10807,37 @@ const DocumentAssignments = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+      if (selectedDocument && selectedTargets.length > 0) {
+        const docTitle = selectedDocument.title;
+        const dueDays = selectedDocument.due_days;
+        const targets = [...selectedTargets];
+        const type = assignmentType;
+        const fireNotifications = async () => {
+          let userIds = [];
+          if (type === "users") {
+            userIds = targets;
+          } else if (type === "departments") {
+            const { data } = await supabase2.from("user_departments").select("user_id").in("department_id", targets);
+            userIds = (data || []).map((r) => r.user_id);
+          } else if (type === "roles") {
+            const { data } = await supabase2.from("user_departments").select("user_id").in("role_id", targets);
+            userIds = (data || []).map((r) => r.user_id);
+          }
+          await Promise.all(
+            [...new Set(userIds)].map(
+              (userId) => sendNotificationByEvent(supabase2, "document_assigned", {
+                user_id: userId,
+                document_title: docTitle,
+                due_days: dueDays,
+                clientId
+              })
+            )
+          );
+        };
+        fireNotifications().catch(
+          (err) => console.error("[DocumentAssignments] notification error:", err)
+        );
+      }
       setIsAssignDialogOpen(false);
       setSelectedDocument(null);
       setSelectedTargets([]);

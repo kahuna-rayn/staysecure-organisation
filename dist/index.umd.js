@@ -430,6 +430,17 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const Image = createLucideIcon("Image", [
+    ["rect", { width: "18", height: "18", x: "3", y: "3", rx: "2", ry: "2", key: "1m3agn" }],
+    ["circle", { cx: "9", cy: "9", r: "2", key: "af1f0g" }],
+    ["path", { d: "m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21", key: "1xmnt7" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const KeyRound = createLucideIcon("KeyRound", [
     [
       "path",
@@ -5170,8 +5181,10 @@
     const [isEditing, setIsEditing] = React.useState(false);
     const [loading, setLoading] = React.useState(true);
     const [saving, setSaving] = React.useState(false);
+    const [uploadingLogo, setUploadingLogo] = React.useState(false);
     const [organisationData, setOrganisationData] = React.useState({});
     const [signatoryData, setSignatoryData] = React.useState({});
+    const logoFileInputRef = React.useRef(null);
     const { isSuperAdmin } = useUserRole.useUserRole();
     const { supabaseClient } = useOrganisationContext();
     const validatePhoneInput = (input2) => {
@@ -5180,6 +5193,36 @@
     const handleTelephoneChange = (e) => {
       const validatedValue = validatePhoneInput(e.target.value);
       setOrganisationData((prev) => ({ ...prev, telephone: validatedValue }));
+    };
+    const handleLogoUpload = async (e) => {
+      var _a;
+      const file = (_a = e.target.files) == null ? void 0 : _a[0];
+      if (!file) return;
+      const validTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/svg+xml"];
+      if (!validTypes.includes(file.type)) {
+        sonner.toast.error("Please upload an image (JPEG, PNG, GIF, WebP, or SVG)");
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        sonner.toast.error("Logo must be smaller than 2 MB");
+        return;
+      }
+      setUploadingLogo(true);
+      try {
+        const ext = file.name.split(".").pop();
+        const storagePath = `org-logo/logo-${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabaseClient.storage.from("logos").upload(storagePath, file, { contentType: file.type, upsert: true });
+        if (uploadError) throw uploadError;
+        const { data: urlData } = supabaseClient.storage.from("logos").getPublicUrl(storagePath);
+        setOrganisationData((prev) => ({ ...prev, org_logo_url: urlData.publicUrl }));
+        sonner.toast.success("Logo uploaded — click Save to apply");
+      } catch (err) {
+        console.error("Logo upload error:", err);
+        sonner.toast.error("Failed to upload logo: " + (err.message ?? "unknown error"));
+      } finally {
+        setUploadingLogo(false);
+        if (logoFileInputRef.current) logoFileInputRef.current.value = "";
+      }
     };
     React.useEffect(() => {
       fetchOrganisationData();
@@ -5556,6 +5599,76 @@
                 disabled: !isEditing
               }
             )
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(separator.Separator, {}),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { children: "Organisation Logo" }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Used on generated certificates alongside the RAYN logo. Recommended: transparent PNG or SVG, max 2 MB." }),
+            organisationData.org_logo_url && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(
+                "img",
+                {
+                  src: organisationData.org_logo_url,
+                  alt: "Organisation logo",
+                  className: "h-14 max-w-[160px] object-contain border rounded p-1 bg-muted"
+                }
+              ),
+              isEditing && /* @__PURE__ */ jsxRuntime.jsxs(
+                button.Button,
+                {
+                  type: "button",
+                  variant: "ghost",
+                  size: "sm",
+                  onClick: () => setOrganisationData((prev) => ({ ...prev, org_logo_url: "" })),
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4 mr-1" }),
+                    " Remove"
+                  ]
+                }
+              )
+            ] }),
+            isEditing && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-1 flex-1", children: /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  placeholder: "https://... (paste a URL, or upload a file below)",
+                  value: organisationData.org_logo_url || "",
+                  onChange: (e) => setOrganisationData((prev) => ({ ...prev, org_logo_url: e.target.value }))
+                }
+              ) }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-xs text-muted-foreground", children: "or" }),
+              /* @__PURE__ */ jsxRuntime.jsxs(
+                button.Button,
+                {
+                  type: "button",
+                  variant: "outline",
+                  size: "sm",
+                  disabled: uploadingLogo,
+                  onClick: () => {
+                    var _a;
+                    return (_a = logoFileInputRef.current) == null ? void 0 : _a.click();
+                  },
+                  children: [
+                    uploadingLogo ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin mr-1" }) : /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4 mr-1" }),
+                    "Upload"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                "input",
+                {
+                  ref: logoFileInputRef,
+                  type: "file",
+                  accept: "image/jpeg,image/png,image/gif,image/webp,image/svg+xml",
+                  className: "hidden",
+                  onChange: handleLogoUpload
+                }
+              )
+            ] }),
+            !organisationData.org_logo_url && !isEditing && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-muted-foreground text-sm", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Image, { className: "h-4 w-4" }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { children: "No logo uploaded" })
+            ] })
           ] })
         ] })
       ] }),
@@ -5892,6 +6005,37 @@
   };
   const EditableCertificates = ({ profile }) => {
     const { certificates } = profile;
+    const { supabaseClient } = useOrganisationContext();
+    const printRef = React.useRef(null);
+    const [downloadingId, setDownloadingId] = React.useState(null);
+    const handlePrint = reactToPrint.useReactToPrint({ contentRef: printRef });
+    const handleDownload = async (certId) => {
+      var _a;
+      setDownloadingId(certId);
+      try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const jwt = (_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token;
+        if (!jwt) {
+          sonner.toast.error("Not authenticated");
+          return;
+        }
+        const { data, error } = await supabaseClient.functions.invoke("get-certificate-url", {
+          body: { certificate_id: certId },
+          headers: { Authorization: `Bearer ${jwt}` }
+        });
+        if (error || !(data == null ? void 0 : data.url)) {
+          console.error("[EditableCertificates] get-certificate-url error:", error);
+          sonner.toast.error("Failed to get download link");
+          return;
+        }
+        window.open(data.url, "_blank");
+      } catch (err) {
+        console.error("[EditableCertificates] download error:", err);
+        sonner.toast.error("Failed to download certificate");
+      } finally {
+        setDownloadingId(null);
+      }
+    };
     const formatDate = (dateString) => {
       if (!dateString) return "No expiry";
       return new Date(dateString).toLocaleDateString();
@@ -5930,39 +6074,58 @@
     const filteredCertificates = certificates.filter(
       (cert) => cert.org_cert === false
     );
-    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: filteredCertificates.map((cert, index) => {
-      const validityStatus = getValidityStatus(cert.expiryDate);
-      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "border rounded-lg p-4", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between mb-3", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
-            getTypeIcon(cert.type),
-            /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
+    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "outline", size: "sm", onClick: () => handlePrint(), className: "print:hidden", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(Printer, { className: "h-4 w-4 mr-2" }),
+        "Print All"
+      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { ref: printRef, className: "space-y-4", children: filteredCertificates.map((cert, index) => {
+        const validityStatus = getValidityStatus(cert.expiryDate);
+        return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "border rounded-lg p-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between mb-3", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
+              getTypeIcon(cert.type),
+              /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-4 gap-4 text-sm ml-8", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium text-foreground", children: cert.issuedBy })
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-4 gap-4 text-sm ml-8", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium text-foreground", children: cert.issuedBy })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }),
+              cert.certificate_url && cert.id && /* @__PURE__ */ jsxRuntime.jsx(
+                button.Button,
+                {
+                  variant: "outline",
+                  size: "sm",
+                  disabled: downloadingId === cert.id,
+                  onClick: () => handleDownload(cert.id),
+                  className: "print:hidden",
+                  children: downloadingId === cert.id ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" })
+                }
+              )
+            ] })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }) })
-        ] }),
-        cert.credentialId && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm ml-8 mt-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "ID: " }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: cert.credentialId })
-        ] })
-      ] }, index);
-    }) }) });
+          cert.credentialId && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm ml-8 mt-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "ID: " }),
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: cert.credentialId })
+          ] })
+        ] }, index);
+      }) })
+    ] }) });
   };
   const AssignPhysicalLocationDialog = ({
     isOpen,
@@ -8757,21 +8920,18 @@
         expiryDate: s.expiryDate,
         lastUsed: s.lastUsed
       })),
-      certificates: (certificates || []).map((c) => {
-        const mapped = {
-          name: c.name,
-          issuedBy: c.issued_by,
-          dateAcquired: c.date_acquired,
-          expiryDate: c.expiry_date,
-          credentialId: c.credential_id,
-          status: c.status,
-          org_cert: c.org_cert !== void 0 ? c.org_cert : false,
-          // Preserve false, default to false if undefined
-          type: c.type
-          // Include type for display
-        };
-        return mapped;
-      })
+      certificates: (certificates || []).map((c) => ({
+        id: c.id,
+        name: c.name,
+        issuedBy: c.issued_by,
+        dateAcquired: c.date_acquired,
+        expiryDate: c.expiry_date,
+        credentialId: c.credential_id,
+        status: c.status,
+        org_cert: c.org_cert !== void 0 ? c.org_cert : false,
+        type: c.type,
+        certificate_url: c.certificate_url
+      }))
     }), [profile, hardware, software, certificates, userEmail, user]);
     const handleProfileUpdate = async () => {
       setOptimisticData(null);
@@ -8946,6 +9106,41 @@
   };
   const Certificates = ({ profile }) => {
     const { certificates } = profile;
+    const { supabaseClient } = useOrganisationContext();
+    const printRef = React.useRef(null);
+    const [downloadingId, setDownloadingId] = React.useState(null);
+    const handlePrint = reactToPrint.useReactToPrint({ contentRef: printRef });
+    const handleDownload = async (certId) => {
+      var _a;
+      if (!certId) {
+        sonner.toast.error("Certificate ID is missing");
+        return;
+      }
+      setDownloadingId(certId);
+      try {
+        const { data: sessionData } = await supabaseClient.auth.getSession();
+        const jwt = (_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token;
+        if (!jwt) {
+          sonner.toast.error("Not authenticated");
+          return;
+        }
+        const { data, error } = await supabaseClient.functions.invoke("get-certificate-url", {
+          body: { certificate_id: certId },
+          headers: { Authorization: `Bearer ${jwt}` }
+        });
+        if (error || !(data == null ? void 0 : data.url)) {
+          console.error("[Certificates] get-certificate-url error:", error);
+          sonner.toast.error("Failed to get download link");
+          return;
+        }
+        window.open(data.url, "_blank");
+      } catch (err) {
+        console.error("[Certificates] download error:", err);
+        sonner.toast.error("Failed to download certificate");
+      } finally {
+        setDownloadingId(null);
+      }
+    };
     const formatDate = (dateString) => {
       if (!dateString) return "No expiry";
       return new Date(dateString).toLocaleDateString();
@@ -8971,38 +9166,57 @@
     const filteredCertificates = certificates.filter(
       (cert) => cert.org_cert === false
     );
-    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: filteredCertificates.map((cert, index) => /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "border rounded-lg p-4", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between gap-3 mb-3", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
-          getTypeIcon(cert.type),
-          /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
+    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4 animate-fade-in", children: filteredCertificates.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground text-center py-8", children: "No certificates yet" }) : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { variant: "outline", size: "sm", onClick: () => handlePrint(), children: [
+        /* @__PURE__ */ jsxRuntime.jsx(Printer, { className: "h-4 w-4 mr-2" }),
+        "Print All"
+      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { ref: printRef, className: "space-y-4", children: filteredCertificates.map((cert, index) => /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "border rounded-lg p-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between gap-3 mb-3", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3 min-w-0 flex-1", children: [
+            getTypeIcon(cert.type),
+            /* @__PURE__ */ jsxRuntime.jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-base font-medium text-foreground", children: cert.issuedBy })
+            ] }),
+            cert.credentialId && /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-base font-medium text-muted-foreground", children: [
+              "ID: ",
+              cert.credentialId
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1 flex-shrink-0`, children: cert.type || "Certificate" })
+          ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Building, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-base font-medium text-foreground", children: cert.issuedBy })
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-3 gap-4 text-sm ml-8", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
           ] }),
-          cert.credentialId && /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-base font-medium text-muted-foreground", children: [
-            "ID: ",
-            cert.credentialId
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1 flex-shrink-0`, children: cert.type || "Certificate" })
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }),
+            cert.certificate_url && cert.id && /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                size: "sm",
+                disabled: downloadingId === cert.id,
+                onClick: () => handleDownload(cert.id),
+                className: "print:hidden",
+                children: downloadingId === cert.id ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" })
+              }
+            )
+          ] })
         ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-3 gap-4 text-sm ml-8", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
-          /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }) })
-      ] })
-    ] }, index)) }) });
+      ] }, index)) })
+    ] }) });
   };
   const AddPhysicalLocationDialog = ({
     isOpen,

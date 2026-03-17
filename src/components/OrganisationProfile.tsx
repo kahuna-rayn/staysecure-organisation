@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { Edit, Save, X } from 'lucide-react';
+import { Edit, Save, X, Upload, Loader2, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
 import type { Database } from '@/integrations/supabase/types';
@@ -33,15 +33,9 @@ interface OrganisationData {
   number_of_employees?: number;
   number_of_executives?: number;
   appointed_certification_body?: string;
+  org_logo_url?: string;
 }
 
-interface SignatoryRole {
-  id?: string;
-  role_type: string;
-  signatory_name?: string;
-  signatory_title?: string;
-  signatory_email?: string;
-}
 
 interface SignatoryData {
   name_signatory_cem?: string;
@@ -67,8 +61,10 @@ const OrganisationProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [organisationData, setOrganisationData] = useState<OrganisationData>({});
   const [signatoryData, setSignatoryData] = useState<SignatoryData>({});
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
   const { isSuperAdmin } = useUserRole();
   const { supabaseClient } = useOrganisationContext();
   
@@ -81,6 +77,46 @@ const OrganisationProfile: React.FC = () => {
     const validatedValue = validatePhoneInput(e.target.value);
     setOrganisationData(prev => ({ ...prev, telephone: validatedValue }));
   };
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Please upload an image (JPEG, PNG, GIF, WebP, or SVG)');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Logo must be smaller than 2 MB');
+      return;
+    }
+
+    setUploadingLogo(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const storagePath = `org-logo/logo-${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from('logos')
+        .upload(storagePath, file, { contentType: file.type, upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabaseClient.storage
+        .from('logos')
+        .getPublicUrl(storagePath);
+
+      setOrganisationData(prev => ({ ...prev, org_logo_url: urlData.publicUrl }));
+      toast.success('Logo uploaded — click Save to apply');
+    } catch (err: any) {
+      console.error('Logo upload error:', err);
+      toast.error('Failed to upload logo: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setUploadingLogo(false);
+      if (logoFileInputRef.current) logoFileInputRef.current.value = '';
+    }
+  };
+
   useEffect(() => {
     fetchOrganisationData();
   }, [supabaseClient]);
@@ -499,6 +535,77 @@ const OrganisationProfile: React.FC = () => {
               onChange={(e) => setOrganisationData(prev => ({ ...prev, appointed_certification_body: e.target.value }))}
               disabled={!isEditing}
             />
+          </div>
+
+          <Separator />
+
+          {/* Organisation Logo */}
+          <div className="space-y-3">
+            <Label>Organisation Logo</Label>
+            <p className="text-xs text-muted-foreground">
+              Used on generated certificates alongside the RAYN logo. Recommended: transparent PNG or SVG, max 2 MB.
+            </p>
+
+            {organisationData.org_logo_url && (
+              <div className="flex items-center gap-3">
+                <img
+                  src={organisationData.org_logo_url}
+                  alt="Organisation logo"
+                  className="h-14 max-w-[160px] object-contain border rounded p-1 bg-muted"
+                />
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setOrganisationData(prev => ({ ...prev, org_logo_url: '' }))}
+                  >
+                    <X className="h-4 w-4 mr-1" /> Remove
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {isEditing && (
+              <div className="flex items-center gap-3">
+                <div className="space-y-1 flex-1">
+                  <Input
+                    placeholder="https://... (paste a URL, or upload a file below)"
+                    value={organisationData.org_logo_url || ''}
+                    onChange={(e) => setOrganisationData(prev => ({ ...prev, org_logo_url: e.target.value }))}
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground">or</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={uploadingLogo}
+                  onClick={() => logoFileInputRef.current?.click()}
+                >
+                  {uploadingLogo ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  ) : (
+                    <Upload className="h-4 w-4 mr-1" />
+                  )}
+                  Upload
+                </Button>
+                <input
+                  ref={logoFileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={handleLogoUpload}
+                />
+              </div>
+            )}
+
+            {!organisationData.org_logo_url && !isEditing && (
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <ImageIcon className="h-4 w-4" />
+                <span>No logo uploaded</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

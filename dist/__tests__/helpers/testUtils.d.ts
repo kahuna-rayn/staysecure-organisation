@@ -3,8 +3,8 @@ import { RenderOptions } from '@testing-library/react';
 import { QueryClient } from '@tanstack/react-query';
 import { OrganisationConfig } from '../../types';
 
-export declare const createTestSupabaseClient: () => import('@supabase/supabase-js').SupabaseClient<any, "public", "public", any, any>;
-export declare const createTestQueryClient: () => QueryClient;
+export declare const createTestSupabaseClient: () => any;
+export declare const createTestQueryClient: () => any;
 export declare const createTestConfig: (overrides?: Partial<OrganisationConfig>) => OrganisationConfig;
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
     config?: Partial<OrganisationConfig>;

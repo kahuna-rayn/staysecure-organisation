@@ -2,11 +2,16 @@ import { default as React } from 'react';
 import { Profile } from '../../hooks/useProfile';
 
 interface Certificate {
+    id?: string;
     name: string;
     issuedBy: string;
     dateAcquired: string;
     expiryDate: string | null;
     credentialId?: string;
+    org_cert?: boolean;
+    type?: string;
+    status?: string;
+    certificate_url?: string | null;
 }
 interface EditableCertificatesProps {
     profile: Profile & {

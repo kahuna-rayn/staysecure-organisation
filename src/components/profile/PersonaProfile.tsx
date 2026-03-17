@@ -51,6 +51,7 @@ export interface PersonProfile {
     lastUsed: string | null;
   }>;
   certificates: Array<{
+    id?: string;
     name: string;
     issuedBy: string;
     dateAcquired: string;
@@ -59,6 +60,7 @@ export interface PersonProfile {
     status: string;
     org_cert?: boolean;
     type?: string;
+    certificate_url?: string | null;
   }>;
 }
 
@@ -116,19 +118,18 @@ const PersonaProfile: React.FC = () => {
       expiryDate: s.expiryDate,
       lastUsed: s.lastUsed,
     })),
-    certificates: (certificates || []).map(c => {
-      const mapped = {
-        name: c.name,
-        issuedBy: c.issued_by,
-        dateAcquired: c.date_acquired,
-        expiryDate: c.expiry_date,
-        credentialId: c.credential_id,
-        status: c.status,
-        org_cert: c.org_cert !== undefined ? c.org_cert : false, // Preserve false, default to false if undefined
-        type: c.type, // Include type for display
-      };
-      return mapped;
-    }),
+    certificates: (certificates || []).map(c => ({
+      id: c.id,
+      name: c.name,
+      issuedBy: c.issued_by,
+      dateAcquired: c.date_acquired,
+      expiryDate: c.expiry_date,
+      credentialId: c.credential_id,
+      status: c.status,
+      org_cert: c.org_cert !== undefined ? c.org_cert : false,
+      type: c.type,
+      certificate_url: c.certificate_url,
+    })),
   }), [profile, hardware, software, certificates, userEmail, user]);
 
   const handleProfileUpdate = async () => {

@@ -73,6 +73,7 @@ const UserDetailView: React.FC = () => {
       lastUsed: s.lastUsed,
     })),
     certificates: certificates.map((c: any) => ({
+      id: c.id,
       type: c.type || 'Certificate',
       name: c.name,
       issuedBy: c.issued_by,
@@ -81,6 +82,7 @@ const UserDetailView: React.FC = () => {
       credentialId: c.credential_id,
       status: c.status,
       org_cert: c.org_cert,
+      certificate_url: c.certificate_url,
     })),
   });
 

@@ -9076,6 +9076,7 @@ const UserDetailView = () => {
       lastUsed: s.lastUsed
     })),
     certificates: certificates.map((c) => ({
+      id: c.id,
       type: c.type || "Certificate",
       name: c.name,
       issuedBy: c.issued_by,
@@ -9083,7 +9084,8 @@ const UserDetailView = () => {
       expiryDate: c.expiry_date,
       credentialId: c.credential_id,
       status: c.status,
-      org_cert: c.org_cert
+      org_cert: c.org_cert,
+      certificate_url: c.certificate_url
     }))
   });
   const [personaData, setPersonaData] = React.useState(null);

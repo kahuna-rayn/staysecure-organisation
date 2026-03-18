@@ -1,1 +1,1 @@
-{"version":3,"file":"KnowledgePanel.d.ts","sourceRoot":"","sources":["../../src/components/KnowledgePanel.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAmB,MAAM,OAAO,CAAC;AAsDxC,QAAA,MAAM,cAAc,EAAE,KAAK,CAAC,EAsB3B,CAAC;AAEF,eAAe,cAAc,CAAC"}
+{"version":3,"file":"KnowledgePanel.d.ts","sourceRoot":"","sources":["../../src/components/KnowledgePanel.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAmB,MAAM,OAAO,CAAC;AAsDxC,UAAU,mBAAmB;IAC3B,QAAQ,CAAC,EAAE,MAAM,CAAC;CACnB;AAED,QAAA,MAAM,cAAc,EAAE,KAAK,CAAC,EAAE,CAAC,mBAAmB,CAuBjD,CAAC;AAEF,eAAe,cAAc,CAAC"}

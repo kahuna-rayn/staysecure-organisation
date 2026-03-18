@@ -342,6 +342,7 @@ const DocumentAssignments: React.FC = () => {
                 user_id: userId,
                 document_title: docTitle,
                 due_days: dueDays,
+                document_id: selectedDocument.document_id,
                 clientId,
               })
             )

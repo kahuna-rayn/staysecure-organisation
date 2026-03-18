@@ -1,5 +1,8 @@
 import { default as React } from 'react';
 
-declare const KnowledgePanel: React.FC;
+interface KnowledgePanelProps {
+    basePath?: string;
+}
+declare const KnowledgePanel: React.FC<KnowledgePanelProps>;
 export default KnowledgePanel;
 //# sourceMappingURL=KnowledgePanel.d.ts.map

@@ -52,11 +52,16 @@ const KnowledgePanelInner: React.FC = () => {
   );
 };
 
-const KnowledgePanel: React.FC = () => {
+interface KnowledgePanelProps {
+  basePath?: string;
+}
+
+const KnowledgePanel: React.FC<KnowledgePanelProps> = ({ basePath }) => {
   const { hasAdminAccess } = useUserRole();
 
   const config = {
     supabaseClient: supabase,
+    basePath,
     permissions: {
       canCreateUsers: hasAdminAccess,
       canEditUsers: hasAdminAccess,

@@ -7175,6 +7175,24 @@
         setOpeningDocId(null);
       }
     };
+    React.useEffect(() => {
+      if (!assignments || assignments.length === 0) return;
+      if (typeof sessionStorage === "undefined") return;
+      const docId = sessionStorage.getItem("deep_link_document");
+      if (!docId) return;
+      const assignment = assignments.find((a) => a.document_id === docId);
+      if (assignment) {
+        console.log("[MyDocuments] deep-link: opening document", docId, assignment.document.title);
+        sessionStorage.removeItem("deep_link_document");
+        handleOpenDocument(
+          assignment.document_id,
+          assignment.document.url,
+          assignment.document.file_name
+        );
+      } else {
+        console.warn("[MyDocuments] deep-link: document not found in assignments, doc_id=", docId);
+      }
+    }, [assignments]);
     const filteredAssignments = assignments == null ? void 0 : assignments.filter((assignment) => {
       var _a;
       const matchesSearch = assignment.document.title.toLowerCase().includes(searchTerm.toLowerCase()) || ((_a = assignment.document.description) == null ? void 0 : _a.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -11115,6 +11133,7 @@
                   user_id: userId,
                   document_title: docTitle,
                   due_days: dueDays,
+                  document_id: selectedDocument.document_id,
                   clientId
                 })
               )
@@ -14643,10 +14662,11 @@
       ] })
     ] });
   };
-  const KnowledgePanel = () => {
+  const KnowledgePanel = ({ basePath }) => {
     const { hasAdminAccess } = useUserRole.useUserRole();
     const config = {
       supabaseClient: client.supabase,
+      basePath,
       permissions: {
         canCreateUsers: hasAdminAccess,
         canEditUsers: hasAdminAccess,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -156,6 +156,28 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
       setOpeningDocId(null);
     }
   };
+
+  // Deep-link: if the user arrived via a ?doc= email link, auto-open the document once
+  // assignments have loaded. The doc ID was stored in sessionStorage by Index.tsx before login.
+  useEffect(() => {
+    if (!assignments || assignments.length === 0) return;
+    if (typeof sessionStorage === 'undefined') return;
+    const docId = sessionStorage.getItem('deep_link_document');
+    if (!docId) return;
+
+    const assignment = assignments.find((a: DocumentAssignment) => a.document_id === docId);
+    if (assignment) {
+      console.log('[MyDocuments] deep-link: opening document', docId, assignment.document.title);
+      sessionStorage.removeItem('deep_link_document');
+      handleOpenDocument(
+        assignment.document_id,
+        assignment.document.url,
+        assignment.document.file_name,
+      );
+    } else {
+      console.warn('[MyDocuments] deep-link: document not found in assignments, doc_id=', docId);
+    }
+  }, [assignments]); // handleOpenDocument is stable; only re-run when assignments change
 
   const filteredAssignments = assignments?.filter((assignment: DocumentAssignment) => {
     const matchesSearch = assignment.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||

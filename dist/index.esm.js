@@ -4784,6 +4784,8 @@ const AddOrganisationCertificateDialog = ({
 }) => {
   const { supabaseClient } = useOrganisationContext();
   const [loading, setLoading] = useState(false);
+  const [certFile, setCertFile] = useState(null);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     type: "Certificate",
     name: "",
@@ -4803,16 +4805,16 @@ const AddOrganisationCertificateDialog = ({
       credential_id: "",
       status: "Valid"
     });
+    setCertFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-      if (userError || !user) {
-        throw new Error("User not authenticated");
-      }
-      const certificateData = {
+      if (userError || !user) throw new Error("User not authenticated");
+      const { data: newCert, error: insertError } = await supabaseClient.from("certificates").insert([{
         user_id: user.id,
         type: formData.type,
         name: formData.name,
@@ -4822,10 +4824,24 @@ const AddOrganisationCertificateDialog = ({
         credential_id: formData.credential_id || null,
         status: formData.status,
         org_cert: true
-        // This is an organisation certificate
-      };
-      const { error } = await supabaseClient.from("certificates").insert([certificateData]);
-      if (error) throw error;
+      }]).select("id").single();
+      if (insertError) throw insertError;
+      if (certFile && (newCert == null ? void 0 : newCert.id)) {
+        const ext = certFile.name.split(".").pop();
+        const safeName = formData.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 40);
+        const storagePath = `org-certs/${newCert.id}_${safeName}.${ext}`;
+        const { error: uploadError } = await supabaseClient.storage.from("certificates").upload(storagePath, certFile, { upsert: true });
+        if (uploadError) {
+          console.error("Error uploading org certificate file:", uploadError);
+          toast({
+            title: "Certificate added",
+            description: "Record saved but file upload failed. You can try uploading the file again later.",
+            variant: "destructive"
+          });
+        } else {
+          await supabaseClient.from("certificates").update({ certificate_url: storagePath }).eq("id", newCert.id);
+        }
+      }
       toast({
         title: "Organisation certificate added",
         description: "Certificate has been successfully added to the organisation."
@@ -4834,11 +4850,7 @@ const AddOrganisationCertificateDialog = ({
       resetForm();
       onSuccess == null ? void 0 : onSuccess();
     } catch (error) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      toast({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -4932,6 +4944,52 @@ const AddOrganisationCertificateDialog = ({
             /* @__PURE__ */ jsx(SelectItem, { value: "Revoked", children: "Revoked" })
           ] })
         ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { children: "Certificate File (optional)" }),
+        /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: "mt-1 flex items-center gap-3 rounded-md border border-dashed border-muted-foreground/40 px-4 py-3 cursor-pointer hover:bg-muted/40 transition-colors",
+            onClick: () => {
+              var _a;
+              return (_a = fileInputRef.current) == null ? void 0 : _a.click();
+            },
+            children: certFile ? /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4 text-muted-foreground shrink-0" }),
+              /* @__PURE__ */ jsx("span", { className: "text-sm truncate", children: certFile.name }),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  type: "button",
+                  className: "ml-auto text-muted-foreground hover:text-destructive",
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    setCertFile(null);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  },
+                  children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" })
+                }
+              )
+            ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 text-muted-foreground shrink-0" }),
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Upload PDF, JPG, or PNG" })
+            ] })
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "input",
+          {
+            ref: fileInputRef,
+            type: "file",
+            accept: ".pdf,.jpg,.jpeg,.png",
+            className: "hidden",
+            onChange: (e) => {
+              var _a;
+              return setCertFile(((_a = e.target.files) == null ? void 0 : _a[0]) ?? null);
+            }
+          }
+        )
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
         /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),
@@ -6848,6 +6906,8 @@ const AddEducationDialog = ({
   onSuccess
 }) => {
   const [loading, setLoading] = useState(false);
+  const [certFile, setCertFile] = useState(null);
+  const fileInputRef = useRef(null);
   const [formData, setFormData] = useState({
     type: "Certificate",
     name: "",
@@ -6857,7 +6917,6 @@ const AddEducationDialog = ({
     credential_id: "",
     status: "Valid"
   });
-  const { addCertificate } = useUserAssets();
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile", userId],
     queryFn: async () => {
@@ -6876,20 +6935,18 @@ const AddEducationDialog = ({
       credential_id: "",
       status: "Valid"
     });
+    setCertFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userProfile) {
-      toast$1({
-        title: "Error",
-        description: "User profile not found.",
-        variant: "destructive"
-      });
+      toast$1({ title: "Error", description: "User profile not found.", variant: "destructive" });
       return;
     }
     setLoading(true);
     try {
-      const certificateData = {
+      const { data: newCert, error: insertError } = await supabase.from("certificates").insert([{
         user_id: userProfile.id,
         type: formData.type,
         name: formData.name,
@@ -6898,21 +6955,30 @@ const AddEducationDialog = ({
         expiry_date: formData.expiry_date || null,
         credential_id: formData.credential_id || null,
         status: formData.status
-      };
-      await addCertificate(certificateData);
-      toast$1({
-        title: "Education record added",
-        description: "Education record has been successfully added."
-      });
+      }]).select("id").single();
+      if (insertError) throw insertError;
+      if (certFile && (newCert == null ? void 0 : newCert.id)) {
+        const ext = certFile.name.split(".").pop();
+        const safeName = formData.name.replace(/[^a-zA-Z0-9]/g, "_").slice(0, 40);
+        const storagePath = `${userProfile.id}/external/${newCert.id}_${safeName}.${ext}`;
+        const { error: uploadError } = await supabase.storage.from("certificates").upload(storagePath, certFile, { upsert: true });
+        if (uploadError) {
+          console.error("Error uploading certificate file:", uploadError);
+          toast$1({
+            title: "Certificate added",
+            description: "Record saved but file upload failed. You can try uploading the file again later.",
+            variant: "destructive"
+          });
+        } else {
+          await supabase.from("certificates").update({ certificate_url: storagePath }).eq("id", newCert.id);
+        }
+      }
+      toast$1({ title: "Certificate added", description: "Certificate has been successfully added." });
       onOpenChange(false);
       resetForm();
       onSuccess == null ? void 0 : onSuccess();
     } catch (error) {
-      toast$1({
-        title: "Error",
-        description: error.message,
-        variant: "destructive"
-      });
+      toast$1({ title: "Error", description: error.message, variant: "destructive" });
     } finally {
       setLoading(false);
     }
@@ -6951,7 +7017,7 @@ const AddEducationDialog = ({
             id: "issued_by",
             value: formData.issued_by,
             onChange: (e) => setFormData({ ...formData, issued_by: e.target.value }),
-            placeholder: "e.g., RAYN, PDPC,",
+            placeholder: "e.g., RAYN, PDPC",
             required: true
           }
         )
@@ -7006,6 +7072,52 @@ const AddEducationDialog = ({
             /* @__PURE__ */ jsx(SelectItem, { value: "Revoked", children: "Revoked" })
           ] })
         ] })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { children: [
+        /* @__PURE__ */ jsx(Label, { children: "Certificate File (optional)" }),
+        /* @__PURE__ */ jsx(
+          "div",
+          {
+            className: "mt-1 flex items-center gap-3 rounded-md border border-dashed border-muted-foreground/40 px-4 py-3 cursor-pointer hover:bg-muted/40 transition-colors",
+            onClick: () => {
+              var _a;
+              return (_a = fileInputRef.current) == null ? void 0 : _a.click();
+            },
+            children: certFile ? /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4 text-muted-foreground shrink-0" }),
+              /* @__PURE__ */ jsx("span", { className: "text-sm truncate", children: certFile.name }),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  type: "button",
+                  className: "ml-auto text-muted-foreground hover:text-destructive",
+                  onClick: (e) => {
+                    e.stopPropagation();
+                    setCertFile(null);
+                    if (fileInputRef.current) fileInputRef.current.value = "";
+                  },
+                  children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" })
+                }
+              )
+            ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+              /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 text-muted-foreground shrink-0" }),
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Upload PDF, JPG, or PNG" })
+            ] })
+          }
+        ),
+        /* @__PURE__ */ jsx(
+          "input",
+          {
+            ref: fileInputRef,
+            type: "file",
+            accept: ".pdf,.jpg,.jpeg,.png",
+            className: "hidden",
+            onChange: (e) => {
+              var _a;
+              return setCertFile(((_a = e.target.files) == null ? void 0 : _a[0]) ?? null);
+            }
+          }
+        )
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
         /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), size: "icon", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) }),

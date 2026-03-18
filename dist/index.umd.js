@@ -9088,7 +9088,7 @@
   const UserDetailView = () => {
     const { userId } = reactRouterDom.useParams();
     const navigate = reactRouterDom.useNavigate();
-    const { supabaseClient } = useOrganisationContext();
+    const { supabaseClient, basePath } = useOrganisationContext();
     const { profiles, loading: profilesLoading } = useUserProfiles.useUserProfiles();
     const { hardware, software, certificates, loading: assetsLoading } = useUserAssets.useUserAssets(userId);
     const { data: lastSignIn } = reactQuery.useQuery({
@@ -9181,7 +9181,7 @@
     const handleProfileUpdate = () => {
     };
     const handleBackToUsers = () => {
-      navigate("/admin", { state: { activeTab: "organisation" } });
+      navigate(`${basePath || ""}/admin`, { state: { activeTab: "organisation" } });
     };
     if (profilesLoading || assetsLoading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
@@ -9190,7 +9190,7 @@
     if (!userProfile) {
       return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-col items-center justify-center min-h-screen gap-4", children: [
         /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "User not found" }),
-        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: () => navigate("/admin"), variant: "outline", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: () => navigate(`${basePath || ""}/admin`), variant: "outline", children: [
           /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4 mr-2" }),
           "Back to Admin"
         ] })

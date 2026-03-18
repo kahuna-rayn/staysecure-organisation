@@ -13,7 +13,7 @@ import PersonaDetailsTabs from '../profile/PersonaDetailsTabs';
 const UserDetailView: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
   const navigate = useNavigate();
-  const { supabaseClient } = useOrganisationContext();
+  const { supabaseClient, basePath } = useOrganisationContext();
   const { profiles, loading: profilesLoading } = useUserProfiles();
   const { hardware, software, certificates, loading: assetsLoading } = useUserAssets(userId);
 
@@ -116,8 +116,8 @@ const UserDetailView: React.FC = () => {
   };
 
   const handleBackToUsers = () => {
-    // Navigate to admin panel with organisation tab active
-    navigate('/admin', { state: { activeTab: 'organisation' } });
+    // Navigate to admin panel with organisation tab active (preserve client basePath)
+    navigate(`${basePath || ''}/admin`, { state: { activeTab: 'organisation' } });
   };
 
   // Loading and error UI
@@ -135,7 +135,7 @@ const UserDetailView: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <p className="text-muted-foreground">User not found</p>
-        <Button onClick={() => navigate('/admin')} variant="outline">
+        <Button onClick={() => navigate(`${basePath || ''}/admin`)} variant="outline">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Admin
         </Button>

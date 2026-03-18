@@ -9130,7 +9130,7 @@ const PersonaProfile = () => {
 const UserDetailView = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const { supabaseClient } = useOrganisationContext();
+  const { supabaseClient, basePath } = useOrganisationContext();
   const { profiles, loading: profilesLoading } = useUserProfiles();
   const { hardware, software, certificates, loading: assetsLoading } = useUserAssets(userId);
   const { data: lastSignIn } = useQuery({
@@ -9223,7 +9223,7 @@ const UserDetailView = () => {
   const handleProfileUpdate = () => {
   };
   const handleBackToUsers = () => {
-    navigate("/admin", { state: { activeTab: "organisation" } });
+    navigate(`${basePath || ""}/admin`, { state: { activeTab: "organisation" } });
   };
   if (profilesLoading || assetsLoading) {
     return /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
@@ -9232,7 +9232,7 @@ const UserDetailView = () => {
   if (!userProfile) {
     return /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center justify-center min-h-screen gap-4", children: [
       /* @__PURE__ */ jsx("p", { className: "text-muted-foreground", children: "User not found" }),
-      /* @__PURE__ */ jsxs(Button, { onClick: () => navigate("/admin"), variant: "outline", children: [
+      /* @__PURE__ */ jsxs(Button, { onClick: () => navigate(`${basePath || ""}/admin`), variant: "outline", children: [
         /* @__PURE__ */ jsx(ArrowLeft, { className: "h-4 w-4 mr-2" }),
         "Back to Admin"
       ] })

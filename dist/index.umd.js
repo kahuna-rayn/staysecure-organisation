@@ -10391,15 +10391,21 @@
           }
           const ext = selectedFile.name.split(".").pop();
           const storagePath = `${crypto.randomUUID()}.${ext}`;
-          const { error: uploadError } = await supabase.storage.from("documents").upload(storagePath, selectedFile, {
-            contentType: selectedFile.type,
-            upsert: false
+          debug.log("[DocumentForm] requesting signed upload URL for", storagePath);
+          const { data: uploadUrlData, error: urlError } = await supabase.functions.invoke("get-upload-url", {
+            body: { storage_path: storagePath }
+          });
+          debug.log("[DocumentForm] get-upload-url result — data:", uploadUrlData, "| error:", urlError);
+          if (urlError) throw urlError;
+          const { error: uploadError } = await supabase.storage.from("documents").uploadToSignedUrl(uploadUrlData.path, uploadUrlData.token, selectedFile, {
+            contentType: selectedFile.type
           });
           if (uploadError) throw uploadError;
           file_name = storagePath;
           file_type = selectedFile.type;
           finalUrl = void 0;
         } catch (err) {
+          debug.error("[DocumentForm] upload error:", err);
           useToast.toast({ title: "Upload failed", description: err.message, variant: "destructive" });
           return;
         } finally {

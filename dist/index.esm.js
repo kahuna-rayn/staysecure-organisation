@@ -10433,14 +10433,10 @@ const DocumentForm = ({ supabase: supabase2, initialData, onSubmit, isSubmitting
         }
         const ext = selectedFile.name.split(".").pop();
         const storagePath = `${crypto.randomUUID()}.${ext}`;
-        debug.log("[DocumentForm] requesting signed upload URL for", storagePath);
-        const { data: uploadUrlData, error: urlError } = await supabase2.functions.invoke("get-upload-url", {
-          body: { storage_path: storagePath }
-        });
-        debug.log("[DocumentForm] get-upload-url result — data:", uploadUrlData, "| error:", urlError);
-        if (urlError) throw urlError;
-        const { error: uploadError } = await supabase2.storage.from("documents").uploadToSignedUrl(uploadUrlData.path, uploadUrlData.token, selectedFile, {
-          contentType: selectedFile.type
+        debug.log("[DocumentForm] uploading to storage path:", storagePath);
+        const { error: uploadError } = await supabase2.storage.from("documents").upload(storagePath, selectedFile, {
+          contentType: selectedFile.type,
+          upsert: false
         });
         if (uploadError) throw uploadError;
         file_name = storagePath;

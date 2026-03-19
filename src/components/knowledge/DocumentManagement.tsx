@@ -420,20 +420,12 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSu
         const ext = selectedFile.name.split('.').pop();
         const storagePath = `${crypto.randomUUID()}.${ext}`;
 
-        // Get a pre-signed upload URL from the Edge Function (service role bypasses
-        // storage RLS, avoiding the recursive RLS evaluation timeout on private buckets).
-        debug.log('[DocumentForm] requesting signed upload URL for', storagePath);
-        const { data: uploadUrlData, error: urlError } = await supabase.functions.invoke('get-upload-url', {
-          body: { storage_path: storagePath },
-        });
-        debug.log('[DocumentForm] get-upload-url result — data:', uploadUrlData, '| error:', urlError);
-        if (urlError) throw urlError;
-
-        // Upload directly to the signed URL — no RLS evaluation on this request
+        debug.log('[DocumentForm] uploading to storage path:', storagePath);
         const { error: uploadError } = await supabase.storage
           .from('documents')
-          .uploadToSignedUrl(uploadUrlData.path, uploadUrlData.token, selectedFile, {
+          .upload(storagePath, selectedFile, {
             contentType: selectedFile.type,
+            upsert: false,
           });
 
         if (uploadError) throw uploadError;

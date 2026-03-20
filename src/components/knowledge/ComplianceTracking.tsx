@@ -445,7 +445,7 @@ const ComplianceTracking: React.FC = () => {
         document_title: assignment.documents?.title || 'Unknown Document',
         user_id: assignment.user_id,
         user_name: profileMap.get(assignment.user_id)?.full_name || 'Unknown User',
-        department: departmentMap.get(assignment.user_id) || 'Unknown Department',
+        department: departmentMap.get(assignment.user_id) || 'No Department',
         completed_at: assignment.completed_at,
       }));
     },
@@ -506,7 +506,7 @@ const ComplianceTracking: React.FC = () => {
         document_title: assignment.documents?.title || 'Unknown Document',
         user_id: assignment.user_id,
         user_name: profileMap.get(assignment.user_id)?.full_name || 'Unknown User',
-        department: departmentMap.get(assignment.user_id) || 'Unknown Department',
+        department: departmentMap.get(assignment.user_id) || 'No Department',
         due_date: assignment.due_date,
         status: assignment.status,
         days_overdue: Math.ceil((new Date().getTime() - new Date(assignment.due_date).getTime()) / (1000 * 60 * 60 * 24)),

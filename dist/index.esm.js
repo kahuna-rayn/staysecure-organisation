@@ -13034,7 +13034,7 @@ const ComplianceDocumentDetail = ({ documentId, documentTitle, onBack }) => {
         return {
           ...assignment,
           user_name: ((_a = profileMap.get(assignment.user_id)) == null ? void 0 : _a.full_name) || "Unknown User",
-          department: departmentMap.get(assignment.user_id) || "Unknown Department",
+          department: departmentMap.get(assignment.user_id) || "No Department",
           days_overdue: assignment.status !== "Completed" && new Date(assignment.due_date) < /* @__PURE__ */ new Date() ? Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24)) : 0
         };
       });
@@ -13466,7 +13466,7 @@ const ComplianceRoleDetail = ({ role, onBack }) => {
         return {
           ...assignment,
           user_name: ((_a = profileMap.get(assignment.user_id)) == null ? void 0 : _a.full_name) || "Unknown User",
-          department: departmentMap.get(assignment.user_id) || "Unknown Department",
+          department: departmentMap.get(assignment.user_id) || "No Department",
           document_title: ((_b = assignment.documents) == null ? void 0 : _b.title) || "Unknown Document",
           document_category: ((_c = assignment.documents) == null ? void 0 : _c.category) || "General",
           days_overdue: assignment.status !== "Completed" && new Date(assignment.due_date) < /* @__PURE__ */ new Date() ? Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24)) : 0
@@ -13960,7 +13960,7 @@ const ComplianceTracking = () => {
           document_title: ((_a = assignment.documents) == null ? void 0 : _a.title) || "Unknown Document",
           user_id: assignment.user_id,
           user_name: ((_b = profileMap.get(assignment.user_id)) == null ? void 0 : _b.full_name) || "Unknown User",
-          department: departmentMap.get(assignment.user_id) || "Unknown Department",
+          department: departmentMap.get(assignment.user_id) || "No Department",
           completed_at: assignment.completed_at
         };
       });
@@ -14005,7 +14005,7 @@ const ComplianceTracking = () => {
           document_title: ((_a = assignment.documents) == null ? void 0 : _a.title) || "Unknown Document",
           user_id: assignment.user_id,
           user_name: ((_b = profileMap.get(assignment.user_id)) == null ? void 0 : _b.full_name) || "Unknown User",
-          department: departmentMap.get(assignment.user_id) || "Unknown Department",
+          department: departmentMap.get(assignment.user_id) || "No Department",
           due_date: assignment.due_date,
           status: assignment.status,
           days_overdue: Math.ceil(((/* @__PURE__ */ new Date()).getTime() - new Date(assignment.due_date).getTime()) / (1e3 * 60 * 60 * 24))

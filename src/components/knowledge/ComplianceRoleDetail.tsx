@@ -80,7 +80,7 @@ const ComplianceRoleDetail: React.FC<RoleDetailProps> = ({ role, onBack }) => {
       return assignments.map(assignment => ({
         ...assignment,
         user_name: profileMap.get(assignment.user_id)?.full_name || 'Unknown User',
-        department: departmentMap.get(assignment.user_id) || 'Unknown Department',
+        department: departmentMap.get(assignment.user_id) || 'No Department',
         document_title: assignment.documents?.title || 'Unknown Document',
         document_category: assignment.documents?.category || 'General',
         days_overdue: assignment.status !== 'Completed' && new Date(assignment.due_date) < new Date() 

@@ -630,6 +630,16 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const RotateCcw = createLucideIcon("RotateCcw", [
+    ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+    ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const Save = createLucideIcon("Save", [
     [
       "path",
@@ -7087,6 +7097,7 @@
   const MyDocuments = ({ userId }) => {
     const { supabaseClient: supabase, basePath } = useOrganisationContext();
     const { user } = staysecureAuth.useAuth();
+    const { hasAdminAccess } = useUserRole.useUserRole();
     const queryClient = reactQuery.useQueryClient();
     const [searchTerm, setSearchTerm] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState("all");
@@ -7107,12 +7118,20 @@
       enabled: !!targetUserId
     });
     const updateStatusMutation = reactQuery.useMutation({
-      mutationFn: async ({ assignmentId, status, documentTitle }) => {
+      mutationFn: async ({
+        assignmentId,
+        status,
+        documentTitle,
+        previousStatus
+      }) => {
+        if (previousStatus === "Completed" && status !== "Completed") {
+          throw new Error("Completed documents cannot be changed to another status.");
+        }
         const completedAt = status === "Completed" ? (/* @__PURE__ */ new Date()).toISOString() : null;
         const updateData = { status };
         if (status === "Completed") {
           updateData.completed_at = completedAt;
-        } else if (status === "Not started") {
+        } else if (status === "Not started" || status === "In progress") {
           updateData.completed_at = null;
         }
         const { error } = await supabase.from("document_assignments").update(updateData).eq("assignment_id", assignmentId);
@@ -7153,8 +7172,43 @@
         });
       }
     });
-    const handleStatusChange = (assignmentId, newStatus, documentTitle) => {
-      updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle });
+    const resetCompletionMutation = reactQuery.useMutation({
+      mutationFn: async ({ assignmentId }) => {
+        const { error } = await supabase.from("document_assignments").update({ status: "Not started", completed_at: null }).eq("assignment_id", assignmentId);
+        if (error) throw error;
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
+        queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["user-compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["department-compliance-stats"] });
+        queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+        useToast.toast({
+          title: "Completion reset",
+          description: "Status set to Not started and completion cleared. The user must acknowledge again."
+        });
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Could not reset completion",
+          variant: "destructive"
+        });
+      }
+    });
+    const handleStatusChange = (assignmentId, newStatus, documentTitle, previousStatus) => {
+      updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle, previousStatus });
+    };
+    const handleAdminResetCompletion = (assignmentId, documentTitle) => {
+      if (!window.confirm(
+        `Reset completion for "${documentTitle}"?
+
+The assignment will return to Not started and the user will need to acknowledge this document again.`
+      )) {
+        return;
+      }
+      resetCompletionMutation.mutate({ assignmentId, documentTitle });
     };
     const handleOpenDocument = async (documentId, url, fileName) => {
       if (!fileName && url) {
@@ -7287,13 +7341,58 @@
             ")"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: filteredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: requiredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: optionalAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) })
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(
+          DocumentList,
+          {
+            assignments: filteredAssignments || [],
+            onStatusChange: handleStatusChange,
+            isReadOnly: !isOwnDocuments,
+            onOpenDocument: handleOpenDocument,
+            openingDocId,
+            canAdminResetCompletion: hasAdminAccess,
+            onAdminResetCompletion: handleAdminResetCompletion,
+            resetCompletionPending: resetCompletionMutation.isPending
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(
+          DocumentList,
+          {
+            assignments: requiredAssignments || [],
+            onStatusChange: handleStatusChange,
+            isReadOnly: !isOwnDocuments,
+            onOpenDocument: handleOpenDocument,
+            openingDocId,
+            canAdminResetCompletion: hasAdminAccess,
+            onAdminResetCompletion: handleAdminResetCompletion,
+            resetCompletionPending: resetCompletionMutation.isPending
+          }
+        ) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(
+          DocumentList,
+          {
+            assignments: optionalAssignments || [],
+            onStatusChange: handleStatusChange,
+            isReadOnly: !isOwnDocuments,
+            onOpenDocument: handleOpenDocument,
+            openingDocId,
+            canAdminResetCompletion: hasAdminAccess,
+            onAdminResetCompletion: handleAdminResetCompletion,
+            resetCompletionPending: resetCompletionMutation.isPending
+          }
+        ) })
       ] })
     ] });
   };
-  const DocumentList = ({ assignments, onStatusChange, onOpenDocument, openingDocId, isReadOnly = false }) => {
+  const DocumentList = ({
+    assignments,
+    onStatusChange,
+    onOpenDocument,
+    openingDocId,
+    isReadOnly = false,
+    canAdminResetCompletion = false,
+    onAdminResetCompletion,
+    resetCompletionPending = false
+  }) => {
     const getStatusIcon = (status) => {
       switch (status) {
         case "Completed":
@@ -7335,12 +7434,20 @@
         ] }),
         /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2", children: getStatusIcon(assignment.status) })
       ] }) }),
-      /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 text-sm text-muted-foreground", children: [
+      /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between flex-wrap gap-3", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center gap-4 text-sm text-muted-foreground", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4" }),
+            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 shrink-0" }),
             "Due: ",
             new Date(assignment.due_date).toLocaleDateString()
+          ] }),
+          assignment.status === "Completed" && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 shrink-0 text-green-600" }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-foreground", children: [
+              "Completed:",
+              " ",
+              assignment.completed_at ? new Date(assignment.completed_at).toLocaleDateString() : "—"
+            ] })
           ] }),
           assignment.document.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: assignment.document.category })
         ] }),
@@ -7362,11 +7469,45 @@
               ]
             }
           ),
-          isReadOnly ? /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor(assignment.status), children: assignment.status }) : /* @__PURE__ */ jsxRuntime.jsxs(
+          isReadOnly ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor(assignment.status), children: assignment.status }),
+            canAdminResetCompletion && assignment.status === "Completed" && onAdminResetCompletion && /* @__PURE__ */ jsxRuntime.jsxs(
+              button.Button,
+              {
+                type: "button",
+                variant: "outline",
+                size: "sm",
+                className: "text-muted-foreground",
+                onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
+                disabled: resetCompletionPending,
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
+                  "Reset completion"
+                ]
+              }
+            )
+          ] }) : assignment.status === "Completed" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor("Completed"), children: "Completed" }),
+            canAdminResetCompletion && onAdminResetCompletion && /* @__PURE__ */ jsxRuntime.jsxs(
+              button.Button,
+              {
+                type: "button",
+                variant: "outline",
+                size: "sm",
+                className: "text-muted-foreground",
+                onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
+                disabled: resetCompletionPending,
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
+                  "Reset completion"
+                ]
+              }
+            )
+          ] }) : /* @__PURE__ */ jsxRuntime.jsxs(
             select.Select,
             {
               value: assignment.status,
-              onValueChange: (value) => onStatusChange(assignment.assignment_id, value, assignment.document.title),
+              onValueChange: (value) => onStatusChange(assignment.assignment_id, value, assignment.document.title, assignment.status),
               children: [
                 /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
                 /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [

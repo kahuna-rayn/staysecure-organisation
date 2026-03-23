@@ -672,6 +672,16 @@ const Printer = createLucideIcon("Printer", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const RotateCcw = createLucideIcon("RotateCcw", [
+  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const Save = createLucideIcon("Save", [
   [
     "path",
@@ -7129,6 +7139,7 @@ const AddEducationDialog = ({
 const MyDocuments = ({ userId }) => {
   const { supabaseClient: supabase2, basePath } = useOrganisationContext();
   const { user } = useAuth();
+  const { hasAdminAccess } = useUserRole();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -7149,12 +7160,20 @@ const MyDocuments = ({ userId }) => {
     enabled: !!targetUserId
   });
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ assignmentId, status, documentTitle }) => {
+    mutationFn: async ({
+      assignmentId,
+      status,
+      documentTitle,
+      previousStatus
+    }) => {
+      if (previousStatus === "Completed" && status !== "Completed") {
+        throw new Error("Completed documents cannot be changed to another status.");
+      }
       const completedAt = status === "Completed" ? (/* @__PURE__ */ new Date()).toISOString() : null;
       const updateData = { status };
       if (status === "Completed") {
         updateData.completed_at = completedAt;
-      } else if (status === "Not started") {
+      } else if (status === "Not started" || status === "In progress") {
         updateData.completed_at = null;
       }
       const { error } = await supabase2.from("document_assignments").update(updateData).eq("assignment_id", assignmentId);
@@ -7195,8 +7214,43 @@ const MyDocuments = ({ userId }) => {
       });
     }
   });
-  const handleStatusChange = (assignmentId, newStatus, documentTitle) => {
-    updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle });
+  const resetCompletionMutation = useMutation({
+    mutationFn: async ({ assignmentId }) => {
+      const { error } = await supabase2.from("document_assignments").update({ status: "Not started", completed_at: null }).eq("assignment_id", assignmentId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["user-compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["department-compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+      toast({
+        title: "Completion reset",
+        description: "Status set to Not started and completion cleared. The user must acknowledge again."
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Could not reset completion",
+        variant: "destructive"
+      });
+    }
+  });
+  const handleStatusChange = (assignmentId, newStatus, documentTitle, previousStatus) => {
+    updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle, previousStatus });
+  };
+  const handleAdminResetCompletion = (assignmentId, documentTitle) => {
+    if (!window.confirm(
+      `Reset completion for "${documentTitle}"?
+
+The assignment will return to Not started and the user will need to acknowledge this document again.`
+    )) {
+      return;
+    }
+    resetCompletionMutation.mutate({ assignmentId, documentTitle });
   };
   const handleOpenDocument = async (documentId, url, fileName) => {
     if (!fileName && url) {
@@ -7329,13 +7383,58 @@ const MyDocuments = ({ userId }) => {
           ")"
         ] })
       ] }),
-      /* @__PURE__ */ jsx(TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsx(DocumentList, { assignments: filteredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) }),
-      /* @__PURE__ */ jsx(TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsx(DocumentList, { assignments: requiredAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) }),
-      /* @__PURE__ */ jsx(TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsx(DocumentList, { assignments: optionalAssignments || [], onStatusChange: handleStatusChange, isReadOnly: !isOwnDocuments, onOpenDocument: handleOpenDocument, openingDocId }) })
+      /* @__PURE__ */ jsx(TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsx(
+        DocumentList,
+        {
+          assignments: filteredAssignments || [],
+          onStatusChange: handleStatusChange,
+          isReadOnly: !isOwnDocuments,
+          onOpenDocument: handleOpenDocument,
+          openingDocId,
+          canAdminResetCompletion: hasAdminAccess,
+          onAdminResetCompletion: handleAdminResetCompletion,
+          resetCompletionPending: resetCompletionMutation.isPending
+        }
+      ) }),
+      /* @__PURE__ */ jsx(TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsx(
+        DocumentList,
+        {
+          assignments: requiredAssignments || [],
+          onStatusChange: handleStatusChange,
+          isReadOnly: !isOwnDocuments,
+          onOpenDocument: handleOpenDocument,
+          openingDocId,
+          canAdminResetCompletion: hasAdminAccess,
+          onAdminResetCompletion: handleAdminResetCompletion,
+          resetCompletionPending: resetCompletionMutation.isPending
+        }
+      ) }),
+      /* @__PURE__ */ jsx(TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsx(
+        DocumentList,
+        {
+          assignments: optionalAssignments || [],
+          onStatusChange: handleStatusChange,
+          isReadOnly: !isOwnDocuments,
+          onOpenDocument: handleOpenDocument,
+          openingDocId,
+          canAdminResetCompletion: hasAdminAccess,
+          onAdminResetCompletion: handleAdminResetCompletion,
+          resetCompletionPending: resetCompletionMutation.isPending
+        }
+      ) })
     ] })
   ] });
 };
-const DocumentList = ({ assignments, onStatusChange, onOpenDocument, openingDocId, isReadOnly = false }) => {
+const DocumentList = ({
+  assignments,
+  onStatusChange,
+  onOpenDocument,
+  openingDocId,
+  isReadOnly = false,
+  canAdminResetCompletion = false,
+  onAdminResetCompletion,
+  resetCompletionPending = false
+}) => {
   const getStatusIcon = (status) => {
     switch (status) {
       case "Completed":
@@ -7377,12 +7476,20 @@ const DocumentList = ({ assignments, onStatusChange, onOpenDocument, openingDocI
       ] }),
       /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: getStatusIcon(assignment.status) })
     ] }) }),
-    /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 text-sm text-muted-foreground", children: [
+    /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between flex-wrap gap-3", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center gap-4 text-sm text-muted-foreground", children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
-          /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4" }),
+          /* @__PURE__ */ jsx(Calendar, { className: "h-4 w-4 shrink-0" }),
           "Due: ",
           new Date(assignment.due_date).toLocaleDateString()
+        ] }),
+        assignment.status === "Completed" && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
+          /* @__PURE__ */ jsx(CircleCheckBig, { className: "h-4 w-4 shrink-0 text-green-600" }),
+          /* @__PURE__ */ jsxs("span", { className: "text-foreground", children: [
+            "Completed:",
+            " ",
+            assignment.completed_at ? new Date(assignment.completed_at).toLocaleDateString() : "—"
+          ] })
         ] }),
         assignment.document.category && /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: assignment.document.category })
       ] }),
@@ -7404,11 +7511,45 @@ const DocumentList = ({ assignments, onStatusChange, onOpenDocument, openingDocI
             ]
           }
         ),
-        isReadOnly ? /* @__PURE__ */ jsx(Badge, { className: getStatusColor(assignment.status), children: assignment.status }) : /* @__PURE__ */ jsxs(
+        isReadOnly ? /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
+          /* @__PURE__ */ jsx(Badge, { className: getStatusColor(assignment.status), children: assignment.status }),
+          canAdminResetCompletion && assignment.status === "Completed" && onAdminResetCompletion && /* @__PURE__ */ jsxs(
+            Button,
+            {
+              type: "button",
+              variant: "outline",
+              size: "sm",
+              className: "text-muted-foreground",
+              onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
+              disabled: resetCompletionPending,
+              children: [
+                /* @__PURE__ */ jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
+                "Reset completion"
+              ]
+            }
+          )
+        ] }) : assignment.status === "Completed" ? /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
+          /* @__PURE__ */ jsx(Badge, { className: getStatusColor("Completed"), children: "Completed" }),
+          canAdminResetCompletion && onAdminResetCompletion && /* @__PURE__ */ jsxs(
+            Button,
+            {
+              type: "button",
+              variant: "outline",
+              size: "sm",
+              className: "text-muted-foreground",
+              onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
+              disabled: resetCompletionPending,
+              children: [
+                /* @__PURE__ */ jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
+                "Reset completion"
+              ]
+            }
+          )
+        ] }) : /* @__PURE__ */ jsxs(
           Select,
           {
             value: assignment.status,
-            onValueChange: (value) => onStatusChange(assignment.assignment_id, value, assignment.document.title),
+            onValueChange: (value) => onStatusChange(assignment.assignment_id, value, assignment.document.title, assignment.status),
             children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
               /* @__PURE__ */ jsxs(SelectContent, { children: [

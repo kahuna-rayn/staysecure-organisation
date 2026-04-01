@@ -1,1 +1,1 @@
-{"version":3,"file":"ComplianceTracking.d.ts","sourceRoot":"","sources":["../../../src/components/knowledge/ComplianceTracking.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAmB,MAAM,OAAO,CAAC;AA4DxC,QAAA,MAAM,kBAAkB,EAAE,KAAK,CAAC,EA8lC/B,CAAC;AAEF,eAAe,kBAAkB,CAAC"}
+{"version":3,"file":"ComplianceTracking.d.ts","sourceRoot":"","sources":["../../../src/components/knowledge/ComplianceTracking.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAmB,MAAM,OAAO,CAAC;AA4DxC,QAAA,MAAM,kBAAkB,EAAE,KAAK,CAAC,EA8+B/B,CAAC;AAEF,eAAe,kBAAkB,CAAC"}

@@ -32,7 +32,7 @@ const KnowledgePanelInner: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger value="compliance" className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4" />
-            Compliance
+            Document Compliance
           </TabsTrigger>
         </TabsList>
 

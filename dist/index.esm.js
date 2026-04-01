@@ -13829,6 +13829,7 @@ const ComplianceTracking = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [departmentFilter, setDepartmentFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [locationFilter, setLocationFilter] = useState("all");
   const [activeTab, setActiveTab] = useState("users");
   const [showCompletedDetails, setShowCompletedDetails] = useState(false);
   const [showOverdueDetails, setShowOverdueDetails] = useState(false);
@@ -13902,7 +13903,7 @@ const ComplianceTracking = () => {
         `);
       if (error) throw error;
       const statsMap = /* @__PURE__ */ new Map();
-      const { data: profiles } = await supabase2.from("profiles").select("id, full_name");
+      const { data: profiles } = await supabase2.from("profiles").select("id, full_name, location_id");
       const { data: userDepartments } = await supabase2.from("user_departments").select(`
           user_id,
           is_primary,
@@ -13917,6 +13918,9 @@ const ComplianceTracking = () => {
           departmentMap.set(ud.user_id, deptName);
         }
       });
+      const locationIdMap = new Map(
+        (profiles == null ? void 0 : profiles.map((p) => [p.id, p.location_id ?? void 0])) || []
+      );
       data.forEach((assignment) => {
         const key = assignment.user_id;
         const profile = profileMap.get(key);
@@ -13940,6 +13944,7 @@ const ComplianceTracking = () => {
         user_id,
         user_name: stats.name,
         department: stats.department,
+        location_id: locationIdMap.get(user_id),
         total_assignments: stats.total,
         completed_assignments: stats.completed,
         overdue_assignments: stats.overdue,
@@ -14041,6 +14046,13 @@ const ComplianceTracking = () => {
       }));
     }
   });
+  const { data: locations = [] } = useQuery({
+    queryKey: ["compliance-locations"],
+    queryFn: async () => {
+      const { data } = await supabase2.from("locations").select("id, name").order("name");
+      return data || [];
+    }
+  });
   const getComplianceColor = (rate) => {
     if (rate >= 90) return "text-green-600";
     if (rate >= 70) return "text-yellow-600";
@@ -14055,8 +14067,9 @@ const ComplianceTracking = () => {
   const filteredUserStats = userStats == null ? void 0 : userStats.filter((user) => {
     const matchesSearch = user.user_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesDepartment = departmentFilter === "all" || user.department === departmentFilter;
+    const matchesLocation = locationFilter === "all" || user.location_id === locationFilter;
     const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && user.compliance_rate === 100 || statusFilter === "overdue" && user.overdue_assignments > 0 && user.compliance_rate < 100;
-    return matchesSearch && matchesDepartment && matchesStatus;
+    return matchesSearch && matchesDepartment && matchesLocation && matchesStatus;
   });
   const filteredDocumentStats = documentStats == null ? void 0 : documentStats.filter((doc) => {
     const matchesSearch = doc.document_title.toLowerCase().includes(searchTerm.toLowerCase());
@@ -14263,450 +14276,285 @@ const ComplianceTracking = () => {
         showOverdueDetails && /* @__PURE__ */ jsx(TabsTrigger, { value: "overdue-details", children: "Overdue Details" })
       ] }),
       /* @__PURE__ */ jsxs(TabsContent, { value: "users", className: "space-y-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "user-search", children: "Search Users" }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                id: "user-search",
-                placeholder: "Search by name...",
-                value: searchTerm,
-                onChange: (e) => setSearchTerm(e.target.value)
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "w-full sm:w-48", children: [
-            /* @__PURE__ */ jsx(Label, { children: "Department" }),
-            /* @__PURE__ */ jsxs(Select, { value: departmentFilter, onValueChange: setDepartmentFilter, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All departments" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Departments" }),
-                departments.map((dept) => /* @__PURE__ */ jsx(SelectItem, { value: dept, children: dept }, dept))
-              ] })
+        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3", children: [
+          /* @__PURE__ */ jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsx(
+            Input,
+            {
+              placeholder: "Search by name...",
+              value: searchTerm,
+              onChange: (e) => setSearchTerm(e.target.value)
+            }
+          ) }),
+          /* @__PURE__ */ jsxs(Select, { value: locationFilter, onValueChange: setLocationFilter, children: [
+            /* @__PURE__ */ jsxs(SelectTrigger, { className: "w-full sm:w-44", children: [
+              /* @__PURE__ */ jsx(MapPin, { className: "h-3.5 w-3.5 mr-1 text-muted-foreground" }),
+              /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Locations" })
+            ] }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Locations" }),
+              locations.map((loc) => /* @__PURE__ */ jsx(SelectItem, { value: loc.id, children: loc.name }, loc.id))
             ] })
           ] }),
-          /* @__PURE__ */ jsxs("div", { className: "w-full sm:w-48", children: [
-            /* @__PURE__ */ jsx(Label, { children: "Status" }),
-            /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All statuses" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
-              ] })
+          /* @__PURE__ */ jsxs(Select, { value: departmentFilter, onValueChange: setDepartmentFilter, children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full sm:w-44", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Departments" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Departments" }),
+              departments.map((dept) => /* @__PURE__ */ jsx(SelectItem, { value: dept, children: dept }, dept))
             ] })
           ] }),
-          /* @__PURE__ */ jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsx(
+          /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full sm:w-36", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Status" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx(
             Button,
             {
               variant: "outline",
               onClick: () => {
                 setSearchTerm("");
+                setLocationFilter("all");
                 setDepartmentFilter("all");
                 setStatusFilter("all");
               },
-              children: "Clear Filters"
+              children: "Clear"
             }
-          ) })
+          )
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground", children: [
           "Showing ",
           (filteredUserStats == null ? void 0 : filteredUserStats.length) || 0,
           " of ",
           (userStats == null ? void 0 : userStats.length) || 0,
-          " users",
-          searchTerm && /* @__PURE__ */ jsxs("span", { children: [
-            ' | Search: "',
-            searchTerm,
-            '"'
-          ] }),
-          departmentFilter !== "all" && /* @__PURE__ */ jsxs("span", { children: [
-            " | Department: ",
-            departmentFilter
-          ] }),
-          statusFilter !== "all" && /* @__PURE__ */ jsxs("span", { children: [
-            " | Status: ",
-            statusFilter
-          ] })
+          " users"
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "grid gap-4", children: filteredUserStats == null ? void 0 : filteredUserStats.map((user) => /* @__PURE__ */ jsxs(
-          Card,
-          {
-            className: "cursor-pointer hover:bg-accent/50 transition-colors",
-            onClick: () => setSelectedUserDetail({
-              userId: user.user_id,
-              userName: user.user_name,
-              department: user.department
-            }),
-            children: [
-              /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxs("div", { children: [
-                  /* @__PURE__ */ jsxs(CardTitle, { className: "text-lg flex items-center gap-2", children: [
-                    user.user_name,
-                    /* @__PURE__ */ jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
-                  ] }),
-                  /* @__PURE__ */ jsx(CardDescription, { children: user.department })
+        /* @__PURE__ */ jsxs("div", { className: "divide-y rounded-lg border", children: [
+          filteredUserStats == null ? void 0 : filteredUserStats.map((user) => /* @__PURE__ */ jsxs(
+            "div",
+            {
+              className: "flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-accent/50 transition-colors",
+              onClick: () => setSelectedUserDetail({ userId: user.user_id, userName: user.user_name, department: user.department }),
+              children: [
+                /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+                  /* @__PURE__ */ jsx("div", { className: "font-medium truncate", children: user.user_name }),
+                  /* @__PURE__ */ jsx("div", { className: "text-xs text-muted-foreground truncate", children: user.department })
                 ] }),
-                /* @__PURE__ */ jsxs(Badge, { className: getComplianceBadge(user.compliance_rate), children: [
+                /* @__PURE__ */ jsx("div", { className: "w-32 hidden sm:block", children: /* @__PURE__ */ jsx(Progress, { value: user.compliance_rate, className: "h-1.5" }) }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground whitespace-nowrap w-16 text-right", children: [
+                  user.completed_assignments,
+                  "/",
+                  user.total_assignments
+                ] }),
+                /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(user.compliance_rate)} whitespace-nowrap`, children: [
                   Math.round(user.compliance_rate),
-                  "% Complete"
-                ] })
-              ] }) }),
-              /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
-                  /* @__PURE__ */ jsx("span", { children: "Progress" }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    user.completed_assignments,
-                    " / ",
-                    user.total_assignments
-                  ] })
+                  "%"
                 ] }),
-                /* @__PURE__ */ jsx(Progress, { value: user.compliance_rate, className: "w-full" }),
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Completed: ",
-                    user.completed_assignments
-                  ] }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Overdue: ",
-                    user.overdue_assignments
-                  ] })
-                ] })
-              ] }) })
-            ]
-          },
-          user.user_id
-        )) })
+                /* @__PURE__ */ jsx(ChevronRight, { className: "h-4 w-4 text-muted-foreground flex-shrink-0" })
+              ]
+            },
+            user.user_id
+          )),
+          (filteredUserStats == null ? void 0 : filteredUserStats.length) === 0 && /* @__PURE__ */ jsx("div", { className: "px-4 py-8 text-center text-sm text-muted-foreground", children: "No users match the current filters." })
+        ] })
       ] }),
       /* @__PURE__ */ jsxs(TabsContent, { value: "documents", className: "space-y-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "document-search", children: "Search Documents" }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                id: "document-search",
-                placeholder: "Search by document title...",
-                value: searchTerm,
-                onChange: (e) => setSearchTerm(e.target.value)
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "w-full sm:w-48", children: [
-            /* @__PURE__ */ jsx(Label, { children: "Status" }),
-            /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All statuses" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
-              ] })
+        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3", children: [
+          /* @__PURE__ */ jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsx(
+            Input,
+            {
+              placeholder: "Search by document title...",
+              value: searchTerm,
+              onChange: (e) => setSearchTerm(e.target.value)
+            }
+          ) }),
+          /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full sm:w-36", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Status" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
             ] })
           ] }),
-          /* @__PURE__ */ jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsx(
-            Button,
-            {
-              variant: "outline",
-              onClick: () => {
-                setSearchTerm("");
-                setStatusFilter("all");
-              },
-              children: "Clear Filters"
-            }
-          ) })
+          /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => {
+            setSearchTerm("");
+            setStatusFilter("all");
+          }, children: "Clear" })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground", children: [
           "Showing ",
           (filteredDocumentStats == null ? void 0 : filteredDocumentStats.length) || 0,
           " of ",
           (documentStats == null ? void 0 : documentStats.length) || 0,
-          " documents",
-          searchTerm && /* @__PURE__ */ jsxs("span", { children: [
-            ' | Search: "',
-            searchTerm,
-            '"'
-          ] }),
-          statusFilter !== "all" && /* @__PURE__ */ jsxs("span", { children: [
-            " | Status: ",
-            statusFilter
-          ] })
+          " documents"
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "grid gap-4", children: filteredDocumentStats == null ? void 0 : filteredDocumentStats.map((doc) => /* @__PURE__ */ jsxs(
-          Card,
-          {
-            className: "cursor-pointer hover:bg-accent/50 transition-colors",
-            onClick: () => setSelectedDocumentDetail({
-              documentId: doc.document_id,
-              documentTitle: doc.document_title
-            }),
-            children: [
-              /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxs("div", { children: [
-                  /* @__PURE__ */ jsxs(CardTitle, { className: "text-lg flex items-center gap-2", children: [
-                    doc.document_title,
-                    /* @__PURE__ */ jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
-                  ] }),
-                  /* @__PURE__ */ jsxs(CardDescription, { children: [
+        /* @__PURE__ */ jsxs("div", { className: "divide-y rounded-lg border", children: [
+          filteredDocumentStats == null ? void 0 : filteredDocumentStats.map((doc) => /* @__PURE__ */ jsxs(
+            "div",
+            {
+              className: "flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-accent/50 transition-colors",
+              onClick: () => setSelectedDocumentDetail({ documentId: doc.document_id, documentTitle: doc.document_title }),
+              children: [
+                /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+                  /* @__PURE__ */ jsx("div", { className: "font-medium truncate", children: doc.document_title }),
+                  /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground", children: [
                     doc.total_assignments,
                     " assignments"
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxs(Badge, { className: getComplianceBadge(doc.compliance_rate), children: [
-                  Math.round(doc.compliance_rate),
-                  "% Complete"
-                ] })
-              ] }) }),
-              /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
-                  /* @__PURE__ */ jsx("span", { children: "Progress" }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    doc.completed_assignments,
-                    " / ",
-                    doc.total_assignments
-                  ] })
+                /* @__PURE__ */ jsx("div", { className: "w-32 hidden sm:block", children: /* @__PURE__ */ jsx(Progress, { value: doc.compliance_rate, className: "h-1.5" }) }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground whitespace-nowrap w-16 text-right", children: [
+                  doc.completed_assignments,
+                  "/",
+                  doc.total_assignments
                 ] }),
-                /* @__PURE__ */ jsx(Progress, { value: doc.compliance_rate, className: "w-full" }),
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Completed: ",
-                    doc.completed_assignments
-                  ] }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Overdue: ",
-                    doc.overdue_assignments
-                  ] })
-                ] })
-              ] }) })
-            ]
-          },
-          doc.document_id
-        )) })
+                /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(doc.compliance_rate)} whitespace-nowrap`, children: [
+                  Math.round(doc.compliance_rate),
+                  "%"
+                ] }),
+                /* @__PURE__ */ jsx(ChevronRight, { className: "h-4 w-4 text-muted-foreground flex-shrink-0" })
+              ]
+            },
+            doc.document_id
+          )),
+          (filteredDocumentStats == null ? void 0 : filteredDocumentStats.length) === 0 && /* @__PURE__ */ jsx("div", { className: "px-4 py-8 text-center text-sm text-muted-foreground", children: "No documents match the current filters." })
+        ] })
       ] }),
       /* @__PURE__ */ jsxs(TabsContent, { value: "departments", className: "space-y-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "department-search", children: "Search Departments" }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                id: "department-search",
-                placeholder: "Search by department name...",
-                value: searchTerm,
-                onChange: (e) => setSearchTerm(e.target.value)
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "w-full sm:w-48", children: [
-            /* @__PURE__ */ jsx(Label, { children: "Department" }),
-            /* @__PURE__ */ jsxs(Select, { value: departmentFilter, onValueChange: setDepartmentFilter, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All departments" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Departments" }),
-                departments.map((dept) => /* @__PURE__ */ jsx(SelectItem, { value: dept, children: dept }, dept))
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "w-full sm:w-48", children: [
-            /* @__PURE__ */ jsx(Label, { children: "Status" }),
-            /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All statuses" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsx(
-            Button,
+        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3", children: [
+          /* @__PURE__ */ jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsx(
+            Input,
             {
-              variant: "outline",
-              onClick: () => {
-                setSearchTerm("");
-                setDepartmentFilter("all");
-                setStatusFilter("all");
-              },
-              children: "Clear Filters"
+              placeholder: "Search by department name...",
+              value: searchTerm,
+              onChange: (e) => setSearchTerm(e.target.value)
             }
-          ) })
+          ) }),
+          /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full sm:w-36", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Status" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => {
+            setSearchTerm("");
+            setDepartmentFilter("all");
+            setStatusFilter("all");
+          }, children: "Clear" })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground", children: [
           "Showing ",
           (filteredDepartmentStats == null ? void 0 : filteredDepartmentStats.length) || 0,
           " of ",
           (departmentStats == null ? void 0 : departmentStats.length) || 0,
-          " departments",
-          searchTerm && /* @__PURE__ */ jsxs("span", { children: [
-            ' | Search: "',
-            searchTerm,
-            '"'
-          ] }),
-          departmentFilter !== "all" && /* @__PURE__ */ jsxs("span", { children: [
-            " | Department: ",
-            departmentFilter
-          ] }),
-          statusFilter !== "all" && /* @__PURE__ */ jsxs("span", { children: [
-            " | Status: ",
-            statusFilter
-          ] })
+          " departments"
         ] }),
-        /* @__PURE__ */ jsx("div", { className: "grid gap-4", children: filteredDepartmentStats == null ? void 0 : filteredDepartmentStats.map((dept) => /* @__PURE__ */ jsxs(
-          Card,
-          {
-            className: "cursor-pointer hover:bg-accent/50 transition-colors",
-            onClick: () => setSelectedDepartmentDetail(dept.department),
-            children: [
-              /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxs("div", { children: [
-                  /* @__PURE__ */ jsxs(CardTitle, { className: "text-lg flex items-center gap-2", children: [
-                    dept.department,
-                    /* @__PURE__ */ jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
-                  ] }),
-                  /* @__PURE__ */ jsxs(CardDescription, { children: [
+        /* @__PURE__ */ jsxs("div", { className: "divide-y rounded-lg border", children: [
+          filteredDepartmentStats == null ? void 0 : filteredDepartmentStats.map((dept) => /* @__PURE__ */ jsxs(
+            "div",
+            {
+              className: "flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-accent/50 transition-colors",
+              onClick: () => setSelectedDepartmentDetail(dept.department),
+              children: [
+                /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+                  /* @__PURE__ */ jsx("div", { className: "font-medium truncate", children: dept.department }),
+                  /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground", children: [
                     dept.total_assignments,
                     " assignments"
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxs(Badge, { className: getComplianceBadge(dept.compliance_rate), children: [
-                  Math.round(dept.compliance_rate),
-                  "% Complete"
-                ] })
-              ] }) }),
-              /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
-                  /* @__PURE__ */ jsx("span", { children: "Progress" }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    dept.completed_assignments,
-                    " / ",
-                    dept.total_assignments
-                  ] })
+                /* @__PURE__ */ jsx("div", { className: "w-32 hidden sm:block", children: /* @__PURE__ */ jsx(Progress, { value: dept.compliance_rate, className: "h-1.5" }) }),
+                /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground whitespace-nowrap w-16 text-right", children: [
+                  dept.completed_assignments,
+                  "/",
+                  dept.total_assignments
                 ] }),
-                /* @__PURE__ */ jsx(Progress, { value: dept.compliance_rate, className: "w-full" }),
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Completed: ",
-                    dept.completed_assignments
-                  ] }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Overdue: ",
-                    dept.overdue_assignments
-                  ] })
-                ] })
-              ] }) })
-            ]
-          },
-          dept.department
-        )) })
+                /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(dept.compliance_rate)} whitespace-nowrap`, children: [
+                  Math.round(dept.compliance_rate),
+                  "%"
+                ] }),
+                /* @__PURE__ */ jsx(ChevronRight, { className: "h-4 w-4 text-muted-foreground flex-shrink-0" })
+              ]
+            },
+            dept.department
+          )),
+          (filteredDepartmentStats == null ? void 0 : filteredDepartmentStats.length) === 0 && /* @__PURE__ */ jsx("div", { className: "px-4 py-8 text-center text-sm text-muted-foreground", children: "No departments match the current filters." })
+        ] })
       ] }),
       /* @__PURE__ */ jsxs(TabsContent, { value: "roles", className: "space-y-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-4", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "role-search", children: "Search Roles" }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                id: "role-search",
-                placeholder: "Search by role name...",
-                value: searchTerm,
-                onChange: (e) => setSearchTerm(e.target.value)
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "w-full sm:w-48", children: [
-            /* @__PURE__ */ jsx(Label, { children: "Status" }),
-            /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All statuses" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
-              ] })
+        /* @__PURE__ */ jsxs("div", { className: "flex flex-col sm:flex-row gap-3", children: [
+          /* @__PURE__ */ jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsx(
+            Input,
+            {
+              placeholder: "Search by role name...",
+              value: searchTerm,
+              onChange: (e) => setSearchTerm(e.target.value)
+            }
+          ) }),
+          /* @__PURE__ */ jsxs(Select, { value: statusFilter, onValueChange: setStatusFilter, children: [
+            /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full sm:w-36", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "All Status" }) }),
+            /* @__PURE__ */ jsxs(SelectContent, { children: [
+              /* @__PURE__ */ jsx(SelectItem, { value: "all", children: "All Status" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "Completed", children: "Completed" }),
+              /* @__PURE__ */ jsx(SelectItem, { value: "overdue", children: "Overdue" })
             ] })
           ] }),
-          /* @__PURE__ */ jsx("div", { className: "flex items-end", children: /* @__PURE__ */ jsx(
-            Button,
-            {
-              variant: "outline",
-              onClick: () => {
-                setSearchTerm("");
-                setStatusFilter("all");
-              },
-              children: "Clear Filters"
-            }
-          ) })
+          /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => {
+            setSearchTerm("");
+            setStatusFilter("all");
+          }, children: "Clear" })
         ] }),
-        /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground", children: [
-          "Showing ",
-          (roleStats == null ? void 0 : roleStats.filter((role) => {
+        (() => {
+          const filteredRoleStats = roleStats == null ? void 0 : roleStats.filter((role) => {
             const matchesSearch = role.role.toLowerCase().includes(searchTerm.toLowerCase());
             const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && role.compliance_rate === 100 || statusFilter === "overdue" && role.overdue_assignments > 0 && role.compliance_rate < 100;
             return matchesSearch && matchesStatus;
-          }).length) || 0,
-          " of ",
-          (roleStats == null ? void 0 : roleStats.length) || 0,
-          " roles",
-          searchTerm && /* @__PURE__ */ jsxs("span", { children: [
-            ' | Search: "',
-            searchTerm,
-            '"'
-          ] }),
-          statusFilter !== "all" && /* @__PURE__ */ jsxs("span", { children: [
-            " | Status: ",
-            statusFilter
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx("div", { className: "grid gap-4", children: roleStats == null ? void 0 : roleStats.filter((role) => {
-          const matchesSearch = role.role.toLowerCase().includes(searchTerm.toLowerCase());
-          const matchesStatus = statusFilter === "all" || statusFilter === "Completed" && role.compliance_rate === 100 || statusFilter === "overdue" && role.overdue_assignments > 0 && role.compliance_rate < 100;
-          return matchesSearch && matchesStatus;
-        }).map((role) => /* @__PURE__ */ jsxs(
-          Card,
-          {
-            className: "cursor-pointer hover:bg-accent/50 transition-colors",
-            onClick: () => setSelectedRoleDetail(role.role),
-            children: [
-              /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
-                /* @__PURE__ */ jsxs("div", { children: [
-                  /* @__PURE__ */ jsxs(CardTitle, { className: "text-lg flex items-center gap-2", children: [
-                    role.role,
-                    /* @__PURE__ */ jsx(Eye, { className: "h-4 w-4 text-muted-foreground" })
-                  ] }),
-                  /* @__PURE__ */ jsxs(CardDescription, { children: [
-                    role.total_assignments,
-                    " assignments"
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxs(Badge, { className: getComplianceBadge(role.compliance_rate), children: [
-                  Math.round(role.compliance_rate),
-                  "% Complete"
-                ] })
-              ] }) }),
-              /* @__PURE__ */ jsx(CardContent, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
-                  /* @__PURE__ */ jsx("span", { children: "Progress" }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    role.completed_assignments,
-                    " / ",
-                    role.total_assignments
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsx(Progress, { value: role.compliance_rate, className: "w-full" }),
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm text-muted-foreground", children: [
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Completed: ",
-                    role.completed_assignments
-                  ] }),
-                  /* @__PURE__ */ jsxs("span", { children: [
-                    "Overdue: ",
-                    role.overdue_assignments
-                  ] })
-                ] })
-              ] }) })
-            ]
-          },
-          role.role
-        )) })
+          });
+          return /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground", children: [
+              "Showing ",
+              (filteredRoleStats == null ? void 0 : filteredRoleStats.length) || 0,
+              " of ",
+              (roleStats == null ? void 0 : roleStats.length) || 0,
+              " roles"
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "divide-y rounded-lg border", children: [
+              filteredRoleStats == null ? void 0 : filteredRoleStats.map((role) => /* @__PURE__ */ jsxs(
+                "div",
+                {
+                  className: "flex items-center gap-4 px-4 py-3 cursor-pointer hover:bg-accent/50 transition-colors",
+                  onClick: () => setSelectedRoleDetail(role.role),
+                  children: [
+                    /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+                      /* @__PURE__ */ jsx("div", { className: "font-medium truncate", children: role.role }),
+                      /* @__PURE__ */ jsxs("div", { className: "text-xs text-muted-foreground", children: [
+                        role.total_assignments,
+                        " assignments"
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsx("div", { className: "w-32 hidden sm:block", children: /* @__PURE__ */ jsx(Progress, { value: role.compliance_rate, className: "h-1.5" }) }),
+                    /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground whitespace-nowrap w-16 text-right", children: [
+                      role.completed_assignments,
+                      "/",
+                      role.total_assignments
+                    ] }),
+                    /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(role.compliance_rate)} whitespace-nowrap`, children: [
+                      Math.round(role.compliance_rate),
+                      "%"
+                    ] }),
+                    /* @__PURE__ */ jsx(ChevronRight, { className: "h-4 w-4 text-muted-foreground flex-shrink-0" })
+                  ]
+                },
+                role.role
+              )),
+              (filteredRoleStats == null ? void 0 : filteredRoleStats.length) === 0 && /* @__PURE__ */ jsx("div", { className: "px-4 py-8 text-center text-sm text-muted-foreground", children: "No roles match the current filters." })
+            ] })
+          ] });
+        })()
       ] }),
       /* @__PURE__ */ jsxs(TabsContent, { value: "completed-details", className: "space-y-4", children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
@@ -14838,7 +14686,7 @@ const KnowledgePanelInner = () => {
         ] }),
         /* @__PURE__ */ jsxs(TabsTrigger, { value: "compliance", className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsx(CircleCheckBig, { className: "h-4 w-4" }),
-          "Compliance"
+          "Document Compliance"
         ] })
       ] }),
       /* @__PURE__ */ jsx(TabsContent, { value: "documents", className: "space-y-4", children: /* @__PURE__ */ jsx(DocumentManagement, { onNavigateToAssignments: () => setActiveTab("assignments") }) }),

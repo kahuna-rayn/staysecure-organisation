@@ -6,8 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Plus, Search, Building2, Shield, Calendar, BarChart3, Save } from 'lucide-react';
+import { Users, Plus, Search, Building2, Shield, Calendar, BarChart3, Save, Info } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useAuth } from 'staysecure-auth';
@@ -493,7 +494,19 @@ const DocumentAssignments: React.FC = () => {
 
               {/* Assignment Type */}
               <div>
-                <Label>Assignment Type</Label>
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Label>Assignment Type</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Info className="w-3.5 h-3.5 text-muted-foreground cursor-pointer" />
+                    </PopoverTrigger>
+                    <PopoverContent className="w-72 text-sm space-y-1.5">
+                      <p><strong>Departments</strong> — assigns to all current and future members of the department.</p>
+                      <p><strong>Roles</strong> — assigns to all users with that role, across departments.</p>
+                      <p><strong>Users</strong> — assigns to specific individuals only.</p>
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <Tabs value={assignmentType} onValueChange={(value) => {
                   setAssignmentType(value as 'roles' | 'departments' | 'users');
                   setSelectedTargets([]);

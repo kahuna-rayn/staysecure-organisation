@@ -483,6 +483,17 @@ const Image = createLucideIcon("Image", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const Info = createLucideIcon("Info", [
+  ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+  ["path", { d: "M12 16v-4", key: "1dtifu" }],
+  ["path", { d: "M12 8h.01", key: "e9boi3" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const KeyRound = createLucideIcon("KeyRound", [
   [
     "path",
@@ -11425,7 +11436,26 @@ const DocumentAssignments = () => {
               ] })
             ] }),
             /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx(Label, { children: "Assignment Type" }),
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1.5 mb-1", children: [
+                /* @__PURE__ */ jsx(Label, { children: "Assignment Type" }),
+                /* @__PURE__ */ jsxs(Popover, { children: [
+                  /* @__PURE__ */ jsx(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Info, { className: "w-3.5 h-3.5 text-muted-foreground cursor-pointer" }) }),
+                  /* @__PURE__ */ jsxs(PopoverContent, { className: "w-72 text-sm space-y-1.5", children: [
+                    /* @__PURE__ */ jsxs("p", { children: [
+                      /* @__PURE__ */ jsx("strong", { children: "Departments" }),
+                      " — assigns to all current and future members of the department."
+                    ] }),
+                    /* @__PURE__ */ jsxs("p", { children: [
+                      /* @__PURE__ */ jsx("strong", { children: "Roles" }),
+                      " — assigns to all users with that role, across departments."
+                    ] }),
+                    /* @__PURE__ */ jsxs("p", { children: [
+                      /* @__PURE__ */ jsx("strong", { children: "Users" }),
+                      " — assigns to specific individuals only."
+                    ] })
+                  ] })
+                ] })
+              ] }),
               /* @__PURE__ */ jsx(Tabs, { value: assignmentType, onValueChange: (value) => {
                 setAssignmentType(value);
                 setSelectedTargets([]);

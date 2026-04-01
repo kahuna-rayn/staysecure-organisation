@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Plus, Search, Building2, Shield, Calendar, BarChart3 } from 'lucide-react';
+import { Users, Plus, Search, Building2, Shield, Calendar, BarChart3, Save } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useAuth } from 'staysecure-auth';
@@ -534,15 +534,13 @@ const DocumentAssignments: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button variant="outline" onClick={() => setIsAssignDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button 
-                  onClick={handleAssign} 
+              <div className="flex justify-end pt-4">
+                <Button
+                  size="icon"
+                  onClick={handleAssign}
                   disabled={!selectedDocument || selectedTargets.length === 0}
                 >
-                  Create Assignment
+                  <Save className="w-4 h-4" />
                 </Button>
               </div>
             </div>
@@ -599,7 +597,6 @@ const DocumentAssignments: React.FC = () => {
                       className="flex items-center gap-2"
                     >
                       <BarChart3 className="h-4 w-4" />
-                      View Breakdown
                     </Button>
                   </div>
                 </div>

@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 
 interface AssignSoftwareDialogProps {
   isOpen: boolean;
@@ -221,11 +221,8 @@ const AssignSoftwareDialog: React.FC<AssignSoftwareDialogProps> = ({
           </div>
 
           <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading || !selectedSoftwareId || !roleAccountType}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Assign Software"}
+            <Button type="submit" size="icon" disabled={loading || !selectedSoftwareId || !roleAccountType}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             </Button>
           </div>
         </form>

@@ -6730,10 +6730,7 @@ const AssignHardwareDialog = ({
           selectedHardwareItem.asset_location || "Not specified"
         ] })
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !selectedHardwareId, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Assign Hardware" })
-      ] })
+      /* @__PURE__ */ jsx("div", { className: "flex gap-2 justify-end", children: /* @__PURE__ */ jsx(Button, { type: "submit", size: "icon", disabled: loading || !selectedHardwareId, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) }) })
     ] })
   ] }) });
 };
@@ -6902,10 +6899,7 @@ const AssignSoftwareDialog = ({
           ] })
         ] })
       ] }),
-      /* @__PURE__ */ jsxs("div", { className: "flex gap-2 justify-end", children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading || !selectedSoftwareId || !roleAccountType, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Assign Software" })
-      ] })
+      /* @__PURE__ */ jsx("div", { className: "flex gap-2 justify-end", children: /* @__PURE__ */ jsx(Button, { type: "submit", size: "icon", disabled: loading || !selectedSoftwareId || !roleAccountType, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) }) })
     ] })
   ] }) });
 };
@@ -8741,13 +8735,7 @@ const ChangePasswordDialog = ({
           )
         ] })
       ] }),
-      /* @__PURE__ */ jsxs(DialogFooter, { children: [
-        /* @__PURE__ */ jsx(Button, { type: "button", variant: "outline", onClick: handleClose, disabled: loading, children: "Cancel" }),
-        /* @__PURE__ */ jsx(Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsxs(Fragment, { children: [
-          /* @__PURE__ */ jsx(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
-          "Updating…"
-        ] }) : "Update password" })
-      ] })
+      /* @__PURE__ */ jsx(DialogFooter, { children: /* @__PURE__ */ jsx(Button, { type: "submit", size: "icon", disabled: loading, children: loading ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsx(Save, { className: "h-4 w-4" }) }) })
     ] })
   ] }) });
 };
@@ -9947,9 +9935,7 @@ const ProfileBasicInfo = ({
 const MultipleRolesField = ({
   userId,
   departmentValue,
-  isEditing,
-  onEdit,
-  onCancel
+  isEditing
 }) => {
   const [isAddingRole, setIsAddingRole] = useState(false);
   const [selectedRole, setSelectedRole] = useState("");
@@ -10130,13 +10116,14 @@ const MultipleRolesField = ({
           ).map((role) => /* @__PURE__ */ jsx(SelectItem, { value: role.role_id, children: role.name }, role.role_id)) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "flex justify-end gap-2", children: [
-          /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsAddingRole(false), children: "Cancel" }),
+          /* @__PURE__ */ jsx(Button, { variant: "outline", size: "icon", onClick: () => setIsAddingRole(false), children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" }) }),
           /* @__PURE__ */ jsx(
             Button,
             {
+              size: "icon",
               onClick: handleAddRole,
               disabled: !selectedRole || addRoleMutation.isPending,
-              children: "Add Role"
+              children: /* @__PURE__ */ jsx(Save, { className: "w-4 h-4" })
             }
           )
         ] })
@@ -11471,17 +11458,15 @@ const DocumentAssignments = () => {
                 /* @__PURE__ */ jsx(Label, { htmlFor: getTargetId(target), className: "text-sm", children: getTargetLabel(target) })
               ] }, getTargetId(target))) })
             ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex justify-end space-x-2 pt-4", children: [
-              /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setIsAssignDialogOpen(false), children: "Cancel" }),
-              /* @__PURE__ */ jsx(
-                Button,
-                {
-                  onClick: handleAssign,
-                  disabled: !selectedDocument || selectedTargets.length === 0,
-                  children: "Create Assignment"
-                }
-              )
-            ] })
+            /* @__PURE__ */ jsx("div", { className: "flex justify-end pt-4", children: /* @__PURE__ */ jsx(
+              Button,
+              {
+                size: "icon",
+                onClick: handleAssign,
+                disabled: !selectedDocument || selectedTargets.length === 0,
+                children: /* @__PURE__ */ jsx(Save, { className: "w-4 h-4" })
+              }
+            ) })
           ] })
         ] })
       ] })
@@ -11522,7 +11507,7 @@ const DocumentAssignments = () => {
                 " staff assigned"
               ] })
             ] }),
-            /* @__PURE__ */ jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxs(
+            /* @__PURE__ */ jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsx(
               Button,
               {
                 variant: "outline",
@@ -11532,10 +11517,7 @@ const DocumentAssignments = () => {
                   title: group.document.title
                 }),
                 className: "flex items-center gap-2",
-                children: [
-                  /* @__PURE__ */ jsx(ChartColumn, { className: "h-4 w-4" }),
-                  "View Breakdown"
-                ]
+                children: /* @__PURE__ */ jsx(ChartColumn, { className: "h-4 w-4" })
               }
             ) })
           ] }) }),

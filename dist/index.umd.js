@@ -6688,10 +6688,7 @@
             selectedHardwareItem.asset_location || "Not specified"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !selectedHardwareId, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Assign Hardware" })
-        ] })
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2 justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", size: "icon", disabled: loading || !selectedHardwareId, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) }) })
       ] })
     ] }) });
   };
@@ -6860,10 +6857,7 @@
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 justify-end", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: () => onOpenChange(false), children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading || !selectedSoftwareId || !roleAccountType, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : "Assign Software" })
-        ] })
+        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2 justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", size: "icon", disabled: loading || !selectedSoftwareId || !roleAccountType, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) }) })
       ] })
     ] }) });
   };
@@ -8699,13 +8693,7 @@ The assignment will return to Not started and the user will need to acknowledge 
             )
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "button", variant: "outline", onClick: handleClose, disabled: loading, children: "Cancel" }),
-          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", disabled: loading, children: loading ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "mr-2 h-4 w-4 animate-spin" }),
-            "Updating…"
-          ] }) : "Update password" })
-        ] })
+        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogFooter, { children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { type: "submit", size: "icon", disabled: loading, children: loading ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) }) })
       ] })
     ] }) });
   };
@@ -9905,9 +9893,7 @@ The assignment will return to Not started and the user will need to acknowledge 
   const MultipleRolesField = ({
     userId,
     departmentValue,
-    isEditing,
-    onEdit,
-    onCancel
+    isEditing
   }) => {
     const [isAddingRole, setIsAddingRole] = React.useState(false);
     const [selectedRole, setSelectedRole] = React.useState("");
@@ -10088,13 +10074,14 @@ The assignment will return to Not started and the user will need to acknowledge 
             ).map((role) => /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: role.role_id, children: role.name }, role.role_id)) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-end gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsAddingRole(false), children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", onClick: () => setIsAddingRole(false), children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "w-4 h-4" }) }),
             /* @__PURE__ */ jsxRuntime.jsx(
               button.Button,
               {
+                size: "icon",
                 onClick: handleAddRole,
                 disabled: !selectedRole || addRoleMutation.isPending,
-                children: "Add Role"
+                children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "w-4 h-4" })
               }
             )
           ] })
@@ -11429,17 +11416,15 @@ The assignment will return to Not started and the user will need to acknowledge 
                   /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: getTargetId(target), className: "text-sm", children: getTargetLabel(target) })
                 ] }, getTargetId(target))) })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-end space-x-2 pt-4", children: [
-                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsAssignDialogOpen(false), children: "Cancel" }),
-                /* @__PURE__ */ jsxRuntime.jsx(
-                  button.Button,
-                  {
-                    onClick: handleAssign,
-                    disabled: !selectedDocument || selectedTargets.length === 0,
-                    children: "Create Assignment"
-                  }
-                )
-              ] })
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end pt-4", children: /* @__PURE__ */ jsxRuntime.jsx(
+                button.Button,
+                {
+                  size: "icon",
+                  onClick: handleAssign,
+                  disabled: !selectedDocument || selectedTargets.length === 0,
+                  children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "w-4 h-4" })
+                }
+              ) })
             ] })
           ] })
         ] })
@@ -11480,7 +11465,7 @@ The assignment will return to Not started and the user will need to acknowledge 
                   " staff assigned"
                 ] })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsxs(
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(
                 button.Button,
                 {
                   variant: "outline",
@@ -11490,10 +11475,7 @@ The assignment will return to Not started and the user will need to acknowledge 
                     title: group.document.title
                   }),
                   className: "flex items-center gap-2",
-                  children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(ChartColumn, { className: "h-4 w-4" }),
-                    "View Breakdown"
-                  ]
+                  children: /* @__PURE__ */ jsxRuntime.jsx(ChartColumn, { className: "h-4 w-4" })
                 }
               ) })
             ] }) }),

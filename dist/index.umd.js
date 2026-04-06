@@ -710,6 +710,29 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const ShieldOff = createLucideIcon("ShieldOff", [
+    ["path", { d: "m2 2 20 20", key: "1ooewy" }],
+    [
+      "path",
+      {
+        d: "M5 5a1 1 0 0 0-1 1v7c0 5 3.5 7.5 7.67 8.94a1 1 0 0 0 .67.01c2.35-.82 4.48-1.97 5.9-3.71",
+        key: "1jlk70"
+      }
+    ],
+    [
+      "path",
+      {
+        d: "M9.309 3.652A12.252 12.252 0 0 0 11.24 2.28a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1v7a9.784 9.784 0 0 1-.08 1.264",
+        key: "18rp1v"
+      }
+    ]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const Shield = createLucideIcon("Shield", [
     [
       "path",
@@ -9264,9 +9287,14 @@ The assignment will return to Not started and the user will need to acknowledge 
     ] });
   };
   const UserDetailView = () => {
+    var _a;
     const { userId } = reactRouterDom.useParams();
     const navigate = reactRouterDom.useNavigate();
     const { supabaseClient, basePath } = useOrganisationContext();
+    const { hasAdminAccess } = useUserRole.useUserRole();
+    const { toast } = useToast$1.useToast();
+    const [showResetMfaConfirm, setShowResetMfaConfirm] = React.useState(false);
+    const [resettingMfa, setResettingMfa] = React.useState(false);
     const { profiles, loading: profilesLoading } = useUserProfiles.useUserProfiles();
     const { hardware, software, certificates, loading: assetsLoading } = useUserAssets.useUserAssets(userId);
     const { data: lastSignIn } = reactQuery.useQuery({
@@ -9361,6 +9389,30 @@ The assignment will return to Not started and the user will need to acknowledge 
     const handleBackToUsers = () => {
       navigate(`${basePath || ""}/admin`, { state: { activeTab: "organisation" } });
     };
+    const handleResetMfa = async () => {
+      var _a2, _b, _c;
+      if (!userId) return;
+      setResettingMfa(true);
+      setShowResetMfaConfirm(false);
+      try {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const res = await supabaseClient.functions.invoke("reset-user-mfa", {
+          body: { userId },
+          headers: (session == null ? void 0 : session.access_token) ? { Authorization: `Bearer ${session.access_token}` } : void 0
+        });
+        if (res.error || !((_a2 = res.data) == null ? void 0 : _a2.success)) {
+          throw new Error(((_b = res.data) == null ? void 0 : _b.error) ?? ((_c = res.error) == null ? void 0 : _c.message) ?? "Unknown error");
+        }
+        setPersonaData(
+          (prev) => prev ? { ...prev, account: { ...prev.account, twoFactorEnabled: false } } : prev
+        );
+        toast({ title: "MFA reset", description: "The user will be able to log in without MFA on their next login." });
+      } catch (err) {
+        console.error("Reset MFA error:", err);
+        toast({ title: "Failed to reset MFA", description: err == null ? void 0 : err.message, variant: "destructive" });
+      }
+      setResettingMfa(false);
+    };
     if (profilesLoading || assetsLoading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
     }
@@ -9378,12 +9430,28 @@ The assignment will return to Not started and the user will need to acknowledge 
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-8 w-8 animate-spin" }) });
     }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "max-w-6xl mx-auto py-6 px-4 space-y-6", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4 mb-6", children: [
-        /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleBackToUsers, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
-        /* @__PURE__ */ jsxRuntime.jsxs("h1", { className: "text-2xl font-bold", children: [
-          "User Profile: ",
-          userProfile.full_name || "Unnamed User"
-        ] })
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between mb-6", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleBackToUsers, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(ArrowLeft, { className: "h-4 w-4" }) }),
+          /* @__PURE__ */ jsxRuntime.jsxs("h1", { className: "text-2xl font-bold", children: [
+            "User Profile: ",
+            userProfile.full_name || "Unnamed User"
+          ] })
+        ] }),
+        hasAdminAccess && ((_a = personaData.account) == null ? void 0 : _a.twoFactorEnabled) && /* @__PURE__ */ jsxRuntime.jsxs(
+          button.Button,
+          {
+            variant: "outline",
+            size: "sm",
+            onClick: () => setShowResetMfaConfirm(true),
+            disabled: resettingMfa,
+            className: "flex items-center gap-2 text-destructive border-destructive hover:bg-destructive/10",
+            children: [
+              resettingMfa ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(ShieldOff, { className: "h-4 w-4" }),
+              "Reset MFA"
+            ]
+          }
+        )
       ] }),
       /* @__PURE__ */ jsxRuntime.jsx(
         EditableProfileHeader,
@@ -9393,7 +9461,21 @@ The assignment will return to Not started and the user will need to acknowledge 
           onOptimisticUpdate: handleOptimisticUpdate
         }
       ),
-      /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: personaData, userId })
+      /* @__PURE__ */ jsxRuntime.jsx(PersonaDetailsTabs, { profile: personaData, userId }),
+      /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialog, { open: showResetMfaConfirm, onOpenChange: setShowResetMfaConfirm, children: /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogContent, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogTitle, { children: [
+            "Reset MFA for ",
+            userProfile.full_name || "this user",
+            "?"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogDescription, { children: "This will remove their enrolled authenticator. They will be able to log in without MFA on their next login and will need to re-enrol if MFA is required for their account." })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogFooter, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogCancel, { children: "Cancel" }),
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogAction, { onClick: handleResetMfa, children: "Reset MFA" })
+        ] })
+      ] }) })
     ] });
   };
   const Certificates = ({ profile }) => {

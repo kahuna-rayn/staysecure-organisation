@@ -5608,7 +5608,7 @@
               console.error("Bulk MFA reset warning:", res.error ?? ((_b = res.data) == null ? void 0 : _b.error));
               sonner.toast.warning("MFA requirement disabled, but some enrolled users may still be challenged until they log out.");
             } else {
-              sonner.toast.success("MFA requirement disabled. " + res.data.message);
+              sonner.toast.success(res.data.message);
             }
           } catch (fnErr) {
             console.error("Bulk MFA reset error:", fnErr);

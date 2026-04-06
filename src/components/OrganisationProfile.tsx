@@ -456,7 +456,7 @@ const OrganisationProfile: React.FC = () => {
             console.error('Bulk MFA reset warning:', res.error ?? res.data?.error);
             toast.warning('MFA requirement disabled, but some enrolled users may still be challenged until they log out.');
           } else {
-            toast.success('MFA requirement disabled. ' + res.data.message);
+            toast.success(res.data.message);
           }
         } catch (fnErr: any) {
           console.error('Bulk MFA reset error:', fnErr);

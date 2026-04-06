@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { Edit, Save, X, Upload, Loader2, ImageIcon } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Edit, Save, X, Upload, Loader2, ImageIcon, ShieldCheck, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
 import type { Database } from '@/integrations/supabase/types';
@@ -65,8 +66,12 @@ const OrganisationProfile: React.FC = () => {
   const [organisationData, setOrganisationData] = useState<OrganisationData>({});
   const [signatoryData, setSignatoryData] = useState<SignatoryData>({});
   const logoFileInputRef = useRef<HTMLInputElement>(null);
-  const { isSuperAdmin } = useUserRole();
+  const { isSuperAdmin, hasAdminAccess } = useUserRole();
   const { supabaseClient } = useOrganisationContext();
+
+  // MFA policy toggle — saved immediately, independent of the edit/save flow
+  const [requireMfa, setRequireMfa] = useState(false);
+  const [mfaSaving, setMfaSaving] = useState(false);
   
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
@@ -137,6 +142,7 @@ const OrganisationProfile: React.FC = () => {
 
       if (orgProfile) {
         setOrganisationData(orgProfile);
+        setRequireMfa(orgProfile.require_mfa ?? false);
       }
 
       // Fetch signatory roles data
@@ -394,6 +400,70 @@ const OrganisationProfile: React.FC = () => {
     }
   };
 
+  const handleMfaToggle = async (enabled: boolean) => {
+    if (!enabled) {
+      const confirmed = window.confirm(
+        'Disable MFA requirement?\n\n' +
+        'This will remove the MFA requirement for all non-admin users and automatically ' +
+        'unenrol anyone who has already set it up. Admin accounts will still require MFA.\n\n' +
+        'Click OK to continue.'
+      );
+      if (!confirmed) return;
+    }
+
+    setMfaSaving(true);
+    try {
+      const orgId = organisationData.id;
+      let error;
+      if (orgId) {
+        ({ error } = await supabaseClient
+          .from('org_profile')
+          .update({ require_mfa: enabled })
+          .eq('id', orgId));
+      } else {
+        const { data: inserted, error: insertError } = await supabaseClient
+          .from('org_profile')
+          .insert({ require_mfa: enabled })
+          .select('id')
+          .single();
+        error = insertError;
+        if (inserted) setOrganisationData(prev => ({ ...prev, id: inserted.id }));
+      }
+
+      if (error) throw error;
+      setRequireMfa(enabled);
+
+      if (!enabled) {
+        // Bulk-unenrol all non-admin users via the edge function
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          const res = await supabaseClient.functions.invoke('reset-user-mfa', {
+            body: {},
+            headers: session?.access_token
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : undefined,
+          });
+          if (res.error || !res.data?.success) {
+            console.error('Bulk MFA reset warning:', res.error ?? res.data?.error);
+            toast.warning('MFA requirement disabled, but some enrolled users may still be challenged until they log out.');
+          } else {
+            toast.success('MFA requirement disabled. ' + res.data.message);
+          }
+        } catch (fnErr: any) {
+          console.error('Bulk MFA reset error:', fnErr);
+          toast.warning('MFA requirement disabled. Note: existing enrolled users may need a manual reset.');
+        }
+      } else {
+        toast.success('MFA required for all users. They will be prompted on next login.');
+      }
+    } catch (err: any) {
+      console.error('MFA toggle error:', err);
+      toast.error('Failed to update MFA setting: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setMfaSaving(false);
+    }
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
     fetchOrganisationData(); // Reset to original data
@@ -432,8 +502,26 @@ const OrganisationProfile: React.FC = () => {
 
       {/* General Organisation Information */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>General Information</CardTitle>
+          {hasAdminAccess && (
+            <div className="flex items-center gap-2">
+              {requireMfa
+                ? <ShieldCheck className="h-4 w-4 text-primary" />
+                : <Shield className="h-4 w-4 text-muted-foreground" />
+              }
+              <Label htmlFor="require-mfa-toggle" className="text-sm font-normal text-muted-foreground cursor-pointer select-none">
+                Require MFA
+              </Label>
+              <Switch
+                id="require-mfa-toggle"
+                checked={requireMfa}
+                onCheckedChange={handleMfaToggle}
+                disabled={mfaSaving}
+                aria-label="Require MFA for all users"
+              />
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

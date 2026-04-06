@@ -5303,8 +5303,10 @@
     const [organisationData, setOrganisationData] = React.useState({});
     const [signatoryData, setSignatoryData] = React.useState({});
     const logoFileInputRef = React.useRef(null);
-    const { isSuperAdmin } = useUserRole.useUserRole();
+    const { isSuperAdmin, hasAdminAccess } = useUserRole.useUserRole();
     const { supabaseClient } = useOrganisationContext();
+    const [requireMfa, setRequireMfa] = React.useState(false);
+    const [mfaSaving, setMfaSaving] = React.useState(false);
     const validatePhoneInput = (input2) => {
       return input2.replace(/[^0-9+\s\-()]/g, "");
     };
@@ -5354,6 +5356,7 @@
         }
         if (orgProfile) {
           setOrganisationData(orgProfile);
+          setRequireMfa(orgProfile.require_mfa ?? false);
         }
         const { data: sigRoles, error: sigError } = await supabaseClient.from("org_sig_roles").select("*");
         if (sigError) {
@@ -5570,6 +5573,54 @@
           break;
       }
     };
+    const handleMfaToggle = async (enabled) => {
+      var _a, _b;
+      if (!enabled) {
+        const confirmed = window.confirm(
+          "Disable MFA requirement?\n\nThis will remove the MFA requirement for all non-admin users and automatically unenrol anyone who has already set it up. Admin accounts will still require MFA.\n\nClick OK to continue."
+        );
+        if (!confirmed) return;
+      }
+      setMfaSaving(true);
+      try {
+        const orgId = organisationData.id;
+        let error;
+        if (orgId) {
+          ({ error } = await supabaseClient.from("org_profile").update({ require_mfa: enabled }).eq("id", orgId));
+        } else {
+          const { data: inserted, error: insertError } = await supabaseClient.from("org_profile").insert({ require_mfa: enabled }).select("id").single();
+          error = insertError;
+          if (inserted) setOrganisationData((prev) => ({ ...prev, id: inserted.id }));
+        }
+        if (error) throw error;
+        setRequireMfa(enabled);
+        if (!enabled) {
+          try {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            const res = await supabaseClient.functions.invoke("reset-user-mfa", {
+              body: {},
+              headers: (session == null ? void 0 : session.access_token) ? { Authorization: `Bearer ${session.access_token}` } : void 0
+            });
+            if (res.error || !((_a = res.data) == null ? void 0 : _a.success)) {
+              console.error("Bulk MFA reset warning:", res.error ?? ((_b = res.data) == null ? void 0 : _b.error));
+              sonner.toast.warning("MFA requirement disabled, but some enrolled users may still be challenged until they log out.");
+            } else {
+              sonner.toast.success("MFA requirement disabled. " + res.data.message);
+            }
+          } catch (fnErr) {
+            console.error("Bulk MFA reset error:", fnErr);
+            sonner.toast.warning("MFA requirement disabled. Note: existing enrolled users may need a manual reset.");
+          }
+        } else {
+          sonner.toast.success("MFA required for all users. They will be prompted on next login.");
+        }
+      } catch (err) {
+        console.error("MFA toggle error:", err);
+        sonner.toast.error("Failed to update MFA setting: " + (err.message ?? "unknown error"));
+      } finally {
+        setMfaSaving(false);
+      }
+    };
     const handleCancel = () => {
       setIsEditing(false);
       fetchOrganisationData();
@@ -5589,7 +5640,23 @@
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "General Information" }) }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "General Information" }),
+          hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+            requireMfa ? /* @__PURE__ */ jsxRuntime.jsx(ShieldCheck, { className: "h-4 w-4 text-primary" }) : /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
+            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "require-mfa-toggle", className: "text-sm font-normal text-muted-foreground cursor-pointer select-none", children: "Require MFA" }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              _switch.Switch,
+              {
+                id: "require-mfa-toggle",
+                checked: requireMfa,
+                onCheckedChange: handleMfaToggle,
+                disabled: mfaSaving,
+                "aria-label": "Require MFA for all users"
+              }
+            )
+          ] })
+        ] }),
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-4 text-left", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [

@@ -42,6 +42,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useReactToPrint } from "react-to-print";
 import { Separator } from "@/components/ui/separator";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { toast as toast$2 } from "sonner";
 import { cn } from "@/lib/utils";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
@@ -56,7 +57,6 @@ import { sendNotificationByEvent } from "staysecure-notifications";
 import LearningTracksTab from "@/components/LearningTracksTab";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -5349,6 +5349,7 @@ const OrganisationProfile = () => {
   const { supabaseClient } = useOrganisationContext();
   const [requireMfa, setRequireMfa] = useState(false);
   const [mfaSaving, setMfaSaving] = useState(false);
+  const [showDisableMfaConfirm, setShowDisableMfaConfirm] = useState(false);
   const validatePhoneInput = (input) => {
     return input.replace(/[^0-9+\s\-()]/g, "");
   };
@@ -5615,14 +5616,16 @@ const OrganisationProfile = () => {
         break;
     }
   };
-  const handleMfaToggle = async (enabled) => {
-    var _a, _b;
+  const handleMfaToggle = (enabled) => {
     if (!enabled) {
-      const confirmed = window.confirm(
-        "Disable MFA requirement?\n\nThis will remove the MFA requirement for all non-admin users and automatically unenrol anyone who has already set it up. Admin accounts will still require MFA.\n\nClick OK to continue."
-      );
-      if (!confirmed) return;
+      setShowDisableMfaConfirm(true);
+      return;
     }
+    applyMfaChange(true);
+  };
+  const applyMfaChange = async (enabled) => {
+    var _a, _b;
+    setShowDisableMfaConfirm(false);
     setMfaSaving(true);
     try {
       const orgId = organisationData.id;
@@ -6137,7 +6140,17 @@ const OrganisationProfile = () => {
           ] })
         ] })
       ] })
-    ] })
+    ] }),
+    /* @__PURE__ */ jsx(AlertDialog, { open: showDisableMfaConfirm, onOpenChange: setShowDisableMfaConfirm, children: /* @__PURE__ */ jsxs(AlertDialogContent, { children: [
+      /* @__PURE__ */ jsxs(AlertDialogHeader, { children: [
+        /* @__PURE__ */ jsx(AlertDialogTitle, { children: "Disable MFA requirement?" }),
+        /* @__PURE__ */ jsx(AlertDialogDescription, { children: "This will remove the MFA requirement for all non-admin users and automatically unenrol anyone who has already set it up. Admin accounts will still require MFA regardless of this setting." })
+      ] }),
+      /* @__PURE__ */ jsxs(AlertDialogFooter, { children: [
+        /* @__PURE__ */ jsx(AlertDialogCancel, { children: "Cancel" }),
+        /* @__PURE__ */ jsx(AlertDialogAction, { onClick: () => applyMfaChange(false), children: "Disable & unenrol users" })
+      ] })
+    ] }) })
   ] });
 };
 const OrganisationPanel = ({

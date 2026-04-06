@@ -6,6 +6,16 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Edit, Save, X, Upload, Loader2, ImageIcon, ShieldCheck, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
@@ -72,6 +82,7 @@ const OrganisationProfile: React.FC = () => {
   // MFA policy toggle — saved immediately, independent of the edit/save flow
   const [requireMfa, setRequireMfa] = useState(false);
   const [mfaSaving, setMfaSaving] = useState(false);
+  const [showDisableMfaConfirm, setShowDisableMfaConfirm] = useState(false);
   
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
@@ -400,17 +411,16 @@ const OrganisationProfile: React.FC = () => {
     }
   };
 
-  const handleMfaToggle = async (enabled: boolean) => {
+  const handleMfaToggle = (enabled: boolean) => {
     if (!enabled) {
-      const confirmed = window.confirm(
-        'Disable MFA requirement?\n\n' +
-        'This will remove the MFA requirement for all non-admin users and automatically ' +
-        'unenrol anyone who has already set it up. Admin accounts will still require MFA.\n\n' +
-        'Click OK to continue.'
-      );
-      if (!confirmed) return;
+      setShowDisableMfaConfirm(true);
+      return;
     }
+    applyMfaChange(true);
+  };
 
+  const applyMfaChange = async (enabled: boolean) => {
+    setShowDisableMfaConfirm(false);
     setMfaSaving(true);
     try {
       const orgId = organisationData.id;
@@ -434,7 +444,6 @@ const OrganisationProfile: React.FC = () => {
       setRequireMfa(enabled);
 
       if (!enabled) {
-        // Bulk-unenrol all non-admin users via the edge function
         try {
           const { data: { session } } = await supabaseClient.auth.getSession();
           const res = await supabaseClient.functions.invoke('reset-user-mfa', {
@@ -899,6 +908,24 @@ const OrganisationProfile: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+      <AlertDialog open={showDisableMfaConfirm} onOpenChange={setShowDisableMfaConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Disable MFA requirement?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the MFA requirement for all non-admin users and
+              automatically unenrol anyone who has already set it up. Admin
+              accounts will still require MFA regardless of this setting.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => applyMfaChange(false)}>
+              Disable &amp; unenrol users
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

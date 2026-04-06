@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Calendar, Shield, Clock } from "lucide-react";
+import { Calendar, Shield, Clock, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { UserRoleField } from './UserRoleField';
 
@@ -22,7 +22,7 @@ const ProfileContactInfo: React.FC<ProfileContactInfoProps> = ({
   accessLevel: _accessLevel,
   lastLogin,
   passwordLastChanged: _passwordLastChanged,
-  twoFactorEnabled: _twoFactorEnabled
+  twoFactorEnabled,
 }) => {
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Not set';
@@ -68,6 +68,13 @@ const ProfileContactInfo: React.FC<ProfileContactInfoProps> = ({
       <div className="flex items-center gap-2 text-sm">
         <Clock className="h-4 w-4 text-muted-foreground" />
         <span>Last login: {lastLogin ? formatDateAndTime(lastLogin) : 'Never'}</span>
+      </div>
+
+      <div className="flex items-center gap-2 text-sm">
+        <ShieldCheck className={`h-4 w-4 ${twoFactorEnabled ? 'text-green-500' : 'text-muted-foreground'}`} />
+        <Badge variant={twoFactorEnabled ? 'default' : 'secondary'}>
+          {twoFactorEnabled ? '2FA enabled' : '2FA not set up'}
+        </Badge>
       </div>
     </div>
   );

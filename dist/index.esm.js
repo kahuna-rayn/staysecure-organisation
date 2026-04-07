@@ -5347,6 +5347,7 @@ const OrganisationProfile = () => {
   const logoFileInputRef = useRef(null);
   const { isSuperAdmin, hasAdminAccess } = useUserRole();
   const { supabaseClient } = useOrganisationContext();
+  debug.state("[OrganisationProfile] role flags", { isSuperAdmin, hasAdminAccess });
   const [requireMfa, setRequireMfa] = useState(false);
   const [mfaSaving, setMfaSaving] = useState(false);
   const [showDisableMfaConfirm, setShowDisableMfaConfirm] = useState(false);
@@ -5390,6 +5391,9 @@ const OrganisationProfile = () => {
   useEffect(() => {
     fetchOrganisationData();
   }, [supabaseClient]);
+  useEffect(() => {
+    debug.state("[OrganisationProfile] MFA toggle visibility", { hasAdminAccess, requireMfa, willShowToggle: hasAdminAccess });
+  }, [hasAdminAccess, requireMfa]);
   const fetchOrganisationData = async () => {
     try {
       setLoading(true);
@@ -5400,6 +5404,7 @@ const OrganisationProfile = () => {
       if (orgProfile) {
         setOrganisationData(orgProfile);
         setRequireMfa(orgProfile.require_mfa ?? false);
+        debug.state("[OrganisationProfile] org_profile loaded", { require_mfa: orgProfile.require_mfa });
       }
       const { data: sigRoles, error: sigError } = await supabaseClient.from("org_sig_roles").select("*");
       if (sigError) {
@@ -5617,6 +5622,7 @@ const OrganisationProfile = () => {
     }
   };
   const handleMfaToggle = (enabled) => {
+    debug.log("[OrganisationProfile.handleMfaToggle] toggled", { enabled, hasAdminAccess });
     if (!enabled) {
       setShowDisableMfaConfirm(true);
       return;

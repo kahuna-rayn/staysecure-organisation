@@ -5305,6 +5305,7 @@
     const logoFileInputRef = React.useRef(null);
     const { isSuperAdmin, hasAdminAccess } = useUserRole.useUserRole();
     const { supabaseClient } = useOrganisationContext();
+    debug.state("[OrganisationProfile] role flags", { isSuperAdmin, hasAdminAccess });
     const [requireMfa, setRequireMfa] = React.useState(false);
     const [mfaSaving, setMfaSaving] = React.useState(false);
     const [showDisableMfaConfirm, setShowDisableMfaConfirm] = React.useState(false);
@@ -5348,6 +5349,9 @@
     React.useEffect(() => {
       fetchOrganisationData();
     }, [supabaseClient]);
+    React.useEffect(() => {
+      debug.state("[OrganisationProfile] MFA toggle visibility", { hasAdminAccess, requireMfa, willShowToggle: hasAdminAccess });
+    }, [hasAdminAccess, requireMfa]);
     const fetchOrganisationData = async () => {
       try {
         setLoading(true);
@@ -5358,6 +5362,7 @@
         if (orgProfile) {
           setOrganisationData(orgProfile);
           setRequireMfa(orgProfile.require_mfa ?? false);
+          debug.state("[OrganisationProfile] org_profile loaded", { require_mfa: orgProfile.require_mfa });
         }
         const { data: sigRoles, error: sigError } = await supabaseClient.from("org_sig_roles").select("*");
         if (sigError) {
@@ -5575,6 +5580,7 @@
       }
     };
     const handleMfaToggle = (enabled) => {
+      debug.log("[OrganisationProfile.handleMfaToggle] toggled", { enabled, hasAdminAccess });
       if (!enabled) {
         setShowDisableMfaConfirm(true);
         return;

@@ -22,6 +22,7 @@ import SearchableProfileField from './profile/SearchableProfileField';
 import type { Database } from '@/integrations/supabase/types';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useOrganisationContext } from '../context/OrganisationContext';
+import debug from '../utils/debug';
 
 type OrgSigRole = Database['public']['Tables']['org_sig_roles']['Row'];
 
@@ -78,6 +79,7 @@ const OrganisationProfile: React.FC = () => {
   const logoFileInputRef = useRef<HTMLInputElement>(null);
   const { isSuperAdmin, hasAdminAccess } = useUserRole();
   const { supabaseClient } = useOrganisationContext();
+  debug.state('[OrganisationProfile] role flags', { isSuperAdmin, hasAdminAccess });
 
   // MFA policy toggle — saved immediately, independent of the edit/save flow
   const [requireMfa, setRequireMfa] = useState(false);
@@ -137,6 +139,10 @@ const OrganisationProfile: React.FC = () => {
     fetchOrganisationData();
   }, [supabaseClient]);
 
+  useEffect(() => {
+    debug.state('[OrganisationProfile] MFA toggle visibility', { hasAdminAccess, requireMfa, willShowToggle: hasAdminAccess });
+  }, [hasAdminAccess, requireMfa]);
+
   const fetchOrganisationData = async () => {
     try {
       setLoading(true);
@@ -154,6 +160,7 @@ const OrganisationProfile: React.FC = () => {
       if (orgProfile) {
         setOrganisationData(orgProfile);
         setRequireMfa(orgProfile.require_mfa ?? false);
+        debug.state('[OrganisationProfile] org_profile loaded', { require_mfa: orgProfile.require_mfa });
       }
 
       // Fetch signatory roles data
@@ -412,6 +419,7 @@ const OrganisationProfile: React.FC = () => {
   };
 
   const handleMfaToggle = (enabled: boolean) => {
+    debug.log('[OrganisationProfile.handleMfaToggle] toggled', { enabled, hasAdminAccess });
     if (!enabled) {
       setShowDisableMfaConfirm(true);
       return;

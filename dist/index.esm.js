@@ -16,9 +16,10 @@ import { getCurrentClientId, supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { DeleteUserDialog } from "@/components/ui/delete-user-dialog";
 import { toast as toast$1, useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useUserDepartments, USER_DEPARTMENTS_KEY } from "@/hooks/useUserDepartments";
 import { useUserDepartments as useUserDepartments2 } from "@/hooks/useUserDepartments";
@@ -31,6 +32,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "staysecure-auth";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useDropzone } from "react-dropzone";
 import Papa from "papaparse";
 import { ImportErrorReport as ImportErrorReport$1 } from "@/components/import/ImportErrorReport";
@@ -42,7 +44,6 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { useReactToPrint } from "react-to-print";
 import { Separator } from "@/components/ui/separator";
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { toast as toast$2 } from "sonner";
 import { cn } from "@/lib/utils";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
@@ -60,7 +61,6 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useProfile } from "@/hooks/useProfile";
 import { useUserPhysicalLocations } from "@/hooks/useUserPhysicalLocations";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Checkbox } from "@/components/ui/checkbox";
 /**
  * @license lucide-react v0.462.0 - ISC
  *
@@ -1255,7 +1255,7 @@ const UserTable = ({
       type: "badge",
       editable: true,
       sortable: true,
-      options: ["Active", "Inactive", "OnLeave"],
+      options: ["Pending", "Active", "Inactive", "OnLeave"],
       width: "120px"
     }
   ];
@@ -1609,6 +1609,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [sendActivationEmails, setSendActivationEmails] = useState(false);
   const { data: validLocations } = useQuery({
     queryKey: ["locations"],
     queryFn: async () => {
@@ -1684,84 +1685,6 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     link.click();
     document.body.removeChild(link);
   };
-  const validateLocation = (locationName) => {
-    if (!locationName || !validLocations) {
-      debug.log("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
-      return { isValid: false };
-    }
-    const trimmedLocation = locationName.trim();
-    debug.log("Location validation: Checking location", {
-      providedLocation: trimmedLocation,
-      availableLocations: validLocations.map((l) => l.name)
-    });
-    const validLocation = validLocations.find(
-      (loc) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
-    );
-    debug.log("Location validation result:", {
-      location: trimmedLocation,
-      found: !!validLocation,
-      validLocation
-    });
-    return {
-      isValid: !!validLocation,
-      locationId: validLocation == null ? void 0 : validLocation.id
-    };
-  };
-  const validateDepartment = (departmentName) => {
-    if (!departmentName || !validDepartments) {
-      return { isValid: false };
-    }
-    const trimmedName = departmentName.trim().toLowerCase();
-    const department = validDepartments.find(
-      (dept) => dept.name.toLowerCase() === trimmedName
-    );
-    return {
-      isValid: !!department,
-      departmentId: department == null ? void 0 : department.id
-    };
-  };
-  const validateRole = (roleName) => {
-    if (!roleName || !validRoles) {
-      return { isValid: false };
-    }
-    const trimmedName = roleName.trim().toLowerCase();
-    const role = validRoles.find(
-      (r) => r.name.toLowerCase() === trimmedName
-    );
-    return {
-      isValid: !!role,
-      roleId: role == null ? void 0 : role.role_id,
-      departmentId: (role == null ? void 0 : role.department_id) || null
-    };
-  };
-  const validateDepartmentRolePair = (departmentName, roleName) => {
-    const deptValidation = validateDepartment(departmentName);
-    if (!deptValidation.isValid) {
-      return { isValid: false, error: `Department "${departmentName}" does not exist` };
-    }
-    const roleValidation = validateRole(roleName);
-    if (!roleValidation.isValid) {
-      return { isValid: false, error: `Role "${roleName}" does not exist or is not active` };
-    }
-    if (roleValidation.departmentId === null) {
-      return {
-        isValid: true,
-        departmentId: deptValidation.departmentId,
-        roleId: roleValidation.roleId
-      };
-    }
-    if (roleValidation.departmentId !== deptValidation.departmentId) {
-      return {
-        isValid: false,
-        error: `Role "${roleName}" does not belong to department "${departmentName}"`
-      };
-    }
-    return {
-      isValid: true,
-      departmentId: deptValidation.departmentId,
-      roleId: roleValidation.roleId
-    };
-  };
   const validateAccessLevel = (accessLevel) => {
     if (!accessLevel) {
       return { isValid: false };
@@ -1834,7 +1757,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     }
     return errorMessage.length > 100 ? "An unexpected error occurred while creating the user. Please try again." : errorMessage;
   };
-  const processUserImport = async (row) => {
+  const processUserImport = async (row, locationCache, departmentCache, roleCache) => {
     var _a;
     const email = row["Email"] || row["email"];
     if (!email) {
@@ -1859,43 +1782,13 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     if (!accessLevelValidation.isValid) {
       throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
     }
-    const locationName = row["Location"] || row["location"] || "";
-    const departmentName = row["Department"] || row["department"] || "";
-    const roleName = row["Role"] || row["role"] || "";
-    if (locationName) {
-      const locationValidation = validateLocation(locationName);
-      if (!locationValidation.isValid) {
-        throw new Error(`Location "${locationName}" does not exist`);
-      }
-    }
-    let departmentId;
-    if (departmentName) {
-      const deptValidation = validateDepartment(departmentName);
-      if (!deptValidation.isValid) {
-        throw new Error(`Department "${departmentName}" does not exist`);
-      }
-      departmentId = deptValidation.departmentId;
-    }
-    let roleId;
-    let roleDepartmentId;
-    if (roleName) {
-      const roleValidation = validateRole(roleName);
-      if (!roleValidation.isValid) {
-        throw new Error(`Role "${roleName}" does not exist or is not active`);
-      }
-      roleId = roleValidation.roleId;
-      roleDepartmentId = roleValidation.departmentId;
-    }
-    if (departmentName && roleName) {
-      const pairValidation = validateDepartmentRolePair(departmentName, roleName);
-      if (!pairValidation.isValid) {
-        throw new Error(pairValidation.error || "Invalid department-role pair");
-      }
-      departmentId = pairValidation.departmentId;
-      roleId = pairValidation.roleId;
-    } else if (roleName && roleDepartmentId !== null) {
-      throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
-    }
+    const locationName = (row["Location"] || row["location"] || "").trim();
+    const departmentName = (row["Department"] || row["department"] || "").trim();
+    const roleName = (row["Role"] || row["role"] || "").trim();
+    const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : void 0;
+    const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : void 0;
+    const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
+    const roleId = roleName ? roleCache.get(roleKey) : void 0;
     const managerEmail = (row["Manager"] || row["manager"] || "").trim() || void 0;
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : "";
@@ -1910,11 +1803,9 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
         status: "Pending",
         employee_id: row["Employee ID"] || row["employee_id"] || "",
         access_level: accessLevelValidation.value,
-        // Already validated above, so safe to use !
         manager: null,
         // Manager assigned in pass 2 after all users exist
         clientPath
-        // Pass client path explicitly
       }
     });
     if (authError) {
@@ -1935,18 +1826,16 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     }
     const warnings = [];
     if (locationName) {
-      const locationValidation = validateLocation(locationName);
-      if (locationValidation.isValid && locationValidation.locationId) {
+      if (locationId) {
         try {
-          const locationData = {
+          const { error: locationError } = await supabase2.from("physical_location_access").insert({
             user_id: userId,
-            location_id: locationValidation.locationId,
+            location_id: locationId,
             full_name: fullName.trim(),
             access_purpose: "General Access",
             status: "Active",
             date_access_created: (/* @__PURE__ */ new Date()).toISOString()
-          };
-          const { error: locationError } = await supabase2.from("physical_location_access").insert(locationData);
+          });
           if (locationError) {
             console.error("Error assigning location to physical_location_access:", locationError);
             warnings.push({
@@ -1955,10 +1844,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
               message: `Location "${locationName}" could not be assigned: ${locationError.message}`
             });
           } else {
-            const { error: profileError } = await supabase2.from("profiles").update({
-              location: locationName,
-              location_id: locationValidation.locationId
-            }).eq("id", userId);
+            const { error: profileError } = await supabase2.from("profiles").update({ location: locationName, location_id: locationId }).eq("id", userId);
             if (profileError) {
               console.error("Error updating profile location:", profileError);
               warnings.push({
@@ -1976,9 +1862,29 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
             message: `Location "${locationName}" could not be assigned: ${locationError.message}`
           });
         }
+      } else {
+        warnings.push({
+          field: "Location",
+          value: locationName,
+          message: `Location "${locationName}" could not be created or found — skipping assignment`
+        });
       }
     }
-    if (departmentName || roleName) {
+    if (departmentName && !departmentId) {
+      warnings.push({
+        field: "Department",
+        value: departmentName,
+        message: `Department "${departmentName}" could not be created or found — skipping assignment`
+      });
+    }
+    if (roleName && !roleId) {
+      warnings.push({
+        field: "Role",
+        value: roleName,
+        message: `Role "${roleName}" could not be created or found — skipping assignment`
+      });
+    }
+    if (departmentId || roleId) {
       try {
         const pairingId = departmentId && roleId ? crypto.randomUUID() : void 0;
         if (departmentId) {
@@ -2076,6 +1982,91 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
           const errors = [];
           const warnings = [];
           const createdUsers = [];
+          const locationCache = /* @__PURE__ */ new Map();
+          const departmentCache = /* @__PURE__ */ new Map();
+          const roleCache = /* @__PURE__ */ new Map();
+          (validLocations || []).forEach(
+            (loc) => locationCache.set(loc.name.toLowerCase(), loc.id)
+          );
+          (validDepartments || []).forEach(
+            (dept) => departmentCache.set(dept.name.toLowerCase(), dept.id)
+          );
+          const deptIdToName = /* @__PURE__ */ new Map();
+          (validDepartments || []).forEach(
+            (dept) => deptIdToName.set(dept.id, dept.name.toLowerCase())
+          );
+          (validRoles || []).forEach((role) => {
+            const deptKey = role.department_id ? deptIdToName.get(role.department_id) ?? "" : "";
+            roleCache.set(`${role.name.toLowerCase()}::${deptKey}`, role.role_id);
+          });
+          const uniqueLocations = /* @__PURE__ */ new Set();
+          const uniqueDepartments = /* @__PURE__ */ new Set();
+          const uniqueRolePairs = /* @__PURE__ */ new Set();
+          for (const row of data) {
+            const loc = (row["Location"] || row["location"] || "").trim();
+            const dept = (row["Department"] || row["department"] || "").trim();
+            const role = (row["Role"] || row["role"] || "").trim();
+            if (loc) uniqueLocations.add(loc);
+            if (dept) uniqueDepartments.add(dept);
+            if (role) uniqueRolePairs.add(`${role}|||${dept}`);
+          }
+          for (const locName of uniqueLocations) {
+            const key = locName.toLowerCase();
+            if (!locationCache.has(key)) {
+              try {
+                const { data: newLoc, error } = await supabase2.from("locations").insert({ name: locName, status: "Active" }).select("id").single();
+                if (!error && newLoc) {
+                  locationCache.set(key, newLoc.id);
+                  debug.log("[ImportUsersDialog] Auto-created location:", locName);
+                } else if (error) {
+                  debug.error("[ImportUsersDialog] Failed to create location:", locName, error);
+                }
+              } catch (err) {
+                debug.error("[ImportUsersDialog] Exception creating location:", locName, err);
+              }
+            }
+          }
+          for (const deptName of uniqueDepartments) {
+            const key = deptName.toLowerCase();
+            if (!departmentCache.has(key)) {
+              try {
+                const { data: newDept, error } = await supabase2.from("departments").insert({ name: deptName }).select("id").single();
+                if (!error && newDept) {
+                  departmentCache.set(key, newDept.id);
+                  debug.log("[ImportUsersDialog] Auto-created department:", deptName);
+                } else if (error) {
+                  debug.error("[ImportUsersDialog] Failed to create department:", deptName, error);
+                }
+              } catch (err) {
+                debug.error("[ImportUsersDialog] Exception creating department:", deptName, err);
+              }
+            }
+          }
+          for (const pair of uniqueRolePairs) {
+            const sep = pair.indexOf("|||");
+            const roleName = pair.slice(0, sep);
+            const deptName = pair.slice(sep + 3);
+            const roleKey = `${roleName.toLowerCase()}::${deptName.toLowerCase()}`;
+            if (!roleCache.has(roleKey)) {
+              const deptId = deptName ? departmentCache.get(deptName.toLowerCase()) ?? null : null;
+              try {
+                const { data: newRole, error } = await supabase2.from("roles").insert({ name: roleName, department_id: deptId, is_active: true }).select("role_id").single();
+                if (!error && newRole) {
+                  roleCache.set(roleKey, newRole.role_id);
+                  debug.log("[ImportUsersDialog] Auto-created role:", roleName, deptName ? `(${deptName})` : "(general)");
+                } else if (error) {
+                  debug.error("[ImportUsersDialog] Failed to create role:", roleName, error);
+                }
+              } catch (err) {
+                debug.error("[ImportUsersDialog] Exception creating role:", roleName, err);
+              }
+            }
+          }
+          debug.log("[ImportUsersDialog] Pass 0 complete. Cache sizes:", {
+            locations: locationCache.size,
+            departments: departmentCache.size,
+            roles: roleCache.size
+          });
           for (let i = 0; i < data.length; i++) {
             const row = data[i];
             if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
@@ -2086,7 +2077,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
             const rowNumber = i + 2;
             try {
               debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
-              const result = await processUserImport(row);
+              const result = await processUserImport(row, locationCache, departmentCache, roleCache);
               successCount++;
               debug.log(`Successfully processed user ${i + 1}`);
               createdUsers.push({
@@ -2168,7 +2159,39 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
             }
           }
           debug.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+          if (sendActivationEmails && createdUsers.length > 0) {
+            const pathParts = window.location.pathname.split("/").filter(Boolean);
+            const reserved = ["admin", "activate-account", "reset-password", "forgot-password", "email-notifications"];
+            const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : "";
+            const redirectUrl = clientSegment ? `${window.location.origin}/${clientSegment}/activate-account` : `${window.location.origin}/activate-account`;
+            debug.log("[ImportUsersDialog] Sending activation emails to", createdUsers.length, "users, redirectUrl:", redirectUrl);
+            const BATCH_SIZE = 5;
+            const BATCH_DELAY_MS = 1e3;
+            let emailsSent = 0;
+            let emailsFailed = 0;
+            for (let i = 0; i < createdUsers.length; i += BATCH_SIZE) {
+              const batch = createdUsers.slice(i, i + BATCH_SIZE);
+              await Promise.all(batch.map(async (u) => {
+                try {
+                  const { error: emailError } = await supabase2.functions.invoke("request-activation-link", {
+                    body: { email: u.email, redirectUrl }
+                  });
+                  if (emailError) throw emailError;
+                  debug.log("[ImportUsersDialog] Activation email sent to", u.email);
+                  emailsSent++;
+                } catch (err) {
+                  debug.error("[ImportUsersDialog] Failed to send activation email to", u.email, err);
+                  emailsFailed++;
+                }
+              }));
+              if (i + BATCH_SIZE < createdUsers.length) {
+                await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+              }
+            }
+            debug.log("[ImportUsersDialog] Activation emails done. Sent:", emailsSent, "Failed:", emailsFailed);
+          }
           setUploadedFile(null);
+          setSendActivationEmails(false);
           setIsProcessing(false);
           setIsOpen(false);
           if ((errors.length > 0 || warnings.length > 0) && onImportError) {
@@ -2227,6 +2250,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   const handleDialogClose = (open) => {
     if (!open && !isProcessing) {
       setUploadedFile(null);
+      setSendActivationEmails(false);
     }
     setIsOpen(open);
   };
@@ -2235,7 +2259,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsx(DialogTitle, { children: "Import Users" }),
-        /* @__PURE__ */ jsx(DialogDescription, { children: "Upload a CSV file to import users in bulk. Users will be created with authentication accounts and will receive an activation link via email. Departments, roles, and locations can be assigned during import." })
+        /* @__PURE__ */ jsx(DialogDescription, { children: "Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist." })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
         /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
@@ -2258,25 +2282,39 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
               ]
             }
           ),
-          uploadedFile && /* @__PURE__ */ jsxs("div", { className: "flex gap-3", children: [
-            /* @__PURE__ */ jsx(
-              Button,
-              {
-                onClick: handleImport,
-                disabled: isProcessing,
-                className: "flex items-center gap-2",
-                children: isProcessing ? /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) }) : /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) })
-              }
-            ),
-            /* @__PURE__ */ jsx(
-              Button,
-              {
-                variant: "outline",
-                onClick: () => setUploadedFile(null),
-                disabled: isProcessing,
-                children: "X"
-              }
-            )
+          uploadedFile && /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx(
+                Checkbox,
+                {
+                  id: "send-activation-emails",
+                  checked: sendActivationEmails,
+                  onCheckedChange: (checked) => setSendActivationEmails(checked === true),
+                  disabled: isProcessing
+                }
+              ),
+              /* @__PURE__ */ jsx(Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to imported users" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex gap-3", children: [
+              /* @__PURE__ */ jsx(
+                Button,
+                {
+                  onClick: handleImport,
+                  disabled: isProcessing,
+                  className: "flex items-center gap-2",
+                  children: isProcessing ? /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) }) : /* @__PURE__ */ jsx(Fragment, { children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) })
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                Button,
+                {
+                  variant: "outline",
+                  onClick: () => setUploadedFile(null),
+                  disabled: isProcessing,
+                  children: "X"
+                }
+              )
+            ] })
           ] })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
@@ -2336,29 +2374,17 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
               /* @__PURE__ */ jsx("strong", { children: "Location" }),
-              " (optional) - must match an existing active location"
+              " (optional) - created automatically if it doesn't exist"
             ] }),
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
               /* @__PURE__ */ jsx("strong", { children: "Department" }),
-              " (optional) - must match an existing department"
+              " (optional) - created automatically if it doesn't exist"
             ] }),
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
               /* @__PURE__ */ jsx("strong", { children: "Role" }),
-              " (optional) - must match an existing active role"
-            ] }),
-            /* @__PURE__ */ jsxs("p", { children: [
-              "• If both ",
-              /* @__PURE__ */ jsx("strong", { children: "Department" }),
-              " and ",
-              /* @__PURE__ */ jsx("strong", { children: "Role" }),
-              " are provided, the role must belong to that department (or be a general role)"
-            ] }),
-            /* @__PURE__ */ jsxs("p", { children: [
-              "• If only ",
-              /* @__PURE__ */ jsx("strong", { children: "Role" }),
-              " is provided, it must be a general role (not assigned to any department)"
+              " (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role."
             ] }),
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
@@ -2394,6 +2420,47 @@ const UserManagement = () => {
   const [importWarnings, setImportWarnings] = useState([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
   const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const [isSendingActivations, setIsSendingActivations] = useState(false);
+  const [showActivationConfirm, setShowActivationConfirm] = useState(false);
+  const pendingProfiles = visibleProfiles.filter((p) => p.status === "Pending");
+  const handleSendActivationEmails = async () => {
+    if (pendingProfiles.length === 0) return;
+    const pathParts = window.location.pathname.split("/").filter(Boolean);
+    const reserved = ["admin", "activate-account", "reset-password", "forgot-password", "email-notifications"];
+    const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : "";
+    const redirectUrl = clientSegment ? `${window.location.origin}/${clientSegment}/activate-account` : `${window.location.origin}/activate-account`;
+    debug.log("[UserManagement.sendActivationEmails] sending to", pendingProfiles.length, "pending users, redirectUrl:", redirectUrl);
+    setIsSendingActivations(true);
+    let sent = 0;
+    let failed = 0;
+    const BATCH_SIZE = 5;
+    const BATCH_DELAY_MS = 1e3;
+    for (let i = 0; i < pendingProfiles.length; i += BATCH_SIZE) {
+      const batch = pendingProfiles.slice(i, i + BATCH_SIZE);
+      await Promise.all(batch.map(async (profile) => {
+        try {
+          const { error } = await supabaseClient.functions.invoke("request-activation-link", {
+            body: { email: profile.username, redirectUrl }
+          });
+          if (error) throw error;
+          debug.log("[UserManagement.sendActivationEmails] sent to", profile.username);
+          sent++;
+        } catch (err) {
+          debug.error("[UserManagement.sendActivationEmails] failed for", profile.username, err);
+          failed++;
+        }
+      }));
+      if (i + BATCH_SIZE < pendingProfiles.length) {
+        await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+      }
+    }
+    setIsSendingActivations(false);
+    toast2({
+      title: failed === 0 ? "Activation emails sent" : "Activation emails sent with errors",
+      description: `${sent} sent${failed > 0 ? `, ${failed} failed` : ""} out of ${pendingProfiles.length} pending user${pendingProfiles.length !== 1 ? "s" : ""}`,
+      variant: failed > 0 ? "destructive" : "default"
+    });
+  };
   const {
     isCreateDialogOpen,
     setIsCreateDialogOpen,
@@ -2485,6 +2552,20 @@ const UserManagement = () => {
                 ]
               }
             ),
+            pendingProfiles.length > 0 && /* @__PURE__ */ jsxs(
+              Button,
+              {
+                variant: "outline",
+                size: "sm",
+                onClick: () => setShowActivationConfirm(true),
+                disabled: isSendingActivations,
+                className: "flex items-center gap-2",
+                children: [
+                  /* @__PURE__ */ jsx(Mail, { className: "h-4 w-4" }),
+                  isSendingActivations ? "Sending…" : `Send Activation Emails (${pendingProfiles.length})`
+                ]
+              }
+            ),
             /* @__PURE__ */ jsx(
               ImportUsersDialog,
               {
@@ -2549,7 +2630,23 @@ const UserManagement = () => {
           loading: isDeleting
         }
       )
-    ] })
+    ] }),
+    /* @__PURE__ */ jsx(AlertDialog, { open: showActivationConfirm, onOpenChange: setShowActivationConfirm, children: /* @__PURE__ */ jsxs(AlertDialogContent, { children: [
+      /* @__PURE__ */ jsxs(AlertDialogHeader, { children: [
+        /* @__PURE__ */ jsx(AlertDialogTitle, { children: "Send Activation Emails" }),
+        /* @__PURE__ */ jsxs(AlertDialogDescription, { children: [
+          "This will send an activation email to ",
+          /* @__PURE__ */ jsx("strong", { children: pendingProfiles.length }),
+          " pending user",
+          pendingProfiles.length !== 1 ? "s" : "",
+          ". They will receive a link to set their password and activate their account."
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(AlertDialogFooter, { children: [
+        /* @__PURE__ */ jsx(AlertDialogCancel, { children: "Cancel" }),
+        /* @__PURE__ */ jsx(AlertDialogAction, { onClick: handleSendActivationEmails, children: "Send Emails" })
+      ] })
+    ] }) })
   ] });
 };
 const ImportRolesDialog = ({ onImportComplete, onImportError }) => {

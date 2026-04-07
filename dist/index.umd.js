@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/button"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("@/components/ui/alert-dialog"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("staysecure-notifications"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/alert"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area"), require("@/components/ui/checkbox")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/button", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "@/components/ui/alert-dialog", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "staysecure-notifications", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/alert", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area", "@/components/ui/checkbox"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.deleteUserDialog, global.useToast$1, global.button, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.alertDialog, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.StaySecureNotifications, global.LearningTracksTab, global.useUserRoleById, global.alert, global.useProfile, global.useUserPhysicalLocations, global.scrollArea, global.checkbox));
-})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, deleteUserDialog, useToast$1, button, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, alertDialog, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, staysecureNotifications, LearningTracksTab, useUserRoleById, alert, useProfile, useUserPhysicalLocations, scrollArea, checkbox) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("staysecure-notifications"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/alert"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "staysecure-notifications", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/alert", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.StaySecureNotifications, global.LearningTracksTab, global.useUserRoleById, global.alert, global.useProfile, global.useUserPhysicalLocations, global.scrollArea));
+})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, staysecureNotifications, LearningTracksTab, useUserRoleById, alert, useProfile, useUserPhysicalLocations, scrollArea) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -1213,7 +1213,7 @@
         type: "badge",
         editable: true,
         sortable: true,
-        options: ["Active", "Inactive", "OnLeave"],
+        options: ["Pending", "Active", "Inactive", "OnLeave"],
         width: "120px"
       }
     ];
@@ -1567,6 +1567,7 @@
     const [isOpen, setIsOpen] = React.useState(false);
     const [uploadedFile, setUploadedFile] = React.useState(null);
     const [isProcessing, setIsProcessing] = React.useState(false);
+    const [sendActivationEmails, setSendActivationEmails] = React.useState(false);
     const { data: validLocations } = reactQuery.useQuery({
       queryKey: ["locations"],
       queryFn: async () => {
@@ -1642,84 +1643,6 @@
       link.click();
       document.body.removeChild(link);
     };
-    const validateLocation = (locationName) => {
-      if (!locationName || !validLocations) {
-        debug.log("Location validation: No location name or validLocations not loaded", { locationName, validLocations });
-        return { isValid: false };
-      }
-      const trimmedLocation = locationName.trim();
-      debug.log("Location validation: Checking location", {
-        providedLocation: trimmedLocation,
-        availableLocations: validLocations.map((l) => l.name)
-      });
-      const validLocation = validLocations.find(
-        (loc) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
-      );
-      debug.log("Location validation result:", {
-        location: trimmedLocation,
-        found: !!validLocation,
-        validLocation
-      });
-      return {
-        isValid: !!validLocation,
-        locationId: validLocation == null ? void 0 : validLocation.id
-      };
-    };
-    const validateDepartment = (departmentName) => {
-      if (!departmentName || !validDepartments) {
-        return { isValid: false };
-      }
-      const trimmedName = departmentName.trim().toLowerCase();
-      const department = validDepartments.find(
-        (dept) => dept.name.toLowerCase() === trimmedName
-      );
-      return {
-        isValid: !!department,
-        departmentId: department == null ? void 0 : department.id
-      };
-    };
-    const validateRole = (roleName) => {
-      if (!roleName || !validRoles) {
-        return { isValid: false };
-      }
-      const trimmedName = roleName.trim().toLowerCase();
-      const role = validRoles.find(
-        (r) => r.name.toLowerCase() === trimmedName
-      );
-      return {
-        isValid: !!role,
-        roleId: role == null ? void 0 : role.role_id,
-        departmentId: (role == null ? void 0 : role.department_id) || null
-      };
-    };
-    const validateDepartmentRolePair = (departmentName, roleName) => {
-      const deptValidation = validateDepartment(departmentName);
-      if (!deptValidation.isValid) {
-        return { isValid: false, error: `Department "${departmentName}" does not exist` };
-      }
-      const roleValidation = validateRole(roleName);
-      if (!roleValidation.isValid) {
-        return { isValid: false, error: `Role "${roleName}" does not exist or is not active` };
-      }
-      if (roleValidation.departmentId === null) {
-        return {
-          isValid: true,
-          departmentId: deptValidation.departmentId,
-          roleId: roleValidation.roleId
-        };
-      }
-      if (roleValidation.departmentId !== deptValidation.departmentId) {
-        return {
-          isValid: false,
-          error: `Role "${roleName}" does not belong to department "${departmentName}"`
-        };
-      }
-      return {
-        isValid: true,
-        departmentId: deptValidation.departmentId,
-        roleId: roleValidation.roleId
-      };
-    };
     const validateAccessLevel = (accessLevel) => {
       if (!accessLevel) {
         return { isValid: false };
@@ -1792,7 +1715,7 @@
       }
       return errorMessage.length > 100 ? "An unexpected error occurred while creating the user. Please try again." : errorMessage;
     };
-    const processUserImport = async (row) => {
+    const processUserImport = async (row, locationCache, departmentCache, roleCache) => {
       var _a;
       const email = row["Email"] || row["email"];
       if (!email) {
@@ -1817,43 +1740,13 @@
       if (!accessLevelValidation.isValid) {
         throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
       }
-      const locationName = row["Location"] || row["location"] || "";
-      const departmentName = row["Department"] || row["department"] || "";
-      const roleName = row["Role"] || row["role"] || "";
-      if (locationName) {
-        const locationValidation = validateLocation(locationName);
-        if (!locationValidation.isValid) {
-          throw new Error(`Location "${locationName}" does not exist`);
-        }
-      }
-      let departmentId;
-      if (departmentName) {
-        const deptValidation = validateDepartment(departmentName);
-        if (!deptValidation.isValid) {
-          throw new Error(`Department "${departmentName}" does not exist`);
-        }
-        departmentId = deptValidation.departmentId;
-      }
-      let roleId;
-      let roleDepartmentId;
-      if (roleName) {
-        const roleValidation = validateRole(roleName);
-        if (!roleValidation.isValid) {
-          throw new Error(`Role "${roleName}" does not exist or is not active`);
-        }
-        roleId = roleValidation.roleId;
-        roleDepartmentId = roleValidation.departmentId;
-      }
-      if (departmentName && roleName) {
-        const pairValidation = validateDepartmentRolePair(departmentName, roleName);
-        if (!pairValidation.isValid) {
-          throw new Error(pairValidation.error || "Invalid department-role pair");
-        }
-        departmentId = pairValidation.departmentId;
-        roleId = pairValidation.roleId;
-      } else if (roleName && roleDepartmentId !== null) {
-        throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
-      }
+      const locationName = (row["Location"] || row["location"] || "").trim();
+      const departmentName = (row["Department"] || row["department"] || "").trim();
+      const roleName = (row["Role"] || row["role"] || "").trim();
+      const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : void 0;
+      const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : void 0;
+      const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
+      const roleId = roleName ? roleCache.get(roleKey) : void 0;
       const managerEmail = (row["Manager"] || row["manager"] || "").trim() || void 0;
       const clientId = client.getCurrentClientId();
       const clientPath = clientId ? `/${clientId}` : "";
@@ -1868,11 +1761,9 @@
           status: "Pending",
           employee_id: row["Employee ID"] || row["employee_id"] || "",
           access_level: accessLevelValidation.value,
-          // Already validated above, so safe to use !
           manager: null,
           // Manager assigned in pass 2 after all users exist
           clientPath
-          // Pass client path explicitly
         }
       });
       if (authError) {
@@ -1893,18 +1784,16 @@
       }
       const warnings = [];
       if (locationName) {
-        const locationValidation = validateLocation(locationName);
-        if (locationValidation.isValid && locationValidation.locationId) {
+        if (locationId) {
           try {
-            const locationData = {
+            const { error: locationError } = await supabase.from("physical_location_access").insert({
               user_id: userId,
-              location_id: locationValidation.locationId,
+              location_id: locationId,
               full_name: fullName.trim(),
               access_purpose: "General Access",
               status: "Active",
               date_access_created: (/* @__PURE__ */ new Date()).toISOString()
-            };
-            const { error: locationError } = await supabase.from("physical_location_access").insert(locationData);
+            });
             if (locationError) {
               console.error("Error assigning location to physical_location_access:", locationError);
               warnings.push({
@@ -1913,10 +1802,7 @@
                 message: `Location "${locationName}" could not be assigned: ${locationError.message}`
               });
             } else {
-              const { error: profileError } = await supabase.from("profiles").update({
-                location: locationName,
-                location_id: locationValidation.locationId
-              }).eq("id", userId);
+              const { error: profileError } = await supabase.from("profiles").update({ location: locationName, location_id: locationId }).eq("id", userId);
               if (profileError) {
                 console.error("Error updating profile location:", profileError);
                 warnings.push({
@@ -1934,9 +1820,29 @@
               message: `Location "${locationName}" could not be assigned: ${locationError.message}`
             });
           }
+        } else {
+          warnings.push({
+            field: "Location",
+            value: locationName,
+            message: `Location "${locationName}" could not be created or found — skipping assignment`
+          });
         }
       }
-      if (departmentName || roleName) {
+      if (departmentName && !departmentId) {
+        warnings.push({
+          field: "Department",
+          value: departmentName,
+          message: `Department "${departmentName}" could not be created or found — skipping assignment`
+        });
+      }
+      if (roleName && !roleId) {
+        warnings.push({
+          field: "Role",
+          value: roleName,
+          message: `Role "${roleName}" could not be created or found — skipping assignment`
+        });
+      }
+      if (departmentId || roleId) {
         try {
           const pairingId = departmentId && roleId ? crypto.randomUUID() : void 0;
           if (departmentId) {
@@ -2034,6 +1940,91 @@
             const errors = [];
             const warnings = [];
             const createdUsers = [];
+            const locationCache = /* @__PURE__ */ new Map();
+            const departmentCache = /* @__PURE__ */ new Map();
+            const roleCache = /* @__PURE__ */ new Map();
+            (validLocations || []).forEach(
+              (loc) => locationCache.set(loc.name.toLowerCase(), loc.id)
+            );
+            (validDepartments || []).forEach(
+              (dept) => departmentCache.set(dept.name.toLowerCase(), dept.id)
+            );
+            const deptIdToName = /* @__PURE__ */ new Map();
+            (validDepartments || []).forEach(
+              (dept) => deptIdToName.set(dept.id, dept.name.toLowerCase())
+            );
+            (validRoles || []).forEach((role) => {
+              const deptKey = role.department_id ? deptIdToName.get(role.department_id) ?? "" : "";
+              roleCache.set(`${role.name.toLowerCase()}::${deptKey}`, role.role_id);
+            });
+            const uniqueLocations = /* @__PURE__ */ new Set();
+            const uniqueDepartments = /* @__PURE__ */ new Set();
+            const uniqueRolePairs = /* @__PURE__ */ new Set();
+            for (const row of data) {
+              const loc = (row["Location"] || row["location"] || "").trim();
+              const dept = (row["Department"] || row["department"] || "").trim();
+              const role = (row["Role"] || row["role"] || "").trim();
+              if (loc) uniqueLocations.add(loc);
+              if (dept) uniqueDepartments.add(dept);
+              if (role) uniqueRolePairs.add(`${role}|||${dept}`);
+            }
+            for (const locName of uniqueLocations) {
+              const key = locName.toLowerCase();
+              if (!locationCache.has(key)) {
+                try {
+                  const { data: newLoc, error } = await supabase.from("locations").insert({ name: locName, status: "Active" }).select("id").single();
+                  if (!error && newLoc) {
+                    locationCache.set(key, newLoc.id);
+                    debug.log("[ImportUsersDialog] Auto-created location:", locName);
+                  } else if (error) {
+                    debug.error("[ImportUsersDialog] Failed to create location:", locName, error);
+                  }
+                } catch (err) {
+                  debug.error("[ImportUsersDialog] Exception creating location:", locName, err);
+                }
+              }
+            }
+            for (const deptName of uniqueDepartments) {
+              const key = deptName.toLowerCase();
+              if (!departmentCache.has(key)) {
+                try {
+                  const { data: newDept, error } = await supabase.from("departments").insert({ name: deptName }).select("id").single();
+                  if (!error && newDept) {
+                    departmentCache.set(key, newDept.id);
+                    debug.log("[ImportUsersDialog] Auto-created department:", deptName);
+                  } else if (error) {
+                    debug.error("[ImportUsersDialog] Failed to create department:", deptName, error);
+                  }
+                } catch (err) {
+                  debug.error("[ImportUsersDialog] Exception creating department:", deptName, err);
+                }
+              }
+            }
+            for (const pair of uniqueRolePairs) {
+              const sep = pair.indexOf("|||");
+              const roleName = pair.slice(0, sep);
+              const deptName = pair.slice(sep + 3);
+              const roleKey = `${roleName.toLowerCase()}::${deptName.toLowerCase()}`;
+              if (!roleCache.has(roleKey)) {
+                const deptId = deptName ? departmentCache.get(deptName.toLowerCase()) ?? null : null;
+                try {
+                  const { data: newRole, error } = await supabase.from("roles").insert({ name: roleName, department_id: deptId, is_active: true }).select("role_id").single();
+                  if (!error && newRole) {
+                    roleCache.set(roleKey, newRole.role_id);
+                    debug.log("[ImportUsersDialog] Auto-created role:", roleName, deptName ? `(${deptName})` : "(general)");
+                  } else if (error) {
+                    debug.error("[ImportUsersDialog] Failed to create role:", roleName, error);
+                  }
+                } catch (err) {
+                  debug.error("[ImportUsersDialog] Exception creating role:", roleName, err);
+                }
+              }
+            }
+            debug.log("[ImportUsersDialog] Pass 0 complete. Cache sizes:", {
+              locations: locationCache.size,
+              departments: departmentCache.size,
+              roles: roleCache.size
+            });
             for (let i = 0; i < data.length; i++) {
               const row = data[i];
               if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
@@ -2044,7 +2035,7 @@
               const rowNumber = i + 2;
               try {
                 debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
-                const result = await processUserImport(row);
+                const result = await processUserImport(row, locationCache, departmentCache, roleCache);
                 successCount++;
                 debug.log(`Successfully processed user ${i + 1}`);
                 createdUsers.push({
@@ -2126,7 +2117,39 @@
               }
             }
             debug.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
+            if (sendActivationEmails && createdUsers.length > 0) {
+              const pathParts = window.location.pathname.split("/").filter(Boolean);
+              const reserved = ["admin", "activate-account", "reset-password", "forgot-password", "email-notifications"];
+              const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : "";
+              const redirectUrl = clientSegment ? `${window.location.origin}/${clientSegment}/activate-account` : `${window.location.origin}/activate-account`;
+              debug.log("[ImportUsersDialog] Sending activation emails to", createdUsers.length, "users, redirectUrl:", redirectUrl);
+              const BATCH_SIZE = 5;
+              const BATCH_DELAY_MS = 1e3;
+              let emailsSent = 0;
+              let emailsFailed = 0;
+              for (let i = 0; i < createdUsers.length; i += BATCH_SIZE) {
+                const batch = createdUsers.slice(i, i + BATCH_SIZE);
+                await Promise.all(batch.map(async (u) => {
+                  try {
+                    const { error: emailError } = await supabase.functions.invoke("request-activation-link", {
+                      body: { email: u.email, redirectUrl }
+                    });
+                    if (emailError) throw emailError;
+                    debug.log("[ImportUsersDialog] Activation email sent to", u.email);
+                    emailsSent++;
+                  } catch (err) {
+                    debug.error("[ImportUsersDialog] Failed to send activation email to", u.email, err);
+                    emailsFailed++;
+                  }
+                }));
+                if (i + BATCH_SIZE < createdUsers.length) {
+                  await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+                }
+              }
+              debug.log("[ImportUsersDialog] Activation emails done. Sent:", emailsSent, "Failed:", emailsFailed);
+            }
             setUploadedFile(null);
+            setSendActivationEmails(false);
             setIsProcessing(false);
             setIsOpen(false);
             if ((errors.length > 0 || warnings.length > 0) && onImportError) {
@@ -2185,6 +2208,7 @@
     const handleDialogClose = (open) => {
       if (!open && !isProcessing) {
         setUploadedFile(null);
+        setSendActivationEmails(false);
       }
       setIsOpen(open);
     };
@@ -2193,7 +2217,7 @@
       /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Users" }),
-          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV file to import users in bulk. Users will be created with authentication accounts and will receive an activation link via email. Departments, roles, and locations can be assigned during import." })
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist." })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
@@ -2216,25 +2240,39 @@
                 ]
               }
             ),
-            uploadedFile && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-3", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(
-                button.Button,
-                {
-                  onClick: handleImport,
-                  disabled: isProcessing,
-                  className: "flex items-center gap-2",
-                  children: isProcessing ? /* @__PURE__ */ jsxRuntime.jsx(jsxRuntime.Fragment, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) }) : /* @__PURE__ */ jsxRuntime.jsx(jsxRuntime.Fragment, { children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) })
-                }
-              ),
-              /* @__PURE__ */ jsxRuntime.jsx(
-                button.Button,
-                {
-                  variant: "outline",
-                  onClick: () => setUploadedFile(null),
-                  disabled: isProcessing,
-                  children: "X"
-                }
-              )
+            uploadedFile && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  checkbox.Checkbox,
+                  {
+                    id: "send-activation-emails",
+                    checked: sendActivationEmails,
+                    onCheckedChange: (checked) => setSendActivationEmails(checked === true),
+                    disabled: isProcessing
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to imported users" })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-3", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  button.Button,
+                  {
+                    onClick: handleImport,
+                    disabled: isProcessing,
+                    className: "flex items-center gap-2",
+                    children: isProcessing ? /* @__PURE__ */ jsxRuntime.jsx(jsxRuntime.Fragment, { children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) }) : /* @__PURE__ */ jsxRuntime.jsx(jsxRuntime.Fragment, { children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  button.Button,
+                  {
+                    variant: "outline",
+                    onClick: () => setUploadedFile(null),
+                    disabled: isProcessing,
+                    children: "X"
+                  }
+                )
+              ] })
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
@@ -2294,29 +2332,17 @@
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Location" }),
-                " (optional) - must match an existing active location"
+                " (optional) - created automatically if it doesn't exist"
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Department" }),
-                " (optional) - must match an existing department"
+                " (optional) - created automatically if it doesn't exist"
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
-                " (optional) - must match an existing active role"
-              ] }),
-              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-                "• If both ",
-                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Department" }),
-                " and ",
-                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
-                " are provided, the role must belong to that department (or be a general role)"
-              ] }),
-              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
-                "• If only ",
-                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
-                " is provided, it must be a general role (not assigned to any department)"
+                " (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role."
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
@@ -2352,6 +2378,47 @@
     const [importWarnings, setImportWarnings] = React.useState([]);
     const [importStats, setImportStats] = React.useState({ success: 0, total: 0 });
     const [isCreatingUser, setIsCreatingUser] = React.useState(false);
+    const [isSendingActivations, setIsSendingActivations] = React.useState(false);
+    const [showActivationConfirm, setShowActivationConfirm] = React.useState(false);
+    const pendingProfiles = visibleProfiles.filter((p) => p.status === "Pending");
+    const handleSendActivationEmails = async () => {
+      if (pendingProfiles.length === 0) return;
+      const pathParts = window.location.pathname.split("/").filter(Boolean);
+      const reserved = ["admin", "activate-account", "reset-password", "forgot-password", "email-notifications"];
+      const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : "";
+      const redirectUrl = clientSegment ? `${window.location.origin}/${clientSegment}/activate-account` : `${window.location.origin}/activate-account`;
+      debug.log("[UserManagement.sendActivationEmails] sending to", pendingProfiles.length, "pending users, redirectUrl:", redirectUrl);
+      setIsSendingActivations(true);
+      let sent = 0;
+      let failed = 0;
+      const BATCH_SIZE = 5;
+      const BATCH_DELAY_MS = 1e3;
+      for (let i = 0; i < pendingProfiles.length; i += BATCH_SIZE) {
+        const batch = pendingProfiles.slice(i, i + BATCH_SIZE);
+        await Promise.all(batch.map(async (profile) => {
+          try {
+            const { error } = await supabaseClient.functions.invoke("request-activation-link", {
+              body: { email: profile.username, redirectUrl }
+            });
+            if (error) throw error;
+            debug.log("[UserManagement.sendActivationEmails] sent to", profile.username);
+            sent++;
+          } catch (err) {
+            debug.error("[UserManagement.sendActivationEmails] failed for", profile.username, err);
+            failed++;
+          }
+        }));
+        if (i + BATCH_SIZE < pendingProfiles.length) {
+          await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
+        }
+      }
+      setIsSendingActivations(false);
+      toast({
+        title: failed === 0 ? "Activation emails sent" : "Activation emails sent with errors",
+        description: `${sent} sent${failed > 0 ? `, ${failed} failed` : ""} out of ${pendingProfiles.length} pending user${pendingProfiles.length !== 1 ? "s" : ""}`,
+        variant: failed > 0 ? "destructive" : "default"
+      });
+    };
     const {
       isCreateDialogOpen,
       setIsCreateDialogOpen,
@@ -2443,6 +2510,20 @@
                   ]
                 }
               ),
+              pendingProfiles.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(
+                button.Button,
+                {
+                  variant: "outline",
+                  size: "sm",
+                  onClick: () => setShowActivationConfirm(true),
+                  disabled: isSendingActivations,
+                  className: "flex items-center gap-2",
+                  children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-4 w-4" }),
+                    isSendingActivations ? "Sending…" : `Send Activation Emails (${pendingProfiles.length})`
+                  ]
+                }
+              ),
               /* @__PURE__ */ jsxRuntime.jsx(
                 ImportUsersDialog,
                 {
@@ -2507,7 +2588,23 @@
             loading: isDeleting
           }
         )
-      ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialog, { open: showActivationConfirm, onOpenChange: setShowActivationConfirm, children: /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogContent, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogTitle, { children: "Send Activation Emails" }),
+          /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogDescription, { children: [
+            "This will send an activation email to ",
+            /* @__PURE__ */ jsxRuntime.jsx("strong", { children: pendingProfiles.length }),
+            " pending user",
+            pendingProfiles.length !== 1 ? "s" : "",
+            ". They will receive a link to set their password and activate their account."
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogFooter, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogCancel, { children: "Cancel" }),
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogAction, { onClick: handleSendActivationEmails, children: "Send Emails" })
+        ] })
+      ] }) })
     ] });
   };
   const ImportRolesDialog = ({ onImportComplete, onImportError }) => {

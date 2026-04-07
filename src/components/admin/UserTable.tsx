@@ -61,7 +61,7 @@ const UserTable: React.FC<UserTableProps> = ({
       type: 'badge' as const, 
       editable: true,
       sortable: true,
-      options: ['Active', 'Inactive', 'OnLeave'],
+      options: ['Pending', 'Active', 'Inactive', 'OnLeave'],
       width: '120px'
     }
   ];

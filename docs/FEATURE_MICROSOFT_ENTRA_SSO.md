@@ -246,6 +246,53 @@ Without authoritative provisioning, Learn cannot rely on correct **department**,
 
 ---
 
+## Architecture decisions
+
+### ADR-1: SSO on shared (nexus) instances — deferred until there is real demand
+
+**Context:** The nexus Supabase project hosts multiple small-to-mid organisations in a single database. A question arose about whether those clients could use Microsoft Entra SSO without migrating to a dedicated instance.
+
+**Decision:** Do not implement multi-org SSO on nexus for now.
+
+**Reasons:**
+
+1. **One Azure provider per Supabase project.** Supabase only supports a single Azure App Registration (Client ID + Secret) per project. All nexus orgs would share one Azure app, which must be registered as *multi-tenant* in Azure (supporting any Azure AD org). This removes the natural per-tenant isolation you get on dedicated instances.
+
+2. **Cross-tenant pollution requires extra code.** Without additional guards, a user from Org A's Azure AD could potentially sign in at Org B's URL. Preventing this requires reading `azure_tenant_id` from `org_profile` *before* the OAuth exchange completes and then verifying the `tid` JWT claim in `AuthProvider` after login — a non-trivial security-critical path.
+
+3. **The `get_org_sso_config` RPC must become org-aware.** Currently it does `SELECT … LIMIT 1`, which only works for single-org databases. On nexus it would need a `WHERE short_name = $1` (or equivalent) keyed on the URL slug — requiring changes to the RPC, `LoginForm`, and `AuthCallbackPage` to thread the org identifier through the OAuth state.
+
+4. **Small shops on nexus rarely have Entra.** The target audience for Entra SSO is large-IT organisations with centralised IAM (see *Target customers* above). Small shops on nexus are more likely to use Google Workspace or email/password. SSO demand from a nexus client is a signal they've outgrown the shared tier.
+
+**If a nexus client requests SSO:** Migrate them to a dedicated Supabase project first. That removes all the shared-instance complexity and is consistent with the pattern used for all large-IT ICP customers.
+
+**Revisit trigger:** If ≥ 3 nexus clients need SSO simultaneously and migration is impractical, implement the nexus-aware path (org-keyed RPC + `tid` verification).
+
+---
+
+### ADR-2: TOTP skip uses `identities` array, not `app_metadata.provider`
+
+**Context:** `AuthProvider.getInitialSession` skips the in-app TOTP challenge for OAuth sessions because the IdP (Entra) has already enforced MFA at the Azure policy level. The initial implementation checked `session.user.app_metadata.provider !== 'email'`.
+
+**Problem:** When a user originally created their account with email/password and later signs in via Azure OAuth, Supabase keeps `app_metadata.provider = 'email'` (the original/primary provider). The check always evaluated to `false`, causing the TOTP challenge to fire even for successful Azure logins.
+
+**Decision:** Check `session.user.identities` (all linked identity providers) and `session.user.app_metadata.providers` (array) instead of the single `provider` field. If *any* identity is not `email`, the session is considered OAuth and TOTP is skipped.
+
+```typescript
+const identities: any[] = session.user.identities ?? [];
+const providers: string[] = session.user.app_metadata?.providers ?? [];
+const hasOAuthIdentity =
+  identities.some((i) => i.provider !== 'email') ||
+  providers.some((p) => p !== 'email');
+```
+
+**Trade-off:** A user who has *both* email/password AND Azure linked will always skip TOTP, even if they somehow authenticated via password for this session. This is acceptable today because:
+- The UX has a single Microsoft sign-in button; password login is the fallback.
+- Entra conditional-access policies enforce MFA server-side before the token reaches us.
+- If stricter per-session-method control is ever needed, use AMR claims from the Supabase JWT.
+
+---
+
 ## References
 
 - **Supabase:** [Login with Azure](https://supabase.com/docs/guides/auth/social-login/auth-azure) (Azure provider setup).

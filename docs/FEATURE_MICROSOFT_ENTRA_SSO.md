@@ -422,3 +422,181 @@ Configured per Supabase project under **Authentication → Providers → Azure**
 - **Azure Tenant ID:** the client's Azure tenant GUID (or `common` for multi-tenant)
 - **Client ID:** Azure App Registration Application (client) ID
 - **Client Secret:** Azure App Registration secret **Value**
+
+---
+
+## Production SSO onboarding runbook
+
+### Overview
+
+| Scope | What |
+|-------|------|
+| **One-time (StaySecure)** | Create a single production Azure App Registration in StaySecure's Microsoft tenant |
+| **Per new Supabase project** | Add that project's Supabase callback URL to the Azure app's Redirect URIs |
+| **Per client going live with SSO** | Configure the Azure provider in their Supabase project + enable SSO in the DB |
+
+Production URL pattern: `https://staysecure-learn.raynsecure.com/<short_name>/`
+
+---
+
+### Step 1 — Create the production Azure App Registration (one-time, StaySecure)
+
+Do this once. All clients share this single app registration.
+
+1. Sign in to [portal.azure.com](https://portal.azure.com) with StaySecure's Microsoft account.
+2. Go to **Azure Active Directory → App registrations → New registration**.
+3. Fill in:
+   - **Name:** `StaySecure`
+   - **Supported account types:** `Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant)` ← required so every client's users can sign in
+   - **Redirect URI:** leave blank for now
+4. Click **Register**. Note down:
+   - **Application (client) ID** — used in every client's Supabase config
+   - **Directory (tenant) ID** — StaySecure's own tenant (not the client's); not used in Supabase config but useful to record
+5. Go to **Certificates & secrets → New client secret**:
+   - Description: `StaySecure Platform (prod)`
+   - Expiry: 24 months (set a calendar reminder to rotate before expiry)
+   - Click **Add** — copy the **Value** immediately (shown only once). **This is the secret you paste into Supabase, NOT the Secret ID (GUID).**
+6. Go to **Token configuration → Add optional claim**:
+   - Token type: **ID**
+   - Claim: `email`
+   - Check **Turn on Microsoft Graph email permission** if prompted
+7. Go to **API permissions** — confirm `openid`, `email`, `profile` are listed (they are default). No extra Graph permissions needed for SSO-only.
+
+**Record in your password manager / secrets store:**
+```
+Azure App: StaySecure (prod)
+Client ID:     <Application (client) ID>
+Tenant ID:     <StaySecure's Directory (tenant) ID>
+Secret Value:  <secret value — not the GUID>
+Secret expiry: <date>
+```
+
+---
+
+### Step 2 — Add a new client's Supabase callback URL to the Azure app (per Supabase project)
+
+Every client has their own Supabase project. Each project's callback URL must be registered in the Azure app's Redirect URIs before any user in that project can log in with Microsoft.
+
+1. Find the client's **Supabase project reference** (the subdomain of their Supabase URL, e.g. `abcdefghijklmn`).
+2. In the Azure portal → **StaySecure** app → **Authentication → Add a platform → Web**.
+3. Add the redirect URI:
+   ```
+   https://<supabase-project-ref>.supabase.co/auth/v1/callback
+   ```
+4. Click **Save**.
+
+> **Why:** The redirect URI is where Supabase's auth server lives — it receives the OAuth tokens from Microsoft. The app's frontend (`staysecure-learn.raynsecure.com`) is a separate redirect configured inside Supabase (Step 3 below).
+
+**For the production app, the Azure app will accumulate one URI per client Supabase project.** Azure supports up to 256 redirect URIs — plenty for all clients.
+
+---
+
+### Step 3 — Configure Supabase for the client (per client going live with SSO)
+
+Do this in the client's Supabase dashboard.
+
+#### 3a — Enable the Azure provider
+
+1. Go to **Authentication → Providers → Azure**.
+2. Toggle **Enable Azure provider** on.
+3. Enter:
+   - **Application (client) ID:** from Step 1 (same for every client)
+   - **Secret:** the secret **Value** from Step 1 (same for every client — NOT the GUID)
+   - **Azure Tenant:** `common` ← leave as `common` for multi-tenant so any client's users can sign in
+4. Click **Save**.
+
+#### 3b — Add allowed redirect URLs
+
+1. Still in Supabase → **Authentication → URL Configuration**.
+2. Add to **Redirect URLs** (these are where Supabase sends users after login):
+   ```
+   https://staysecure-learn.raynsecure.com/<short_name>/auth/callback
+   https://staysecure-govern.raynsecure.com/<short_name>/auth/callback
+   ```
+   Replace `<short_name>` with the client's URL slug (e.g. `rayn`, `psybersafe`).
+3. If the client uses a **custom domain** (e.g. `learn.acmecorp.com`), add those too:
+   ```
+   https://learn.acmecorp.com/auth/callback
+   ```
+4. Click **Save**.
+
+> **Tip:** Supabase supports wildcards — `https://staysecure-learn.raynsecure.com/*` would cover all clients on the shared domain. However, wildcards also permit paths you didn't intend. Prefer explicit per-client URLs for production.
+
+---
+
+### Step 4 — Run the DB migration and enable SSO for the client
+
+#### 4a — Apply the migration (if not already run for this project)
+
+```sql
+-- File: learn/supabase/migrations/20260407000000_entra_sso.sql
+-- Run once per Supabase project
+```
+
+Use the Supabase CLI or the SQL editor in the dashboard:
+```bash
+supabase db push --project-ref <project-ref>
+```
+
+Or paste the migration SQL directly in the Supabase SQL editor.
+
+#### 4b — Enable SSO for the org
+
+```sql
+UPDATE public.org_profile
+SET
+  entra_enabled   = true,
+  azure_tenant_id = '<client-azure-tenant-id>'  -- the client's own Azure AD tenant ID, NOT StaySecure's
+WHERE id = (SELECT id FROM public.org_profile LIMIT 1);
+```
+
+The `azure_tenant_id` here is the client's Microsoft tenant ID (find it in their Azure portal under **Azure Active Directory → Overview → Tenant ID**, or ask their IT admin). It's used for display/record-keeping today; it will be used for tenant-verification enforcement if multi-org support is added later (see ADR-1).
+
+**After this UPDATE, the "Sign in with Microsoft" button will appear on the login page for this client.**
+
+---
+
+### Step 5 — Ask the client's IT admin to consent (per client)
+
+Because the Azure app is multi-tenant, the client's IT admin must grant it access to their directory once before their users can sign in.
+
+Send the client's IT admin this URL (replace `<your-azure-client-id>` with the Application (client) ID from Step 1):
+
+```
+https://login.microsoftonline.com/common/adminconsent?client_id=<your-azure-client-id>
+```
+
+They will see a Microsoft consent screen asking to grant **StaySecure** access to: sign in and read basic profile (`openid`, `email`, `profile`). Once they click **Accept**, all users in their tenant can sign in.
+
+> **If the client's IT admin can't do this immediately:** individual users can still sign in if the tenant's policy allows user consent. The admin consent is only strictly required if the tenant has disabled user consent (common in security-conscious enterprises).
+
+---
+
+### Per-client checklist (print this when onboarding a new SSO client)
+
+Replace `<short_name>` and `<project-ref>` with the client's actual values.
+
+**StaySecure side:**
+- [ ] Add `https://<project-ref>.supabase.co/auth/v1/callback` to the Azure app's Redirect URIs (Step 2)
+- [ ] Enable Azure provider in client's Supabase project with shared Client ID + Secret, tenant = `common` (Step 3a)
+- [ ] Add `https://staysecure-learn.raynsecure.com/<short_name>/auth/callback` to Supabase Redirect URLs (Step 3b)
+- [ ] Add `https://staysecure-govern.raynsecure.com/<short_name>/auth/callback` to Supabase Redirect URLs (Step 3b)
+- [ ] Run DB migration `20260407000000_entra_sso.sql` on the client's project (Step 4a)
+- [ ] `UPDATE org_profile SET entra_enabled = true, azure_tenant_id = '...'` (Step 4b)
+
+**Client IT admin side:**
+- [ ] Admin consent URL sent to client's IT admin (Step 5)
+- [ ] IT admin has clicked Accept on the consent screen
+- [ ] Smoke test: sign in with a Microsoft account from the client's tenant at `https://staysecure-learn.raynsecure.com/<short_name>/`
+
+---
+
+### Dev/staging differences
+
+| | Dev | Production |
+|--|-----|-----------|
+| Azure app | `StaySecure (Dev)` — separate app | `StaySecure` — shared with all prod clients |
+| Supported account types | Single-tenant (your org only) | Multi-tenant (any org) |
+| Supabase tenant field | Your StaySecure tenant ID | `common` |
+| Redirect URIs in Azure | Dev Supabase project ref only | All production client project refs |
+| Admin consent | Not needed (your own tenant) | Required for each client's IT admin |

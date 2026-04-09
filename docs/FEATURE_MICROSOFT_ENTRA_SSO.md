@@ -419,7 +419,7 @@ For each Vercel deployment, two redirect URLs must be added to:
 ### Supabase Azure provider settings
 
 Configured per Supabase project under **Authentication → Providers → Azure**:
-- **Azure Tenant ID:** the client's Azure tenant GUID (or `https://login.microsoftonline.com/common` for multi-tenant)
+- **Azure Tenant ID:** the client's Azure tenant GUID (or `common` for multi-tenant)
 - **Client ID:** Azure App Registration Application (client) ID
 - **Client Secret:** Azure App Registration secret **Value**
 
@@ -446,7 +446,7 @@ Do this once. All clients share this single app registration.
 1. Sign in to [portal.azure.com](https://portal.azure.com) with StaySecure's Microsoft account.
 2. Go to **Azure Active Directory → App registrations → New registration**.
 3. Fill in:
-   - **Name:** `StaySecure`
+   - **Name:** `StaySecure Suite`
    - **Supported account types:** `Accounts in any organizational directory (Any Microsoft Entra ID tenant - Multitenant)` ← required so every client's users can sign in
    - **Redirect URI:** leave blank for now
 4. Click **Register**. Note down:
@@ -502,7 +502,7 @@ Do this in the client's Supabase dashboard.
 3. Enter:
    - **Application (client) ID:** from Step 1 (same for every client)
    - **Secret:** the secret **Value** from Step 1 (same for every client — NOT the GUID)
-   - **Azure Tenant URL:** `https://login.microsoftonline.com/common` ← use this exact URL for multi-tenant so any client's users can sign in
+   - **Azure Tenant:** `https://login.microsoftonline.com/common` ← leave as `common` for multi-tenant so any client's users can sign in
 4. Click **Save**.
 
 #### 3b — Add allowed redirect URLs
@@ -556,14 +556,38 @@ The `azure_tenant_id` here is the client's Microsoft tenant ID (find it in their
 
 ---
 
+### Step 4b — Remove the "unverified" warning from the consent screen (one-time, StaySecure)
+
+When users (or IT admins) are redirected to the Microsoft consent screen, they will see **"StaySecure Suite — unverified"** until publisher verification is complete. The app still works — users can click Accept — but enterprise IT admins will flag this during security review.
+
+There are two levels of fix:
+
+**Level 1 — Publisher domain (quick, ~5 min):** Shows your domain name instead of nothing. The "unverified" badge remains but the screen shows `raynsecure.com`.
+
+1. Azure portal → **App registrations → StaySecure → Branding & properties**
+2. Set **Publisher domain** to `raynsecure.com`
+3. Verify domain ownership via the DNS TXT record or `/.well-known/microsoft-identity-association.json` file that Microsoft prompts for
+4. Save
+
+**Level 2 — Publisher verification (proper fix, removes "unverified" badge entirely):** Requires a Microsoft Partner Network account.
+
+1. Enroll at [partner.microsoft.com](https://partner.microsoft.com) — free, takes 1–2 business days
+2. Once you have an MPN ID, go to **App registrations → StaySecure → Branding & properties → Publisher verification**
+3. Click **Add MPN ID** and link your verified partner account
+4. The consent screen will show a blue verified ✓ badge next to the app name
+
+> **Timeline:** Complete Level 1 before giving the admin consent URL to any client. Complete Level 2 before the first enterprise customer goes live with SSO — they will ask about it.
+
+---
+
 ### Step 5 — Ask the client's IT admin to consent (per client)
 
 Because the Azure app is multi-tenant, the client's IT admin must grant it access to their directory once before their users can sign in.
 
-Send the client's IT admin this URL (replace `<your-azure-client-id>` with the Application (client) ID from Step 1):
+Send the client's IT admin this URL (replace `<your-azure-application-client-id>` with the Application (client) ID from Step 1):
 
 ```
-https://login.microsoftonline.com/common/adminconsent?client_id=<your-azure-client-id>
+https://login.microsoftonline.com/common/adminconsent?client_id=66514ca0-e64c-4405-930d-f12fc54d10ff
 ```
 
 They will see a Microsoft consent screen asking to grant **StaySecure** access to: sign in and read basic profile (`openid`, `email`, `profile`). Once they click **Accept**, all users in their tenant can sign in.
@@ -576,9 +600,13 @@ They will see a Microsoft consent screen asking to grant **StaySecure** access t
 
 Replace `<short_name>` and `<project-ref>` with the client's actual values.
 
-**StaySecure side:**
+**One-time StaySecure setup (do before first client goes live):**
+- [ ] Publisher domain set to `raynsecure.com` on Azure app (Step 4b — Level 1)
+- [ ] Publisher verification completed via MPN (Step 4b — Level 2)
+
+**Per-client:**
 - [ ] Add `https://<project-ref>.supabase.co/auth/v1/callback` to the Azure app's Redirect URIs (Step 2)
-- [ ] Enable Azure provider in client's Supabase project with shared Client ID + Secret, tenant URL = `https://login.microsoftonline.com/common` (Step 3a)
+- [ ] Enable Azure provider in client's Supabase project with shared Client ID + Secret, tenant = `common` (Step 3a)
 - [ ] Add `https://staysecure-learn.raynsecure.com/<short_name>/auth/callback` to Supabase Redirect URLs (Step 3b)
 - [ ] Add `https://staysecure-govern.raynsecure.com/<short_name>/auth/callback` to Supabase Redirect URLs (Step 3b)
 - [ ] Run DB migration `20260407000000_entra_sso.sql` on the client's project (Step 4a)
@@ -597,6 +625,6 @@ Replace `<short_name>` and `<project-ref>` with the client's actual values.
 |--|-----|-----------|
 | Azure app | `StaySecure (Dev)` — separate app | `StaySecure` — shared with all prod clients |
 | Supported account types | Single-tenant (your org only) | Multi-tenant (any org) |
-| Supabase Azure Tenant URL | `https://login.microsoftonline.com/<your-tenant-id>` | `https://login.microsoftonline.com/common` |
+| Supabase tenant field | Your StaySecure tenant ID | `common` |
 | Redirect URIs in Azure | Dev Supabase project ref only | All production client project refs |
 | Admin consent | Not needed (your own tenant) | Required for each client's IT admin |

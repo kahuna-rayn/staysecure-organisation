@@ -8235,12 +8235,12 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
       return "grid-cols-3";
     }
     if (profile == null ? void 0 : profile.cyber_learner) {
-      return "grid-cols-7";
+      return "grid-cols-6";
     }
-    return "grid-cols-6";
+    return "grid-cols-5";
   };
   return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsxs(CardContent, { className: "p-6", children: [
-    /* @__PURE__ */ jsxs(Tabs, { defaultValue: "knowledge", className: "w-full", children: [
+    /* @__PURE__ */ jsxs(Tabs, { defaultValue: isLearnMode ? "knowledge" : "certification", className: "w-full", children: [
       /* @__PURE__ */ jsx(TabsList, { className: `grid w-full ${getGridClass()} mb-6`, children: isLearnMode ? /* @__PURE__ */ jsxs(Fragment, { children: [
         /* @__PURE__ */ jsxs(TabsTrigger, { value: "knowledge", className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsx(BookOpen, { className: "h-4 w-4" }),
@@ -8257,10 +8257,6 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
       ] }) : (
         /* ========== GOVERN MODE TABS ========== */
         /* @__PURE__ */ jsxs(Fragment, { children: [
-          /* @__PURE__ */ jsxs(TabsTrigger, { value: "knowledge", className: "flex items-center gap-2", children: [
-            /* @__PURE__ */ jsx(BookOpen, { className: "h-4 w-4" }),
-            /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Knowledge" })
-          ] }),
           /* @__PURE__ */ jsxs(TabsTrigger, { value: "certification", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsx(GraduationCap, { className: "h-4 w-4" }),
             /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Certificates" })
@@ -8324,7 +8320,6 @@ const PersonaDetailsTabs = ({ profile, userId, onUpdate }) => {
       ] }) : (
         /* ========== GOVERN MODE TAB CONTENT ========== */
         /* @__PURE__ */ jsxs(Fragment, { children: [
-          /* @__PURE__ */ jsx(TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsx(MyDocuments, { userId: typeof profile.id === "string" ? profile.id : userId }) }),
           /* @__PURE__ */ jsxs(TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
             /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsx(
               Button,

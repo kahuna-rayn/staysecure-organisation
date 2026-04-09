@@ -54,16 +54,16 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
     }
     
     if (profile?.cyber_learner) {
-      return "grid-cols-7"; // All tabs including Learn
+      return "grid-cols-6"; // Certificates, Departments & Roles, Accounts, Hardware, Location, Learn
     }
     
-    return "grid-cols-6"; // Certificates, Departments & Roles, Knowledge, Accounts, Hardware, Location
+    return "grid-cols-5"; // Certificates, Departments & Roles, Accounts, Hardware, Location
   };
 
   return (
     <Card className="w-full">
       <CardContent className="p-6">
-        <Tabs defaultValue="knowledge" className="w-full">
+        <Tabs defaultValue={isLearnMode ? "knowledge" : "certification"} className="w-full">
           <TabsList className={`grid w-full ${getGridClass()} mb-6`}>
             {/* ========== LEARN MODE TABS ========== */}
             {isLearnMode ? (
@@ -86,10 +86,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
             ) : (
               /* ========== GOVERN MODE TABS ========== */
               <>
-                <TabsTrigger value="knowledge" className="flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
-                  <span className="hidden sm:inline">Knowledge</span>
-                </TabsTrigger>
                 <TabsTrigger value="certification" className="flex items-center gap-2">
                   <GraduationCap className="h-4 w-4" />
                   <span className="hidden sm:inline">Certificates</span>
@@ -161,10 +157,6 @@ const PersonaDetailsTabs: React.FC<PersonaDetailsTabsProps> = ({ profile, userId
           ) : (
             /* ========== GOVERN MODE TAB CONTENT ========== */
             <>
-              <TabsContent value="knowledge" className="space-y-4 animate-fade-in">
-                <MyDocuments userId={typeof profile.id === 'string' ? profile.id : userId} />
-              </TabsContent>
-              
               <TabsContent value="certification" className="space-y-4 animate-fade-in">
                 <div className="flex justify-end">
                   <Button 

@@ -8193,12 +8193,12 @@ The assignment will return to Not started and the user will need to acknowledge 
         return "grid-cols-3";
       }
       if (profile == null ? void 0 : profile.cyber_learner) {
-        return "grid-cols-7";
+        return "grid-cols-6";
       }
-      return "grid-cols-6";
+      return "grid-cols-5";
     };
     return /* @__PURE__ */ jsxRuntime.jsx(card.Card, { className: "w-full", children: /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "p-6", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(tabs.Tabs, { defaultValue: "knowledge", className: "w-full", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(tabs.Tabs, { defaultValue: isLearnMode ? "knowledge" : "certification", className: "w-full", children: [
         /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsList, { className: `grid w-full ${getGridClass()} mb-6`, children: isLearnMode ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
           /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "knowledge", className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(BookOpen, { className: "h-4 w-4" }),
@@ -8215,10 +8215,6 @@ The assignment will return to Not started and the user will need to acknowledge 
         ] }) : (
           /* ========== GOVERN MODE TABS ========== */
           /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-            /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "knowledge", className: "flex items-center gap-2", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(BookOpen, { className: "h-4 w-4" }),
-              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Knowledge" })
-            ] }),
             /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsTrigger, { value: "certification", className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(GraduationCap, { className: "h-4 w-4" }),
               /* @__PURE__ */ jsxRuntime.jsx("span", { className: "hidden sm:inline", children: "Certificates" })
@@ -8282,7 +8278,6 @@ The assignment will return to Not started and the user will need to acknowledge 
         ] }) : (
           /* ========== GOVERN MODE TAB CONTENT ========== */
           /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-            /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "knowledge", className: "space-y-4 animate-fade-in", children: /* @__PURE__ */ jsxRuntime.jsx(MyDocuments, { userId: typeof profile.id === "string" ? profile.id : userId }) }),
             /* @__PURE__ */ jsxRuntime.jsxs(tabs.TabsContent, { value: "certification", className: "space-y-4 animate-fade-in", children: [
               /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(
                 button.Button,

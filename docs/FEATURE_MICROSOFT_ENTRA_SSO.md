@@ -183,14 +183,14 @@ Skipping **both** SCIM and Graph is only valid for **non-Entra** (e.g. CSV/passw
 
 ## Implementation checklist
 
-### Phase A — SSO
+### Phase A — SSO ✅ completed (Apr 2026)
 
-- [ ] Register Azure provider in Supabase (all relevant projects / tenants).
-- [ ] Add “Sign in with Microsoft” (or equivalent) to auth UI; handle OAuth callback and errors.
-- [ ] Document redirect URL setup for each Vercel deployment and path-prefixed clients.
-- [ ] JIT: create or link `profiles` (and org membership) on first Azure login; **no** password activation email for that path.
-- [ ] Store Entra `oid` / `sub` for stable identity linking.
-- [ ] Decide and implement password-user vs Microsoft-user **merge / conflict** policy.
+- [x] Register Azure provider in Supabase (all relevant projects / tenants). *(dev: `cleqfnrbiqpxpzxkatda`; staging/prod: follow onboarding runbook)*
+- [x] Add “Sign in with Microsoft” (or equivalent) to auth UI; handle OAuth callback and errors.
+- [x] Document redirect URL setup for each Vercel deployment and path-prefixed clients.
+- [x] JIT: create or link `profiles` (and org membership) on first Azure login; **no** password activation email for that path.
+- [x] Store Entra `oid` / `sub` for stable identity linking.
+- [x] Decide and implement password-user vs Microsoft-user **merge / conflict** policy. *(decision: merge by email on first OAuth login; `entra_oid` backfilled on subsequent logins — see implementation log below)*
 
 ### Phase B — SCIM 2.0 provisioning — **required** for Entra go-live (ICP)
 
@@ -306,3 +306,119 @@ const hasOAuthIdentity =
 ## History
 
 This specification **supersedes** the previous design documented at `FEATURE_AZURE_AD_IMPORT.md` (bulk admin import from Graph into `create-user` + activation). That path is now a short redirect to this document.
+
+---
+
+## Phase A implementation log (Apr 2026)
+
+### What was built
+
+#### 1. Database migration — `learn/supabase/migrations/20260407000000_entra_sso.sql`
+
+```sql
+-- Stable identity link to Entra object ID
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS entra_oid text;
+
+CREATE UNIQUE INDEX IF NOT EXISTS profiles_entra_oid_idx
+  ON public.profiles (entra_oid)
+  WHERE entra_oid IS NOT NULL;
+
+-- Per-org SSO toggle + tenant hint
+ALTER TABLE public.org_profile
+  ADD COLUMN IF NOT EXISTS entra_enabled  boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS azure_tenant_id text;
+
+-- Narrow SECURITY DEFINER RPC — safe for anon callers (login page pre-auth)
+CREATE OR REPLACE FUNCTION public.get_org_sso_config()
+RETURNS TABLE (entra_enabled boolean, azure_tenant_id text)
+LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public
+AS $$ SELECT entra_enabled, azure_tenant_id FROM public.org_profile LIMIT 1; $$;
+
+GRANT EXECUTE ON FUNCTION public.get_org_sso_config() TO anon, authenticated;
+```
+
+**To enable SSO for a client:** run this migration on their Supabase project, configure the Azure provider in Supabase Auth, then:
+```sql
+UPDATE public.org_profile
+SET entra_enabled = true, azure_tenant_id = '<their-azure-tenant-id>';
+```
+
+#### 2. Auth module — `auth/src/components/LoginForm.tsx`
+
+- On mount, calls `supabaseClient.rpc('get_org_sso_config')` (unauthenticated) to check if SSO is enabled for this org.
+- Conditionally renders a **"Sign in with Microsoft"** button (hidden by default; only shown when `entra_enabled = true`).
+- `handleMicrosoftSignIn` calls `supabase.auth.signInWithOAuth({ provider: 'azure', options: { redirectTo, scopes: 'openid email profile', queryParams: { prompt: 'select_account' } } })`.
+- `redirectTo` is built from `window.location.origin + clientPrefix + '/auth/callback'`, where `clientPrefix` is derived dynamically from `window.location.pathname` (not hardcoded).
+
+#### 3. OAuth callback page — `learn/src/components/auth/AuthCallbackPage.tsx` *(new file)*
+
+Dedicated React component that handles the redirect after Microsoft login. Supports both:
+- **PKCE flow** (`?code=…`): calls `supabase.auth.exchangeCodeForSession(window.location.href)` then navigates to dashboard.
+- **Implicit flow** (`#access_token=…`): waits for `onAuthStateChange(SIGNED_IN)` then navigates. Also checks `getSession()` in case the event already fired.
+
+Includes error state display, 10-second timeout guard, and correct `clientPrefix` extraction for multi-tenant routing.
+
+Routes added to `learn/src/App.tsx`:
+```tsx
+<Route path="/auth/callback" element={<AuthCallbackPage />} />
+<Route path="/:client/auth/callback" element={<AuthCallbackPage />} />
+```
+`RecoveryRedirect` was also guarded to skip interception when the path includes `/auth/callback`.
+
+#### 4. Auth module — `auth/src/components/AuthProvider.tsx`
+
+**JIT provisioning + inactive gate (in `onAuthStateChange`):**
+- On `SIGNED_IN` from an OAuth provider, checks for an existing `profiles` row by `user.id`.
+- If none exists: inserts `{ id, email, full_name, status: 'Active', entra_oid }` — no activation email.
+- If row exists but `entra_oid` is missing: backfills it.
+- Applies the existing **inactive gate** (`status === 'Inactive'` → sign out + show message) to OAuth users too.
+
+**TOTP skip for OAuth sessions (in `getInitialSession`):**
+- When a session is at `aal1` but has an enrolled TOTP factor (`aal2` required), the old code checked `app_metadata.provider !== 'email'`.
+- **Bug:** Supabase keeps `provider = 'email'` for accounts originally created via email/password even after Azure is linked. The check always evaluated to `false`, causing the TOTP challenge to fire even for successful Azure logins.
+- **Fix (ADR-2):** Check `user.identities` array and `app_metadata.providers` array instead. If any linked identity is not `email`, skip TOTP.
+
+#### 5. Redirect URLs configured
+
+For each Vercel deployment, two redirect URLs must be added to:
+- **Supabase Auth → URL Configuration → Redirect URLs**
+- **Azure App Registration → Authentication → Redirect URIs**
+
+| Environment | URLs |
+|-------------|------|
+| Dev (standalone) | `https://dev.staysecure-learn.raynsecure.com/auth/callback` |
+| Prod (standalone) | `https://staysecure-learn.raynsecure.com/rayn/auth/callback` |
+| Localhost | `http://localhost:8080/auth/callback`, `http://localhost:8080/rayn/auth/callback` |
+
+`deploy/scripts/onboard-client.sh` was updated to print these URLs in the post-onboarding instructions block.
+
+---
+
+### Troubleshooting log (issues hit during implementation)
+
+| Symptom | Root cause | Fix |
+|---------|-----------|-----|
+| `404 Page not found` on OAuth redirect | `/auth/callback` route did not exist in the React app | Created `AuthCallbackPage.tsx` + added routes to `App.tsx` |
+| `Unable to exchange external code: 1.Ab` | Azure **Secret ID** (a GUID) pasted instead of Secret **Value** | Copy the Value column from Azure portal → Certificates & secrets |
+| `AuthCallbackPage` showed "No authorisation code found" | Supabase returned tokens in URL hash (implicit flow), not `?code=` | Added implicit-flow branch (`onAuthStateChange` wait) alongside PKCE handler |
+| TOTP challenge fired after successful Azure login | `app_metadata.provider` stays `'email'` for email-origin accounts; OAuth identity not detected | Switched to `identities` + `providers` array check (ADR-2) |
+| Govern login logo appeared much larger than Learn | `AuthBranding.tsx` uses `text-learning-primary`; this class was defined in Learn's Tailwind config but not Govern's | Added `--learning-primary` CSS variable + `learning-primary` Tailwind color alias to `govern/src/index.css` and `govern/tailwind.config.ts` |
+
+---
+
+### Azure App Registration settings used (dev/staging)
+
+| Setting | Value |
+|---------|-------|
+| Supported account types | *My organisation only* (single-tenant for dev; switch to multi-tenant for production multi-client rollout) |
+| Redirect URIs | See table above |
+| Client secret | Configured in Supabase Auth → Azure provider (use the **Value**, not the ID) |
+| Token claims | `email`, `name`, `oid` available by default with `openid email profile` scopes |
+
+### Supabase Azure provider settings
+
+Configured per Supabase project under **Authentication → Providers → Azure**:
+- **Azure Tenant ID:** the client's Azure tenant GUID (or `common` for multi-tenant)
+- **Client ID:** Azure App Registration Application (client) ID
+- **Client Secret:** Azure App Registration secret **Value**

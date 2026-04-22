@@ -13,7 +13,7 @@ export const OrganisationWrapper: React.FC<OrganisationWrapperProps> = ({ basePa
 
   // Managers see only their own users, departments, and roles — not org-wide config tabs
   const enabledTabs = hasAdminAccess
-    ? ['users', 'roles', 'departments', 'locations', 'certificates', 'profile']
+    ? ['users', 'roles', 'departments', 'locations', 'certificates', 'licenses', 'profile']
     : hasManagerAccess
     ? ['users', 'departments', 'roles']
     : ['users'];

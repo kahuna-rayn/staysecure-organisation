@@ -42,8 +42,7 @@ export function useLicenseData() {
       // 1. Fetch all customer product licenses joined with products for names
       const { data: licenses, error: licenseError } = await supabaseClient
         .from('customer_product_licenses')
-        .select('id, product_id, seats, start_date, end_date, products(name)')
-        .order('created_at');
+        .select('id, product_id, seats, start_date, end_date, products(name)');
 
       if (licenseError) throw licenseError;
       if (!licenses || licenses.length === 0) return { products: [], assignments: [] };

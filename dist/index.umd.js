@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/components/ui/alert"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/components/ui/alert", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.LearningTracksTab, global.useUserRoleById, global.alert, global.useProfile, global.useUserPhysicalLocations, global.scrollArea));
-})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, LearningTracksTab, useUserRoleById, alert, useProfile, useUserPhysicalLocations, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/ui/alert"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/ui/alert", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.alert, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.scrollArea));
+})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, alert, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, scrollArea) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -276,6 +276,16 @@
   const CircleCheckBig = createLucideIcon("CircleCheckBig", [
     ["path", { d: "M21.801 10A10 10 0 1 1 17 3.335", key: "yps3ct" }],
     ["path", { d: "m9 11 3 3L22 4", key: "1pflzl" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const CircleCheck = createLucideIcon("CircleCheck", [
+    ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
+    ["path", { d: "m9 12 2 2 4-4", key: "dzmm74" }]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -878,7 +888,7 @@
     canManageCertificates: true,
     canManageProfile: true
   };
-  const defaultEnabledTabs = ["users", "roles", "departments", "locations", "certificates", "profile"];
+  const defaultEnabledTabs = ["users", "roles", "departments", "locations", "certificates", "licenses", "profile"];
   const OrganisationProvider = ({ config, children }) => {
     const isTabEnabled = (tab) => {
       const enabledTabs = config.enabledTabs || defaultEnabledTabs;
@@ -5151,7 +5161,7 @@
     const [loading, setLoading] = React.useState(true);
     const [error, setError] = React.useState(null);
     const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false);
-    const formatDate = (dateString) => {
+    const formatDate2 = (dateString) => {
       if (!dateString) return "No expiry";
       return new Date(dateString).toLocaleDateString();
     };
@@ -5273,12 +5283,12 @@
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
                 /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
-                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.date_acquired) })
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate2(cert.date_acquired) })
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
                 /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
-                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiry_date) })
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate2(cert.expiry_date) })
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between ml-8 mt-2", children: [
@@ -6245,6 +6255,322 @@
       ] }) })
     ] });
   };
+  const NEAR_CAPACITY_THRESHOLD = 0.8;
+  function useLicenseData() {
+    const { supabaseClient } = useOrganisationContext();
+    return reactQuery.useQuery({
+      queryKey: ["license-data"],
+      queryFn: async () => {
+        const { data: licenses, error: licenseError } = await supabaseClient.from("customer_product_licenses").select("id, product_id, seats, start_date, end_date, products(name)").order("created_at");
+        if (licenseError) throw licenseError;
+        if (!licenses || licenses.length === 0) return { products: [], assignments: [] };
+        const licenseIds = licenses.map((l) => l.id);
+        const { data: rawAssignments, error: assignError } = await supabaseClient.from("product_license_assignments").select("id, license_id, user_id, access_level, profiles(full_name, username)").in("license_id", licenseIds).order("user_id");
+        if (assignError) throw assignError;
+        const countByLicense = /* @__PURE__ */ new Map();
+        (rawAssignments ?? []).forEach((a) => {
+          countByLicense.set(a.license_id, (countByLicense.get(a.license_id) ?? 0) + 1);
+        });
+        const msPerDay = 1e3 * 60 * 60 * 24;
+        const products = licenses.map((l) => {
+          var _a;
+          const used = countByLicense.get(l.id) ?? 0;
+          const total = l.seats ?? 0;
+          const available = Math.max(total - used, 0);
+          const pctUsed = total > 0 ? used / total : 0;
+          const daysUntilExpiry = l.end_date ? Math.ceil((new Date(l.end_date).getTime() - Date.now()) / msPerDay) : null;
+          return {
+            licenseId: l.id,
+            productId: l.product_id,
+            productName: ((_a = l.products) == null ? void 0 : _a.name) ?? "Unknown Product",
+            seats: total,
+            usedSeats: used,
+            availableSeats: available,
+            pctUsed,
+            isNearCapacity: pctUsed >= NEAR_CAPACITY_THRESHOLD,
+            isAtCapacity: used >= total,
+            startDate: l.start_date ?? null,
+            endDate: l.end_date ?? null,
+            daysUntilExpiry
+          };
+        });
+        const licenseProductMap = new Map(licenses.map((l) => {
+          var _a;
+          return [l.id, ((_a = l.products) == null ? void 0 : _a.name) ?? "Unknown Product"];
+        }));
+        const licenseProductIdMap = new Map(licenses.map((l) => [l.id, l.product_id]));
+        const assignments = (rawAssignments ?? []).map((a) => {
+          var _a, _b;
+          return {
+            userId: a.user_id,
+            userName: ((_a = a.profiles) == null ? void 0 : _a.full_name) ?? null,
+            userEmail: ((_b = a.profiles) == null ? void 0 : _b.username) ?? null,
+            licenseId: a.license_id,
+            productId: licenseProductIdMap.get(a.license_id) ?? "",
+            productName: licenseProductMap.get(a.license_id) ?? "Unknown Product",
+            accessLevel: a.access_level
+          };
+        });
+        return { products, assignments };
+      },
+      staleTime: 1e3 * 60 * 2
+    });
+  }
+  function formatDate(dateStr) {
+    if (!dateStr) return "—";
+    return new Date(dateStr).toLocaleDateString(void 0, {
+      year: "numeric",
+      month: "short",
+      day: "numeric"
+    });
+  }
+  function ExpiryBadge({ daysUntilExpiry }) {
+    if (daysUntilExpiry === null) return null;
+    if (daysUntilExpiry < 0)
+      return /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", children: "Expired" });
+    if (daysUntilExpiry <= 30)
+      return /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
+        "Expires in ",
+        daysUntilExpiry,
+        "d"
+      ] });
+    return /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-green-500 text-green-700 bg-green-50", children: [
+      daysUntilExpiry,
+      "d remaining"
+    ] });
+  }
+  function ProductSummaryCard({ product, isSuperAdmin }) {
+    const pct = Math.min(product.pctUsed * 100, 100);
+    const barColor = product.isAtCapacity ? "bg-destructive" : product.isNearCapacity ? "bg-amber-500" : "bg-green-500";
+    return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(card.CardTitle, { className: "flex items-center gap-2 text-base", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(Key, { className: "h-4 w-4 text-muted-foreground" }),
+            product.productName
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Seat consumption" })
+        ] }),
+        isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+          "a",
+          {
+            href: "https://license.raynsecure.com",
+            target: "_blank",
+            rel: "noopener noreferrer",
+            className: "inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors",
+            children: [
+              "Manage ",
+              /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+            ]
+          }
+        )
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-4", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "font-medium flex items-center gap-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 text-muted-foreground" }),
+              product.usedSeats,
+              " of ",
+              product.seats,
+              " seats used"
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-muted-foreground", children: [
+              product.availableSeats,
+              " available"
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-2 w-full rounded-full bg-muted overflow-hidden", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: `h-full rounded-full transition-all ${barColor}`, style: { width: `${pct}%` } }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: product.isAtCapacity ? /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", children: "At capacity" }) : product.isNearCapacity ? /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
+            Math.round(pct),
+            "% used"
+          ] }) : /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-green-500 text-green-700 bg-green-50", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-3 w-3 mr-1" }),
+            Math.round(pct),
+            "% used"
+          ] }) })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap gap-4 border-t pt-3", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-0.5", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-3 w-3" }),
+              " Start"
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm font-medium", children: formatDate(product.startDate) })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-0.5", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-3 w-3" }),
+              " End"
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm font-medium", children: formatDate(product.endDate) })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-0.5", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground uppercase tracking-wide", children: "Status" }),
+            /* @__PURE__ */ jsxRuntime.jsx(ExpiryBadge, { daysUntilExpiry: product.daysUntilExpiry })
+          ] })
+        ] })
+      ] })
+    ] });
+  }
+  const LicenseDashboard = () => {
+    const { data, isLoading, error } = useLicenseData();
+    const { isSuperAdmin } = useUserRole.useUserRole();
+    if (isLoading) {
+      return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 py-12 text-muted-foreground", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-5 w-5 animate-spin" }),
+        "Loading license information..."
+      ] });
+    }
+    if (error) {
+      return /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "destructive", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-4 w-4" }),
+        /* @__PURE__ */ jsxRuntime.jsx(alert.AlertTitle, { children: "Failed to load license data" }),
+        /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: error.message ?? "An unexpected error occurred." })
+      ] });
+    }
+    if (!data || data.products.length === 0) {
+      return /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(Key, { className: "h-4 w-4" }),
+        /* @__PURE__ */ jsxRuntime.jsx(alert.AlertTitle, { children: "No licenses found" }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alert.AlertDescription, { children: [
+          "No product licenses are configured for this organisation.",
+          " ",
+          isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+            "a",
+            {
+              href: "https://license.raynsecure.com",
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "underline inline-flex items-center gap-1",
+              children: [
+                "Manage licenses ",
+                /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+              ]
+            }
+          )
+        ] })
+      ] });
+    }
+    const atCapacity = data.products.filter((p) => p.isAtCapacity);
+    const nearCapacity = data.products.filter((p) => !p.isAtCapacity && p.isNearCapacity);
+    const userMap = /* @__PURE__ */ new Map();
+    (data.assignments ?? []).forEach((a) => {
+      if (!userMap.has(a.userId)) {
+        userMap.set(a.userId, {
+          userId: a.userId,
+          userName: a.userName,
+          userEmail: a.userEmail,
+          licenses: []
+        });
+      }
+      userMap.get(a.userId).licenses.push({
+        productName: a.productName,
+        accessLevel: a.accessLevel
+      });
+    });
+    const userGroups = Array.from(userMap.values()).sort(
+      (a, b) => (a.userName ?? "").localeCompare(b.userName ?? "")
+    );
+    return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+      atCapacity.map((p) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "destructive", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-4 w-4" }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alert.AlertTitle, { children: [
+          p.productName,
+          " — All seats in use"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alert.AlertDescription, { className: "flex items-center justify-between flex-wrap gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+            "All ",
+            p.seats,
+            " seats are in use. New users cannot be added until a seat is freed."
+          ] }),
+          isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+            "a",
+            {
+              href: "https://license.raynsecure.com",
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "underline inline-flex items-center gap-1 whitespace-nowrap",
+              children: [
+                "Add more seats ",
+                /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+              ]
+            }
+          )
+        ] })
+      ] }, p.licenseId)),
+      nearCapacity.map((p) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { className: "border-amber-300 bg-amber-50 text-amber-900", children: [
+        /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-4 w-4 text-amber-600" }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alert.AlertTitle, { className: "text-amber-800", children: [
+          p.productName,
+          " — Approaching seat limit"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alert.AlertDescription, { className: "flex items-center justify-between flex-wrap gap-2 text-amber-700", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
+            p.usedSeats,
+            " of ",
+            p.seats,
+            " seats in use (",
+            Math.round(p.pctUsed * 100),
+            "%)."
+          ] }),
+          isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+            "a",
+            {
+              href: "https://license.raynsecure.com",
+              target: "_blank",
+              rel: "noopener noreferrer",
+              className: "underline inline-flex items-center gap-1 whitespace-nowrap",
+              children: [
+                "Increase your limit ",
+                /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+              ]
+            }
+          )
+        ] })
+      ] }, p.licenseId)),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: `grid gap-4 ${data.products.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-lg"}`, children: data.products.map((p) => /* @__PURE__ */ jsxRuntime.jsx(ProductSummaryCard, { product: p, isSuperAdmin }, p.licenseId)) }),
+      /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Assigned Users" }),
+          /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Users who currently hold a license seat. Remove a user to free a seat." })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: userGroups.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "py-8 text-center text-muted-foreground", children: "No seats are currently assigned." }) : /* @__PURE__ */ jsxRuntime.jsx("div", { className: "border rounded-lg overflow-hidden", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "max-h-[480px] overflow-y-auto", children: /* @__PURE__ */ jsxRuntime.jsxs("table", { className: "w-full text-sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx("thead", { className: "sticky top-0 z-10 bg-muted", children: /* @__PURE__ */ jsxRuntime.jsxs("tr", { className: "border-b", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Name" }),
+            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Email / Username" }),
+            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Product" }),
+            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Access Level" })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("tbody", { children: userGroups.flatMap(
+            (user) => user.licenses.map((lic, licIdx) => /* @__PURE__ */ jsxRuntime.jsxs("tr", { className: "border-b last:border-0", children: [
+              licIdx === 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  "td",
+                  {
+                    className: "p-2 font-medium align-top border-r",
+                    rowSpan: user.licenses.length,
+                    children: user.userName ?? "—"
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  "td",
+                  {
+                    className: "p-2 text-muted-foreground align-top border-r",
+                    rowSpan: user.licenses.length,
+                    children: user.userEmail ?? "—"
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("td", { className: "p-2", children: lic.productName }),
+              /* @__PURE__ */ jsxRuntime.jsx("td", { className: "p-2", children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "capitalize", children: lic.accessLevel.replace("_", " ") }) })
+            ] }, `${user.userId}-${licIdx}`))
+          ) })
+        ] }) }) }) })
+      ] })
+    ] });
+  };
   const OrganisationPanel = ({
     title = "Organisation",
     description = "Manage users, roles, departments, and locations",
@@ -6254,7 +6580,7 @@
     const { isTabEnabled, onNavigate } = useOrganisationContext();
     const [searchParams, setSearchParams] = reactRouterDom.useSearchParams();
     const getDefaultTab = () => {
-      const defaultTabs = ["users", "roles", "departments", "locations", "certificates", "profile"];
+      const defaultTabs = ["users", "roles", "departments", "locations", "certificates", "licenses", "profile"];
       return defaultTabs.find((tab) => isTabEnabled(tab)) || "users";
     };
     const [activeTab, setActiveTab] = React.useState(() => {
@@ -6266,7 +6592,7 @@
     });
     React.useEffect(() => {
       const urlTab = searchParams.get("orgTab");
-      const defaultTabs = ["users", "roles", "departments", "locations", "certificates", "profile"];
+      const defaultTabs = ["users", "roles", "departments", "locations", "certificates", "licenses", "profile"];
       const defaultTab = defaultTabs.find((tab) => isTabEnabled(tab)) || "users";
       if (urlTab && isTabEnabled(urlTab) && urlTab !== activeTab) {
         setActiveTab(urlTab);
@@ -6285,6 +6611,7 @@
       { id: "departments", label: "Departments", icon: Building2, component: DepartmentManagement },
       { id: "locations", label: "Locations", icon: MapPin, component: LocationManagement },
       { id: "certificates", label: "Certificates", icon: Award, component: OrganisationCertificates },
+      { id: "licenses", label: "Licenses", icon: Key, component: LicenseDashboard },
       { id: "profile", label: "Profile", icon: User, component: OrganisationProfile }
     ];
     const enabledTabs = tabConfig.filter((tab) => isTabEnabled(tab.id));
@@ -6368,7 +6695,7 @@
         setDownloadingId(null);
       }
     };
-    const formatDate = (dateString) => {
+    const formatDate2 = (dateString) => {
       if (!dateString) return "No expiry";
       return new Date(dateString).toLocaleDateString();
     };
@@ -6429,12 +6756,12 @@
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
               /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
-              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate2(cert.dateAcquired) })
             ] }),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
               /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
-              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate2(cert.expiryDate) })
             ] }),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
               /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }),
@@ -8609,7 +8936,7 @@ The assignment will return to Not started and the user will need to acknowledge 
     passwordLastChanged: _passwordLastChanged,
     twoFactorEnabled
   }) => {
-    const formatDate = (dateString) => {
+    const formatDate2 = (dateString) => {
       if (!dateString) return "Not set";
       return new Date(dateString).toLocaleDateString();
     };
@@ -8636,7 +8963,7 @@ The assignment will return to Not started and the user will need to acknowledge 
         /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
         /* @__PURE__ */ jsxRuntime.jsxs("span", { children: [
           "Started ",
-          formatDate(startDate)
+          formatDate2(startDate)
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
@@ -9724,7 +10051,7 @@ The assignment will return to Not started and the user will need to acknowledge 
         setDownloadingId(null);
       }
     };
-    const formatDate = (dateString) => {
+    const formatDate2 = (dateString) => {
       if (!dateString) return "No expiry";
       return new Date(dateString).toLocaleDateString();
     };
@@ -9776,12 +10103,12 @@ The assignment will return to Not started and the user will need to acknowledge 
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Issued:" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.dateAcquired) })
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate2(cert.dateAcquired) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 text-muted-foreground" }),
             /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Expires:" }),
-            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate(cert.expiryDate) })
+            /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-medium", children: formatDate2(cert.expiryDate) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-end gap-2", children: [
             /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }),
@@ -15038,6 +15365,7 @@ The assignment will return to Not started and the user will need to acknowledge 
   exports2.ImportErrorReport = ImportErrorReport;
   exports2.ImportUsersDialog = ImportUsersDialog;
   exports2.KnowledgePanel = KnowledgePanel;
+  exports2.LicenseDashboard = LicenseDashboard;
   exports2.LocationManagement = LocationManagement;
   exports2.MultipleRolesField = MultipleRolesField;
   exports2.MyDocuments = MyDocuments;
@@ -15059,6 +15387,7 @@ The assignment will return to Not started and the user will need to acknowledge 
   exports2.handleCreateUser = handleCreateUser;
   exports2.handleDeleteUser = handleDeleteUser;
   exports2.handleSaveUser = handleSaveUser;
+  exports2.useLicenseData = useLicenseData;
   exports2.useOrganisationContext = useOrganisationContext;
   Object.defineProperty(exports2, Symbol.toStringTag, { value: "Module" });
 });

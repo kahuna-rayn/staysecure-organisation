@@ -40,5 +40,7 @@ export { useViewPreference } from './hooks/useViewPreference';
 export type { OrganisationConfig, ThemeConfig, PermissionConfig, UserProfile, NewUser, Role, Department, Location, OrgCertificate, } from './types';
 export { default as KnowledgePanel } from './components/KnowledgePanel';
 export { default as MyDocuments } from './components/knowledge/MyDocuments';
+export { LicenseDashboard } from './components/licenses/LicenseDashboard';
+export { useLicenseData, type ProductLicense, type LicenseAssignment, type LicenseData } from './hooks/useLicenseData';
 export { handleSaveUser, handleCreateUser, handleDeleteUser } from './utils/userManagementActions';
 //# sourceMappingURL=index.d.ts.map

@@ -6637,7 +6637,7 @@
   };
   const OrganisationWrapper = ({ basePath }) => {
     const { hasAdminAccess, hasManagerAccess } = useUserRole.useUserRole();
-    const enabledTabs = hasAdminAccess ? ["users", "roles", "departments", "locations", "certificates", "profile"] : hasManagerAccess ? ["users", "departments", "roles"] : ["users"];
+    const enabledTabs = hasAdminAccess ? ["users", "roles", "departments", "locations", "certificates", "licenses", "profile"] : hasManagerAccess ? ["users", "departments", "roles"] : ["users"];
     const organisationConfig = {
       supabaseClient: client.supabase,
       basePath,

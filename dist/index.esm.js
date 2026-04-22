@@ -12,6 +12,7 @@ import { useUserRole } from "@/hooks/useUserRole";
 import { useUserRole as useUserRole2 } from "@/hooks/useUserRole";
 import { useViewPreference } from "@/hooks/useViewPreference";
 import { useViewPreference as useViewPreference2 } from "@/hooks/useViewPreference";
+import { sendNotificationByEvent } from "staysecure-notifications";
 import { getCurrentClientId, supabase } from "@/integrations/supabase/client";
 import { toast } from "@/components/ui/use-toast";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -54,7 +55,6 @@ import { useInventory } from "@/hooks/useInventory";
 import { useUserAssets } from "@/hooks/useUserAssets";
 import { useUserAssets as useUserAssets2 } from "@/hooks/useUserAssets";
 import { Progress } from "@/components/ui/progress";
-import { sendNotificationByEvent } from "staysecure-notifications";
 import LearningTracksTab from "@/components/LearningTracksTab";
 import { useUserRoleById } from "@/hooks/useUserRoleById";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -980,7 +980,7 @@ const handleSaveUser = async (editingUser, updateProfile, onSuccess) => {
   }
 };
 const handleCreateUser = async (supabaseClient, newUser, updateProfile, onSuccess) => {
-  var _a;
+  var _a, _b;
   try {
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : "";
@@ -1017,6 +1017,14 @@ const handleCreateUser = async (supabaseClient, newUser, updateProfile, onSucces
     if (data == null ? void 0 : data.error) {
       console.error("[handleCreateUser] Edge Function returned error:", data.error);
       console.error("[handleCreateUser] Full Edge Function response:", data);
+      if (data.error === "LICENSE_SEATS_EXHAUSTED") {
+        toast({
+          title: "License seats exhausted",
+          description: `All ${data.seats ?? "available"} license seats are in use. Visit license.raynsecure.com to add more seats before creating new users.`,
+          variant: "destructive"
+        });
+        return;
+      }
       throw new Error(data.error);
     }
     if (!data || !data.user) {
@@ -1058,9 +1066,32 @@ const handleCreateUser = async (supabaseClient, newUser, updateProfile, onSucces
       }
     }
     toast({
-      title: "Success",
-      description: "User created successfully"
+      title: "User created successfully",
+      description: "The activation email has been sent."
     });
+    if (data.near_capacity) {
+      setTimeout(() => {
+        toast({
+          title: "Approaching seat limit",
+          description: "You are now using 80% or more of your license seats. Consider adding more seats soon."
+        });
+      }, 600);
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if ((_b = session == null ? void 0 : session.user) == null ? void 0 : _b.id) {
+        const usedSeats = data.seats_used ?? "";
+        const totalSeats = data.seats ?? "";
+        const pctUsed = totalSeats ? Math.round(usedSeats / totalSeats * 100) : "";
+        sendNotificationByEvent(supabaseClient, "license_near_capacity", {
+          user_id: session.user.id,
+          used_seats: usedSeats,
+          total_seats: totalSeats,
+          pct_used: pctUsed,
+          clientId: getCurrentClientId() ?? void 0
+        }).catch((err) => {
+          console.warn("license_near_capacity notification failed (non-fatal):", err);
+        });
+      }
+    }
     onSuccess();
   } catch (error) {
     console.error("Error creating user:", error);

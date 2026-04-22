@@ -1,4 +1,5 @@
 import debug from '../utils/debug';
+import { sendNotificationByEvent } from 'staysecure-notifications';
 
 /**
  * User Management Actions
@@ -139,6 +140,16 @@ export const handleCreateUser = async (
     if (data?.error) {
       console.error('[handleCreateUser] Edge Function returned error:', data.error);
       console.error('[handleCreateUser] Full Edge Function response:', data);
+
+      if (data.error === 'LICENSE_SEATS_EXHAUSTED') {
+        toast({
+          title: "License seats exhausted",
+          description: `All ${data.seats ?? 'available'} license seats are in use. Visit license.raynsecure.com to add more seats before creating new users.`,
+          variant: "destructive",
+        });
+        return; // Return without calling onSuccess
+      }
+
       throw new Error(data.error);
     }
 
@@ -192,9 +203,35 @@ export const handleCreateUser = async (
     }
 
     toast({
-      title: "Success",
-      description: "User created successfully",
+      title: "User created successfully",
+      description: "The activation email has been sent.",
     });
+
+    if (data.near_capacity) {
+      setTimeout(() => {
+        toast({
+          title: "Approaching seat limit",
+          description: "You are now using 80% or more of your license seats. Consider adding more seats soon.",
+        });
+      }, 600);
+
+      // Send email notification to client admins (fire-and-forget; don't block onSuccess)
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session?.user?.id) {
+        const usedSeats = data.seats_used ?? '';
+        const totalSeats = data.seats ?? '';
+        const pctUsed = totalSeats ? Math.round((usedSeats / totalSeats) * 100) : '';
+        sendNotificationByEvent(supabaseClient, 'license_near_capacity', {
+          user_id: session.user.id,
+          used_seats: usedSeats,
+          total_seats: totalSeats,
+          pct_used: pctUsed,
+          clientId: getCurrentClientId() ?? undefined,
+        }).catch((err: unknown) => {
+          console.warn('license_near_capacity notification failed (non-fatal):', err);
+        });
+      }
+    }
     
     onSuccess();
   } catch (error: any) {

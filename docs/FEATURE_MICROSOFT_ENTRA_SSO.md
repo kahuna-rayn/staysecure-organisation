@@ -607,10 +607,16 @@ Replace `<short_name>` and `<project-ref>` with the client's actual values.
 **Per-client:**
 - [ ] Add `https://<project-ref>.supabase.co/auth/v1/callback` to the Azure app's Redirect URIs (Step 2)
 - [ ] Enable Azure provider in client's Supabase project with shared Client ID + Secret, tenant = `common` (Step 3a)
+      1. Go to **Authentication → Providers → Azure**.
+      2. Toggle **Enable Azure provider** on.
+      3. Enter:
+         - **Application (client) ID:** from Step 1 (same for every client) - (look in shared secrets)
+         - **Secret:** the secret **Value** from Step 1 (same for every client — NOT the GUID) - (look in )
+         - **Azure Tenant:** `https://login.microsoftonline.com/common` ← leave as `common` for multi-tenant so any client's users can sign in
+      4. Click **Save**.
 - [ ] Add `https://staysecure-learn.raynsecure.com/<short_name>/auth/callback` to Supabase Redirect URLs (Step 3b)
 - [ ] Add `https://staysecure-govern.raynsecure.com/<short_name>/auth/callback` to Supabase Redirect URLs (Step 3b)
-- [ ] Run DB migration `20260407000000_entra_sso.sql` on the client's project (Step 4a)
-- [ ] `UPDATE org_profile SET entra_enabled = true, azure_tenant_id = '...'` (Step 4b)
+- [ ] `UPDATE org_profile SET entra_enabled = true, azure_tenant_id = '<azure-tenant-id>'` (Step 4b)
 
 **Client IT admin side:**
 - [ ] Admin consent URL sent to client's IT admin (Step 5)

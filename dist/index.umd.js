@@ -6261,11 +6261,11 @@
     return reactQuery.useQuery({
       queryKey: ["license-data"],
       queryFn: async () => {
-        const { data: licenses, error: licenseError } = await supabaseClient.from("customer_product_licenses").select("id, product_id, seats, start_date, end_date, products(name)").order("created_at");
+        const { data: licenses, error: licenseError } = await supabaseClient.from("customer_product_licenses").select("id, product_id, seats, start_date, end_date, products(name)");
         if (licenseError) throw licenseError;
         if (!licenses || licenses.length === 0) return { products: [], assignments: [] };
         const licenseIds = licenses.map((l) => l.id);
-        const { data: rawAssignments, error: assignError } = await supabaseClient.from("product_license_assignments").select("id, license_id, user_id, access_level, profiles(full_name, username)").in("license_id", licenseIds).order("user_id");
+        const { data: rawAssignments, error: assignError } = await supabaseClient.from("product_license_assignments").select("id, license_id, user_id, access_level, profiles(full_name, username)").in("license_id", licenseIds);
         if (assignError) throw assignError;
         const countByLicense = /* @__PURE__ */ new Map();
         (rawAssignments ?? []).forEach((a) => {
@@ -6287,8 +6287,8 @@
             usedSeats: used,
             availableSeats: available,
             pctUsed,
-            isNearCapacity: pctUsed >= NEAR_CAPACITY_THRESHOLD,
-            isAtCapacity: used >= total,
+            isNearCapacity: total > 0 && pctUsed >= NEAR_CAPACITY_THRESHOLD,
+            isAtCapacity: total > 0 && used >= total,
             startDate: l.start_date ?? null,
             endDate: l.end_date ?? null,
             daysUntilExpiry

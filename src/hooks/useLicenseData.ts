@@ -53,8 +53,7 @@ export function useLicenseData() {
       const { data: rawAssignments, error: assignError } = await supabaseClient
         .from('product_license_assignments')
         .select('id, license_id, user_id, access_level, profiles(full_name, username)')
-        .in('license_id', licenseIds)
-        .order('user_id');
+        .in('license_id', licenseIds);
 
       if (assignError) throw assignError;
 
@@ -84,8 +83,8 @@ export function useLicenseData() {
           usedSeats: used,
           availableSeats: available,
           pctUsed,
-          isNearCapacity: pctUsed >= NEAR_CAPACITY_THRESHOLD,
-          isAtCapacity: used >= total,
+          isNearCapacity: total > 0 && pctUsed >= NEAR_CAPACITY_THRESHOLD,
+          isAtCapacity: total > 0 && used >= total,
           startDate: l.start_date ?? null,
           endDate: l.end_date ?? null,
           daysUntilExpiry,

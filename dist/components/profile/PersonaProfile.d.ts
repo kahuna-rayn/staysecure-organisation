@@ -15,7 +15,7 @@ export interface PersonProfile {
     startDate: string;
     language?: string;
     account: {
-        username: string;
+        email: string;
         employeeId: string;
         status: string;
         accessLevel: string;

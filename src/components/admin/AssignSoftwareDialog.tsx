@@ -47,7 +47,7 @@ const AssignSoftwareDialog: React.FC<AssignSoftwareDialogProps> = ({
       
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, username')
+        .select('id, full_name, email')
         .eq('id', userId)
         .single();
       
@@ -98,7 +98,7 @@ const AssignSoftwareDialog: React.FC<AssignSoftwareDialogProps> = ({
       const softwareData = {
         user_id: userProfile.id,
         full_name: userProfile.full_name,
-        username_email: userProfile.username || '',
+        email: userProfile.email || '',
         software: selectedSoftwareItem.software_name,
         role_account_type: roleAccountType,
         status: 'Active',

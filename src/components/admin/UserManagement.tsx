@@ -59,7 +59,7 @@ const UserManagement: React.FC = () => {
     const search = searchTerm.toLowerCase();
     return (
       p.full_name?.toLowerCase().includes(search) ||
-      p.username?.toLowerCase().includes(search) ||
+      p.email?.toLowerCase().includes(search) ||
       p.location?.toLowerCase().includes(search) ||
       p.status?.toLowerCase().includes(search)
     );
@@ -100,13 +100,13 @@ const UserManagement: React.FC = () => {
       await Promise.all(batch.map(async (profile) => {
         try {
           const { error } = await supabaseClient.functions.invoke('request-activation-link', {
-            body: { email: profile.username, redirectUrl },
+            body: { email: profile.email, redirectUrl },
           });
           if (error) throw error;
-          debug.log('[UserManagement.sendActivationEmails] sent to', profile.username);
+          debug.log('[UserManagement.sendActivationEmails] sent to', profile.email);
           sent++;
         } catch (err) {
-          debug.error('[UserManagement.sendActivationEmails] failed for', profile.username, err);
+          debug.error('[UserManagement.sendActivationEmails] failed for', profile.email, err);
           failed++;
         }
       }));

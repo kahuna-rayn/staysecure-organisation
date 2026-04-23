@@ -6,7 +6,6 @@ export interface Profile {
   id: string;
   email?: string;
   full_name?: string;
-  username?: string; // username stores the email address in this system
 }
 
 /**
@@ -25,9 +24,8 @@ export const validateManager = (
 
   const trimmedEmail = managerEmail.trim().toLowerCase();
   
-  // Find by email (username stores email, so check both email and username fields)
   const matchingProfile = existingProfiles.find((profile: Profile) => {
-    const email = (profile.email || profile.username || '').toLowerCase();
+    const email = (profile.email || '').toLowerCase();
     return email === trimmedEmail;
   });
   

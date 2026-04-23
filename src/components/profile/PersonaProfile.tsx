@@ -24,7 +24,7 @@ export interface PersonProfile {
   startDate: string;
   language?: string;
   account: {
-    username: string;
+    email: string;
     employeeId: string;
     status: string;
     accessLevel: string;
@@ -92,7 +92,7 @@ const PersonaProfile: React.FC = () => {
     startDate: profile?.start_date || profile?.created_at || '',
     language: profile?.language || 'English',
     account: {
-      username: profile?.username || 'Not set',
+      email: profile?.email || 'Not set',
       employeeId: profile?.employee_id || 'Not assigned',
       status: profile?.status || 'Active',
       accessLevel: profile?.access_level || 'User',

@@ -29,8 +29,7 @@ type OrgSigRole = Database['public']['Tables']['org_sig_roles']['Row'];
 interface Profile {
   id: string;
   full_name: string;
-  username: string;
-  email?: string;
+  email: string;
 }
 
 interface OrganisationData {

@@ -44,7 +44,6 @@ interface NewUser {
   full_name: string;
   first_name?: string;
   last_name?: string;
-  username?: string;
   email: string;
   phone?: string;
   location?: string;
@@ -119,7 +118,6 @@ export const handleCreateUser = async (
         full_name: newUser.full_name,
         first_name: newUser.first_name || '',
         last_name: newUser.last_name || '',
-        username: '',
         phone: newUser.phone || '',
         location: newUser.location || '',
         location_id: newUser.location_id || null,
@@ -165,7 +163,6 @@ export const handleCreateUser = async (
         full_name: newUser.full_name,
         first_name: newUser.first_name,
         last_name: newUser.last_name,
-        username: newUser.email, 
         phone: newUser.phone,
         location: newUser.location,
         location_id: newUser.location_id || null,

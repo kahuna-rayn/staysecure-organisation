@@ -69,7 +69,7 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
       // Get profiles for these users
       const { data: profiles, error: profilesError } = await supabaseClient
         .from('profiles')
-        .select('id, full_name, username, status')
+        .select('id, full_name, email, status')
         .in('id', userIds);
 
       debug.log('[RoleMembersDialog] profiles result:', { count: profiles?.length, error: profilesError?.message });
@@ -124,7 +124,7 @@ export const RoleMembersDialog: React.FC<RoleMembersDialogProps> = ({
           roleName: roleNameMap.get(ur.role_id) || 'Unknown',
           userName: profile?.full_name || 'Unknown User',
           departmentName: userDeptMap.get(ur.user_id) || 'No Department',
-          email: profile?.username || '',
+          email: profile?.email || '',
           status: profile?.status || 'Unknown',
         };
       });

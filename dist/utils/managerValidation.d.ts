@@ -5,7 +5,6 @@ export interface Profile {
     id: string;
     email?: string;
     full_name?: string;
-    username?: string;
 }
 /**
  * Validates if a manager email matches an existing profile

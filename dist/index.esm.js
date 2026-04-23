@@ -1008,7 +1008,6 @@ const handleCreateUser = async (supabaseClient, newUser, updateProfile, onSucces
         full_name: newUser.full_name,
         first_name: newUser.first_name || "",
         last_name: newUser.last_name || "",
-        username: "",
         phone: newUser.phone || "",
         location: newUser.location || "",
         location_id: newUser.location_id || null,
@@ -1046,7 +1045,6 @@ const handleCreateUser = async (supabaseClient, newUser, updateProfile, onSucces
         full_name: newUser.full_name,
         first_name: newUser.first_name,
         last_name: newUser.last_name,
-        username: newUser.email,
         phone: newUser.phone,
         location: newUser.location,
         location_id: newUser.location_id || null,
@@ -1181,7 +1179,7 @@ const UserCard = ({ user, onDelete }) => {
   var _a;
   const navigate = useNavigate();
   const { basePath } = useOrganisationContext();
-  const initials = user.full_name ? user.full_name.split(" ").map((n) => n.charAt(0)).join("").slice(0, 2) : ((_a = user.username) == null ? void 0 : _a.slice(0, 2)) || "U";
+  const initials = user.full_name ? user.full_name.split(" ").map((n) => n.charAt(0)).join("").slice(0, 2) : ((_a = user.email) == null ? void 0 : _a.slice(0, 2)) || "U";
   const getStatusColor = (status) => {
     switch (status) {
       case "Active":
@@ -1267,10 +1265,10 @@ const UserTable = ({
       width: "300px"
     },
     {
-      key: "username",
-      header: "Username",
+      key: "email",
+      header: "Email",
       type: "text",
-      editable: true,
+      editable: false,
       sortable: true,
       width: "200px"
     },
@@ -1369,12 +1367,8 @@ const CreateUserDialog = ({
   const { data: profiles } = useQuery({
     queryKey: ["profiles-for-managers"],
     queryFn: async () => {
-      const { data } = await supabaseClient.from("profiles").select("id, full_name, username").eq("status", "Active").order("full_name");
-      return (data || []).map((profile) => ({
-        ...profile,
-        email: profile.username
-        // username stores the email
-      }));
+      const { data } = await supabaseClient.from("profiles").select("id, full_name, email").eq("status", "Active").order("full_name");
+      return data || [];
     },
     enabled: isOpen
     // Only fetch when dialog is open
@@ -1428,7 +1422,6 @@ const CreateUserDialog = ({
         full_name: "",
         email: "",
         password: "",
-        username: "",
         phone: "",
         employee_id: "",
         status: "Active",
@@ -1595,7 +1588,7 @@ const CreateUserDialog = ({
                   /* @__PURE__ */ jsx(SelectTrigger, { children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager (optional)" }) }),
                   /* @__PURE__ */ jsxs(SelectContent, { children: [
                     /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "No manager" }),
-                    profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsx(SelectItem, { value: profile.id, children: profile.full_name || profile.email || profile.username }, profile.id))
+                    profiles == null ? void 0 : profiles.map((profile) => /* @__PURE__ */ jsx(SelectItem, { value: profile.id, children: profile.full_name || profile.email }, profile.id))
                   ] })
                 ]
               }
@@ -1678,13 +1671,9 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
   const { data: existingProfiles } = useQuery({
     queryKey: ["profiles-for-manager-validation"],
     queryFn: async () => {
-      const { data, error } = await supabase2.from("profiles").select("id, full_name, username").order("full_name");
+      const { data, error } = await supabase2.from("profiles").select("id, full_name, email").order("full_name");
       if (error) throw error;
-      return (data || []).map((profile) => ({
-        ...profile,
-        email: profile.username
-        // username stores the email
-      }));
+      return data || [];
     }
   });
   const onDrop = useCallback((acceptedFiles) => {
@@ -1839,7 +1828,6 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
         full_name: fullName.trim(),
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        username: row["Username"] || row["username"] || "",
         phone: row["Phone"] || row["phone"] || "",
         status: "Pending",
         employee_id: row["Employee ID"] || row["employee_id"] || "",
@@ -2156,7 +2144,7 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
           }
           const emailToId = /* @__PURE__ */ new Map();
           (existingProfiles || []).forEach((p) => {
-            const e = (p.email ?? p.username ?? "").trim().toLowerCase();
+            const e = (p.email ?? "").trim().toLowerCase();
             if (e) emailToId.set(e, p.id);
           });
           createdUsers.forEach((u) => {
@@ -2451,7 +2439,7 @@ const UserManagement = () => {
     var _a, _b, _c, _d;
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
-    return ((_a = p.full_name) == null ? void 0 : _a.toLowerCase().includes(search)) || ((_b = p.username) == null ? void 0 : _b.toLowerCase().includes(search)) || ((_c = p.location) == null ? void 0 : _c.toLowerCase().includes(search)) || ((_d = p.status) == null ? void 0 : _d.toLowerCase().includes(search));
+    return ((_a = p.full_name) == null ? void 0 : _a.toLowerCase().includes(search)) || ((_b = p.email) == null ? void 0 : _b.toLowerCase().includes(search)) || ((_c = p.location) == null ? void 0 : _c.toLowerCase().includes(search)) || ((_d = p.status) == null ? void 0 : _d.toLowerCase().includes(search));
   });
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
@@ -2481,13 +2469,13 @@ const UserManagement = () => {
       await Promise.all(batch.map(async (profile) => {
         try {
           const { error } = await supabaseClient.functions.invoke("request-activation-link", {
-            body: { email: profile.username, redirectUrl }
+            body: { email: profile.email, redirectUrl }
           });
           if (error) throw error;
-          debug.log("[UserManagement.sendActivationEmails] sent to", profile.username);
+          debug.log("[UserManagement.sendActivationEmails] sent to", profile.email);
           sent++;
         } catch (err) {
-          debug.error("[UserManagement.sendActivationEmails] failed for", profile.username, err);
+          debug.error("[UserManagement.sendActivationEmails] failed for", profile.email, err);
           failed++;
         }
       }));
@@ -3037,7 +3025,7 @@ const RoleMembersDialog = ({
         debug.log("[RoleMembersDialog] No users found with roles");
         return [];
       }
-      const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
+      const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, email, status").in("id", userIds);
       debug.log("[RoleMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
       if (profilesError) throw profilesError;
       const roleIds = [...new Set((userRoles || []).map((ur) => ur.role_id).filter(Boolean))];
@@ -3068,7 +3056,7 @@ const RoleMembersDialog = ({
           roleName: roleNameMap.get(ur.role_id) || "Unknown",
           userName: (profile == null ? void 0 : profile.full_name) || "Unknown User",
           departmentName: userDeptMap.get(ur.user_id) || "No Department",
-          email: (profile == null ? void 0 : profile.username) || "",
+          email: (profile == null ? void 0 : profile.email) || "",
           status: (profile == null ? void 0 : profile.status) || "Unknown"
         };
       });
@@ -3977,7 +3965,7 @@ const DepartmentMembersDialog = ({
         debug.log("[DepartmentMembersDialog] No users found in departments");
         return [];
       }
-      const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username, status").in("id", userIds);
+      const { data: profiles, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, email, status").in("id", userIds);
       debug.log("[DepartmentMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
       if (profilesError) throw profilesError;
       const { data: userProfileRoles, error: uprError } = await supabaseClient.from("user_profile_roles").select("user_id, is_primary, role_id").in("user_id", userIds);
@@ -4009,8 +3997,7 @@ const DepartmentMembersDialog = ({
           departmentName: ((_a = ud.departments) == null ? void 0 : _a.name) || "Unknown",
           userName: (profile == null ? void 0 : profile.full_name) || "Unknown User",
           roleName: userRoleMap.get(ud.user_id) || "No Role",
-          email: (profile == null ? void 0 : profile.username) || "",
-          // username is the email in this schema
+          email: (profile == null ? void 0 : profile.email) || "",
           status: (profile == null ? void 0 : profile.status) || "Unknown"
         };
       });
@@ -5240,7 +5227,7 @@ const OrganisationCertificates = () => {
   };
   const getUserDisplayName = (userId) => {
     const profile = userProfiles[userId];
-    return (profile == null ? void 0 : profile.full_name) || (profile == null ? void 0 : profile.username) || "Unknown User";
+    return (profile == null ? void 0 : profile.full_name) || (profile == null ? void 0 : profile.email) || "Unknown User";
   };
   const fetchOrganisationCertificates = async () => {
     try {
@@ -5250,7 +5237,7 @@ const OrganisationCertificates = () => {
       if (certificatesError) throw certificatesError;
       const userIds = [...new Set((certificatesData == null ? void 0 : certificatesData.map((cert) => cert.user_id)) || [])];
       if (userIds.length > 0) {
-        const { data: profilesData, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, username").in("id", userIds);
+        const { data: profilesData, error: profilesError } = await supabaseClient.from("profiles").select("id, full_name, email").in("id", userIds);
         if (profilesError) throw profilesError;
         const profilesMap = (profilesData || []).reduce((acc, profile) => {
           acc[profile.id] = profile;
@@ -5372,7 +5359,7 @@ const SearchableProfileField = ({
   const fetchProfiles = async () => {
     try {
       setLoading(true);
-      const { data, error } = await supabase.from("profiles").select("id, full_name, username").not("full_name", "is", null).order("full_name");
+      const { data, error } = await supabase.from("profiles").select("id, full_name, email").not("full_name", "is", null).order("full_name");
       if (error) throw error;
       setProfiles(data || []);
     } catch (error) {
@@ -5384,7 +5371,7 @@ const SearchableProfileField = ({
   const filteredProfiles = profiles.filter(
     (profile) => {
       var _a, _b;
-      return ((_a = profile.full_name) == null ? void 0 : _a.toLowerCase().includes(searchTerm.toLowerCase())) || ((_b = profile.username) == null ? void 0 : _b.toLowerCase().includes(searchTerm.toLowerCase()));
+      return ((_a = profile.full_name) == null ? void 0 : _a.toLowerCase().includes(searchTerm.toLowerCase())) || ((_b = profile.email) == null ? void 0 : _b.toLowerCase().includes(searchTerm.toLowerCase()));
     }
   );
   profiles.find((profile) => profile.full_name === value);
@@ -5459,13 +5446,7 @@ const SearchableProfileField = ({
                     )
                   }
                 ),
-                /* @__PURE__ */ jsxs("div", { className: "flex flex-col", children: [
-                  /* @__PURE__ */ jsx("span", { children: profile.full_name }),
-                  profile.username && /* @__PURE__ */ jsxs("span", { className: "text-sm text-muted-foreground", children: [
-                    "@",
-                    profile.username
-                  ] })
-                ] })
+                /* @__PURE__ */ jsx("div", { className: "flex flex-col", children: /* @__PURE__ */ jsx("span", { children: profile.full_name }) })
               ]
             },
             profile.id
@@ -6307,7 +6288,7 @@ function useLicenseData() {
       if (licenseError) throw licenseError;
       if (!licenses || licenses.length === 0) return { products: [], assignments: [] };
       const licenseIds = licenses.map((l) => l.id);
-      const { data: rawAssignments, error: assignError } = await supabaseClient.from("product_license_assignments").select("id, license_id, user_id, access_level, profiles(full_name, username)").in("license_id", licenseIds);
+      const { data: rawAssignments, error: assignError } = await supabaseClient.from("product_license_assignments").select("id, license_id, user_id, access_level, profiles(full_name, email)").in("license_id", licenseIds);
       if (assignError) throw assignError;
       const countByLicense = /* @__PURE__ */ new Map();
       (rawAssignments ?? []).forEach((a) => {
@@ -6346,7 +6327,7 @@ function useLicenseData() {
         return {
           userId: a.user_id,
           userName: ((_a = a.profiles) == null ? void 0 : _a.full_name) ?? null,
-          userEmail: ((_b = a.profiles) == null ? void 0 : _b.username) ?? null,
+          userEmail: ((_b = a.profiles) == null ? void 0 : _b.email) ?? null,
           licenseId: a.license_id,
           productId: licenseProductIdMap.get(a.license_id) ?? "",
           productName: licenseProductMap.get(a.license_id) ?? "Unknown Product",
@@ -6954,7 +6935,7 @@ const AssignPhysicalLocationDialog = ({
               profiles.map((profile) => /* @__PURE__ */ jsxs(SelectItem, { value: profile.id, children: [
                 profile.full_name || "No name",
                 " (",
-                profile.email || profile.username || "No email",
+                profile.email || "No email",
                 ")"
               ] }, profile.id))
             ] })
@@ -7231,7 +7212,7 @@ const AssignHardwareDialog = ({
   const { data: userProfile } = useQuery({
     queryKey: ["user-profile-by-id", userId],
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("full_name, username").eq("id", userId).single();
+      const { data, error } = await supabase.from("profiles").select("full_name, email").eq("id", userId).single();
       if (error) throw error;
       return data;
     }
@@ -7248,7 +7229,7 @@ const AssignHardwareDialog = ({
     }
     setLoading(true);
     try {
-      const userName = userProfile.full_name || userProfile.username || "Assigned User";
+      const userName = userProfile.full_name || userProfile.email || "Assigned User";
       const { error: inventoryError } = await supabase.from("hardware_inventory").update({
         user_id: userId,
         asset_owner: userName,
@@ -7344,7 +7325,7 @@ const AssignSoftwareDialog = ({
     queryKey: ["user-profile-by-id", userId],
     queryFn: async () => {
       debug.log("Querying profile for userId:", userId);
-      const { data, error } = await supabase.from("profiles").select("id, full_name, username").eq("id", userId).single();
+      const { data, error } = await supabase.from("profiles").select("id, full_name, email").eq("id", userId).single();
       debug.log("Profile query result:", { data, error });
       if (error) {
         console.error("Error fetching user profile:", error);
@@ -7385,7 +7366,7 @@ const AssignSoftwareDialog = ({
       const softwareData = {
         user_id: userProfile.id,
         full_name: userProfile.full_name,
-        username_email: userProfile.username || "",
+        email: userProfile.email || "",
         software: selectedSoftwareItem.software_name,
         role_account_type: roleAccountType,
         status: "Active"
@@ -9351,7 +9332,7 @@ const EditableProfileHeader = ({
   const isCurrentUserProfile = !!(user == null ? void 0 : user.id) && profile.id === user.id;
   const handleSendPasswordReset = async () => {
     const account = profile.account;
-    const email = (account == null ? void 0 : account.username) || profile.username || profile.email;
+    const email = (account == null ? void 0 : account.email) || profile.email;
     if (!email) {
       toast$2.error("No email address found for this user.");
       return;
@@ -9478,7 +9459,7 @@ const EditableProfileHeader = ({
     return true;
   });
   const managerProfile = profiles.find((u) => u.id === profile.manager);
-  const managerName = managerProfile ? managerProfile.full_name || managerProfile.username : "Not assigned";
+  const managerName = managerProfile ? managerProfile.full_name || managerProfile.email : "Not assigned";
   const { userDepartments } = useUserDepartments(profile.id);
   const { primaryRole } = useUserProfileRoles(profile.id);
   const { data: physicalLocations, isLoading: locationsLoading } = useQuery({
@@ -9571,9 +9552,9 @@ const EditableProfileHeader = ({
           }
         )
       ] }),
-      ((_a = profile.account) == null ? void 0 : _a.username) && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+      ((_a = profile.account) == null ? void 0 : _a.email) && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
         /* @__PURE__ */ jsx(User, { className: "h-4 w-4 text-muted-foreground" }),
-        /* @__PURE__ */ jsx("span", { className: "text-foreground", children: profile.account.username })
+        /* @__PURE__ */ jsx("span", { className: "text-foreground", children: profile.account.email })
       ] }),
       ((_b = profile.account) == null ? void 0 : _b.employeeId) && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
         /* @__PURE__ */ jsx(Hash, { className: "h-4 w-4 text-muted-foreground" }),
@@ -9607,7 +9588,7 @@ const EditableProfileHeader = ({
             onValueChange: handleManagerChange,
             children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48 h-6 text-sm", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Not assigned", children: managerName !== "Not assigned" ? managerName : void 0 }) }),
-              /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user2) => /* @__PURE__ */ jsx(SelectItem, { value: user2.id, children: user2.full_name || user2.username || "Unnamed User" }, user2.id)) })
+              /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user2) => /* @__PURE__ */ jsx(SelectItem, { value: user2.id, children: user2.full_name || user2.email || "Unnamed User" }, user2.id)) })
             ]
           }
         ) : /* @__PURE__ */ jsx("span", { className: "text-foreground", children: managerName })
@@ -9746,7 +9727,7 @@ const EditableProfileHeader = ({
           /* @__PURE__ */ jsx(AlertDialogTitle, { children: "Send password reset?" }),
           /* @__PURE__ */ jsxs(AlertDialogDescription, { children: [
             "A password reset link will be emailed to ",
-            /* @__PURE__ */ jsx("strong", { children: ((_h = profile.account) == null ? void 0 : _h.username) || profile.username || profile.email || "this user" }),
+            /* @__PURE__ */ jsx("strong", { children: ((_h = profile.account) == null ? void 0 : _h.email) || profile.email || "this user" }),
             ". They will be able to set a new password using that link."
           ] })
         ] }),
@@ -9785,7 +9766,7 @@ const PersonaProfile = () => {
     startDate: (profile == null ? void 0 : profile.start_date) || (profile == null ? void 0 : profile.created_at) || "",
     language: (profile == null ? void 0 : profile.language) || "English",
     account: {
-      username: (profile == null ? void 0 : profile.username) || "Not set",
+      email: (profile == null ? void 0 : profile.email) || "Not set",
       employeeId: (profile == null ? void 0 : profile.employee_id) || "Not assigned",
       status: (profile == null ? void 0 : profile.status) || "Active",
       accessLevel: (profile == null ? void 0 : profile.access_level) || "User",
@@ -9904,7 +9885,7 @@ const UserDetailView = () => {
     language: profileObj.language || "English",
     cyber_learner: profileObj.cyber_learner || false,
     account: {
-      username: profileObj.username || "Not set",
+      email: profileObj.email || "Not set",
       employeeId: profileObj.employee_id || "Not assigned",
       status: profileObj.status || "Active",
       accessLevel: profileObj.access_level || "User",
@@ -10277,7 +10258,7 @@ const AddPhysicalLocationDialog = ({
               profiles.map((profile) => /* @__PURE__ */ jsxs(SelectItem, { value: profile.id, children: [
                 profile.full_name || "No name",
                 " (",
-                profile.email || profile.username || "No email",
+                profile.email || "No email",
                 ")"
               ] }, profile.id))
             ] })
@@ -10433,7 +10414,7 @@ const ProfileBasicInfo = ({
   phone,
   location,
   locationId,
-  username,
+  email,
   employeeId,
   editingField,
   onEdit,
@@ -10469,7 +10450,7 @@ const ProfileBasicInfo = ({
   };
   const filteredProfiles = profiles.filter((user) => user.id !== currentUserId);
   const managerProfile = profiles.find((u) => u.id === manager);
-  const managerName = managerProfile ? managerProfile.full_name || managerProfile.username : "Not assigned";
+  const managerName = managerProfile ? managerProfile.full_name || managerProfile.email : "Not assigned";
   return /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
     /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2 mb-4", children: /* @__PURE__ */ jsx(
       EditableField,
@@ -10487,9 +10468,9 @@ const ProfileBasicInfo = ({
     ) }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 lg:gap-12 w-full", children: [
       /* @__PURE__ */ jsxs("div", { className: "space-y-2 w-full", children: [
-        username && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
+        email && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsx(User, { className: "h-4 w-4 text-muted-foreground" }),
-          /* @__PURE__ */ jsx("span", { className: "text-foreground", children: username })
+          /* @__PURE__ */ jsx("span", { className: "text-foreground", children: email })
         ] }),
         employeeId && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
           /* @__PURE__ */ jsx(Hash, { className: "h-4 w-4 text-muted-foreground" }),
@@ -10523,7 +10504,7 @@ const ProfileBasicInfo = ({
               onValueChange: handleManagerChange,
               children: [
                 /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select manager" }) }),
-                /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.username || "Unnamed User" }, user.id)) })
+                /* @__PURE__ */ jsx(SelectContent, { children: filteredProfiles.map((user) => /* @__PURE__ */ jsx(SelectItem, { value: user.id, children: user.full_name || user.email || "Unnamed User" }, user.id)) })
               ]
             }
           )

@@ -1,8 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Users, MapPin, Building, Globe, Activity, UserCheck, UserX, Filter, Printer, FileText } from 'lucide-react';
+import { Download, Users, Activity, UserCheck, UserX, Filter, Printer, FileText } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip, BarChart, Bar, XAxis, YAxis, LineChart, Line } from 'recharts';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -310,7 +310,7 @@ export const UserReport = () => {
           : 'Never';
         
         return {
-          name: profile.full_name || profile.username || `User ${profile.id.slice(0, 8)}`,
+          name: profile.full_name || profile.email || `User ${profile.id.slice(0, 8)}`,
           lessonsCompleted,
           averageScore,
           lastActive

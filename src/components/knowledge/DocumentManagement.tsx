@@ -420,6 +420,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSu
         const ext = selectedFile.name.split('.').pop();
         const storagePath = `${crypto.randomUUID()}.${ext}`;
 
+        debug.log('[DocumentForm] uploading to storage path:', storagePath);
         const { error: uploadError } = await supabase.storage
           .from('documents')
           .upload(storagePath, selectedFile, {
@@ -433,6 +434,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSu
         file_type = selectedFile.type;
         finalUrl = undefined;
       } catch (err: any) {
+        debug.error('[DocumentForm] upload error:', err);
         toast({ title: "Upload failed", description: err.message, variant: "destructive" });
         return;
       } finally {

@@ -46,7 +46,7 @@ const defaultPermissions = {
   canManageProfile: true,
 };
 
-const defaultEnabledTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'profile'];
+const defaultEnabledTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'licenses', 'profile'];
 
 export const OrganisationProvider: React.FC<OrganisationProviderProps> = ({ config, children }) => {
   const isTabEnabled = (tab: string): boolean => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -7,12 +7,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { FileText, Calendar, Circle, CheckCircle, Clock, ExternalLink, Search, Loader2 } from 'lucide-react';
+import { FileText, Calendar, Circle, CheckCircle, Clock, ExternalLink, Search, Loader2, RotateCcw } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
 import { useAuth } from 'staysecure-auth';
 import { sendNotificationByEvent } from 'staysecure-notifications';
+import { useUserRole } from '@/hooks/useUserRole';
 
 interface DocumentAssignment {
   assignment_id: string;
@@ -40,6 +41,7 @@ interface MyDocumentsProps {
 const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
   const { supabaseClient: supabase, basePath } = useOrganisationContext();
   const { user } = useAuth();
+  const { hasAdminAccess } = useUserRole();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -70,12 +72,25 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
   });
 
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ assignmentId, status, documentTitle }: { assignmentId: string; status: string; documentTitle: string }) => {
+    mutationFn: async ({
+      assignmentId,
+      status,
+      documentTitle,
+      previousStatus,
+    }: {
+      assignmentId: string;
+      status: string;
+      documentTitle: string;
+      previousStatus: string;
+    }) => {
+      if (previousStatus === 'Completed' && status !== 'Completed') {
+        throw new Error('Completed documents cannot be changed to another status.');
+      }
       const completedAt = status === 'Completed' ? new Date().toISOString() : null;
-      const updateData: any = { status };
+      const updateData: Record<string, unknown> = { status };
       if (status === 'Completed') {
         updateData.completed_at = completedAt;
-      } else if (status === 'Not started') {
+      } else if (status === 'Not started' || status === 'In progress') {
         updateData.completed_at = null;
       }
 
@@ -129,8 +144,48 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
     },
   });
 
-  const handleStatusChange = (assignmentId: string, newStatus: string, documentTitle: string) => {
-    updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle });
+  const resetCompletionMutation = useMutation({
+    mutationFn: async ({ assignmentId }: { assignmentId: string; documentTitle: string }) => {
+      const { error } = await supabase
+        .from('document_assignments')
+        .update({ status: 'Not started', completed_at: null })
+        .eq('assignment_id', assignmentId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['document-assignments'] });
+      queryClient.invalidateQueries({ queryKey: ['compliance-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['document-compliance-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['user-compliance-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['department-compliance-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['document-assignments-overview'] });
+      toast({
+        title: 'Completion reset',
+        description: 'Status set to Not started and completion cleared. The user must acknowledge again.',
+      });
+    },
+    onError: (error: unknown) => {
+      toast({
+        title: 'Error',
+        description: error instanceof Error ? error.message : 'Could not reset completion',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleStatusChange = (assignmentId: string, newStatus: string, documentTitle: string, previousStatus: string) => {
+    updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle, previousStatus });
+  };
+
+  const handleAdminResetCompletion = (assignmentId: string, documentTitle: string) => {
+    if (
+      !window.confirm(
+        `Reset completion for "${documentTitle}"?\n\nThe assignment will return to Not started and the user will need to acknowledge this document again.`,
+      )
+    ) {
+      return;
+    }
+    resetCompletionMutation.mutate({ assignmentId, documentTitle });
   };
 
   const handleOpenDocument = async (documentId: string, url?: string, fileName?: string) => {
@@ -156,6 +211,28 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
       setOpeningDocId(null);
     }
   };
+
+  // Deep-link: if the user arrived via a ?doc= email link, auto-open the document once
+  // assignments have loaded. The doc ID was stored in sessionStorage by Index.tsx before login.
+  useEffect(() => {
+    if (!assignments || assignments.length === 0) return;
+    if (typeof sessionStorage === 'undefined') return;
+    const docId = sessionStorage.getItem('deep_link_document');
+    if (!docId) return;
+
+    const assignment = assignments.find((a: DocumentAssignment) => a.document_id === docId);
+    if (assignment) {
+      console.log('[MyDocuments] deep-link: opening document', docId, assignment.document.title);
+      sessionStorage.removeItem('deep_link_document');
+      handleOpenDocument(
+        assignment.document_id,
+        assignment.document.url,
+        assignment.document.file_name,
+      );
+    } else {
+      console.warn('[MyDocuments] deep-link: document not found in assignments, doc_id=', docId);
+    }
+  }, [assignments]); // handleOpenDocument is stable; only re-run when assignments change
 
   const filteredAssignments = assignments?.filter((assignment: DocumentAssignment) => {
     const matchesSearch = assignment.document.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -255,15 +332,42 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
         </TabsList>
 
         <TabsContent value="assigned" className="space-y-4">
-          <DocumentList assignments={filteredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} onOpenDocument={handleOpenDocument} openingDocId={openingDocId} />
+          <DocumentList
+            assignments={filteredAssignments || []}
+            onStatusChange={handleStatusChange}
+            isReadOnly={!isOwnDocuments}
+            onOpenDocument={handleOpenDocument}
+            openingDocId={openingDocId}
+            canAdminResetCompletion={hasAdminAccess}
+            onAdminResetCompletion={handleAdminResetCompletion}
+            resetCompletionPending={resetCompletionMutation.isPending}
+          />
         </TabsContent>
 
         <TabsContent value="required" className="space-y-4">
-          <DocumentList assignments={requiredAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} onOpenDocument={handleOpenDocument} openingDocId={openingDocId} />
+          <DocumentList
+            assignments={requiredAssignments || []}
+            onStatusChange={handleStatusChange}
+            isReadOnly={!isOwnDocuments}
+            onOpenDocument={handleOpenDocument}
+            openingDocId={openingDocId}
+            canAdminResetCompletion={hasAdminAccess}
+            onAdminResetCompletion={handleAdminResetCompletion}
+            resetCompletionPending={resetCompletionMutation.isPending}
+          />
         </TabsContent>
 
         <TabsContent value="optional" className="space-y-4">
-          <DocumentList assignments={optionalAssignments || []} onStatusChange={handleStatusChange} isReadOnly={!isOwnDocuments} onOpenDocument={handleOpenDocument} openingDocId={openingDocId} />
+          <DocumentList
+            assignments={optionalAssignments || []}
+            onStatusChange={handleStatusChange}
+            isReadOnly={!isOwnDocuments}
+            onOpenDocument={handleOpenDocument}
+            openingDocId={openingDocId}
+            canAdminResetCompletion={hasAdminAccess}
+            onAdminResetCompletion={handleAdminResetCompletion}
+            resetCompletionPending={resetCompletionMutation.isPending}
+          />
         </TabsContent>
       </Tabs>
     </div>
@@ -272,13 +376,26 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
 
 interface DocumentListProps {
   assignments: DocumentAssignment[];
-  onStatusChange: (assignmentId: string, status: string, documentTitle: string) => void;
+  onStatusChange: (assignmentId: string, status: string, documentTitle: string, previousStatus: string) => void;
   onOpenDocument: (documentId: string, url?: string, fileName?: string) => void;
   openingDocId: string | null;
   isReadOnly?: boolean;
+  /** super_admin / client_admin — show reset control on completed assignments */
+  canAdminResetCompletion?: boolean;
+  onAdminResetCompletion?: (assignmentId: string, documentTitle: string) => void;
+  resetCompletionPending?: boolean;
 }
 
-const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange, onOpenDocument, openingDocId, isReadOnly = false }) => {
+const DocumentList: React.FC<DocumentListProps> = ({
+  assignments,
+  onStatusChange,
+  onOpenDocument,
+  openingDocId,
+  isReadOnly = false,
+  canAdminResetCompletion = false,
+  onAdminResetCompletion,
+  resetCompletionPending = false,
+}) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'Completed':
@@ -344,12 +461,23 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
             </div>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
+                  <Calendar className="h-4 w-4 shrink-0" />
                   Due: {new Date(assignment.due_date).toLocaleDateString()}
                 </div>
+                {assignment.status === 'Completed' && (
+                  <div className="flex items-center gap-1">
+                    <CheckCircle className="h-4 w-4 shrink-0 text-green-600" />
+                    <span className="text-foreground">
+                      Completed:{' '}
+                      {assignment.completed_at
+                        ? new Date(assignment.completed_at).toLocaleDateString()
+                        : '—'}
+                    </span>
+                  </div>
+                )}
                 {assignment.document.category && (
                   <Badge variant="outline" className="text-xs">
                     {assignment.document.category}
@@ -377,13 +505,53 @@ const DocumentList: React.FC<DocumentListProps> = ({ assignments, onStatusChange
                   </Button>
                 )}
                 {isReadOnly ? (
-                  <Badge className={getStatusColor(assignment.status)}>
-                    {assignment.status}
-                  </Badge>
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <Badge className={getStatusColor(assignment.status)}>
+                      {assignment.status}
+                    </Badge>
+                    {canAdminResetCompletion &&
+                      assignment.status === 'Completed' &&
+                      onAdminResetCompletion && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="text-muted-foreground"
+                          onClick={() =>
+                            onAdminResetCompletion(assignment.assignment_id, assignment.document.title)
+                          }
+                          disabled={resetCompletionPending}
+                        >
+                          <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                          Reset completion
+                        </Button>
+                      )}
+                  </div>
+                ) : assignment.status === 'Completed' ? (
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <Badge className={getStatusColor('Completed')}>Completed</Badge>
+                    {canAdminResetCompletion && onAdminResetCompletion && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="text-muted-foreground"
+                        onClick={() =>
+                          onAdminResetCompletion(assignment.assignment_id, assignment.document.title)
+                        }
+                        disabled={resetCompletionPending}
+                      >
+                        <RotateCcw className="h-3.5 w-3.5 mr-1" />
+                        Reset completion
+                      </Button>
+                    )}
+                  </div>
                 ) : (
                   <Select
                     value={assignment.status}
-                    onValueChange={(value: string) => onStatusChange(assignment.assignment_id, value, assignment.document.title)}
+                    onValueChange={(value: string) =>
+                      onStatusChange(assignment.assignment_id, value, assignment.document.title, assignment.status)
+                    }
                   >
                     <SelectTrigger className="w-[140px]">
                       <SelectValue />

@@ -1,0 +1,29 @@
+export interface ProductLicense {
+    licenseId: string;
+    productId: string;
+    productName: string;
+    seats: number;
+    usedSeats: number;
+    availableSeats: number;
+    pctUsed: number;
+    isNearCapacity: boolean;
+    isAtCapacity: boolean;
+    startDate: string | null;
+    endDate: string | null;
+    daysUntilExpiry: number | null;
+}
+export interface LicenseAssignment {
+    userId: string;
+    userName: string | null;
+    userEmail: string | null;
+    licenseId: string;
+    productId: string;
+    productName: string;
+    accessLevel: string;
+}
+export interface LicenseData {
+    products: ProductLicense[];
+    assignments: LicenseAssignment[];
+}
+export declare function useLicenseData(): import('@tanstack/react-query').UseQueryResult<LicenseData, Error>;
+//# sourceMappingURL=useLicenseData.d.ts.map

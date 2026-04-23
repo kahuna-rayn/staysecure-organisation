@@ -33,7 +33,6 @@ export interface UserProfile {
   full_name?: string;
   first_name?: string;
   last_name?: string;
-  username?: string;
   email?: string;
   role?: string;
   department?: string;
@@ -62,7 +61,6 @@ export interface NewUser {
   full_name: string;
   first_name: string;
   last_name: string;
-  username: string;
   phone: string;
   location: string;
   location_id?: string;

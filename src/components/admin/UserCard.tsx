@@ -21,7 +21,7 @@ const UserCard: React.FC<UserCardProps> = ({ user, onDelete }) => {
 
   const initials = user.full_name 
     ? user.full_name.split(' ').map((n: string) => n.charAt(0)).join('').slice(0, 2)
-    : user.username?.slice(0, 2) || 'U';
+    : user.email?.slice(0, 2) || 'U';
 
   const getStatusColor = (status: string) => {
     switch (status) {

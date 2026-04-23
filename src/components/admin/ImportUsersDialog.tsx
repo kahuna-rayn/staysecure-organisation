@@ -3,6 +3,8 @@ import debug from '../../utils/debug';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
@@ -25,6 +27,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [sendActivationEmails, setSendActivationEmails] = useState(false);
 
   // Fetch valid locations for validation
   const { data: validLocations } = useQuery({
@@ -68,20 +71,15 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   });
 
   // Fetch all existing profiles for manager validation
-  // Note: username stores the email address in this system
   const { data: existingProfiles } = useQuery({
     queryKey: ['profiles-for-manager-validation'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, username')
+        .select('id, full_name, email')
         .order('full_name');
       if (error) throw error;
-      // Map username to email field for validation (username = email in this system)
-      return (data || []).map(profile => ({
-        ...profile,
-        email: profile.username // username stores the email
-      }));
+      return data || [];
     },
   });
 
@@ -128,113 +126,6 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-  };
-
-
-  // Helper function to validate location
-  const validateLocation = (locationName: string): { isValid: boolean; locationId?: string } => {
-    if (!locationName || !validLocations) {
-      debug.log('Location validation: No location name or validLocations not loaded', { locationName, validLocations });
-      return { isValid: false };
-    }
-
-    const trimmedLocation = locationName.trim();
-    debug.log('Location validation: Checking location', { 
-      providedLocation: trimmedLocation, 
-      availableLocations: validLocations.map((l: { name: string }) => l.name) 
-    });
-    
-    const validLocation = validLocations.find(
-      (loc: { name: string }) => loc.name.toLowerCase() === trimmedLocation.toLowerCase()
-    );
-
-    debug.log('Location validation result:', { 
-      location: trimmedLocation, 
-      found: !!validLocation, 
-      validLocation 
-    });
-
-    return {
-      isValid: !!validLocation,
-      locationId: validLocation?.id
-    };
-  };
-
-  // Helper function to validate department
-  const validateDepartment = (departmentName: string): { isValid: boolean; departmentId?: string } => {
-    if (!departmentName || !validDepartments) {
-      return { isValid: false };
-    }
-
-    const trimmedName = departmentName.trim().toLowerCase();
-    const department = validDepartments.find(
-      (dept: { name: string }) => dept.name.toLowerCase() === trimmedName
-    );
-
-    return {
-      isValid: !!department,
-      departmentId: department?.id
-    };
-  };
-
-  // Helper function to validate role
-  const validateRole = (roleName: string): { isValid: boolean; roleId?: string; departmentId?: string | null } => {
-    if (!roleName || !validRoles) {
-      return { isValid: false };
-    }
-
-    const trimmedName = roleName.trim().toLowerCase();
-    const role = validRoles.find(
-      (r: { name: string }) => r.name.toLowerCase() === trimmedName
-    );
-
-    return {
-      isValid: !!role,
-      roleId: role?.role_id,
-      departmentId: role?.department_id || null
-    };
-  };
-
-  // Helper function to validate department-role pair
-  const validateDepartmentRolePair = (
-    departmentName: string,
-    roleName: string
-  ): { isValid: boolean; error?: string; departmentId?: string; roleId?: string } => {
-    // Validate department
-    const deptValidation = validateDepartment(departmentName);
-    if (!deptValidation.isValid) {
-      return { isValid: false, error: `Department "${departmentName}" does not exist` };
-    }
-
-    // Validate role
-    const roleValidation = validateRole(roleName);
-    if (!roleValidation.isValid) {
-      return { isValid: false, error: `Role "${roleName}" does not exist or is not active` };
-    }
-
-    // Check if role belongs to department or is a general role
-    if (roleValidation.departmentId === null) {
-      // General role (no department) - valid for any department
-      return {
-        isValid: true,
-        departmentId: deptValidation.departmentId,
-        roleId: roleValidation.roleId
-      };
-    }
-
-    // Role has a department - must match
-    if (roleValidation.departmentId !== deptValidation.departmentId) {
-      return {
-        isValid: false,
-        error: `Role "${roleName}" does not belong to department "${departmentName}"`
-      };
-    }
-
-    return {
-      isValid: true,
-      departmentId: deptValidation.departmentId,
-      roleId: roleValidation.roleId
-    };
   };
 
 
@@ -346,7 +237,12 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       : errorMessage;
   };
 
-  const processUserImport = async (row: any) => {
+  const processUserImport = async (
+    row: any,
+    locationCache: Map<string, string>,
+    departmentCache: Map<string, string>,
+    roleCache: Map<string, string>
+  ) => {
     const email = row['Email'] || row['email'];
     
     if (!email) {
@@ -373,63 +269,22 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
     debug.log('Processing user:', email);
 
-    // Validate all fields BEFORE creating user
     const accessLevelValue = row['Access Level'] || row['access_level'] || '';
     const accessLevelValidation = validateAccessLevel(accessLevelValue);
     
-    // Validate access level - must be 'user' or 'client_admin' (reject 'author', 'manager', etc.)
-    // Note: Users see 'User' or 'Admin' in the UI, but backend uses 'user' and 'client_admin'
     if (!accessLevelValidation.isValid) {
       throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
     }
 
-    const locationName = row['Location'] || row['location'] || '';
-    const departmentName = row['Department'] || row['department'] || '';
-    const roleName = row['Role'] || row['role'] || '';
+    const locationName = (row['Location'] || row['location'] || '').trim();
+    const departmentName = (row['Department'] || row['department'] || '').trim();
+    const roleName = (row['Role'] || row['role'] || '').trim();
 
-    // Validate location if provided
-    if (locationName) {
-      const locationValidation = validateLocation(locationName);
-      if (!locationValidation.isValid) {
-        throw new Error(`Location "${locationName}" does not exist`);
-      }
-    }
-
-    // Validate department if provided
-    let departmentId: string | undefined;
-    if (departmentName) {
-      const deptValidation = validateDepartment(departmentName);
-      if (!deptValidation.isValid) {
-        throw new Error(`Department "${departmentName}" does not exist`);
-      }
-      departmentId = deptValidation.departmentId;
-    }
-
-    // Validate role if provided
-    let roleId: string | undefined;
-    let roleDepartmentId: string | null | undefined;
-    if (roleName) {
-      const roleValidation = validateRole(roleName);
-      if (!roleValidation.isValid) {
-        throw new Error(`Role "${roleName}" does not exist or is not active`);
-      }
-      roleId = roleValidation.roleId;
-      roleDepartmentId = roleValidation.departmentId;
-    }
-
-    // Validate department-role pair if both provided
-    if (departmentName && roleName) {
-      const pairValidation = validateDepartmentRolePair(departmentName, roleName);
-      if (!pairValidation.isValid) {
-        throw new Error(pairValidation.error || 'Invalid department-role pair');
-      }
-      // Use validated IDs from pair validation
-      departmentId = pairValidation.departmentId;
-      roleId = pairValidation.roleId;
-    } else if (roleName && roleDepartmentId !== null) {
-      // Role-only but role has a department - invalid
-      throw new Error(`Role "${roleName}" belongs to a department. Please specify the department or use a general role.`);
-    }
+    // Resolve IDs from pre-built caches (populated in Pass 0)
+    const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : undefined;
+    const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : undefined;
+    const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
+    const roleId = roleName ? roleCache.get(roleKey) : undefined;
 
     // Manager is assigned in pass 2 (after all users created) so order in CSV doesn't matter
     const managerEmail = (row['Manager'] || row['manager'] || '').trim() || undefined;
@@ -445,13 +300,12 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         full_name: fullName.trim(),
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        username: row['Username'] || row['username'] || '',
         phone: row['Phone'] || row['phone'] || '',
         status: 'Pending',
         employee_id: row['Employee ID'] || row['employee_id'] || '',
-        access_level: accessLevelValidation.value!, // Already validated above, so safe to use !
+        access_level: accessLevelValidation.value!,
         manager: null, // Manager assigned in pass 2 after all users exist
-        clientPath // Pass client path explicitly
+        clientPath
       }
     });
 
@@ -474,27 +328,23 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       throw new Error('User created but user ID not returned');
     }
 
-    // Collect all warnings (manager assignment and warnings happen in pass 2)
+    // Collect all warnings (manager assignment happens in pass 2)
     const warnings = [];
 
     // Assign location if provided
     if (locationName) {
-      const locationValidation = validateLocation(locationName);
-      if (locationValidation.isValid && locationValidation.locationId) {
+      if (locationId) {
         try {
-          // Insert into physical_location_access table
-          const locationData = {
-            user_id: userId,
-            location_id: locationValidation.locationId,
-            full_name: fullName.trim(),
-            access_purpose: 'General Access',
-            status: 'Active',
-            date_access_created: new Date().toISOString()
-          };
-
           const { error: locationError } = await supabase
             .from('physical_location_access')
-            .insert(locationData);
+            .insert({
+              user_id: userId,
+              location_id: locationId,
+              full_name: fullName.trim(),
+              access_purpose: 'General Access',
+              status: 'Active',
+              date_access_created: new Date().toISOString()
+            });
 
           if (locationError) {
             console.error('Error assigning location to physical_location_access:', locationError);
@@ -504,13 +354,9 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               message: `Location "${locationName}" could not be assigned: ${locationError.message}`
             });
           } else {
-            // Also update profiles table with location information
             const { error: profileError } = await supabase
               .from('profiles')
-              .update({
-                location: locationName,
-                location_id: locationValidation.locationId
-              })
+              .update({ location: locationName, location_id: locationId })
               .eq('id', userId);
 
             if (profileError) {
@@ -530,13 +376,33 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             message: `Location "${locationName}" could not be assigned: ${locationError.message}`
           });
         }
+      } else {
+        warnings.push({
+          field: 'Location',
+          value: locationName,
+          message: `Location "${locationName}" could not be created or found — skipping assignment`
+        });
       }
     }
 
-    // Assign department and/or role if provided
-    if (departmentName || roleName) {
+    // Assign department and/or role if provided (warn for any that couldn't be resolved)
+    if (departmentName && !departmentId) {
+      warnings.push({
+        field: 'Department',
+        value: departmentName,
+        message: `Department "${departmentName}" could not be created or found — skipping assignment`
+      });
+    }
+    if (roleName && !roleId) {
+      warnings.push({
+        field: 'Role',
+        value: roleName,
+        message: `Role "${roleName}" could not be created or found — skipping assignment`
+      });
+    }
+
+    if (departmentId || roleId) {
       try {
-        // Generate pairing_id if both department and role are provided
         const pairingId = (departmentId && roleId) ? crypto.randomUUID() : undefined;
 
         // Assign department if provided
@@ -667,6 +533,117 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           const warnings: ImportError[] = [];
           const createdUsers: Array<{ rowNumber: number; email: string; userId: string; managerEmail?: string; row: any }> = [];
 
+          // ── Pass 0: Build location / department / role caches ───────────────
+          // Seed caches from what already exists in the DB
+          const locationCache = new Map<string, string>(); // lower_name → id
+          const departmentCache = new Map<string, string>(); // lower_name → id
+          const roleCache = new Map<string, string>(); // `${role_lower}::${dept_lower}` → role_id
+
+          (validLocations || []).forEach((loc: { id: string; name: string }) =>
+            locationCache.set(loc.name.toLowerCase(), loc.id)
+          );
+          (validDepartments || []).forEach((dept: { id: string; name: string }) =>
+            departmentCache.set(dept.name.toLowerCase(), dept.id)
+          );
+          // For existing roles build key as `name::dept_name_lower` using reverse dept id→name map
+          const deptIdToName = new Map<string, string>();
+          (validDepartments || []).forEach((dept: { id: string; name: string }) =>
+            deptIdToName.set(dept.id, dept.name.toLowerCase())
+          );
+          (validRoles || []).forEach((role: { role_id: string; name: string; department_id: string | null }) => {
+            const deptKey = role.department_id ? (deptIdToName.get(role.department_id) ?? '') : '';
+            roleCache.set(`${role.name.toLowerCase()}::${deptKey}`, role.role_id);
+          });
+
+          // Collect unique locations / departments / (role, department) pairs from CSV
+          const uniqueLocations = new Set<string>();
+          const uniqueDepartments = new Set<string>();
+          const uniqueRolePairs = new Set<string>(); // `${roleName}|||${deptName}`
+
+          for (const row of data) {
+            const loc = (row['Location'] || row['location'] || '').trim();
+            const dept = (row['Department'] || row['department'] || '').trim();
+            const role = (row['Role'] || row['role'] || '').trim();
+            if (loc) uniqueLocations.add(loc);
+            if (dept) uniqueDepartments.add(dept);
+            if (role) uniqueRolePairs.add(`${role}|||${dept}`);
+          }
+
+          // Pass 0a: Ensure locations exist
+          for (const locName of uniqueLocations) {
+            const key = locName.toLowerCase();
+            if (!locationCache.has(key)) {
+              try {
+                const { data: newLoc, error } = await supabase
+                  .from('locations')
+                  .insert({ name: locName, status: 'Active' })
+                  .select('id')
+                  .single();
+                if (!error && newLoc) {
+                  locationCache.set(key, newLoc.id);
+                  debug.log('[ImportUsersDialog] Auto-created location:', locName);
+                } else if (error) {
+                  debug.error('[ImportUsersDialog] Failed to create location:', locName, error);
+                }
+              } catch (err) {
+                debug.error('[ImportUsersDialog] Exception creating location:', locName, err);
+              }
+            }
+          }
+
+          // Pass 0b: Ensure departments exist
+          for (const deptName of uniqueDepartments) {
+            const key = deptName.toLowerCase();
+            if (!departmentCache.has(key)) {
+              try {
+                const { data: newDept, error } = await supabase
+                  .from('departments')
+                  .insert({ name: deptName })
+                  .select('id')
+                  .single();
+                if (!error && newDept) {
+                  departmentCache.set(key, newDept.id);
+                  debug.log('[ImportUsersDialog] Auto-created department:', deptName);
+                } else if (error) {
+                  debug.error('[ImportUsersDialog] Failed to create department:', deptName, error);
+                }
+              } catch (err) {
+                debug.error('[ImportUsersDialog] Exception creating department:', deptName, err);
+              }
+            }
+          }
+
+          // Pass 0c: Ensure roles exist (needs departmentCache populated first)
+          for (const pair of uniqueRolePairs) {
+            const sep = pair.indexOf('|||');
+            const roleName = pair.slice(0, sep);
+            const deptName = pair.slice(sep + 3);
+            const roleKey = `${roleName.toLowerCase()}::${deptName.toLowerCase()}`;
+            if (!roleCache.has(roleKey)) {
+              const deptId = deptName ? (departmentCache.get(deptName.toLowerCase()) ?? null) : null;
+              try {
+                const { data: newRole, error } = await supabase
+                  .from('roles')
+                  .insert({ name: roleName, department_id: deptId, is_active: true })
+                  .select('role_id')
+                  .single();
+                if (!error && newRole) {
+                  roleCache.set(roleKey, newRole.role_id);
+                  debug.log('[ImportUsersDialog] Auto-created role:', roleName, deptName ? `(${deptName})` : '(general)');
+                } else if (error) {
+                  debug.error('[ImportUsersDialog] Failed to create role:', roleName, error);
+                }
+              } catch (err) {
+                debug.error('[ImportUsersDialog] Exception creating role:', roleName, err);
+              }
+            }
+          }
+
+          debug.log('[ImportUsersDialog] Pass 0 complete. Cache sizes:', {
+            locations: locationCache.size, departments: departmentCache.size, roles: roleCache.size,
+          });
+          // ── End Pass 0 ─────────────────────────────────────────────────────
+
           // Pass 1: Create all users (manager column is deferred to pass 2)
           for (let i = 0; i < data.length; i++) {
             const row = data[i];
@@ -681,7 +658,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             
             try {
               debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
-              const result = await processUserImport(row);
+              const result = await processUserImport(row, locationCache, departmentCache, roleCache);
               successCount++;
               debug.log(`Successfully processed user ${i + 1}`);
               
@@ -723,8 +700,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
           // Pass 2: Assign managers (all users from CSV now exist, so order doesn't matter)
           const emailToId = new Map<string, string>();
-          (existingProfiles || []).forEach((p: { id: string; username?: string; email?: string }) => {
-            const e = (p.email ?? p.username ?? '').trim().toLowerCase();
+          (existingProfiles || []).forEach((p: { id: string; email?: string }) => {
+            const e = (p.email ?? '').trim().toLowerCase();
             if (e) emailToId.set(e, p.id);
           });
           createdUsers.forEach((u) => {
@@ -774,7 +751,47 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
           debug.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
 
+          // Pass 3: Send activation emails if requested
+          if (sendActivationEmails && createdUsers.length > 0) {
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            const reserved = ['admin', 'activate-account', 'reset-password', 'forgot-password', 'email-notifications'];
+            const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : '';
+            const redirectUrl = clientSegment
+              ? `${window.location.origin}/${clientSegment}/activate-account`
+              : `${window.location.origin}/activate-account`;
+
+            debug.log('[ImportUsersDialog] Sending activation emails to', createdUsers.length, 'users, redirectUrl:', redirectUrl);
+
+            const BATCH_SIZE = 5;
+            const BATCH_DELAY_MS = 1000;
+            let emailsSent = 0;
+            let emailsFailed = 0;
+
+            for (let i = 0; i < createdUsers.length; i += BATCH_SIZE) {
+              const batch = createdUsers.slice(i, i + BATCH_SIZE);
+              await Promise.all(batch.map(async (u) => {
+                try {
+                  const { error: emailError } = await supabase.functions.invoke('request-activation-link', {
+                    body: { email: u.email, redirectUrl },
+                  });
+                  if (emailError) throw emailError;
+                  debug.log('[ImportUsersDialog] Activation email sent to', u.email);
+                  emailsSent++;
+                } catch (err) {
+                  debug.error('[ImportUsersDialog] Failed to send activation email to', u.email, err);
+                  emailsFailed++;
+                }
+              }));
+              if (i + BATCH_SIZE < createdUsers.length) {
+                await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+              }
+            }
+
+            debug.log('[ImportUsersDialog] Activation emails done. Sent:', emailsSent, 'Failed:', emailsFailed);
+          }
+
           setUploadedFile(null);
+          setSendActivationEmails(false);
           setIsProcessing(false);
           setIsOpen(false);
 
@@ -839,6 +856,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   const handleDialogClose = (open: boolean) => {
     if (!open && !isProcessing) {
       setUploadedFile(null);
+      setSendActivationEmails(false);
     }
     setIsOpen(open);
   };
@@ -854,7 +872,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         <DialogHeader>
           <DialogTitle>Import Users</DialogTitle>
           <DialogDescription>
-            Upload a CSV file to import users in bulk. Users will be created with authentication accounts and will receive an activation link via email. Departments, roles, and locations can be assigned during import.
+            Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist.
           </DialogDescription>
         </DialogHeader>
         
@@ -892,6 +910,18 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             </div>
 
             {uploadedFile && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="send-activation-emails"
+                    checked={sendActivationEmails}
+                    onCheckedChange={(checked: boolean | 'indeterminate') => setSendActivationEmails(checked === true)}
+                    disabled={isProcessing}
+                  />
+                  <Label htmlFor="send-activation-emails" className="text-sm font-normal cursor-pointer">
+                    Send activation emails to imported users
+                  </Label>
+                </div>
               <div className="flex gap-3">
                 <Button
                   onClick={handleImport}
@@ -915,6 +945,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                 >
                   X
                 </Button>
+              </div>
               </div>
             )}
           </div>
@@ -956,11 +987,9 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
               <p>• <strong>Last Name</strong> is required for each user</p>
               <p>• Users will be created with 'Pending' status and must activate via email</p>
               <p>• <strong>Access Level</strong> - must be "User" or "Admin". Other values are not allowed.</p>
-              <p>• <strong>Location</strong> (optional) - must match an existing active location</p>
-              <p>• <strong>Department</strong> (optional) - must match an existing department</p>
-              <p>• <strong>Role</strong> (optional) - must match an existing active role</p>
-              <p>• If both <strong>Department</strong> and <strong>Role</strong> are provided, the role must belong to that department (or be a general role)</p>
-              <p>• If only <strong>Role</strong> is provided, it must be a general role (not assigned to any department)</p>
+              <p>• <strong>Location</strong> (optional) - created automatically if it doesn't exist</p>
+              <p>• <strong>Department</strong> (optional) - created automatically if it doesn't exist</p>
+              <p>• <strong>Role</strong> (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role.</p>
               <p>• <strong>Manager</strong> (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported</p>
               <p>• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided</p>
             </div>

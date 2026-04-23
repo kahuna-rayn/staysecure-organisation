@@ -1,13 +1,12 @@
 
 import React, { useState } from 'react';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
-import { useUserAssets } from '@/hooks/useUserAssets';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Plus, Award, X, Save } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 
@@ -108,7 +107,7 @@ export const CreateCertificateDialog: React.FC<CreateCertificateDialogProps> = (
                 <SelectContent>
                   {profiles.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
-                      {user.full_name || user.username || 'Unnamed User'}
+                      {user.full_name || user.email || 'Unnamed User'}
                     </SelectItem>
                   ))}
                 </SelectContent>

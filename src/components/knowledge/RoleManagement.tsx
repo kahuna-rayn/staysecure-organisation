@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { UserCheck, Plus, Edit, Trash2 } from 'lucide-react';
+import { UserCheck, Plus, Edit, Trash2, Save } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
@@ -275,11 +275,8 @@ const RoleManagement: React.FC = () => {
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                    Cancel
-                  </Button>
-                  <Button onClick={handleSubmit} disabled={!formData.name.trim()}>
-                    Create Role
+                  <Button size="icon" onClick={handleSubmit} disabled={!formData.name.trim()}>
+                    <Save className="w-4 h-4" />
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -408,11 +405,8 @@ const RoleManagement: React.FC = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setEditingRole(null)}>
-              Cancel
-            </Button>
-            <Button onClick={handleSubmit} disabled={!formData.name.trim()}>
-              Update Role
+            <Button size="icon" onClick={handleSubmit} disabled={!formData.name.trim()}>
+              <Save className="w-4 h-4" />
             </Button>
           </DialogFooter>
         </DialogContent>

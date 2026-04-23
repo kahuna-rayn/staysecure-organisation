@@ -24,7 +24,7 @@ interface OrgCertificate {
 interface UserProfile {
   id: string;
   full_name: string;
-  username: string;
+  email: string;
 }
 
 const OrganisationCertificates: React.FC = () => {
@@ -75,7 +75,7 @@ const OrganisationCertificates: React.FC = () => {
 
   const getUserDisplayName = (userId: string) => {
     const profile = userProfiles[userId];
-    return profile?.full_name || profile?.username || 'Unknown User';
+    return profile?.full_name || profile?.email || 'Unknown User';
   };
 
   const fetchOrganisationCertificates = async () => {
@@ -98,7 +98,7 @@ const OrganisationCertificates: React.FC = () => {
       if (userIds.length > 0) {
         const { data: profilesData, error: profilesError } = await supabaseClient
           .from('profiles')
-          .select('id, full_name, username')
+          .select('id, full_name, email')
           .in('id', userIds);
 
         if (profilesError) throw profilesError;

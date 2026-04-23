@@ -17,14 +17,14 @@ interface ProfileBasicInfoProps {
   phone: string;
   location: string;
   locationId?: string;
-  username?: string;
+  email?: string;
   employeeId?: string;
   editingField: string | null;
   onEdit: (field: string) => void;
   onSave: (field: string, value: string) => Promise<void>;
   onCancel: () => void;
   saving: boolean;
-  profiles: { id: string; full_name: string; username: string }[];
+  profiles: { id: string; full_name: string; email: string }[];
   currentUserId: string;
   userId: string; // Add userId for multiple roles
 }
@@ -36,7 +36,7 @@ const ProfileBasicInfo: React.FC<ProfileBasicInfoProps> = ({
   phone,
   location,
   locationId,
-  username,
+  email,
   employeeId,
   editingField,
   onEdit,
@@ -81,7 +81,7 @@ const ProfileBasicInfo: React.FC<ProfileBasicInfoProps> = ({
   
   const filteredProfiles = profiles.filter(user => user.id !== currentUserId);
   const managerProfile = profiles.find(u => u.id === manager);
-  const managerName = managerProfile ? (managerProfile.full_name || managerProfile.username) : 'Not assigned';
+  const managerName = managerProfile ? (managerProfile.full_name || managerProfile.email) : 'Not assigned';
 
   return (
     <div className="flex-1">
@@ -104,10 +104,10 @@ const ProfileBasicInfo: React.FC<ProfileBasicInfoProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-8 lg:gap-12 w-full">
         {/* Left column - Personal info: Email, Employee ID, Phone */}
         <div className="space-y-2 w-full">
-          {username && (
+          {email && (
             <div className="flex items-center gap-2 text-sm">
               <User className="h-4 w-4 text-muted-foreground" />
-              <span className="text-foreground">{username}</span>
+              <span className="text-foreground">{email}</span>
             </div>
           )}
           
@@ -149,7 +149,7 @@ const ProfileBasicInfo: React.FC<ProfileBasicInfoProps> = ({
                 <SelectContent>
                   {filteredProfiles.map((user) => (
                     <SelectItem key={user.id} value={user.id}>
-                      {user.full_name || user.username || 'Unnamed User'}
+                      {user.full_name || user.email || 'Unnamed User'}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Users, UserCheck, Building2, MapPin, Settings, Award, User } from 'lucide-react';
+import { Users, UserCheck, Building2, MapPin, Settings, Award, User, Key } from 'lucide-react';
 import { useOrganisationContext } from '../context/OrganisationContext';
 import UserManagement from './admin/UserManagement';
 import { RoleManagement } from './organisational/RoleManagement';
@@ -11,6 +11,7 @@ import { DepartmentManagement } from './organisational/DepartmentManagement';
 import { LocationManagement } from './organisational/LocationManagement';
 import OrganisationCertificates from './certificates/OrganisationCertificates';
 import OrganisationProfile from './OrganisationProfile';
+import LicenseDashboard from './licenses/LicenseDashboard';
 
 interface OrganisationPanelProps {
   title?: string;
@@ -30,7 +31,7 @@ export const OrganisationPanel: React.FC<OrganisationPanelProps> = ({
   
   // Get default tab (first enabled tab)
   const getDefaultTab = () => {
-    const defaultTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'profile'];
+    const defaultTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'licenses', 'profile'];
     return defaultTabs.find(tab => isTabEnabled(tab)) || 'users';
   };
   
@@ -47,7 +48,7 @@ export const OrganisationPanel: React.FC<OrganisationPanelProps> = ({
   // Sync with URL if it changes externally (e.g., browser back/forward)
   useEffect(() => {
     const urlTab = searchParams.get('orgTab');
-    const defaultTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'profile'];
+    const defaultTabs = ['users', 'roles', 'departments', 'locations', 'certificates', 'licenses', 'profile'];
     const defaultTab = defaultTabs.find(tab => isTabEnabled(tab)) || 'users';
     
     if (urlTab && isTabEnabled(urlTab) && urlTab !== activeTab) {
@@ -71,6 +72,7 @@ export const OrganisationPanel: React.FC<OrganisationPanelProps> = ({
     { id: 'departments', label: 'Departments', icon: Building2, component: DepartmentManagement },
     { id: 'locations', label: 'Locations', icon: MapPin, component: LocationManagement },
     { id: 'certificates', label: 'Certificates', icon: Award, component: OrganisationCertificates },
+    { id: 'licenses', label: 'Licenses', icon: Key, component: LicenseDashboard },
     { id: 'profile', label: 'Profile', icon: User, component: OrganisationProfile },
   ];
 

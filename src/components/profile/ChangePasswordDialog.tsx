@@ -15,7 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from 'staysecure-auth';
 import { useOrganisationContext } from '@/context/OrganisationContext';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, Eye, EyeOff } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Save } from 'lucide-react';
 
 export interface ChangePasswordDialogProps {
   isOpen: boolean;
@@ -259,18 +259,8 @@ const ChangePasswordDialog: React.FC<ChangePasswordDialogProps> = ({
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={handleClose} disabled={loading}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading}>
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Updating…
-                </>
-              ) : (
-                'Update password'
-              )}
+            <Button type="submit" size="icon" disabled={loading}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             </Button>
           </DialogFooter>
         </form>

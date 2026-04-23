@@ -4,8 +4,6 @@ interface MultipleRolesFieldProps {
     userId: string;
     departmentValue?: string;
     isEditing: boolean;
-    onEdit: () => void;
-    onCancel: () => void;
 }
 declare const MultipleRolesField: React.FC<MultipleRolesFieldProps>;
 export default MultipleRolesField;

@@ -3,8 +3,7 @@ import { default as React } from 'react';
 interface Profile {
     id: string;
     full_name: string;
-    username: string;
-    email?: string;
+    email: string;
 }
 interface SearchableProfileFieldProps {
     value?: string;

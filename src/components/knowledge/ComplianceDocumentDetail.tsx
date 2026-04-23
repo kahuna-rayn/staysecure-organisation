@@ -63,7 +63,7 @@ const ComplianceDocumentDetail: React.FC<DocumentDetailProps> = ({ documentId, d
       return assignments.map(assignment => ({
         ...assignment,
         user_name: profileMap.get(assignment.user_id)?.full_name || 'Unknown User',
-        department: departmentMap.get(assignment.user_id) || 'Unknown Department',
+        department: departmentMap.get(assignment.user_id) || 'No Department',
         days_overdue: assignment.status !== 'Completed' && new Date(assignment.due_date) < new Date() 
           ? Math.ceil((new Date().getTime() - new Date(assignment.due_date).getTime()) / (1000 * 60 * 60 * 24))
           : 0,

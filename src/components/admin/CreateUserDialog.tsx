@@ -84,21 +84,16 @@ const isSuperAdmin = currentUserRole === 'super_admin';
   });
 
   // Fetch user profiles for manager dropdown
-  // Note: username stores the email address in this system
   // Only fetch when dialog is open to avoid unnecessary queries
   const { data: profiles } = useQuery({
     queryKey: ['profiles-for-managers'],
     queryFn: async () => {
       const { data } = await supabaseClient
         .from('profiles')
-        .select('id, full_name, username')
+        .select('id, full_name, email')
         .eq('status', 'Active')
         .order('full_name');
-      // Map username to email field for consistency (username = email in this system)
-      return (data || []).map(profile => ({
-        ...profile,
-        email: profile.username // username stores the email
-      }));
+      return data || [];
     },
     enabled: isOpen, // Only fetch when dialog is open
   });
@@ -171,7 +166,6 @@ const handleFullNameChange = (value: string) => {
         full_name: '',
         email: '',
         password: '',
-        username: '',
         phone: '',
         employee_id: '',
         status: 'Active',
@@ -326,7 +320,7 @@ const handleFullNameChange = (value: string) => {
                   <SelectItem value="none">No manager</SelectItem>
                   {profiles?.map((profile) => (
                     <SelectItem key={profile.id} value={profile.id}>
-                      {profile.full_name || profile.email || profile.username}
+                      {profile.full_name || profile.email}
                     </SelectItem>
                   ))}
                 </SelectContent>

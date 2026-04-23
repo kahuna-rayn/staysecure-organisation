@@ -68,5 +68,9 @@ export type {
 export { default as KnowledgePanel } from './components/KnowledgePanel';
 export { default as MyDocuments } from './components/knowledge/MyDocuments';
 
+// License Management exports
+export { LicenseDashboard } from './components/licenses/LicenseDashboard';
+export { useLicenseData, type ProductLicense, type LicenseAssignment, type LicenseData } from './hooks/useLicenseData';
+
 // Utility exports
 export { handleSaveUser, handleCreateUser, handleDeleteUser } from './utils/userManagementActions';

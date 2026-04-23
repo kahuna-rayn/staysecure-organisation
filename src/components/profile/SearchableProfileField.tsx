@@ -20,8 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface Profile {
   id: string;
   full_name: string;
-  username: string;
-  email?: string;
+  email: string;
 }
 
 interface SearchableProfileFieldProps {
@@ -51,7 +50,7 @@ const SearchableProfileField: React.FC<SearchableProfileFieldProps> = ({
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, username')
+        .select('id, full_name, email')
         .not('full_name', 'is', null)
         .order('full_name');
 
@@ -66,10 +65,10 @@ const SearchableProfileField: React.FC<SearchableProfileFieldProps> = ({
 
   const filteredProfiles = profiles.filter(profile =>
     profile.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    profile.username?.toLowerCase().includes(searchTerm.toLowerCase())
+    profile.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const selectedProfile = profiles.find(profile => profile.full_name === value);
+  const _selectedProfile = profiles.find(profile => profile.full_name === value);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -139,9 +138,6 @@ const SearchableProfileField: React.FC<SearchableProfileFieldProps> = ({
                   />
                   <div className="flex flex-col">
                     <span>{profile.full_name}</span>
-                    {profile.username && (
-                      <span className="text-sm text-muted-foreground">@{profile.username}</span>
-                    )}
                   </div>
                 </CommandItem>
               ))}

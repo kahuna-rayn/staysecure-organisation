@@ -1,15 +1,14 @@
 
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useUserAssets } from '@/hooks/useUserAssets';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { Loader2, X, Plus } from 'lucide-react';
+import { Loader2, X, Plus, Upload, FileText } from 'lucide-react';
 
 interface AddEducationDialogProps {
   isOpen: boolean;
@@ -25,6 +24,8 @@ const AddEducationDialog: React.FC<AddEducationDialogProps> = ({
   onSuccess,
 }) => {
   const [loading, setLoading] = useState(false);
+  const [certFile, setCertFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     type: 'Certificate',
     name: '',
@@ -35,9 +36,6 @@ const AddEducationDialog: React.FC<AddEducationDialogProps> = ({
     status: 'Valid',
   });
 
-  const { addCertificate } = useUserAssets();
-
-  // Fix: Look up user profile by ID, only select id since email doesn't exist
   const { data: userProfile } = useQuery({
     queryKey: ['user-profile', userId],
     queryFn: async () => {
@@ -46,7 +44,6 @@ const AddEducationDialog: React.FC<AddEducationDialogProps> = ({
         .select('id')
         .eq('id', userId)
         .single();
-      
       if (error) throw error;
       return data;
     },
@@ -62,50 +59,70 @@ const AddEducationDialog: React.FC<AddEducationDialogProps> = ({
       credential_id: '',
       status: 'Valid',
     });
+    setCertFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!userProfile) {
-      toast({
-        title: "Error",
-        description: "User profile not found.",
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: 'User profile not found.', variant: 'destructive' });
       return;
     }
 
     setLoading(true);
-    
+
     try {
-      const certificateData = {
-        user_id: userProfile.id,
-        type: formData.type,
-        name: formData.name,
-        issued_by: formData.issued_by,
-        date_acquired: formData.date_acquired,
-        expiry_date: formData.expiry_date || null,
-        credential_id: formData.credential_id || null,
-        status: formData.status,
-      };
-      
-      await addCertificate(certificateData);
-      
-      toast({
-        title: "Education record added",
-        description: "Education record has been successfully added.",
-      });
-      
+      // Insert certificate row and return the new id
+      const { data: newCert, error: insertError } = await supabase
+        .from('certificates')
+        .insert([{
+          user_id: userProfile.id,
+          type: formData.type,
+          name: formData.name,
+          issued_by: formData.issued_by,
+          date_acquired: formData.date_acquired,
+          expiry_date: formData.expiry_date || null,
+          credential_id: formData.credential_id || null,
+          status: formData.status,
+        }])
+        .select('id')
+        .single();
+
+      if (insertError) throw insertError;
+
+      // Upload certificate file if provided
+      if (certFile && newCert?.id) {
+        const ext = certFile.name.split('.').pop();
+        const safeName = formData.name.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 40);
+        const storagePath = `${userProfile.id}/external/${newCert.id}_${safeName}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('certificates')
+          .upload(storagePath, certFile, { upsert: true });
+
+        if (uploadError) {
+          console.error('Error uploading certificate file:', uploadError);
+          toast({
+            title: 'Certificate added',
+            description: 'Record saved but file upload failed. You can try uploading the file again later.',
+            variant: 'destructive',
+          });
+        } else {
+          await supabase
+            .from('certificates')
+            .update({ certificate_url: storagePath })
+            .eq('id', newCert.id);
+        }
+      }
+
+      toast({ title: 'Certificate added', description: 'Certificate has been successfully added.' });
       onOpenChange(false);
       resetForm();
       onSuccess?.();
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -117,7 +134,7 @@ const AddEducationDialog: React.FC<AddEducationDialogProps> = ({
         <DialogHeader>
           <DialogTitle>Add Certificate</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="type">Type *</Label>
@@ -149,7 +166,7 @@ const AddEducationDialog: React.FC<AddEducationDialogProps> = ({
               id="issued_by"
               value={formData.issued_by}
               onChange={(e) => setFormData({ ...formData, issued_by: e.target.value })}
-              placeholder="e.g., RAYN, PDPC,"
+              placeholder="e.g., RAYN, PDPC"
               required
             />
           </div>
@@ -199,6 +216,40 @@ const AddEducationDialog: React.FC<AddEducationDialogProps> = ({
                 <SelectItem value="Revoked">Revoked</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label>Certificate File (optional)</Label>
+            <div
+              className="mt-1 flex items-center gap-3 rounded-md border border-dashed border-muted-foreground/40 px-4 py-3 cursor-pointer hover:bg-muted/40 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {certFile ? (
+                <>
+                  <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm truncate">{certFile.name}</span>
+                  <button
+                    type="button"
+                    className="ml-auto text-muted-foreground hover:text-destructive"
+                    onClick={(e) => { e.stopPropagation(); setCertFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground">Upload PDF, JPG, or PNG</span>
+                </>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              className="hidden"
+              onChange={(e) => setCertFile(e.target.files?.[0] ?? null)}
+            />
           </div>
 
           <div className="flex gap-2 justify-end">

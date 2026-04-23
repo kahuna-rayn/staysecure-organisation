@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
 
 interface AssignHardwareDialogProps {
   isOpen: boolean;
@@ -47,7 +47,7 @@ const AssignHardwareDialog: React.FC<AssignHardwareDialogProps> = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, username')
+        .select('full_name, email')
         .eq('id', userId)
         .single();
       
@@ -71,7 +71,7 @@ const AssignHardwareDialog: React.FC<AssignHardwareDialogProps> = ({
     setLoading(true);
     
     try {
-      const userName = userProfile.full_name || userProfile.username || 'Assigned User';
+      const userName = userProfile.full_name || userProfile.email || 'Assigned User';
       
       // Update the hardware inventory item to assign it to the user
       // Set user_id (UUID foreign key) and keep asset_owner (name) for backward compatibility
@@ -147,11 +147,8 @@ const AssignHardwareDialog: React.FC<AssignHardwareDialogProps> = ({
           )}
 
           <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={loading || !selectedHardwareId}>
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Assign Hardware"}
+            <Button type="submit" size="icon" disabled={loading || !selectedHardwareId}>
+              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             </Button>
           </div>
         </form>

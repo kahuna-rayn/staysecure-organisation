@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from '@/components/ui/use-toast';
-import { Loader2, X, Plus } from 'lucide-react';
+import { Loader2, X, Plus, Upload, FileText } from 'lucide-react';
 
 interface AddOrganisationCertificateDialogProps {
   isOpen: boolean;
@@ -21,6 +21,8 @@ const AddOrganisationCertificateDialog: React.FC<AddOrganisationCertificateDialo
 }) => {
   const { supabaseClient } = useOrganisationContext();
   const [loading, setLoading] = useState(false);
+  const [certFile, setCertFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     type: 'Certificate',
     name: '',
@@ -41,53 +43,71 @@ const AddOrganisationCertificateDialog: React.FC<AddOrganisationCertificateDialo
       credential_id: '',
       status: 'Valid',
     });
+    setCertFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     setLoading(true);
-    
+
     try {
-      // Get current user
       const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-      
-      if (userError || !user) {
-        throw new Error('User not authenticated');
+      if (userError || !user) throw new Error('User not authenticated');
+
+      // Insert and return the new cert id
+      const { data: newCert, error: insertError } = await supabaseClient
+        .from('certificates')
+        .insert([{
+          user_id: user.id,
+          type: formData.type,
+          name: formData.name,
+          issued_by: formData.issued_by,
+          date_acquired: formData.date_acquired,
+          expiry_date: formData.expiry_date || null,
+          credential_id: formData.credential_id || null,
+          status: formData.status,
+          org_cert: true,
+        }])
+        .select('id')
+        .single();
+
+      if (insertError) throw insertError;
+
+      // Upload certificate file if provided
+      if (certFile && newCert?.id) {
+        const ext = certFile.name.split('.').pop();
+        const safeName = formData.name.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 40);
+        const storagePath = `org-certs/${newCert.id}_${safeName}.${ext}`;
+
+        const { error: uploadError } = await supabaseClient.storage
+          .from('certificates')
+          .upload(storagePath, certFile, { upsert: true });
+
+        if (uploadError) {
+          console.error('Error uploading org certificate file:', uploadError);
+          toast({
+            title: 'Certificate added',
+            description: 'Record saved but file upload failed. You can try uploading the file again later.',
+            variant: 'destructive',
+          });
+        } else {
+          await supabaseClient
+            .from('certificates')
+            .update({ certificate_url: storagePath })
+            .eq('id', newCert.id);
+        }
       }
 
-      const certificateData = {
-        user_id: user.id,
-        type: formData.type,
-        name: formData.name,
-        issued_by: formData.issued_by,
-        date_acquired: formData.date_acquired,
-        expiry_date: formData.expiry_date || null,
-        credential_id: formData.credential_id || null,
-        status: formData.status,
-        org_cert: true, // This is an organisation certificate
-      };
-      
-      const { error } = await supabaseClient
-        .from('certificates')
-        .insert([certificateData]);
-      
-      if (error) throw error;
-      
       toast({
-        title: "Organisation certificate added",
-        description: "Certificate has been successfully added to the organisation.",
+        title: 'Organisation certificate added',
+        description: 'Certificate has been successfully added to the organisation.',
       });
-      
       onOpenChange(false);
       resetForm();
       onSuccess?.();
     } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
     } finally {
       setLoading(false);
     }
@@ -99,7 +119,7 @@ const AddOrganisationCertificateDialog: React.FC<AddOrganisationCertificateDialo
         <DialogHeader>
           <DialogTitle>Add Organisation Certificate</DialogTitle>
         </DialogHeader>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="type">Type *</Label>
@@ -181,6 +201,40 @@ const AddOrganisationCertificateDialog: React.FC<AddOrganisationCertificateDialo
                 <SelectItem value="Revoked">Revoked</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div>
+            <Label>Certificate File (optional)</Label>
+            <div
+              className="mt-1 flex items-center gap-3 rounded-md border border-dashed border-muted-foreground/40 px-4 py-3 cursor-pointer hover:bg-muted/40 transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {certFile ? (
+                <>
+                  <FileText className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm truncate">{certFile.name}</span>
+                  <button
+                    type="button"
+                    className="ml-auto text-muted-foreground hover:text-destructive"
+                    onClick={(e) => { e.stopPropagation(); setCertFile(null); if (fileInputRef.current) fileInputRef.current.value = ''; }}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Upload className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-muted-foreground">Upload PDF, JPG, or PNG</span>
+                </>
+              )}
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png"
+              className="hidden"
+              onChange={(e) => setCertFile(e.target.files?.[0] ?? null)}
+            />
           </div>
 
           <div className="flex gap-2 justify-end">

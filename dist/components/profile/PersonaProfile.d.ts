@@ -15,7 +15,7 @@ export interface PersonProfile {
     startDate: string;
     language?: string;
     account: {
-        username: string;
+        email: string;
         employeeId: string;
         status: string;
         accessLevel: string;
@@ -42,6 +42,7 @@ export interface PersonProfile {
         lastUsed: string | null;
     }>;
     certificates: Array<{
+        id?: string;
         name: string;
         issuedBy: string;
         dateAcquired: string;
@@ -50,6 +51,7 @@ export interface PersonProfile {
         status: string;
         org_cert?: boolean;
         type?: string;
+        certificate_url?: string | null;
     }>;
 }
 declare const PersonaProfile: React.FC;

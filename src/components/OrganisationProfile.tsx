@@ -1,24 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
-import { Edit, Save, X } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Edit, Save, X, Upload, Loader2, ImageIcon, ShieldCheck, Shield } from 'lucide-react';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
 import type { Database } from '@/integrations/supabase/types';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useOrganisationContext } from '../context/OrganisationContext';
+import debug from '../utils/debug';
 
 type OrgSigRole = Database['public']['Tables']['org_sig_roles']['Row'];
 
 interface Profile {
   id: string;
   full_name: string;
-  username: string;
-  email?: string;
+  email: string;
 }
 
 interface OrganisationData {
@@ -33,15 +44,9 @@ interface OrganisationData {
   number_of_employees?: number;
   number_of_executives?: number;
   appointed_certification_body?: string;
+  org_logo_url?: string;
 }
 
-interface SignatoryRole {
-  id?: string;
-  role_type: string;
-  signatory_name?: string;
-  signatory_title?: string;
-  signatory_email?: string;
-}
 
 interface SignatoryData {
   name_signatory_cem?: string;
@@ -67,10 +72,18 @@ const OrganisationProfile: React.FC = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [organisationData, setOrganisationData] = useState<OrganisationData>({});
   const [signatoryData, setSignatoryData] = useState<SignatoryData>({});
-  const { isSuperAdmin } = useUserRole();
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
+  const { isSuperAdmin, hasAdminAccess } = useUserRole();
   const { supabaseClient } = useOrganisationContext();
+  debug.state('[OrganisationProfile] role flags', { isSuperAdmin, hasAdminAccess });
+
+  // MFA policy toggle — saved immediately, independent of the edit/save flow
+  const [requireMfa, setRequireMfa] = useState(false);
+  const [mfaSaving, setMfaSaving] = useState(false);
+  const [showDisableMfaConfirm, setShowDisableMfaConfirm] = useState(false);
   
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
@@ -81,9 +94,53 @@ const OrganisationProfile: React.FC = () => {
     const validatedValue = validatePhoneInput(e.target.value);
     setOrganisationData(prev => ({ ...prev, telephone: validatedValue }));
   };
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    if (!validTypes.includes(file.type)) {
+      toast.error('Please upload an image (JPEG, PNG, GIF, WebP, or SVG)');
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Logo must be smaller than 2 MB');
+      return;
+    }
+
+    setUploadingLogo(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const storagePath = `org-logo/logo-${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabaseClient.storage
+        .from('logos')
+        .upload(storagePath, file, { contentType: file.type, upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabaseClient.storage
+        .from('logos')
+        .getPublicUrl(storagePath);
+
+      setOrganisationData(prev => ({ ...prev, org_logo_url: urlData.publicUrl }));
+      toast.success('Logo uploaded — click Save to apply');
+    } catch (err: any) {
+      console.error('Logo upload error:', err);
+      toast.error('Failed to upload logo: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setUploadingLogo(false);
+      if (logoFileInputRef.current) logoFileInputRef.current.value = '';
+    }
+  };
+
   useEffect(() => {
     fetchOrganisationData();
   }, [supabaseClient]);
+
+  useEffect(() => {
+    debug.state('[OrganisationProfile] MFA toggle visibility', { hasAdminAccess, requireMfa, willShowToggle: hasAdminAccess });
+  }, [hasAdminAccess, requireMfa]);
 
   const fetchOrganisationData = async () => {
     try {
@@ -101,6 +158,8 @@ const OrganisationProfile: React.FC = () => {
 
       if (orgProfile) {
         setOrganisationData(orgProfile);
+        setRequireMfa(orgProfile.require_mfa ?? false);
+        debug.state('[OrganisationProfile] org_profile loaded', { require_mfa: orgProfile.require_mfa });
       }
 
       // Fetch signatory roles data
@@ -358,6 +417,69 @@ const OrganisationProfile: React.FC = () => {
     }
   };
 
+  const handleMfaToggle = (enabled: boolean) => {
+    debug.log('[OrganisationProfile.handleMfaToggle] toggled', { enabled, hasAdminAccess });
+    if (!enabled) {
+      setShowDisableMfaConfirm(true);
+      return;
+    }
+    applyMfaChange(true);
+  };
+
+  const applyMfaChange = async (enabled: boolean) => {
+    setShowDisableMfaConfirm(false);
+    setMfaSaving(true);
+    try {
+      const orgId = organisationData.id;
+      let error;
+      if (orgId) {
+        ({ error } = await supabaseClient
+          .from('org_profile')
+          .update({ require_mfa: enabled })
+          .eq('id', orgId));
+      } else {
+        const { data: inserted, error: insertError } = await supabaseClient
+          .from('org_profile')
+          .insert({ require_mfa: enabled })
+          .select('id')
+          .single();
+        error = insertError;
+        if (inserted) setOrganisationData(prev => ({ ...prev, id: inserted.id }));
+      }
+
+      if (error) throw error;
+      setRequireMfa(enabled);
+
+      if (!enabled) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          const res = await supabaseClient.functions.invoke('reset-user-mfa', {
+            body: {},
+            headers: session?.access_token
+              ? { Authorization: `Bearer ${session.access_token}` }
+              : undefined,
+          });
+          if (res.error || !res.data?.success) {
+            console.error('Bulk MFA reset warning:', res.error ?? res.data?.error);
+            toast.warning('MFA requirement disabled, but some enrolled users may still be challenged until they log out.');
+          } else {
+            toast.success(res.data.message);
+          }
+        } catch (fnErr: any) {
+          console.error('Bulk MFA reset error:', fnErr);
+          toast.warning('MFA requirement disabled. Note: existing enrolled users may need a manual reset.');
+        }
+      } else {
+        toast.success('MFA required for all users. They will be prompted on next login.');
+      }
+    } catch (err: any) {
+      console.error('MFA toggle error:', err);
+      toast.error('Failed to update MFA setting: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setMfaSaving(false);
+    }
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
     fetchOrganisationData(); // Reset to original data
@@ -396,8 +518,26 @@ const OrganisationProfile: React.FC = () => {
 
       {/* General Organisation Information */}
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0">
           <CardTitle>General Information</CardTitle>
+          {hasAdminAccess && (
+            <div className="flex items-center gap-2">
+              {requireMfa
+                ? <ShieldCheck className="h-4 w-4 text-primary" />
+                : <Shield className="h-4 w-4 text-muted-foreground" />
+              }
+              <Label htmlFor="require-mfa-toggle" className="text-sm font-normal text-muted-foreground cursor-pointer select-none">
+                Require MFA
+              </Label>
+              <Switch
+                id="require-mfa-toggle"
+                checked={requireMfa}
+                onCheckedChange={handleMfaToggle}
+                disabled={mfaSaving}
+                aria-label="Require MFA for all users"
+              />
+            </div>
+          )}
         </CardHeader>
         <CardContent className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -499,6 +639,77 @@ const OrganisationProfile: React.FC = () => {
               onChange={(e) => setOrganisationData(prev => ({ ...prev, appointed_certification_body: e.target.value }))}
               disabled={!isEditing}
             />
+          </div>
+
+          <Separator />
+
+          {/* Organisation Logo */}
+          <div className="space-y-3">
+            <Label>Organisation Logo</Label>
+            <p className="text-xs text-muted-foreground">
+              Used on generated certificates alongside the RAYN logo. Recommended: transparent PNG or SVG, max 2 MB.
+            </p>
+
+            {organisationData.org_logo_url && (
+              <div className="flex items-center gap-3">
+                <img
+                  src={organisationData.org_logo_url}
+                  alt="Organisation logo"
+                  className="h-14 max-w-[160px] object-contain border rounded p-1 bg-muted"
+                />
+                {isEditing && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setOrganisationData(prev => ({ ...prev, org_logo_url: '' }))}
+                  >
+                    <X className="h-4 w-4 mr-1" /> Remove
+                  </Button>
+                )}
+              </div>
+            )}
+
+            {isEditing && (
+              <div className="flex items-center gap-3">
+                <div className="space-y-1 flex-1">
+                  <Input
+                    placeholder="https://... (paste a URL, or upload a file below)"
+                    value={organisationData.org_logo_url || ''}
+                    onChange={(e) => setOrganisationData(prev => ({ ...prev, org_logo_url: e.target.value }))}
+                  />
+                </div>
+                <span className="text-xs text-muted-foreground">or</span>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={uploadingLogo}
+                  onClick={() => logoFileInputRef.current?.click()}
+                >
+                  {uploadingLogo ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                  ) : (
+                    <Upload className="h-4 w-4 mr-1" />
+                  )}
+                  Upload
+                </Button>
+                <input
+                  ref={logoFileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
+                  className="hidden"
+                  onChange={handleLogoUpload}
+                />
+              </div>
+            )}
+
+            {!organisationData.org_logo_url && !isEditing && (
+              <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                <ImageIcon className="h-4 w-4" />
+                <span>No logo uploaded</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -704,6 +915,24 @@ const OrganisationProfile: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+      <AlertDialog open={showDisableMfaConfirm} onOpenChange={setShowDisableMfaConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Disable MFA requirement?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will remove the MFA requirement for all non-admin users and
+              automatically unenrol anyone who has already set it up. Admin
+              accounts will still require MFA regardless of this setting.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={() => applyMfaChange(false)}>
+              Disable &amp; unenrol users
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

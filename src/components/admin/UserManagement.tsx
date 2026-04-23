@@ -6,16 +6,28 @@ import { useViewPreference } from '@/hooks/useViewPreference';
 import { handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { LayoutGrid, List, Users, Search } from 'lucide-react';
+import { LayoutGrid, List, Users, Search, Mail } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { DeleteUserDialog } from '@/components/ui/delete-user-dialog';
 import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import UserList from './UserList';
 import UserTable from './UserTable';
 import CreateUserDialog from './CreateUserDialog';
 import ImportUsersDialog from './ImportUsersDialog';
 import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
+import debug from '../../utils/debug';
 
 
 /**
@@ -47,7 +59,7 @@ const UserManagement: React.FC = () => {
     const search = searchTerm.toLowerCase();
     return (
       p.full_name?.toLowerCase().includes(search) ||
-      p.username?.toLowerCase().includes(search) ||
+      p.email?.toLowerCase().includes(search) ||
       p.location?.toLowerCase().includes(search) ||
       p.status?.toLowerCase().includes(search)
     );
@@ -60,7 +72,57 @@ const UserManagement: React.FC = () => {
   const [importWarnings, setImportWarnings] = useState<ImportError[]>([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
   const [isCreatingUser, setIsCreatingUser] = useState(false);
-  
+  const [isSendingActivations, setIsSendingActivations] = useState(false);
+  const [showActivationConfirm, setShowActivationConfirm] = useState(false);
+
+  const pendingProfiles = visibleProfiles.filter(p => p.status === 'Pending');
+
+  const handleSendActivationEmails = async () => {
+    if (pendingProfiles.length === 0) return;
+
+    const pathParts = window.location.pathname.split('/').filter(Boolean);
+    const reserved = ['admin', 'activate-account', 'reset-password', 'forgot-password', 'email-notifications'];
+    const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : '';
+    const redirectUrl = clientSegment
+      ? `${window.location.origin}/${clientSegment}/activate-account`
+      : `${window.location.origin}/activate-account`;
+
+    debug.log('[UserManagement.sendActivationEmails] sending to', pendingProfiles.length, 'pending users, redirectUrl:', redirectUrl);
+
+    setIsSendingActivations(true);
+    let sent = 0;
+    let failed = 0;
+    const BATCH_SIZE = 5;
+    const BATCH_DELAY_MS = 1000;
+
+    for (let i = 0; i < pendingProfiles.length; i += BATCH_SIZE) {
+      const batch = pendingProfiles.slice(i, i + BATCH_SIZE);
+      await Promise.all(batch.map(async (profile) => {
+        try {
+          const { error } = await supabaseClient.functions.invoke('request-activation-link', {
+            body: { email: profile.email, redirectUrl },
+          });
+          if (error) throw error;
+          debug.log('[UserManagement.sendActivationEmails] sent to', profile.email);
+          sent++;
+        } catch (err) {
+          debug.error('[UserManagement.sendActivationEmails] failed for', profile.email, err);
+          failed++;
+        }
+      }));
+      if (i + BATCH_SIZE < pendingProfiles.length) {
+        await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+      }
+    }
+
+    setIsSendingActivations(false);
+    toast({
+      title: failed === 0 ? 'Activation emails sent' : 'Activation emails sent with errors',
+      description: `${sent} sent${failed > 0 ? `, ${failed} failed` : ''} out of ${pendingProfiles.length} pending user${pendingProfiles.length !== 1 ? 's' : ''}`,
+      variant: failed > 0 ? 'destructive' : 'default',
+    });
+  };
+
   const {
     isCreateDialogOpen,
     setIsCreateDialogOpen,
@@ -170,6 +232,20 @@ const UserManagement: React.FC = () => {
                     <List className="h-4 w-4" />
                   </ToggleGroupItem>
                 </ToggleGroup>
+                {pendingProfiles.length > 0 && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowActivationConfirm(true)}
+                    disabled={isSendingActivations}
+                    className="flex items-center gap-2"
+                  >
+                    <Mail className="h-4 w-4" />
+                    {isSendingActivations
+                      ? 'Sending…'
+                      : `Send Activation Emails (${pendingProfiles.length})`}
+                  </Button>
+                )}
                 <ImportUsersDialog 
                   onImportComplete={refetch}
                   onImportError={(errors, warnings, stats) => {
@@ -225,6 +301,24 @@ const UserManagement: React.FC = () => {
           loading={isDeleting}
         />
       </div>
+
+      <AlertDialog open={showActivationConfirm} onOpenChange={setShowActivationConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Send Activation Emails</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will send an activation email to <strong>{pendingProfiles.length}</strong> pending user{pendingProfiles.length !== 1 ? 's' : ''}.
+              They will receive a link to set their password and activate their account.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSendActivationEmails}>
+              Send Emails
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

@@ -32,7 +32,7 @@ const KnowledgePanelInner: React.FC = () => {
           </TabsTrigger>
           <TabsTrigger value="compliance" className="flex items-center gap-2">
             <CheckCircle className="h-4 w-4" />
-            Compliance
+            Document Compliance
           </TabsTrigger>
         </TabsList>
 
@@ -52,11 +52,16 @@ const KnowledgePanelInner: React.FC = () => {
   );
 };
 
-const KnowledgePanel: React.FC = () => {
+interface KnowledgePanelProps {
+  basePath?: string;
+}
+
+const KnowledgePanel: React.FC<KnowledgePanelProps> = ({ basePath }) => {
   const { hasAdminAccess } = useUserRole();
 
   const config = {
     supabaseClient: supabase,
+    basePath,
     permissions: {
       canCreateUsers: hasAdminAccess,
       canEditUsers: hasAdminAccess,

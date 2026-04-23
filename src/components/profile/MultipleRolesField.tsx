@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, X } from 'lucide-react';
+import { Plus, X, Save } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/components/ui/use-toast';
@@ -12,16 +12,12 @@ interface MultipleRolesFieldProps {
   userId: string;
   departmentValue?: string;
   isEditing: boolean;
-  onEdit: () => void;
-  onCancel: () => void;
 }
 
 const MultipleRolesField: React.FC<MultipleRolesFieldProps> = ({
   userId,
   departmentValue,
   isEditing,
-  onEdit,
-  onCancel
 }) => {
   const [isAddingRole, setIsAddingRole] = useState(false);
   const [selectedRole, setSelectedRole] = useState('');
@@ -267,14 +263,15 @@ const MultipleRolesField: React.FC<MultipleRolesFieldProps> = ({
               </SelectContent>
             </Select>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsAddingRole(false)}>
-                Cancel
+              <Button variant="outline" size="icon" onClick={() => setIsAddingRole(false)}>
+                <X className="w-4 h-4" />
               </Button>
-              <Button 
-                onClick={handleAddRole} 
+              <Button
+                size="icon"
+                onClick={handleAddRole}
                 disabled={!selectedRole || addRoleMutation.isPending}
               >
-                Add Role
+                <Save className="w-4 h-4" />
               </Button>
             </div>
           </div>

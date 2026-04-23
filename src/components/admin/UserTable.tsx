@@ -32,10 +32,10 @@ const UserTable: React.FC<UserTableProps> = ({
       width: '300px'
     },
     { 
-      key: 'username', 
-      header: 'Username', 
+      key: 'email', 
+      header: 'Email', 
       type: 'text' as const, 
-      editable: true,
+      editable: false,
       sortable: true,
       width: '200px'
     },
@@ -61,7 +61,7 @@ const UserTable: React.FC<UserTableProps> = ({
       type: 'badge' as const, 
       editable: true,
       sortable: true,
-      options: ['Active', 'Inactive', 'OnLeave'],
+      options: ['Pending', 'Active', 'Inactive', 'OnLeave'],
       width: '120px'
     }
   ];

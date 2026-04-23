@@ -194,7 +194,7 @@ const AssignPhysicalLocationDialog: React.FC<AssignPhysicalLocationDialogProps> 
                     <SelectItem value="none">Create without user assignment</SelectItem>
                     {profiles.map((profile) => (
                       <SelectItem key={profile.id} value={profile.id}>
-                        {profile.full_name || 'No name'} ({profile.email || profile.username || 'No email'})
+                        {profile.full_name || 'No name'} ({profile.email || 'No email'})
                       </SelectItem>
                     ))}
                   </SelectContent>

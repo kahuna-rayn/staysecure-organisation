@@ -47,7 +47,7 @@ const AssignHardwareDialog: React.FC<AssignHardwareDialogProps> = ({
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('full_name, username')
+        .select('full_name, email')
         .eq('id', userId)
         .single();
       
@@ -71,7 +71,7 @@ const AssignHardwareDialog: React.FC<AssignHardwareDialogProps> = ({
     setLoading(true);
     
     try {
-      const userName = userProfile.full_name || userProfile.username || 'Assigned User';
+      const userName = userProfile.full_name || userProfile.email || 'Assigned User';
       
       // Update the hardware inventory item to assign it to the user
       // Set user_id (UUID foreign key) and keep asset_owner (name) for backward compatibility

@@ -7,7 +7,7 @@ interface ProfileBasicInfoProps {
     phone: string;
     location: string;
     locationId?: string;
-    username?: string;
+    email?: string;
     employeeId?: string;
     editingField: string | null;
     onEdit: (field: string) => void;
@@ -17,7 +17,7 @@ interface ProfileBasicInfoProps {
     profiles: {
         id: string;
         full_name: string;
-        username: string;
+        email: string;
     }[];
     currentUserId: string;
     userId: string;

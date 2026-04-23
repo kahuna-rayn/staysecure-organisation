@@ -43,8 +43,8 @@ const ProfileHeader: React.FC<ProfileHeaderProps> = ({ profile }) => {
                 </SelectTrigger>
                 <SelectContent>
                   {profiles.map((user) => (
-                    <SelectItem key={user.id} value={user.full_name || user.username || 'Unnamed User'}>
-                      {user.full_name || user.username || 'Unnamed User'}
+                    <SelectItem key={user.id} value={user.full_name || user.email || 'Unnamed User'}>
+                      {user.full_name || user.email || 'Unnamed User'}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -18,7 +18,6 @@ const ProfileEditor: React.FC = () => {
   const [saving, setSaving] = useState(false);
   
   const [formData, setFormData] = useState({
-    username: '',
     full_name: '',
     bio: '',
   });
@@ -26,7 +25,6 @@ const ProfileEditor: React.FC = () => {
   React.useEffect(() => {
     if (profile) {
       setFormData({
-        username: profile.username || '',
         full_name: profile.full_name || '',
         bio: profile.bio || '',
       });
@@ -87,10 +85,6 @@ const ProfileEditor: React.FC = () => {
                   <p className="text-sm">{profile?.full_name || 'Not set'}</p>
                 </div>
                 <div>
-                  <Label className="text-sm font-medium text-muted-foreground">Username</Label>
-                  <p className="text-sm">{profile?.username || 'Not set'}</p>
-                </div>
-                <div>
                   <Label className="text-sm font-medium text-muted-foreground">Bio</Label>
                   <p className="text-sm">{profile?.bio || 'Not set'}</p>
                 </div>
@@ -117,16 +111,6 @@ const ProfileEditor: React.FC = () => {
                     type="text"
                     value={formData.full_name}
                     onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-                  />
-                </div>
-                
-                <div>
-                  <Label htmlFor="username">Username</Label>
-                  <Input
-                    id="username"
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
                 </div>
                 

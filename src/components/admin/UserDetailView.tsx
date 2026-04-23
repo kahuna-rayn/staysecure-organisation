@@ -63,7 +63,7 @@ const UserDetailView: React.FC = () => {
     language: profileObj.language || 'English',
     cyber_learner: profileObj.cyber_learner || false,
     account: {
-      username: profileObj.username || 'Not set',
+      email: profileObj.email || 'Not set',
       employeeId: profileObj.employee_id || 'Not assigned',
       status: profileObj.status || 'Active',
       accessLevel: profileObj.access_level || 'User',

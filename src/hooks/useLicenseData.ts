@@ -52,7 +52,7 @@ export function useLicenseData() {
       // 2. Fetch all license assignments for this client's licenses
       const { data: rawAssignments, error: assignError } = await supabaseClient
         .from('product_license_assignments')
-        .select('id, license_id, user_id, access_level, profiles(full_name, username)')
+        .select('id, license_id, user_id, access_level, profiles(full_name, email)')
         .in('license_id', licenseIds);
 
       if (assignError) throw assignError;
@@ -98,7 +98,7 @@ export function useLicenseData() {
       const assignments: LicenseAssignment[] = (rawAssignments ?? []).map(a => ({
         userId: a.user_id,
         userName: (a.profiles as any)?.full_name ?? null,
-        userEmail: (a.profiles as any)?.username ?? null,
+        userEmail: (a.profiles as any)?.email ?? null,
         licenseId: a.license_id,
         productId: licenseProductIdMap.get(a.license_id) ?? '',
         productName: licenseProductMap.get(a.license_id) ?? 'Unknown Product',

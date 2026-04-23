@@ -57,10 +57,8 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   const isCurrentUserProfile = !!user?.id && profile.id === user.id;
 
   const handleSendPasswordReset = async () => {
-    // username (= email) may be at top-level or nested under account depending on the caller
     const account = profile.account as Record<string, unknown> | undefined;
-    const email = (account?.username as string)
-      || (profile.username as string)
+    const email = (account?.email as string)
       || (profile.email as string);
     if (!email) {
       toast.error("No email address found for this user.");
@@ -223,7 +221,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
   });
   
   const managerProfile = profiles.find(u => u.id === profile.manager);
-  const managerName = managerProfile ? (managerProfile.full_name || managerProfile.username) : 'Not assigned';
+  const managerName = managerProfile ? (managerProfile.full_name || managerProfile.email) : 'Not assigned';
 
   // Get departments and roles
   const { userDepartments } = useUserDepartments(profile.id);
@@ -330,10 +328,10 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                 />
               </div>
               
-              {profile.account?.username && (
+              {profile.account?.email && (
                 <div className="flex items-center gap-2 text-sm">
                   <User className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-foreground">{profile.account.username}</span>
+                  <span className="text-foreground">{profile.account.email}</span>
                 </div>
               )}
               
@@ -375,7 +373,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                     <SelectContent>
                       {filteredProfiles.map((user) => (
                         <SelectItem key={user.id} value={user.id}>
-                          {user.full_name || user.username || 'Unnamed User'}
+                          {user.full_name || user.email || 'Unnamed User'}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -535,8 +533,7 @@ const EditableProfileHeader: React.FC<EditableProfileHeaderProps> = ({
                     <AlertDialogTitle>Send password reset?</AlertDialogTitle>
                     <AlertDialogDescription>
                       A password reset link will be emailed to <strong>
-                        {((profile.account as Record<string, unknown>)?.username as string)
-                          || (profile.username as string)
+                        {((profile.account as Record<string, unknown>)?.email as string)
                           || (profile.email as string)
                           || 'this user'}
                       </strong>. They will be able to set a new password using that link.

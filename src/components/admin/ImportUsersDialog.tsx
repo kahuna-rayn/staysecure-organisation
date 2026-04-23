@@ -71,20 +71,15 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   });
 
   // Fetch all existing profiles for manager validation
-  // Note: username stores the email address in this system
   const { data: existingProfiles } = useQuery({
     queryKey: ['profiles-for-manager-validation'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, full_name, username')
+        .select('id, full_name, email')
         .order('full_name');
       if (error) throw error;
-      // Map username to email field for validation (username = email in this system)
-      return (data || []).map(profile => ({
-        ...profile,
-        email: profile.username // username stores the email
-      }));
+      return data || [];
     },
   });
 
@@ -305,7 +300,6 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
         full_name: fullName.trim(),
         first_name: firstName.trim(),
         last_name: lastName.trim(),
-        username: row['Username'] || row['username'] || '',
         phone: row['Phone'] || row['phone'] || '',
         status: 'Pending',
         employee_id: row['Employee ID'] || row['employee_id'] || '',
@@ -706,8 +700,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
           // Pass 2: Assign managers (all users from CSV now exist, so order doesn't matter)
           const emailToId = new Map<string, string>();
-          (existingProfiles || []).forEach((p: { id: string; username?: string; email?: string }) => {
-            const e = (p.email ?? p.username ?? '').trim().toLowerCase();
+          (existingProfiles || []).forEach((p: { id: string; email?: string }) => {
+            const e = (p.email ?? '').trim().toLowerCase();
             if (e) emailToId.set(e, p.id);
           });
           createdUsers.forEach((u) => {

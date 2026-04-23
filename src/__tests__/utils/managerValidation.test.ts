@@ -7,24 +7,9 @@ import { validateManager, Profile } from '@/utils/managerValidation';
 
 describe('validateManager', () => {
   const mockProfiles: Profile[] = [
-    {
-      id: 'user-1',
-      email: 'john.doe@example.com',
-      full_name: 'John Doe',
-      username: 'john.doe@example.com' // username stores email in this system
-    },
-    {
-      id: 'user-2',
-      email: 'jane.smith@example.com',
-      full_name: 'Jane Smith',
-      username: 'jane.smith@example.com'
-    },
-    {
-      id: 'user-3',
-      email: 'bob.wilson@example.com',
-      full_name: 'Bob Wilson',
-      username: 'bob.wilson@example.com'
-    }
+    { id: 'user-1', email: 'john.doe@example.com', full_name: 'John Doe' },
+    { id: 'user-2', email: 'jane.smith@example.com', full_name: 'Jane Smith' },
+    { id: 'user-3', email: 'bob.wilson@example.com', full_name: 'Bob Wilson' },
   ];
 
   describe('when manager email exists', () => {
@@ -34,16 +19,11 @@ describe('validateManager', () => {
       expect(result.managerId).toBe('user-1');
     });
 
-    it('should find manager by email when using username field (username = email)', () => {
-      // Test with profile that has email in username field
-      const profilesWithUsernameAsEmail: Profile[] = [
-        {
-          id: 'user-1',
-          username: 'test@example.com', // username stores email
-          full_name: 'Test User'
-        }
+    it('should find manager by email field', () => {
+      const profiles: Profile[] = [
+        { id: 'user-1', email: 'test@example.com', full_name: 'Test User' }
       ];
-      const result = validateManager('test@example.com', profilesWithUsernameAsEmail);
+      const result = validateManager('test@example.com', profiles);
       expect(result.isValid).toBe(true);
       expect(result.managerId).toBe('user-1');
     });
@@ -95,32 +75,26 @@ describe('validateManager', () => {
       expect(result.managerId).toBeUndefined();
     });
 
-    it('should handle profiles with missing email field but username contains email', () => {
-      const profilesWithMissingFields: Profile[] = [
-        { id: 'user-1', email: 'test@example.com' }, // has email field
-        { id: 'user-3', username: 'test2@example.com' } // username stores email, no email field
+    it('should handle profiles with missing email field gracefully', () => {
+      const profiles: Profile[] = [
+        { id: 'user-1', email: 'test@example.com' },
+        { id: 'user-2' } // no email field
       ];
 
-      // Should match by email field
-      const result1 = validateManager('test@example.com', profilesWithMissingFields);
+      const result1 = validateManager('test@example.com', profiles);
       expect(result1.isValid).toBe(true);
       expect(result1.managerId).toBe('user-1');
 
-      // Should match by username field (username stores email)
-      const result2 = validateManager('test2@example.com', profilesWithMissingFields);
-      expect(result2.isValid).toBe(true);
-      expect(result2.managerId).toBe('user-3');
+      const result2 = validateManager('other@example.com', profiles);
+      expect(result2.isValid).toBe(false);
     });
 
-    it('should handle profiles with null/undefined fields gracefully', () => {
-      const profilesWithNulls: Profile[] = [
-        { id: 'user-1', email: null as any, full_name: undefined as any, username: 'test@example.com' }
+    it('should handle profiles with null/undefined email gracefully', () => {
+      const profiles: Profile[] = [
+        { id: 'user-1', email: null as any, full_name: undefined as any }
       ];
-
-      // username stores email, so should match by username field
-      const result = validateManager('test@example.com', profilesWithNulls);
-      expect(result.isValid).toBe(true);
-      expect(result.managerId).toBe('user-1');
+      const result = validateManager('test@example.com', profiles);
+      expect(result.isValid).toBe(false);
     });
   });
 });

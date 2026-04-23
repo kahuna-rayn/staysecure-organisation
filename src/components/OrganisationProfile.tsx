@@ -45,6 +45,8 @@ interface OrganisationData {
   number_of_executives?: number;
   appointed_certification_body?: string;
   org_logo_url?: string;
+  entra_enabled?: boolean;
+  azure_tenant_id?: string;
 }
 
 
@@ -84,6 +86,10 @@ const OrganisationProfile: React.FC = () => {
   const [requireMfa, setRequireMfa] = useState(false);
   const [mfaSaving, setMfaSaving] = useState(false);
   const [showDisableMfaConfirm, setShowDisableMfaConfirm] = useState(false);
+
+  // Entra SSO toggle — saved immediately like MFA; azure_tenant_id saved via edit/save flow
+  const [entraEnabled, setEntraEnabled] = useState(false);
+  const [entraSaving, setEntraSaving] = useState(false);
   
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
@@ -159,7 +165,8 @@ const OrganisationProfile: React.FC = () => {
       if (orgProfile) {
         setOrganisationData(orgProfile);
         setRequireMfa(orgProfile.require_mfa ?? false);
-        debug.state('[OrganisationProfile] org_profile loaded', { require_mfa: orgProfile.require_mfa });
+        setEntraEnabled(orgProfile.entra_enabled ?? false);
+        debug.state('[OrganisationProfile] org_profile loaded', { require_mfa: orgProfile.require_mfa, entra_enabled: orgProfile.entra_enabled });
       }
 
       // Fetch signatory roles data
@@ -480,6 +487,37 @@ const OrganisationProfile: React.FC = () => {
     }
   };
 
+  const handleEntraToggle = async (enabled: boolean) => {
+    setEntraSaving(true);
+    try {
+      const orgId = organisationData.id;
+      let error;
+      if (orgId) {
+        ({ error } = await supabaseClient
+          .from('org_profile')
+          .update({ entra_enabled: enabled })
+          .eq('id', orgId));
+      } else {
+        const { data: inserted, error: insertError } = await supabaseClient
+          .from('org_profile')
+          .insert({ entra_enabled: enabled })
+          .select('id')
+          .single();
+        error = insertError;
+        if (inserted) setOrganisationData(prev => ({ ...prev, id: inserted.id }));
+      }
+      if (error) throw error;
+      setEntraEnabled(enabled);
+      setOrganisationData(prev => ({ ...prev, entra_enabled: enabled }));
+      toast.success(enabled ? 'Microsoft SSO enabled.' : 'Microsoft SSO disabled.');
+    } catch (err: any) {
+      console.error('Entra toggle error:', err);
+      toast.error('Failed to update SSO setting: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setEntraSaving(false);
+    }
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
     fetchOrganisationData(); // Reset to original data
@@ -518,26 +556,8 @@ const OrganisationProfile: React.FC = () => {
 
       {/* General Organisation Information */}
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0">
+        <CardHeader>
           <CardTitle>General Information</CardTitle>
-          {hasAdminAccess && (
-            <div className="flex items-center gap-2">
-              {requireMfa
-                ? <ShieldCheck className="h-4 w-4 text-primary" />
-                : <Shield className="h-4 w-4 text-muted-foreground" />
-              }
-              <Label htmlFor="require-mfa-toggle" className="text-sm font-normal text-muted-foreground cursor-pointer select-none">
-                Require MFA
-              </Label>
-              <Switch
-                id="require-mfa-toggle"
-                checked={requireMfa}
-                onCheckedChange={handleMfaToggle}
-                disabled={mfaSaving}
-                aria-label="Require MFA for all users"
-              />
-            </div>
-          )}
         </CardHeader>
         <CardContent className="space-y-4 text-left">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -713,6 +733,83 @@ const OrganisationProfile: React.FC = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Sign In & Security */}
+      {hasAdminAccess && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Sign In &amp; Security</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+
+            {/* Require MFA */}
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  {requireMfa
+                    ? <ShieldCheck className="h-4 w-4 text-primary" />
+                    : <Shield className="h-4 w-4 text-muted-foreground" />
+                  }
+                  <Label htmlFor="require-mfa-toggle" className="text-sm font-medium cursor-pointer">
+                    Require MFA
+                  </Label>
+                </div>
+                <p className="text-xs text-muted-foreground pl-6">
+                  Users must enrol an authenticator app before accessing the platform. Admins always require MFA regardless of this setting.
+                </p>
+              </div>
+              <Switch
+                id="require-mfa-toggle"
+                checked={requireMfa}
+                onCheckedChange={handleMfaToggle}
+                disabled={mfaSaving}
+                aria-label="Require MFA for all users"
+              />
+            </div>
+
+            <Separator />
+
+            {/* Microsoft Entra SSO */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label htmlFor="entra-toggle" className="text-sm font-medium cursor-pointer">
+                    Sign in with Microsoft
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    Show the "Sign in with Microsoft" button on the login page. Requires an Azure Tenant ID.
+                  </p>
+                </div>
+                <Switch
+                  id="entra-toggle"
+                  checked={entraEnabled}
+                  onCheckedChange={handleEntraToggle}
+                  disabled={entraSaving || (!organisationData.azure_tenant_id && !entraEnabled)}
+                  aria-label="Enable Microsoft SSO"
+                />
+              </div>
+
+              <div className="space-y-2 pl-0">
+                <Label htmlFor="azure-tenant-id" className="text-sm">
+                  Azure Tenant ID
+                </Label>
+                <Input
+                  id="azure-tenant-id"
+                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                  value={organisationData.azure_tenant_id || ''}
+                  onChange={(e) => setOrganisationData(prev => ({ ...prev, azure_tenant_id: e.target.value }))}
+                  disabled={!isEditing || !isSuperAdmin}
+                  className="font-mono text-sm"
+                />
+                {!isSuperAdmin && (
+                  <p className="text-xs text-muted-foreground">Contact your RAYN administrator to update the Tenant ID.</p>
+                )}
+              </div>
+            </div>
+
+          </CardContent>
+        </Card>
+      )}
 
       {/* Signatory Information */}
       <Card>

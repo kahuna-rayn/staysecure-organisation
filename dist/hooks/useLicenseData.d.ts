@@ -25,5 +25,5 @@ export interface LicenseData {
     products: ProductLicense[];
     assignments: LicenseAssignment[];
 }
-export declare function useLicenseData(): import('@tanstack/react-query').UseQueryResult<LicenseData, Error>;
+export declare function useLicenseData(): any;
 //# sourceMappingURL=useLicenseData.d.ts.map

@@ -5428,6 +5428,8 @@
     const [requireMfa, setRequireMfa] = React.useState(false);
     const [mfaSaving, setMfaSaving] = React.useState(false);
     const [showDisableMfaConfirm, setShowDisableMfaConfirm] = React.useState(false);
+    const [entraEnabled, setEntraEnabled] = React.useState(false);
+    const [entraSaving, setEntraSaving] = React.useState(false);
     const validatePhoneInput = (input2) => {
       return input2.replace(/[^0-9+\s\-()]/g, "");
     };
@@ -5481,7 +5483,8 @@
         if (orgProfile) {
           setOrganisationData(orgProfile);
           setRequireMfa(orgProfile.require_mfa ?? false);
-          debug.state("[OrganisationProfile] org_profile loaded", { require_mfa: orgProfile.require_mfa });
+          setEntraEnabled(orgProfile.entra_enabled ?? false);
+          debug.state("[OrganisationProfile] org_profile loaded", { require_mfa: orgProfile.require_mfa, entra_enabled: orgProfile.entra_enabled });
         }
         const { data: sigRoles, error: sigError } = await supabaseClient.from("org_sig_roles").select("*");
         if (sigError) {
@@ -5749,6 +5752,29 @@
         setMfaSaving(false);
       }
     };
+    const handleEntraToggle = async (enabled) => {
+      setEntraSaving(true);
+      try {
+        const orgId = organisationData.id;
+        let error;
+        if (orgId) {
+          ({ error } = await supabaseClient.from("org_profile").update({ entra_enabled: enabled }).eq("id", orgId));
+        } else {
+          const { data: inserted, error: insertError } = await supabaseClient.from("org_profile").insert({ entra_enabled: enabled }).select("id").single();
+          error = insertError;
+          if (inserted) setOrganisationData((prev) => ({ ...prev, id: inserted.id }));
+        }
+        if (error) throw error;
+        setEntraEnabled(enabled);
+        setOrganisationData((prev) => ({ ...prev, entra_enabled: enabled }));
+        sonner.toast.success(enabled ? "Microsoft SSO enabled." : "Microsoft SSO disabled.");
+      } catch (err) {
+        console.error("Entra toggle error:", err);
+        sonner.toast.error("Failed to update SSO setting: " + (err.message ?? "unknown error"));
+      } finally {
+        setEntraSaving(false);
+      }
+    };
     const handleCancel = () => {
       setIsEditing(false);
       fetchOrganisationData();
@@ -5768,23 +5794,7 @@
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0", children: [
-          /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "General Information" }),
-          hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-            requireMfa ? /* @__PURE__ */ jsxRuntime.jsx(ShieldCheck, { className: "h-4 w-4 text-primary" }) : /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
-            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "require-mfa-toggle", className: "text-sm font-normal text-muted-foreground cursor-pointer select-none", children: "Require MFA" }),
-            /* @__PURE__ */ jsxRuntime.jsx(
-              _switch.Switch,
-              {
-                id: "require-mfa-toggle",
-                checked: requireMfa,
-                onCheckedChange: handleMfaToggle,
-                disabled: mfaSaving,
-                "aria-label": "Require MFA for all users"
-              }
-            )
-          ] })
-        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "General Information" }) }),
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-4 text-left", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
@@ -5981,6 +5991,64 @@
             !organisationData.org_logo_url && !isEditing && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 text-muted-foreground text-sm", children: [
               /* @__PURE__ */ jsxRuntime.jsx(Image, { className: "h-4 w-4" }),
               /* @__PURE__ */ jsxRuntime.jsx("span", { children: "No logo uploaded" })
+            ] })
+          ] })
+        ] })
+      ] }),
+      hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { children: "Sign In & Security" }) }),
+        /* @__PURE__ */ jsxRuntime.jsxs(card.CardContent, { className: "space-y-6", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                requireMfa ? /* @__PURE__ */ jsxRuntime.jsx(ShieldCheck, { className: "h-4 w-4 text-primary" }) : /* @__PURE__ */ jsxRuntime.jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
+                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "require-mfa-toggle", className: "text-sm font-medium cursor-pointer", children: "Require MFA" })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground pl-6", children: "Users must enrol an authenticator app before accessing the platform. Admins always require MFA regardless of this setting." })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              _switch.Switch,
+              {
+                id: "require-mfa-toggle",
+                checked: requireMfa,
+                onCheckedChange: handleMfaToggle,
+                disabled: mfaSaving,
+                "aria-label": "Require MFA for all users"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(separator.Separator, {}),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "entra-toggle", className: "text-sm font-medium cursor-pointer", children: "Sign in with Microsoft" }),
+                /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: 'Show the "Sign in with Microsoft" button on the login page. Requires an Azure Tenant ID.' })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                _switch.Switch,
+                {
+                  id: "entra-toggle",
+                  checked: entraEnabled,
+                  onCheckedChange: handleEntraToggle,
+                  disabled: entraSaving || !organisationData.azure_tenant_id && !entraEnabled,
+                  "aria-label": "Enable Microsoft SSO"
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2 pl-0", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "azure-tenant-id", className: "text-sm", children: "Azure Tenant ID" }),
+              /* @__PURE__ */ jsxRuntime.jsx(
+                input.Input,
+                {
+                  id: "azure-tenant-id",
+                  placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                  value: organisationData.azure_tenant_id || "",
+                  onChange: (e) => setOrganisationData((prev) => ({ ...prev, azure_tenant_id: e.target.value })),
+                  disabled: !isEditing || !isSuperAdmin,
+                  className: "font-mono text-sm"
+                }
+              ),
+              !isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Contact your RAYN administrator to update the Tenant ID." })
             ] })
           ] })
         ] })

@@ -4478,6 +4478,181 @@
       )
     ] });
   };
+  const LocationMembersDialog = ({
+    isOpen,
+    onOpenChange,
+    locationId,
+    locationName
+  }) => {
+    const { supabaseClient } = useOrganisationContext();
+    const printRef = React.useRef(null);
+    const { data: members = [], isLoading } = reactQuery.useQuery({
+      queryKey: ["location-members", locationId],
+      queryFn: async () => {
+        debug.log("[LocationMembersDialog] Fetching members, locationId:", locationId);
+        let profileQuery = supabaseClient.from("profiles").select("id, full_name, email, status, location_id");
+        if (locationId) {
+          profileQuery = profileQuery.eq("location_id", locationId);
+        } else {
+          profileQuery = profileQuery.not("location_id", "is", null);
+        }
+        const { data: profiles, error: profilesError } = await profileQuery;
+        debug.log("[LocationMembersDialog] profiles result:", { count: profiles == null ? void 0 : profiles.length, error: profilesError == null ? void 0 : profilesError.message });
+        if (profilesError) throw profilesError;
+        if (!profiles || profiles.length === 0) {
+          debug.log("[LocationMembersDialog] No users found for location(s)");
+          return [];
+        }
+        const userIds = profiles.map((p) => p.id);
+        const locationIds = [...new Set(profiles.map((p) => p.location_id).filter(Boolean))];
+        let locationNameMap = /* @__PURE__ */ new Map();
+        if (locationIds.length > 0) {
+          const { data: locationsData, error: locationsError } = await supabaseClient.from("locations").select("id, name").in("id", locationIds);
+          debug.log("[LocationMembersDialog] locations result:", { count: locationsData == null ? void 0 : locationsData.length, error: locationsError == null ? void 0 : locationsError.message });
+          if (locationsError) throw locationsError;
+          (locationsData || []).forEach((l) => locationNameMap.set(l.id, l.name));
+        }
+        const { data: userProfileRoles, error: uprError } = await supabaseClient.from("user_profile_roles").select("user_id, role_id, is_primary").in("user_id", userIds);
+        debug.log("[LocationMembersDialog] user_profile_roles result:", { count: userProfileRoles == null ? void 0 : userProfileRoles.length, error: uprError == null ? void 0 : uprError.message });
+        if (uprError) throw uprError;
+        const roleIds = [...new Set((userProfileRoles || []).map((upr) => upr.role_id).filter(Boolean))];
+        let rolesData = [];
+        if (roleIds.length > 0) {
+          const { data: roles, error: rolesError } = await supabaseClient.from("roles").select("role_id, name").in("role_id", roleIds);
+          debug.log("[LocationMembersDialog] roles result:", { count: roles == null ? void 0 : roles.length, error: rolesError == null ? void 0 : rolesError.message });
+          if (rolesError) throw rolesError;
+          rolesData = roles || [];
+        }
+        const { data: userDepts, error: userDeptsError } = await supabaseClient.from("user_departments").select("user_id, department_id, is_primary, departments(name)").in("user_id", userIds);
+        debug.log("[LocationMembersDialog] user_departments result:", { count: userDepts == null ? void 0 : userDepts.length, error: userDeptsError == null ? void 0 : userDeptsError.message });
+        if (userDeptsError) throw userDeptsError;
+        const roleNameMap = /* @__PURE__ */ new Map();
+        rolesData.forEach((r) => roleNameMap.set(r.role_id, r.name));
+        const userRoleMap = /* @__PURE__ */ new Map();
+        (userProfileRoles || []).forEach((upr) => {
+          const roleName = roleNameMap.get(upr.role_id) || "No Role";
+          if (upr.is_primary || !userRoleMap.has(upr.user_id)) {
+            userRoleMap.set(upr.user_id, roleName);
+          }
+        });
+        const userDeptMap = /* @__PURE__ */ new Map();
+        (userDepts || []).forEach((ud) => {
+          var _a;
+          if (ud.is_primary || !userDeptMap.has(ud.user_id)) {
+            userDeptMap.set(ud.user_id, ((_a = ud.departments) == null ? void 0 : _a.name) || "No Department");
+          }
+        });
+        const memberData = profiles.map((p) => ({
+          locationName: locationNameMap.get(p.location_id) || locationName || "Unknown",
+          userName: p.full_name || "Unknown User",
+          roleName: userRoleMap.get(p.id) || "No Role",
+          departmentName: userDeptMap.get(p.id) || "No Department",
+          email: p.email || "",
+          status: p.status || "Unknown"
+        }));
+        memberData.sort((a, b) => {
+          const locCompare = a.locationName.localeCompare(b.locationName);
+          if (locCompare !== 0) return locCompare;
+          return a.userName.localeCompare(b.userName);
+        });
+        debug.log("[LocationMembersDialog] Final member data:", memberData.length, "members");
+        return memberData;
+      },
+      enabled: isOpen
+    });
+    const handlePrint = reactToPrint.useReactToPrint({
+      content: () => printRef.current,
+      documentTitle: locationName ? `${locationName} Members Report` : "All Location Members Report"
+    });
+    const handleExportExcel = () => {
+      if (members.length === 0) return;
+      const worksheet = XLSX__namespace.utils.json_to_sheet(members.map((m) => ({
+        Location: m.locationName,
+        User: m.userName,
+        Role: m.roleName,
+        Department: m.departmentName,
+        Email: m.email,
+        Status: m.status
+      })));
+      const workbook = XLSX__namespace.utils.book_new();
+      XLSX__namespace.utils.book_append_sheet(workbook, worksheet, "Location Members");
+      const fileName = locationName ? `${locationName.replace(/\s+/g, "_")}_members.xlsx` : "all_location_members.xlsx";
+      XLSX__namespace.writeFile(workbook, fileName);
+    };
+    const handleExportPDF = () => {
+      if (members.length === 0) return;
+      const doc = new jsPDF();
+      doc.setFontSize(18);
+      doc.text(locationName ? `${locationName} Members` : "Location Members Report", 14, 20);
+      doc.setFontSize(10);
+      doc.text(`Generated: ${(/* @__PURE__ */ new Date()).toLocaleDateString()}`, 14, 28);
+      doc.text(`Total Members: ${members.length}`, 14, 34);
+      autoTable(doc, {
+        head: [["Location", "User", "Role", "Department", "Email", "Status"]],
+        body: members.map((m) => [
+          m.locationName,
+          m.userName,
+          m.roleName,
+          m.departmentName,
+          m.email,
+          m.status
+        ]),
+        startY: 40,
+        styles: { fontSize: 9 },
+        headStyles: { fillColor: [41, 128, 185] }
+      });
+      const fileName = locationName ? `${locationName.replace(/\s+/g, "_")}_members.pdf` : "all_location_members.pdf";
+      doc.save(fileName);
+    };
+    const title = locationName ? `${locationName} Members` : "All Location Members";
+    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-4xl max-h-[90vh] overflow-hidden flex flex-col", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogTitle, { className: "flex items-center gap-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-5 w-5" }),
+          title
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: locationName ? `Users assigned to ${locationName}` : "All users grouped by location" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-2 py-2", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handlePrint, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Printer, { className: "h-4 w-4 mr-2" }),
+          "Print"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportExcel, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4 mr-2" }),
+          "Excel"
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleExportPDF, variant: "outline", size: "sm", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-4 w-4 mr-2" }),
+          "PDF"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { ref: printRef, className: "flex-1 overflow-auto", children: isLoading ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-32", children: /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "Loading members..." }) }) : members.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-32", children: /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-muted-foreground", children: "No members found" }) }) : /* @__PURE__ */ jsxRuntime.jsxs(table.Table, { children: [
+        /* @__PURE__ */ jsxRuntime.jsx(table.TableHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+          !locationId && /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Location" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "User" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Role" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Department" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Email" }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableHead, { children: "Status" })
+        ] }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(table.TableBody, { children: members.map((member, index) => /* @__PURE__ */ jsxRuntime.jsxs(table.TableRow, { children: [
+          !locationId && /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.locationName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "font-medium", children: member.userName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.roleName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: member.departmentName }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { className: "text-muted-foreground", children: member.email }),
+          /* @__PURE__ */ jsxRuntime.jsx(table.TableCell, { children: /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
+        ] }, index)) })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "pt-2 border-t text-sm text-muted-foreground", children: [
+        "Total: ",
+        members.length,
+        " member",
+        members.length !== 1 ? "s" : ""
+      ] })
+    ] }) });
+  };
   const LocationManagement = () => {
     const { supabaseClient, hasPermission } = useOrganisationContext();
     const queryClient = reactQuery.useQueryClient();
@@ -4493,6 +4668,8 @@
     });
     const [sortField, setSortField] = React.useState("name");
     const [sortDirection, setSortDirection] = React.useState("asc");
+    const [isMembersDialogOpen, setIsMembersDialogOpen] = React.useState(false);
+    const [selectedLocationForMembers, setSelectedLocationForMembers] = React.useState(null);
     const { data: locationsData, isLoading: locationsLoading } = reactQuery.useQuery({
       queryKey: ["locations"],
       queryFn: async () => {
@@ -4654,91 +4831,106 @@
             ] }),
             /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Manage organizational locations and facilities" })
           ] }),
-          hasPermission("canManageLocations") && /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
-            /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
-            /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
-              /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Location" }),
-                /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Add a new location to your organization" })
-              ] }),
-              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-4 py-4", children: [
-                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "name", children: "Location Name" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(
-                    input.Input,
-                    {
-                      id: "name",
-                      value: formData.name,
-                      onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
-                      placeholder: "Enter location name"
-                    }
-                  )
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(
+              button.Button,
+              {
+                variant: "outline",
+                size: "icon",
+                onClick: () => {
+                  setSelectedLocationForMembers(null);
+                  setIsMembersDialogOpen(true);
+                },
+                title: "View all members",
+                children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
+              }
+            ),
+            hasPermission("canManageLocations") && /* @__PURE__ */ jsxRuntime.jsxs(dialog.Dialog, { open: isCreateDialogOpen, onOpenChange: setIsCreateDialogOpen, children: [
+              /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Plus, { className: "h-4 w-4" }) }) }),
+              /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
+                /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Create Location" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Add a new location to your organization" })
                 ] }),
-                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "description", children: "Description" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(
-                    textarea.Textarea,
-                    {
-                      id: "description",
-                      value: formData.description,
-                      onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
-                      placeholder: "Enter location description (optional)"
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-4 py-4", children: [
                   /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "building", children: "Building" }),
+                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "name", children: "Location Name" }),
                     /* @__PURE__ */ jsxRuntime.jsx(
                       input.Input,
                       {
-                        id: "building",
-                        value: formData.building,
-                        onChange: (e) => setFormData((prev) => ({ ...prev, building: e.target.value })),
-                        placeholder: "Building name"
+                        id: "name",
+                        value: formData.name,
+                        onChange: (e) => setFormData((prev) => ({ ...prev, name: e.target.value })),
+                        placeholder: "Enter location name"
                       }
                     )
                   ] }),
                   /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "floor", children: "Floor" }),
+                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "description", children: "Description" }),
+                    /* @__PURE__ */ jsxRuntime.jsx(
+                      textarea.Textarea,
+                      {
+                        id: "description",
+                        value: formData.description,
+                        onChange: (e) => setFormData((prev) => ({ ...prev, description: e.target.value })),
+                        placeholder: "Enter location description (optional)"
+                      }
+                    )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "building", children: "Building" }),
+                      /* @__PURE__ */ jsxRuntime.jsx(
+                        input.Input,
+                        {
+                          id: "building",
+                          value: formData.building,
+                          onChange: (e) => setFormData((prev) => ({ ...prev, building: e.target.value })),
+                          placeholder: "Building name"
+                        }
+                      )
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "floor", children: "Floor" }),
+                      /* @__PURE__ */ jsxRuntime.jsx(
+                        input.Input,
+                        {
+                          id: "floor",
+                          value: formData.floor,
+                          onChange: (e) => setFormData((prev) => ({ ...prev, floor: e.target.value })),
+                          placeholder: "Floor number"
+                        }
+                      )
+                    ] })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "room", children: "Room" }),
                     /* @__PURE__ */ jsxRuntime.jsx(
                       input.Input,
                       {
-                        id: "floor",
-                        value: formData.floor,
-                        onChange: (e) => setFormData((prev) => ({ ...prev, floor: e.target.value })),
-                        placeholder: "Floor number"
+                        id: "room",
+                        value: formData.room,
+                        onChange: (e) => setFormData((prev) => ({ ...prev, room: e.target.value })),
+                        placeholder: "Room number/name"
                       }
                     )
+                  ] }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center space-x-2", children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(
+                      _switch.Switch,
+                      {
+                        id: "status",
+                        checked: formData.status === "Active",
+                        onCheckedChange: (checked) => setFormData((prev) => ({ ...prev, status: checked ? "Active" : "Inactive" }))
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "status", children: "Active Location" })
                   ] })
                 ] }),
-                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid gap-2", children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "room", children: "Room" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(
-                    input.Input,
-                    {
-                      id: "room",
-                      value: formData.room,
-                      onChange: (e) => setFormData((prev) => ({ ...prev, room: e.target.value })),
-                      placeholder: "Room number/name"
-                    }
-                  )
-                ] }),
-                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center space-x-2", children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(
-                    _switch.Switch,
-                    {
-                      id: "status",
-                      checked: formData.status === "Active",
-                      onCheckedChange: (checked) => setFormData((prev) => ({ ...prev, status: checked ? "Active" : "Inactive" }))
-                    }
-                  ),
-                  /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "status", children: "Active Location" })
+                /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
+                  /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
                 ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
-                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setIsCreateDialogOpen(false), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }),
-                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleSubmit, disabled: !formData.name.trim(), size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Save, { className: "h-4 w-4" }) })
               ] })
             ] })
           ] })
@@ -4810,6 +5002,19 @@
                   {
                     variant: "outline",
                     size: "sm",
+                    onClick: () => {
+                      setSelectedLocationForMembers(location);
+                      setIsMembersDialogOpen(true);
+                    },
+                    title: "View members",
+                    children: /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntime.jsx(
+                  button.Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
                     onClick: () => handleEdit(location),
                     children: /* @__PURE__ */ jsxRuntime.jsx(SquarePen, { className: "h-4 w-4" })
                   }
@@ -4833,6 +5038,15 @@
           ] })
         ] })
       ] }),
+      /* @__PURE__ */ jsxRuntime.jsx(
+        LocationMembersDialog,
+        {
+          isOpen: isMembersDialogOpen,
+          onOpenChange: setIsMembersDialogOpen,
+          locationId: selectedLocationForMembers == null ? void 0 : selectedLocationForMembers.id,
+          locationName: selectedLocationForMembers == null ? void 0 : selectedLocationForMembers.name
+        }
+      ),
       hasPermission("canManageLocations") && /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: !!editingLocation, onOpenChange: (open) => !open && setEditingLocation(null), children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Edit Location" }),

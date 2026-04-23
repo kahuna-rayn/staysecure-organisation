@@ -7,7 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
-import { MapPin, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown } from 'lucide-react';
+import { MapPin, Plus, Edit, Trash2, X, Save, ArrowUp, ArrowDown, Users } from 'lucide-react';
+import { LocationMembersDialog } from './LocationMembersDialog';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { useOrganisationContext } from '../../context/OrganisationContext';
@@ -28,6 +29,8 @@ export const LocationManagement: React.FC = () => {
   });
   const [sortField, setSortField] = useState<'name' | 'building' | 'status' | 'created_at'>('name');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [isMembersDialogOpen, setIsMembersDialogOpen] = useState(false);
+  const [selectedLocationForMembers, setSelectedLocationForMembers] = useState<Location | null>(null);
 
   const { data: locationsData, isLoading: locationsLoading } = useQuery({
     queryKey: ['locations'],
@@ -226,6 +229,18 @@ export const LocationManagement: React.FC = () => {
                 Manage organizational locations and facilities
               </CardDescription>
             </div>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  setSelectedLocationForMembers(null);
+                  setIsMembersDialogOpen(true);
+                }}
+                title="View all members"
+              >
+                <Users className="h-4 w-4" />
+              </Button>
             {hasPermission('canManageLocations') && (
               <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                 <DialogTrigger asChild>
@@ -308,6 +323,7 @@ export const LocationManagement: React.FC = () => {
                 </DialogContent>
               </Dialog>
             )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -413,6 +429,17 @@ export const LocationManagement: React.FC = () => {
                         <Button
                           variant="outline"
                           size="sm"
+                          onClick={() => {
+                            setSelectedLocationForMembers(location);
+                            setIsMembersDialogOpen(true);
+                          }}
+                          title="View members"
+                        >
+                          <Users className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => handleEdit(location)}
                         >
                           <Edit className="h-4 w-4" />
@@ -441,6 +468,13 @@ export const LocationManagement: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      <LocationMembersDialog
+        isOpen={isMembersDialogOpen}
+        onOpenChange={setIsMembersDialogOpen}
+        locationId={selectedLocationForMembers?.id}
+        locationName={selectedLocationForMembers?.name}
+      />
 
       {/* Edit Dialog */}
       {hasPermission('canManageLocations') && (

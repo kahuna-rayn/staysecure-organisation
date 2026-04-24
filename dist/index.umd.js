@@ -11493,11 +11493,20 @@ The assignment will return to Not started and the user will need to acknowledge 
             input.Input,
             {
               id: "category",
+              list: "category-options",
               value: category,
               onChange: (e) => setCategory(e.target.value),
-              placeholder: "e.g., Policy, Training"
+              placeholder: "e.g., Policy, Handbook"
             }
-          )
+          ),
+          /* @__PURE__ */ jsxRuntime.jsxs("datalist", { id: "category-options", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "policy" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "handbook" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "procedure" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "guideline" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "template" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "report" })
+          ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "version", children: "Version" }),

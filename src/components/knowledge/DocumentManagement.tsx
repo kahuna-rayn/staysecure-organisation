@@ -485,10 +485,19 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSu
           <Label htmlFor="category">Category</Label>
           <Input
             id="category"
+            list="category-options"
             value={category}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCategory(e.target.value)}
-            placeholder="e.g., Policy, Training"
+            placeholder="e.g., Policy, Handbook"
           />
+          <datalist id="category-options">
+            <option value="policy" />
+            <option value="handbook" />
+            <option value="procedure" />
+            <option value="guideline" />
+            <option value="template" />
+            <option value="report" />
+          </datalist>
         </div>
         <div>
           <Label htmlFor="version">Version</Label>

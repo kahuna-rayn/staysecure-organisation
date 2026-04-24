@@ -11535,11 +11535,20 @@ const DocumentForm = ({ supabase: supabase2, initialData, onSubmit, isSubmitting
           Input,
           {
             id: "category",
+            list: "category-options",
             value: category,
             onChange: (e) => setCategory(e.target.value),
-            placeholder: "e.g., Policy, Training"
+            placeholder: "e.g., Policy, Handbook"
           }
-        )
+        ),
+        /* @__PURE__ */ jsxs("datalist", { id: "category-options", children: [
+          /* @__PURE__ */ jsx("option", { value: "policy" }),
+          /* @__PURE__ */ jsx("option", { value: "handbook" }),
+          /* @__PURE__ */ jsx("option", { value: "procedure" }),
+          /* @__PURE__ */ jsx("option", { value: "guideline" }),
+          /* @__PURE__ */ jsx("option", { value: "template" }),
+          /* @__PURE__ */ jsx("option", { value: "report" })
+        ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx(Label, { htmlFor: "version", children: "Version" }),

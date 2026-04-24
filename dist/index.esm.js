@@ -4547,7 +4547,7 @@ const LocationMembersDialog = ({
       }
       const userIds = profiles.map((p) => p.id);
       const locationIds = [...new Set(profiles.map((p) => p.location_id).filter(Boolean))];
-      let locationNameMap = /* @__PURE__ */ new Map();
+      const locationNameMap = /* @__PURE__ */ new Map();
       if (locationIds.length > 0) {
         const { data: locationsData, error: locationsError } = await supabaseClient.from("locations").select("id, name").in("id", locationIds);
         debug.log("[LocationMembersDialog] locations result:", { count: locationsData == null ? void 0 : locationsData.length, error: locationsError == null ? void 0 : locationsError.message });
@@ -11389,12 +11389,13 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
             {
               variant: "outline",
               size: "icon",
+              disabled: !!document2.is_system,
               onClick: () => {
                 if (confirm("Are you sure you want to delete this document?")) {
                   deleteDocumentMutation.mutate(document2);
                 }
               },
-              title: "Delete document",
+              title: document2.is_system ? "System document — cannot be deleted" : "Delete document",
               children: /* @__PURE__ */ jsx(Trash2, { className: "h-4 w-4" })
             }
           )

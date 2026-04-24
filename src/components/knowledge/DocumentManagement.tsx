@@ -20,6 +20,7 @@ interface Document {
   description?: string;
   category?: string;
   required: boolean;
+  is_system?: boolean;
   url?: string;
   file_name?: string;
   file_type?: string;
@@ -300,12 +301,13 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
                   <Button
                     variant="outline"
                     size="icon"
+                    disabled={!!document.is_system}
                     onClick={() => {
                       if (confirm('Are you sure you want to delete this document?')) {
                         deleteDocumentMutation.mutate(document);
                       }
                     }}
-                    title="Delete document"
+                    title={document.is_system ? 'System document — cannot be deleted' : 'Delete document'}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

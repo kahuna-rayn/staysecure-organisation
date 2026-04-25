@@ -626,23 +626,16 @@ const OrganisationProfile: React.FC = () => {
   const handleTestConnection = async () => {
     setTestingConnection(true);
     try {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-      const res = await fetch(
-        `${supabaseUrl}/functions/v1/device-ingest/v1/sync?dry_run=true`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${session?.access_token ?? ''}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      const body = await res.json();
-      if (!res.ok || !body.success) {
-        toast.error(`Connection test failed: ${body.error ?? 'unknown error'}`);
+      // Use functions.invoke so the client's configured URL is used (avoids VITE_SUPABASE_URL dependency).
+      // dry_run is passed in the body; the edge function reads it from either query string or body.
+      const { data, error } = await (supabaseClient as any).functions.invoke('device-ingest/v1/sync', {
+        method: 'POST',
+        body: { dry_run: true },
+      });
+      if (error || !data?.success) {
+        toast.error(`Connection test failed: ${data?.error ?? error?.message ?? 'unknown error'}`);
       } else {
-        toast.success(`Connection successful — ${body.synced_count} device(s) found via ${body.source}.`);
+        toast.success(`Connection successful — ${data.synced_count} device(s) found via ${data.source}.`);
       }
     } catch (err: any) {
       toast.error('Connection test error: ' + (err.message ?? 'unknown error'));

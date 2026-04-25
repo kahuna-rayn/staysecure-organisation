@@ -6082,23 +6082,14 @@
     const handleTestConnection = async () => {
       setTestingConnection(true);
       try {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        const supabaseUrl = void 0;
-        const res = await fetch(
-          `${supabaseUrl}/functions/v1/device-ingest/v1/sync?dry_run=true`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${(session == null ? void 0 : session.access_token) ?? ""}`,
-              "Content-Type": "application/json"
-            }
-          }
-        );
-        const body = await res.json();
-        if (!res.ok || !body.success) {
-          sonner.toast.error(`Connection test failed: ${body.error ?? "unknown error"}`);
+        const { data, error } = await supabaseClient.functions.invoke("device-ingest/v1/sync", {
+          method: "POST",
+          body: { dry_run: true }
+        });
+        if (error || !(data == null ? void 0 : data.success)) {
+          sonner.toast.error(`Connection test failed: ${(data == null ? void 0 : data.error) ?? (error == null ? void 0 : error.message) ?? "unknown error"}`);
         } else {
-          sonner.toast.success(`Connection successful — ${body.synced_count} device(s) found via ${body.source}.`);
+          sonner.toast.success(`Connection successful — ${data.synced_count} device(s) found via ${data.source}.`);
         }
       } catch (err) {
         sonner.toast.error("Connection test error: " + (err.message ?? "unknown error"));

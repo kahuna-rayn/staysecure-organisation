@@ -429,6 +429,23 @@ const FileText = createLucideIcon("FileText", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const FlaskConical = createLucideIcon("FlaskConical", [
+  [
+    "path",
+    {
+      d: "M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2",
+      key: "pzvekw"
+    }
+  ],
+  ["path", { d: "M8.5 2h7", key: "csnxdl" }],
+  ["path", { d: "M7 16h10", key: "wp8him" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const Globe = createLucideIcon("Globe", [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20", key: "13o1zl" }],
@@ -5686,6 +5703,13 @@ const OrganisationProfile = () => {
   const [showDisableMfaConfirm, setShowDisableMfaConfirm] = useState(false);
   const [entraEnabled, setEntraEnabled] = useState(false);
   const [entraSaving, setEntraSaving] = useState(false);
+  const [deviceEnabled, setDeviceEnabled] = useState(false);
+  const [deviceSaving, setDeviceSaving] = useState(false);
+  const [testingConnection, setTestingConnection] = useState(false);
+  const SECRET_PLACEHOLDER = "••••••••";
+  const [intuneSecretDraft, setIntuneSecretDraft] = useState("");
+  const [ateraKeyDraft, setAteraKeyDraft] = useState("");
+  const isLearnMode = typeof window !== "undefined" && (window.location.hostname.includes("learn") || window.location.port.startsWith("80"));
   const validatePhoneInput = (input) => {
     return input.replace(/[^0-9+\s\-()]/g, "");
   };
@@ -5740,7 +5764,10 @@ const OrganisationProfile = () => {
         setOrganisationData(orgProfile);
         setRequireMfa(orgProfile.require_mfa ?? false);
         setEntraEnabled(orgProfile.entra_enabled ?? false);
-        debug.state("[OrganisationProfile] org_profile loaded", { require_mfa: orgProfile.require_mfa, entra_enabled: orgProfile.entra_enabled });
+        setDeviceEnabled(!!orgProfile.device_source);
+        setIntuneSecretDraft(orgProfile.intune_client_secret ? SECRET_PLACEHOLDER : "");
+        setAteraKeyDraft(orgProfile.atera_api_key ? SECRET_PLACEHOLDER : "");
+        debug.state("[OrganisationProfile] org_profile loaded", { require_mfa: orgProfile.require_mfa, entra_enabled: orgProfile.entra_enabled, device_source: orgProfile.device_source });
       }
       const { data: sigRoles, error: sigError } = await supabaseClient.from("org_sig_roles").select("*");
       if (sigError) {
@@ -6031,6 +6058,96 @@ const OrganisationProfile = () => {
       setEntraSaving(false);
     }
   };
+  const handleDeviceToggle = async (enabled) => {
+    setDeviceSaving(true);
+    try {
+      const orgId = organisationData.id;
+      const newSource = enabled ? organisationData.device_source || "intune" : null;
+      if (orgId) {
+        const { error } = await supabaseClient.from("org_profile").update({ device_source: newSource }).eq("id", orgId);
+        if (error) throw error;
+      } else {
+        const { data: inserted, error: insertError } = await supabaseClient.from("org_profile").insert({ device_source: newSource }).select("id").single();
+        if (insertError) throw insertError;
+        if (inserted) setOrganisationData((prev) => ({ ...prev, id: inserted.id }));
+      }
+      setDeviceEnabled(enabled);
+      setOrganisationData((prev) => ({ ...prev, device_source: newSource }));
+      toast$2.success(enabled ? "Device management enabled." : "Device management disabled.");
+    } catch (err) {
+      console.error("Device toggle error:", err);
+      toast$2.error("Failed to update device management setting: " + (err.message ?? "unknown error"));
+    } finally {
+      setDeviceSaving(false);
+    }
+  };
+  const handleSaveDeviceCredentials = async () => {
+    try {
+      setSaving(true);
+      const orgId = organisationData.id;
+      if (!orgId) {
+        toast$2.error("Save organisation profile first.");
+        return;
+      }
+      const updates = {
+        device_source: organisationData.device_source,
+        intune_client_id: organisationData.intune_client_id ?? null,
+        atera_customer_id: organisationData.atera_customer_id ?? null
+      };
+      if (organisationData.device_source === "intune" && intuneSecretDraft && intuneSecretDraft !== SECRET_PLACEHOLDER) {
+        await supabaseClient.rpc("upsert_vault_secret", {
+          secret_name: "intune-client-secret",
+          secret_value: intuneSecretDraft
+        });
+        updates.intune_client_secret = "intune-client-secret";
+        setIntuneSecretDraft(SECRET_PLACEHOLDER);
+      }
+      if (organisationData.device_source === "atera" && ateraKeyDraft && ateraKeyDraft !== SECRET_PLACEHOLDER) {
+        await supabaseClient.rpc("upsert_vault_secret", {
+          secret_name: "atera-api-key",
+          secret_value: ateraKeyDraft
+        });
+        updates.atera_api_key = "atera-api-key";
+        setAteraKeyDraft(SECRET_PLACEHOLDER);
+      }
+      const { error } = await supabaseClient.from("org_profile").update(updates).eq("id", orgId);
+      if (error) throw error;
+      setOrganisationData((prev) => ({ ...prev, ...updates }));
+      toast$2.success("Device management settings saved.");
+    } catch (err) {
+      console.error("Device credentials save error:", err);
+      toast$2.error("Failed to save device settings: " + (err.message ?? "unknown error"));
+    } finally {
+      setSaving(false);
+    }
+  };
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const supabaseUrl = void 0;
+      const res = await fetch(
+        `${supabaseUrl}/functions/v1/device-ingest/v1/sync?dry_run=true`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${(session == null ? void 0 : session.access_token) ?? ""}`,
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      const body = await res.json();
+      if (!res.ok || !body.success) {
+        toast$2.error(`Connection test failed: ${body.error ?? "unknown error"}`);
+      } else {
+        toast$2.success(`Connection successful — ${body.synced_count} device(s) found via ${body.source}.`);
+      }
+    } catch (err) {
+      toast$2.error("Connection test error: " + (err.message ?? "unknown error"));
+    } finally {
+      setTestingConnection(false);
+    }
+  };
   const handleCancel = () => {
     setIsEditing(false);
     fetchOrganisationData();
@@ -6252,7 +6369,7 @@ const OrganisationProfile = () => {
       ] })
     ] }),
     hasAdminAccess && /* @__PURE__ */ jsxs(Card, { children: [
-      /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Sign In & Security" }) }),
+      /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Sign In & Devices" }) }),
       /* @__PURE__ */ jsxs(CardContent, { className: "space-y-6", children: [
         /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
           /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
@@ -6278,7 +6395,7 @@ const OrganisationProfile = () => {
           /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
             /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
               /* @__PURE__ */ jsx(Label, { htmlFor: "entra-toggle", className: "text-sm font-medium cursor-pointer", children: "Sign in with Microsoft" }),
-              /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: 'Show the "Sign in with Microsoft" button on the login page. Requires an Azure Tenant ID.' })
+              /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: 'Show the "Sign in with Microsoft" button on the login page. Requires a Directory (tenant) ID.' })
             ] }),
             /* @__PURE__ */ jsx(
               Switch,
@@ -6291,8 +6408,8 @@ const OrganisationProfile = () => {
               }
             )
           ] }),
-          /* @__PURE__ */ jsxs("div", { className: "space-y-2 pl-0", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "azure-tenant-id", className: "text-sm", children: "Azure Tenant ID" }),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsx(Label, { htmlFor: "azure-tenant-id", className: "text-sm", children: "Directory (tenant) ID" }),
             /* @__PURE__ */ jsx(
               Input,
               {
@@ -6304,143 +6421,167 @@ const OrganisationProfile = () => {
                 className: "font-mono text-sm"
               }
             ),
-            !isSuperAdmin && /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Contact your RAYN administrator to update the Tenant ID." })
+            !isSuperAdmin && /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Contact your RAYN administrator to update the tenant ID." })
+          ] })
+        ] }),
+        !isLearnMode && /* @__PURE__ */ jsxs(Fragment, { children: [
+          /* @__PURE__ */ jsx(Separator, {}),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+              /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
+                /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ jsx(MonitorSmartphone, { className: "h-4 w-4 text-muted-foreground" }),
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "device-toggle", className: "text-sm font-medium cursor-pointer", children: "Device Management" })
+                ] }),
+                /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground pl-6", children: "Sync devices from Intune or Atera into the hardware inventory." })
+              ] }),
+              /* @__PURE__ */ jsx(
+                Switch,
+                {
+                  id: "device-toggle",
+                  checked: deviceEnabled,
+                  onCheckedChange: handleDeviceToggle,
+                  disabled: deviceSaving,
+                  "aria-label": "Enable device management"
+                }
+              )
+            ] }),
+            deviceEnabled && /* @__PURE__ */ jsxs("div", { className: "space-y-4 pl-6", children: [
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { className: "text-sm", children: "Source" }),
+                /* @__PURE__ */ jsxs(
+                  Select,
+                  {
+                    value: organisationData.device_source ?? "",
+                    onValueChange: (val) => setOrganisationData((prev) => ({ ...prev, device_source: val })),
+                    disabled: !isEditing || !isSuperAdmin,
+                    children: [
+                      /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select source…" }) }),
+                      /* @__PURE__ */ jsxs(SelectContent, { children: [
+                        /* @__PURE__ */ jsx(SelectItem, { value: "intune", children: "Intune" }),
+                        /* @__PURE__ */ jsx(SelectItem, { value: "atera", children: "Atera" })
+                      ] })
+                    ]
+                  }
+                )
+              ] }),
+              organisationData.device_source === "intune" && /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+                /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Uses the Directory (tenant) ID above. Provide the app registration credentials below." }),
+                /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "intune-client-id", className: "text-sm", children: "Application (client) ID" }),
+                  /* @__PURE__ */ jsx(
+                    Input,
+                    {
+                      id: "intune-client-id",
+                      placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+                      value: organisationData.intune_client_id || "",
+                      onChange: (e) => setOrganisationData((prev) => ({ ...prev, intune_client_id: e.target.value })),
+                      disabled: !isEditing || !isSuperAdmin,
+                      className: "font-mono text-sm"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "intune-client-secret", className: "text-sm", children: "Client Secret" }),
+                  /* @__PURE__ */ jsx(
+                    Input,
+                    {
+                      id: "intune-client-secret",
+                      type: "password",
+                      placeholder: intuneSecretDraft || "Enter client secret…",
+                      value: intuneSecretDraft === SECRET_PLACEHOLDER ? "" : intuneSecretDraft,
+                      onFocus: () => {
+                        if (intuneSecretDraft === SECRET_PLACEHOLDER) setIntuneSecretDraft("");
+                      },
+                      onBlur: () => {
+                        if (!intuneSecretDraft && organisationData.intune_client_secret) setIntuneSecretDraft(SECRET_PLACEHOLDER);
+                      },
+                      onChange: (e) => setIntuneSecretDraft(e.target.value),
+                      disabled: !isEditing || !isSuperAdmin,
+                      className: "font-mono text-sm"
+                    }
+                  ),
+                  organisationData.intune_client_secret && /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Secret is stored securely. Enter a new value to rotate it." })
+                ] })
+              ] }),
+              organisationData.device_source === "atera" && /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+                /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "atera-api-key", className: "text-sm", children: "API Key" }),
+                  /* @__PURE__ */ jsx(
+                    Input,
+                    {
+                      id: "atera-api-key",
+                      type: "password",
+                      placeholder: ateraKeyDraft || "Enter API key…",
+                      value: ateraKeyDraft === SECRET_PLACEHOLDER ? "" : ateraKeyDraft,
+                      onFocus: () => {
+                        if (ateraKeyDraft === SECRET_PLACEHOLDER) setAteraKeyDraft("");
+                      },
+                      onBlur: () => {
+                        if (!ateraKeyDraft && organisationData.atera_api_key) setAteraKeyDraft(SECRET_PLACEHOLDER);
+                      },
+                      onChange: (e) => setAteraKeyDraft(e.target.value),
+                      disabled: !isEditing || !isSuperAdmin,
+                      className: "font-mono text-sm"
+                    }
+                  ),
+                  organisationData.atera_api_key && /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Key is stored securely. Enter a new value to rotate it." })
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                  /* @__PURE__ */ jsx(Label, { htmlFor: "atera-customer-id", className: "text-sm", children: "Customer ID" }),
+                  /* @__PURE__ */ jsx(
+                    Input,
+                    {
+                      id: "atera-customer-id",
+                      type: "number",
+                      placeholder: "12345",
+                      value: organisationData.atera_customer_id ?? "",
+                      onChange: (e) => setOrganisationData((prev) => ({ ...prev, atera_customer_id: parseInt(e.target.value) || null })),
+                      disabled: !isEditing || !isSuperAdmin,
+                      className: "font-mono text-sm w-48"
+                    }
+                  )
+                ] })
+              ] }),
+              organisationData.device_source && isSuperAdmin && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 pt-1", children: [
+                isEditing && /* @__PURE__ */ jsxs(
+                  Button,
+                  {
+                    size: "sm",
+                    onClick: handleSaveDeviceCredentials,
+                    disabled: saving,
+                    children: [
+                      saving ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin mr-2" }) : null,
+                      "Save credentials"
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxs(
+                  Button,
+                  {
+                    size: "sm",
+                    variant: "outline",
+                    onClick: handleTestConnection,
+                    disabled: testingConnection,
+                    children: [
+                      testingConnection ? /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin mr-2" }) : /* @__PURE__ */ jsx(FlaskConical, { className: "h-4 w-4 mr-2" }),
+                      "Test connection"
+                    ]
+                  }
+                ),
+                organisationData.device_last_synced_at && /* @__PURE__ */ jsxs("span", { className: "text-xs text-muted-foreground", children: [
+                  "Last synced: ",
+                  new Date(organisationData.device_last_synced_at).toLocaleString()
+                ] })
+              ] })
+            ] })
           ] })
         ] })
       ] })
     ] }),
     /* @__PURE__ */ jsxs(Card, { children: [
-      /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Signatory Information" }) }),
+      /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { children: "Key People & Compliance" }) }),
       /* @__PURE__ */ jsxs(CardContent, { className: "space-y-6 text-left", children: [
-        /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
-          /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "CEM Declaration" }),
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "cem-name", children: "Name of Signatory to CEM Declaration" }),
-              /* @__PURE__ */ jsx(
-                SearchableProfileField,
-                {
-                  value: signatoryData.name_signatory_cem,
-                  onSelect: (profile) => handleProfileSelect("cem", profile),
-                  placeholder: "Select CEM signatory...",
-                  disabled: !isEditing
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "cem-title", children: "Title of Signatory to CEM Declaration" }),
-              /* @__PURE__ */ jsx(
-                Input,
-                {
-                  id: "cem-title",
-                  value: signatoryData.title_signatory_cem || "",
-                  onChange: (e) => setSignatoryData((prev) => ({ ...prev, title_signatory_cem: e.target.value })),
-                  disabled: !isEditing
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "cem-email", children: "Email of Signatory to CEM Declaration" }),
-              /* @__PURE__ */ jsx(
-                Input,
-                {
-                  id: "cem-email",
-                  type: "email",
-                  value: signatoryData.email_signatory_cem || "",
-                  onChange: (e) => setSignatoryData((prev) => ({ ...prev, email_signatory_cem: e.target.value })),
-                  disabled: !isEditing
-                }
-              )
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx(Separator, {}),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
-          /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "HIB Pledge" }),
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "hib-name", children: "Name of Signatory to HIB Pledge" }),
-              /* @__PURE__ */ jsx(
-                SearchableProfileField,
-                {
-                  value: signatoryData.name_signatory_hib,
-                  onSelect: (profile) => handleProfileSelect("hib", profile),
-                  placeholder: "Select HIB signatory...",
-                  disabled: !isEditing
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "hib-title", children: "Title of Signatory to HIB Pledge" }),
-              /* @__PURE__ */ jsx(
-                Input,
-                {
-                  id: "hib-title",
-                  value: signatoryData.title_signatory_hib || "",
-                  onChange: (e) => setSignatoryData((prev) => ({ ...prev, title_signatory_hib: e.target.value })),
-                  disabled: !isEditing
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "hib-email", children: "Email of Signatory to HIB Pledge" }),
-              /* @__PURE__ */ jsx(
-                Input,
-                {
-                  id: "hib-email",
-                  type: "email",
-                  value: signatoryData.email_signatory_hib || "",
-                  onChange: (e) => setSignatoryData((prev) => ({ ...prev, email_signatory_hib: e.target.value })),
-                  disabled: !isEditing
-                }
-              )
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx(Separator, {}),
-        /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
-          /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "DPE Pledge" }),
-          /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "dpe-name", children: "Name of Signatory to DPE Pledge" }),
-              /* @__PURE__ */ jsx(
-                SearchableProfileField,
-                {
-                  value: signatoryData.name_signatory_dpe,
-                  onSelect: (profile) => handleProfileSelect("dpe", profile),
-                  placeholder: "Select DPE signatory...",
-                  disabled: !isEditing
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "dpe-title", children: "Title of Signatory to DPE Pledge" }),
-              /* @__PURE__ */ jsx(
-                Input,
-                {
-                  id: "dpe-title",
-                  value: signatoryData.title_signatory_dpe || "",
-                  onChange: (e) => setSignatoryData((prev) => ({ ...prev, title_signatory_dpe: e.target.value })),
-                  disabled: !isEditing
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsx(Label, { htmlFor: "dpe-email", children: "Email of Signatory to DPE Pledge" }),
-              /* @__PURE__ */ jsx(
-                Input,
-                {
-                  id: "dpe-email",
-                  type: "email",
-                  value: signatoryData.email_signatory_dpe || "",
-                  onChange: (e) => setSignatoryData((prev) => ({ ...prev, email_signatory_dpe: e.target.value })),
-                  disabled: !isEditing
-                }
-              )
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsx(Separator, {}),
         /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "Key Personnel" }),
           /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
@@ -6543,6 +6684,137 @@ const OrganisationProfile = () => {
                   disabled: !isEditing
                 }
               )
+            ] })
+          ] })
+        ] }),
+        !isLearnMode && /* @__PURE__ */ jsxs(Fragment, { children: [
+          /* @__PURE__ */ jsx(Separator, {}),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "CEM Declaration" }),
+            /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "cem-name", children: "Name of Signatory to CEM Declaration" }),
+                /* @__PURE__ */ jsx(
+                  SearchableProfileField,
+                  {
+                    value: signatoryData.name_signatory_cem,
+                    onSelect: (profile) => handleProfileSelect("cem", profile),
+                    placeholder: "Select CEM signatory...",
+                    disabled: !isEditing
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "cem-title", children: "Title of Signatory to CEM Declaration" }),
+                /* @__PURE__ */ jsx(
+                  Input,
+                  {
+                    id: "cem-title",
+                    value: signatoryData.title_signatory_cem || "",
+                    onChange: (e) => setSignatoryData((prev) => ({ ...prev, title_signatory_cem: e.target.value })),
+                    disabled: !isEditing
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "cem-email", children: "Email of Signatory to CEM Declaration" }),
+                /* @__PURE__ */ jsx(
+                  Input,
+                  {
+                    id: "cem-email",
+                    type: "email",
+                    value: signatoryData.email_signatory_cem || "",
+                    onChange: (e) => setSignatoryData((prev) => ({ ...prev, email_signatory_cem: e.target.value })),
+                    disabled: !isEditing
+                  }
+                )
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx(Separator, {}),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "HIB Pledge" }),
+            /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "hib-name", children: "Name of Signatory to HIB Pledge" }),
+                /* @__PURE__ */ jsx(
+                  SearchableProfileField,
+                  {
+                    value: signatoryData.name_signatory_hib,
+                    onSelect: (profile) => handleProfileSelect("hib", profile),
+                    placeholder: "Select HIB signatory...",
+                    disabled: !isEditing
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "hib-title", children: "Title of Signatory to HIB Pledge" }),
+                /* @__PURE__ */ jsx(
+                  Input,
+                  {
+                    id: "hib-title",
+                    value: signatoryData.title_signatory_hib || "",
+                    onChange: (e) => setSignatoryData((prev) => ({ ...prev, title_signatory_hib: e.target.value })),
+                    disabled: !isEditing
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "hib-email", children: "Email of Signatory to HIB Pledge" }),
+                /* @__PURE__ */ jsx(
+                  Input,
+                  {
+                    id: "hib-email",
+                    type: "email",
+                    value: signatoryData.email_signatory_hib || "",
+                    onChange: (e) => setSignatoryData((prev) => ({ ...prev, email_signatory_hib: e.target.value })),
+                    disabled: !isEditing
+                  }
+                )
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx(Separator, {}),
+          /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+            /* @__PURE__ */ jsx("h4", { className: "font-semibold text-sm text-muted-foreground uppercase tracking-wide", children: "DPE Pledge" }),
+            /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-4", children: [
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "dpe-name", children: "Name of Signatory to DPE Pledge" }),
+                /* @__PURE__ */ jsx(
+                  SearchableProfileField,
+                  {
+                    value: signatoryData.name_signatory_dpe,
+                    onSelect: (profile) => handleProfileSelect("dpe", profile),
+                    placeholder: "Select DPE signatory...",
+                    disabled: !isEditing
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "dpe-title", children: "Title of Signatory to DPE Pledge" }),
+                /* @__PURE__ */ jsx(
+                  Input,
+                  {
+                    id: "dpe-title",
+                    value: signatoryData.title_signatory_dpe || "",
+                    onChange: (e) => setSignatoryData((prev) => ({ ...prev, title_signatory_dpe: e.target.value })),
+                    disabled: !isEditing
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "dpe-email", children: "Email of Signatory to DPE Pledge" }),
+                /* @__PURE__ */ jsx(
+                  Input,
+                  {
+                    id: "dpe-email",
+                    type: "email",
+                    value: signatoryData.email_signatory_dpe || "",
+                    onChange: (e) => setSignatoryData((prev) => ({ ...prev, email_signatory_dpe: e.target.value })),
+                    disabled: !isEditing
+                  }
+                )
+              ] })
             ] })
           ] })
         ] })

@@ -7,6 +7,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -16,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Edit, Save, X, Upload, Loader2, ImageIcon, ShieldCheck, Shield } from 'lucide-react';
+import { Edit, Save, X, Upload, Loader2, ImageIcon, ShieldCheck, Shield, MonitorSmartphone, FlaskConical } from 'lucide-react';
 import { toast } from 'sonner';
 import SearchableProfileField from './profile/SearchableProfileField';
 import type { Database } from '@/integrations/supabase/types';
@@ -47,6 +54,13 @@ interface OrganisationData {
   org_logo_url?: string;
   entra_enabled?: boolean;
   azure_tenant_id?: string;
+  // Device management integration
+  device_source?: string | null;
+  intune_client_id?: string | null;
+  intune_client_secret?: string | null;  // stores Vault secret name, not raw value
+  atera_api_key?: string | null;         // stores Vault secret name, not raw value
+  atera_customer_id?: number | null;
+  device_last_synced_at?: string | null;
 }
 
 
@@ -90,7 +104,21 @@ const OrganisationProfile: React.FC = () => {
   // Entra SSO toggle — saved immediately like MFA; azure_tenant_id saved via edit/save flow
   const [entraEnabled, setEntraEnabled] = useState(false);
   const [entraSaving, setEntraSaving] = useState(false);
-  
+
+  // Device management toggle — saved immediately; source + credentials saved via edit/save flow
+  const [deviceEnabled, setDeviceEnabled] = useState(false);
+  const [deviceSaving, setDeviceSaving] = useState(false);
+  const [testingConnection, setTestingConnection] = useState(false);
+
+  // Secret draft values — only written to Vault on save if changed from placeholder
+  const SECRET_PLACEHOLDER = '••••••••';
+  const [intuneSecretDraft, setIntuneSecretDraft] = useState('');
+  const [ateraKeyDraft, setAteraKeyDraft] = useState('');
+
+  // Detect Learn vs Govern context (same pattern as PersonaDetailsTabs)
+  const isLearnMode = typeof window !== 'undefined' &&
+    (window.location.hostname.includes('learn') || window.location.port.startsWith('80'));
+
   // Phone validation function
   const validatePhoneInput = (input: string): string => {
     return input.replace(/[^0-9+\s\-()]/g, '');
@@ -166,7 +194,11 @@ const OrganisationProfile: React.FC = () => {
         setOrganisationData(orgProfile);
         setRequireMfa(orgProfile.require_mfa ?? false);
         setEntraEnabled(orgProfile.entra_enabled ?? false);
-        debug.state('[OrganisationProfile] org_profile loaded', { require_mfa: orgProfile.require_mfa, entra_enabled: orgProfile.entra_enabled });
+        setDeviceEnabled(!!orgProfile.device_source);
+        // Show placeholder for secrets if a Vault name is already stored
+        setIntuneSecretDraft(orgProfile.intune_client_secret ? SECRET_PLACEHOLDER : '');
+        setAteraKeyDraft(orgProfile.atera_api_key ? SECRET_PLACEHOLDER : '');
+        debug.state('[OrganisationProfile] org_profile loaded', { require_mfa: orgProfile.require_mfa, entra_enabled: orgProfile.entra_enabled, device_source: orgProfile.device_source });
       }
 
       // Fetch signatory roles data
@@ -518,6 +550,107 @@ const OrganisationProfile: React.FC = () => {
     }
   };
 
+  const handleDeviceToggle = async (enabled: boolean) => {
+    setDeviceSaving(true);
+    try {
+      const orgId = organisationData.id;
+      const newSource = enabled ? (organisationData.device_source || 'intune') : null;
+      if (orgId) {
+        const { error } = await supabaseClient
+          .from('org_profile')
+          .update({ device_source: newSource })
+          .eq('id', orgId);
+        if (error) throw error;
+      } else {
+        const { data: inserted, error: insertError } = await supabaseClient
+          .from('org_profile')
+          .insert({ device_source: newSource })
+          .select('id')
+          .single();
+        if (insertError) throw insertError;
+        if (inserted) setOrganisationData(prev => ({ ...prev, id: inserted.id }));
+      }
+      setDeviceEnabled(enabled);
+      setOrganisationData(prev => ({ ...prev, device_source: newSource }));
+      toast.success(enabled ? 'Device management enabled.' : 'Device management disabled.');
+    } catch (err: any) {
+      console.error('Device toggle error:', err);
+      toast.error('Failed to update device management setting: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setDeviceSaving(false);
+    }
+  };
+
+  const handleSaveDeviceCredentials = async () => {
+    try {
+      setSaving(true);
+      const orgId = organisationData.id;
+      if (!orgId) { toast.error('Save organisation profile first.'); return; }
+
+      const updates: Record<string, unknown> = {
+        device_source: organisationData.device_source,
+        intune_client_id: organisationData.intune_client_id ?? null,
+        atera_customer_id: organisationData.atera_customer_id ?? null,
+      };
+
+      // Vault: only write secret if user typed a new value (not the placeholder)
+      if (organisationData.device_source === 'intune' && intuneSecretDraft && intuneSecretDraft !== SECRET_PLACEHOLDER) {
+        await supabaseClient.rpc('upsert_vault_secret', {
+          secret_name: 'intune-client-secret',
+          secret_value: intuneSecretDraft,
+        });
+        updates.intune_client_secret = 'intune-client-secret';
+        setIntuneSecretDraft(SECRET_PLACEHOLDER);
+      }
+      if (organisationData.device_source === 'atera' && ateraKeyDraft && ateraKeyDraft !== SECRET_PLACEHOLDER) {
+        await supabaseClient.rpc('upsert_vault_secret', {
+          secret_name: 'atera-api-key',
+          secret_value: ateraKeyDraft,
+        });
+        updates.atera_api_key = 'atera-api-key';
+        setAteraKeyDraft(SECRET_PLACEHOLDER);
+      }
+
+      const { error } = await supabaseClient.from('org_profile').update(updates).eq('id', orgId);
+      if (error) throw error;
+      setOrganisationData(prev => ({ ...prev, ...updates }));
+      toast.success('Device management settings saved.');
+    } catch (err: any) {
+      console.error('Device credentials save error:', err);
+      toast.error('Failed to save device settings: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setTestingConnection(true);
+    try {
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+      const res = await fetch(
+        `${supabaseUrl}/functions/v1/device-ingest/v1/sync?dry_run=true`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${session?.access_token ?? ''}`,
+            'Content-Type': 'application/json',
+          },
+        },
+      );
+      const body = await res.json();
+      if (!res.ok || !body.success) {
+        toast.error(`Connection test failed: ${body.error ?? 'unknown error'}`);
+      } else {
+        toast.success(`Connection successful — ${body.synced_count} device(s) found via ${body.source}.`);
+      }
+    } catch (err: any) {
+      toast.error('Connection test error: ' + (err.message ?? 'unknown error'));
+    } finally {
+      setTestingConnection(false);
+    }
+  };
+
   const handleCancel = () => {
     setIsEditing(false);
     fetchOrganisationData(); // Reset to original data
@@ -734,11 +867,11 @@ const OrganisationProfile: React.FC = () => {
         </CardContent>
       </Card>
 
-      {/* Sign In & Security */}
+      {/* Sign In & Devices */}
       {hasAdminAccess && (
         <Card>
           <CardHeader>
-            <CardTitle>Sign In &amp; Security</CardTitle>
+            <CardTitle>Sign In &amp; Devices</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
 
@@ -777,7 +910,7 @@ const OrganisationProfile: React.FC = () => {
                     Sign in with Microsoft
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    Show the "Sign in with Microsoft" button on the login page. Requires an Azure Tenant ID.
+                    Show the "Sign in with Microsoft" button on the login page. Requires a Directory (tenant) ID.
                   </p>
                 </div>
                 <Switch
@@ -789,9 +922,9 @@ const OrganisationProfile: React.FC = () => {
                 />
               </div>
 
-              <div className="space-y-2 pl-0">
+              <div className="space-y-2">
                 <Label htmlFor="azure-tenant-id" className="text-sm">
-                  Azure Tenant ID
+                  Directory (tenant) ID
                 </Label>
                 <Input
                   id="azure-tenant-id"
@@ -802,133 +935,180 @@ const OrganisationProfile: React.FC = () => {
                   className="font-mono text-sm"
                 />
                 {!isSuperAdmin && (
-                  <p className="text-xs text-muted-foreground">Contact your RAYN administrator to update the Tenant ID.</p>
+                  <p className="text-xs text-muted-foreground">Contact your RAYN administrator to update the tenant ID.</p>
                 )}
               </div>
             </div>
+
+            {/* Device Management — Govern only */}
+            {!isLearnMode && (
+              <>
+                <Separator />
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <MonitorSmartphone className="h-4 w-4 text-muted-foreground" />
+                        <Label htmlFor="device-toggle" className="text-sm font-medium cursor-pointer">
+                          Device Management
+                        </Label>
+                      </div>
+                      <p className="text-xs text-muted-foreground pl-6">
+                        Sync devices from Intune or Atera into the hardware inventory.
+                      </p>
+                    </div>
+                    <Switch
+                      id="device-toggle"
+                      checked={deviceEnabled}
+                      onCheckedChange={handleDeviceToggle}
+                      disabled={deviceSaving}
+                      aria-label="Enable device management"
+                    />
+                  </div>
+
+                  {deviceEnabled && (
+                    <div className="space-y-4 pl-6">
+                      {/* Source selector */}
+                      <div className="space-y-2">
+                        <Label className="text-sm">Source</Label>
+                        <Select
+                          value={organisationData.device_source ?? ''}
+                          onValueChange={(val) => setOrganisationData(prev => ({ ...prev, device_source: val }))}
+                          disabled={!isEditing || !isSuperAdmin}
+                        >
+                          <SelectTrigger className="w-48">
+                            <SelectValue placeholder="Select source…" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="intune">Intune</SelectItem>
+                            <SelectItem value="atera">Atera</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Intune fields */}
+                      {organisationData.device_source === 'intune' && (
+                        <div className="space-y-3">
+                          <p className="text-xs text-muted-foreground">
+                            Uses the Directory (tenant) ID above. Provide the app registration credentials below.
+                          </p>
+                          <div className="space-y-2">
+                            <Label htmlFor="intune-client-id" className="text-sm">Application (client) ID</Label>
+                            <Input
+                              id="intune-client-id"
+                              placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                              value={organisationData.intune_client_id || ''}
+                              onChange={(e) => setOrganisationData(prev => ({ ...prev, intune_client_id: e.target.value }))}
+                              disabled={!isEditing || !isSuperAdmin}
+                              className="font-mono text-sm"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="intune-client-secret" className="text-sm">Client Secret</Label>
+                            <Input
+                              id="intune-client-secret"
+                              type="password"
+                              placeholder={intuneSecretDraft || 'Enter client secret…'}
+                              value={intuneSecretDraft === SECRET_PLACEHOLDER ? '' : intuneSecretDraft}
+                              onFocus={() => { if (intuneSecretDraft === SECRET_PLACEHOLDER) setIntuneSecretDraft(''); }}
+                              onBlur={() => { if (!intuneSecretDraft && organisationData.intune_client_secret) setIntuneSecretDraft(SECRET_PLACEHOLDER); }}
+                              onChange={(e) => setIntuneSecretDraft(e.target.value)}
+                              disabled={!isEditing || !isSuperAdmin}
+                              className="font-mono text-sm"
+                            />
+                            {organisationData.intune_client_secret && (
+                              <p className="text-xs text-muted-foreground">Secret is stored securely. Enter a new value to rotate it.</p>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Atera fields */}
+                      {organisationData.device_source === 'atera' && (
+                        <div className="space-y-3">
+                          <div className="space-y-2">
+                            <Label htmlFor="atera-api-key" className="text-sm">API Key</Label>
+                            <Input
+                              id="atera-api-key"
+                              type="password"
+                              placeholder={ateraKeyDraft || 'Enter API key…'}
+                              value={ateraKeyDraft === SECRET_PLACEHOLDER ? '' : ateraKeyDraft}
+                              onFocus={() => { if (ateraKeyDraft === SECRET_PLACEHOLDER) setAteraKeyDraft(''); }}
+                              onBlur={() => { if (!ateraKeyDraft && organisationData.atera_api_key) setAteraKeyDraft(SECRET_PLACEHOLDER); }}
+                              onChange={(e) => setAteraKeyDraft(e.target.value)}
+                              disabled={!isEditing || !isSuperAdmin}
+                              className="font-mono text-sm"
+                            />
+                            {organisationData.atera_api_key && (
+                              <p className="text-xs text-muted-foreground">Key is stored securely. Enter a new value to rotate it.</p>
+                            )}
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="atera-customer-id" className="text-sm">Customer ID</Label>
+                            <Input
+                              id="atera-customer-id"
+                              type="number"
+                              placeholder="12345"
+                              value={organisationData.atera_customer_id ?? ''}
+                              onChange={(e) => setOrganisationData(prev => ({ ...prev, atera_customer_id: parseInt(e.target.value) || null }))}
+                              disabled={!isEditing || !isSuperAdmin}
+                              className="font-mono text-sm w-48"
+                            />
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Save + Test connection */}
+                      {organisationData.device_source && isSuperAdmin && (
+                        <div className="flex items-center gap-3 pt-1">
+                          {isEditing && (
+                            <Button
+                              size="sm"
+                              onClick={handleSaveDeviceCredentials}
+                              disabled={saving}
+                            >
+                              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                              Save credentials
+                            </Button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleTestConnection}
+                            disabled={testingConnection}
+                          >
+                            {testingConnection
+                              ? <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              : <FlaskConical className="h-4 w-4 mr-2" />
+                            }
+                            Test connection
+                          </Button>
+                          {organisationData.device_last_synced_at && (
+                            <span className="text-xs text-muted-foreground">
+                              Last synced: {new Date(organisationData.device_last_synced_at).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
 
           </CardContent>
         </Card>
       )}
 
-      {/* Signatory Information */}
+      {/* Key People & Compliance */}
       <Card>
         <CardHeader>
-          <CardTitle>Signatory Information</CardTitle>
+          <CardTitle>Key People &amp; Compliance</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 text-left">
-          {/* CEM Declaration Signatory */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">CEM Declaration</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="cem-name">Name of Signatory to CEM Declaration</Label>
-                <SearchableProfileField
-                  value={signatoryData.name_signatory_cem}
-                  onSelect={(profile) => handleProfileSelect('cem', profile)}
-                  placeholder="Select CEM signatory..."
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cem-title">Title of Signatory to CEM Declaration</Label>
-                <Input
-                  id="cem-title"
-                  value={signatoryData.title_signatory_cem || ''}
-                  onChange={(e) => setSignatoryData(prev => ({ ...prev, title_signatory_cem: e.target.value }))}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="cem-email">Email of Signatory to CEM Declaration</Label>
-                <Input
-                  id="cem-email"
-                  type="email"
-                  value={signatoryData.email_signatory_cem || ''}
-                  onChange={(e) => setSignatoryData(prev => ({ ...prev, email_signatory_cem: e.target.value }))}
-                  disabled={!isEditing}
-                />
-              </div>
-            </div>
-          </div>
 
-          <Separator />
-
-          {/* HIB Pledge Signatory */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">HIB Pledge</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="hib-name">Name of Signatory to HIB Pledge</Label>
-                <SearchableProfileField
-                  value={signatoryData.name_signatory_hib}
-                  onSelect={(profile) => handleProfileSelect('hib', profile)}
-                  placeholder="Select HIB signatory..."
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="hib-title">Title of Signatory to HIB Pledge</Label>
-                <Input
-                  id="hib-title"
-                  value={signatoryData.title_signatory_hib || ''}
-                  onChange={(e) => setSignatoryData(prev => ({ ...prev, title_signatory_hib: e.target.value }))}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="hib-email">Email of Signatory to HIB Pledge</Label>
-                <Input
-                  id="hib-email"
-                  type="email"
-                  value={signatoryData.email_signatory_hib || ''}
-                  onChange={(e) => setSignatoryData(prev => ({ ...prev, email_signatory_hib: e.target.value }))}
-                  disabled={!isEditing}
-                />
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* DPE Pledge Signatory */}
-          <div className="space-y-4">
-            <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">DPE Pledge</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="dpe-name">Name of Signatory to DPE Pledge</Label>
-                <SearchableProfileField
-                  value={signatoryData.name_signatory_dpe}
-                  onSelect={(profile) => handleProfileSelect('dpe', profile)}
-                  placeholder="Select DPE signatory..."
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dpe-title">Title of Signatory to DPE Pledge</Label>
-                <Input
-                  id="dpe-title"
-                  value={signatoryData.title_signatory_dpe || ''}
-                  onChange={(e) => setSignatoryData(prev => ({ ...prev, title_signatory_dpe: e.target.value }))}
-                  disabled={!isEditing}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dpe-email">Email of Signatory to DPE Pledge</Label>
-                <Input
-                  id="dpe-email"
-                  type="email"
-                  value={signatoryData.email_signatory_dpe || ''}
-                  onChange={(e) => setSignatoryData(prev => ({ ...prev, email_signatory_dpe: e.target.value }))}
-                  disabled={!isEditing}
-                />
-              </div>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Other Personnel */}
+          {/* Key Personnel — shown in all modes */}
           <div className="space-y-4">
             <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">Key Personnel</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1010,6 +1190,123 @@ const OrganisationProfile: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {/* Signatory sections — Govern / compliance only */}
+          {!isLearnMode && (
+            <>
+              <Separator />
+
+              {/* CEM Declaration Signatory */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">CEM Declaration</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="cem-name">Name of Signatory to CEM Declaration</Label>
+                    <SearchableProfileField
+                      value={signatoryData.name_signatory_cem}
+                      onSelect={(profile) => handleProfileSelect('cem', profile)}
+                      placeholder="Select CEM signatory..."
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cem-title">Title of Signatory to CEM Declaration</Label>
+                    <Input
+                      id="cem-title"
+                      value={signatoryData.title_signatory_cem || ''}
+                      onChange={(e) => setSignatoryData(prev => ({ ...prev, title_signatory_cem: e.target.value }))}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="cem-email">Email of Signatory to CEM Declaration</Label>
+                    <Input
+                      id="cem-email"
+                      type="email"
+                      value={signatoryData.email_signatory_cem || ''}
+                      onChange={(e) => setSignatoryData(prev => ({ ...prev, email_signatory_cem: e.target.value }))}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* HIB Pledge Signatory */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">HIB Pledge</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="hib-name">Name of Signatory to HIB Pledge</Label>
+                    <SearchableProfileField
+                      value={signatoryData.name_signatory_hib}
+                      onSelect={(profile) => handleProfileSelect('hib', profile)}
+                      placeholder="Select HIB signatory..."
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hib-title">Title of Signatory to HIB Pledge</Label>
+                    <Input
+                      id="hib-title"
+                      value={signatoryData.title_signatory_hib || ''}
+                      onChange={(e) => setSignatoryData(prev => ({ ...prev, title_signatory_hib: e.target.value }))}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="hib-email">Email of Signatory to HIB Pledge</Label>
+                    <Input
+                      id="hib-email"
+                      type="email"
+                      value={signatoryData.email_signatory_hib || ''}
+                      onChange={(e) => setSignatoryData(prev => ({ ...prev, email_signatory_hib: e.target.value }))}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <Separator />
+
+              {/* DPE Pledge Signatory */}
+              <div className="space-y-4">
+                <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">DPE Pledge</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="dpe-name">Name of Signatory to DPE Pledge</Label>
+                    <SearchableProfileField
+                      value={signatoryData.name_signatory_dpe}
+                      onSelect={(profile) => handleProfileSelect('dpe', profile)}
+                      placeholder="Select DPE signatory..."
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dpe-title">Title of Signatory to DPE Pledge</Label>
+                    <Input
+                      id="dpe-title"
+                      value={signatoryData.title_signatory_dpe || ''}
+                      onChange={(e) => setSignatoryData(prev => ({ ...prev, title_signatory_dpe: e.target.value }))}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="dpe-email">Email of Signatory to DPE Pledge</Label>
+                    <Input
+                      id="dpe-email"
+                      type="email"
+                      value={signatoryData.email_signatory_dpe || ''}
+                      onChange={(e) => setSignatoryData(prev => ({ ...prev, email_signatory_dpe: e.target.value }))}
+                      disabled={!isEditing}
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
         </CardContent>
       </Card>
       <AlertDialog open={showDisableMfaConfirm} onOpenChange={setShowDisableMfaConfirm}>

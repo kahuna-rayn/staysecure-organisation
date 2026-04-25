@@ -6445,7 +6445,7 @@ const OrganisationProfile = () => {
                   {
                     value: organisationData.device_source ?? "",
                     onValueChange: (val) => setOrganisationData((prev) => ({ ...prev, device_source: val })),
-                    disabled: !isEditing || !isSuperAdmin,
+                    disabled: !isSuperAdmin,
                     children: [
                       /* @__PURE__ */ jsx(SelectTrigger, { className: "w-48", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Select source…" }) }),
                       /* @__PURE__ */ jsxs(SelectContent, { children: [
@@ -6467,7 +6467,7 @@ const OrganisationProfile = () => {
                       placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
                       value: organisationData.intune_client_id || "",
                       onChange: (e) => setOrganisationData((prev) => ({ ...prev, intune_client_id: e.target.value })),
-                      disabled: !isEditing || !isSuperAdmin,
+                      disabled: !isSuperAdmin,
                       className: "font-mono text-sm"
                     }
                   )
@@ -6488,7 +6488,7 @@ const OrganisationProfile = () => {
                         if (!intuneSecretDraft && organisationData.intune_client_secret) setIntuneSecretDraft(SECRET_PLACEHOLDER);
                       },
                       onChange: (e) => setIntuneSecretDraft(e.target.value),
-                      disabled: !isEditing || !isSuperAdmin,
+                      disabled: !isSuperAdmin,
                       className: "font-mono text-sm"
                     }
                   ),
@@ -6512,7 +6512,7 @@ const OrganisationProfile = () => {
                         if (!ateraKeyDraft && organisationData.atera_api_key) setAteraKeyDraft(SECRET_PLACEHOLDER);
                       },
                       onChange: (e) => setAteraKeyDraft(e.target.value),
-                      disabled: !isEditing || !isSuperAdmin,
+                      disabled: !isSuperAdmin,
                       className: "font-mono text-sm"
                     }
                   ),
@@ -6528,14 +6528,14 @@ const OrganisationProfile = () => {
                       placeholder: "12345",
                       value: organisationData.atera_customer_id ?? "",
                       onChange: (e) => setOrganisationData((prev) => ({ ...prev, atera_customer_id: parseInt(e.target.value) || null })),
-                      disabled: !isEditing || !isSuperAdmin,
+                      disabled: !isSuperAdmin,
                       className: "font-mono text-sm w-48"
                     }
                   )
                 ] })
               ] }),
               organisationData.device_source && isSuperAdmin && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3 pt-1", children: [
-                isEditing && /* @__PURE__ */ jsxs(
+                /* @__PURE__ */ jsxs(
                   Button,
                   {
                     size: "sm",

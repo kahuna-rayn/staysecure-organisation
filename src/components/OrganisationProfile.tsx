@@ -968,7 +968,7 @@ const OrganisationProfile: React.FC = () => {
                         <Select
                           value={organisationData.device_source ?? ''}
                           onValueChange={(val) => setOrganisationData(prev => ({ ...prev, device_source: val }))}
-                          disabled={!isEditing || !isSuperAdmin}
+                          disabled={!isSuperAdmin}
                         >
                           <SelectTrigger className="w-48">
                             <SelectValue placeholder="Select source…" />
@@ -993,7 +993,7 @@ const OrganisationProfile: React.FC = () => {
                               placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                               value={organisationData.intune_client_id || ''}
                               onChange={(e) => setOrganisationData(prev => ({ ...prev, intune_client_id: e.target.value }))}
-                              disabled={!isEditing || !isSuperAdmin}
+                              disabled={!isSuperAdmin}
                               className="font-mono text-sm"
                             />
                           </div>
@@ -1007,7 +1007,7 @@ const OrganisationProfile: React.FC = () => {
                               onFocus={() => { if (intuneSecretDraft === SECRET_PLACEHOLDER) setIntuneSecretDraft(''); }}
                               onBlur={() => { if (!intuneSecretDraft && organisationData.intune_client_secret) setIntuneSecretDraft(SECRET_PLACEHOLDER); }}
                               onChange={(e) => setIntuneSecretDraft(e.target.value)}
-                              disabled={!isEditing || !isSuperAdmin}
+                              disabled={!isSuperAdmin}
                               className="font-mono text-sm"
                             />
                             {organisationData.intune_client_secret && (
@@ -1030,7 +1030,7 @@ const OrganisationProfile: React.FC = () => {
                               onFocus={() => { if (ateraKeyDraft === SECRET_PLACEHOLDER) setAteraKeyDraft(''); }}
                               onBlur={() => { if (!ateraKeyDraft && organisationData.atera_api_key) setAteraKeyDraft(SECRET_PLACEHOLDER); }}
                               onChange={(e) => setAteraKeyDraft(e.target.value)}
-                              disabled={!isEditing || !isSuperAdmin}
+                              disabled={!isSuperAdmin}
                               className="font-mono text-sm"
                             />
                             {organisationData.atera_api_key && (
@@ -1045,7 +1045,7 @@ const OrganisationProfile: React.FC = () => {
                               placeholder="12345"
                               value={organisationData.atera_customer_id ?? ''}
                               onChange={(e) => setOrganisationData(prev => ({ ...prev, atera_customer_id: parseInt(e.target.value) || null }))}
-                              disabled={!isEditing || !isSuperAdmin}
+                              disabled={!isSuperAdmin}
                               className="font-mono text-sm w-48"
                             />
                           </div>
@@ -1055,16 +1055,14 @@ const OrganisationProfile: React.FC = () => {
                       {/* Save + Test connection */}
                       {organisationData.device_source && isSuperAdmin && (
                         <div className="flex items-center gap-3 pt-1">
-                          {isEditing && (
-                            <Button
-                              size="sm"
-                              onClick={handleSaveDeviceCredentials}
-                              disabled={saving}
-                            >
-                              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-                              Save credentials
-                            </Button>
-                          )}
+                          <Button
+                            size="sm"
+                            onClick={handleSaveDeviceCredentials}
+                            disabled={saving}
+                          >
+                            {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                            Save credentials
+                          </Button>
                           <Button
                             size="sm"
                             variant="outline"

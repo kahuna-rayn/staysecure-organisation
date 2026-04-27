@@ -8337,11 +8337,11 @@
         const { error } = await supabase.from("document_assignments").update({ status: "Not started", completed_at: null }).eq("assignment_id", assignmentId);
         if (error) throw error;
       },
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         invalidateComplianceQueries();
         useToast.toast({
           title: "Completion reset",
-          description: "Status set to Not started. The user must acknowledge again."
+          description: `"${variables.documentTitle}" is set to Not started. The user will need to open and acknowledge it again.`
         });
       },
       onError: (error) => {

@@ -1,8 +1,7 @@
 -- Knowledge Module: Private Document Storage
--- Run once per Supabase instance.
--- This creates a private storage bucket for document files and restricts
--- access so only admins can upload/delete; signed URLs are generated
--- server-side via the get-document-url Edge Function.
+-- NOTE: The can_manage_documents() function and storage RLS policy below are
+-- now tracked as migration 20260427000000_can_manage_documents.sql.
+-- This file is kept for reference only — do not run it manually on new instances.
 
 -- -----------------------------------------------------------------------
 -- 1. Create the private documents bucket

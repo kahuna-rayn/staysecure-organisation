@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/ui/alert"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/ui/alert", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.alert, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.scrollArea));
-})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, alert, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/ui/alert"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/ui/tooltip"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/ui/alert", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/ui/tooltip", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.alert, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.tooltip, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.scrollArea));
+})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, alert, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, tooltip, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, scrollArea) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -610,6 +610,22 @@
     ["rect", { x: "9", y: "2", width: "6", height: "6", rx: "1", key: "1egb70" }],
     ["path", { d: "M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3", key: "1jsf9p" }],
     ["path", { d: "M12 12V8", key: "2874zd" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const PenLine = createLucideIcon("PenLine", [
+    ["path", { d: "M12 20h9", key: "t2du7b" }],
+    [
+      "path",
+      {
+        d: "M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z",
+        key: "1ykcvy"
+      }
+    ]
   ]);
   /**
    * @license lucide-react v0.462.0 - ISC
@@ -8214,6 +8230,9 @@
     const [statusFilter, setStatusFilter] = React.useState("all");
     const [activeTab, setActiveTab] = React.useState("assigned");
     const [openingDocId, setOpeningDocId] = React.useState(null);
+    const [acknowledgeTarget, setAcknowledgeTarget] = React.useState(null);
+    const [agreedToTerms, setAgreedToTerms] = React.useState(false);
+    const [typedName, setTypedName] = React.useState("");
     const targetUserId = userId || (user == null ? void 0 : user.id);
     const isOwnDocuments = !userId || userId === (user == null ? void 0 : user.id);
     const { data: assignments, isLoading } = reactQuery.useQuery({
@@ -8228,57 +8247,87 @@
       },
       enabled: !!targetUserId
     });
+    const invalidateComplianceQueries = () => {
+      queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
+      queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["user-compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["department-compliance-stats"] });
+      queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+    };
+    const notifyManager = (documentTitle, completedAt) => {
+      const clientId = basePath ? basePath.replace(/^\//, "") : "default";
+      supabase.from("profiles").select("manager").eq("id", targetUserId).maybeSingle().then(({ data: profile }) => {
+        if (profile == null ? void 0 : profile.manager) {
+          staysecureNotifications.sendNotificationByEvent(supabase, "document_completed_manager", {
+            user_id: profile.manager,
+            employee_user_id: targetUserId,
+            document_title: documentTitle,
+            completed_at: completedAt,
+            clientId
+          }).catch((err) => console.error("[MyDocuments] manager notification error:", err));
+        }
+      });
+    };
     const updateStatusMutation = reactQuery.useMutation({
       mutationFn: async ({
         assignmentId,
-        status,
-        documentTitle,
-        previousStatus
+        status
       }) => {
-        if (previousStatus === "Completed" && status !== "Completed") {
-          throw new Error("Completed documents cannot be changed to another status.");
-        }
-        const completedAt = status === "Completed" ? (/* @__PURE__ */ new Date()).toISOString() : null;
-        const updateData = { status };
-        if (status === "Completed") {
-          updateData.completed_at = completedAt;
-        } else if (status === "Not started" || status === "In progress") {
-          updateData.completed_at = null;
-        }
-        const { error } = await supabase.from("document_assignments").update(updateData).eq("assignment_id", assignmentId);
+        const { error } = await supabase.from("document_assignments").update({ status, completed_at: null }).eq("assignment_id", assignmentId);
         if (error) throw error;
-        return { status, documentTitle, completedAt };
       },
-      onSuccess: (result) => {
-        queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
-        queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["user-compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["department-compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
-        useToast.toast({
-          title: "Success",
-          description: "Document status updated successfully"
-        });
-        if ((result == null ? void 0 : result.status) === "Completed") {
-          const clientId = basePath ? basePath.replace(/^\//, "") : "default";
-          supabase.from("profiles").select("manager").eq("id", targetUserId).maybeSingle().then(({ data: profile }) => {
-            if (profile == null ? void 0 : profile.manager) {
-              staysecureNotifications.sendNotificationByEvent(supabase, "document_completed_manager", {
-                user_id: profile.manager,
-                employee_user_id: targetUserId,
-                document_title: result.documentTitle,
-                completed_at: result.completedAt,
-                clientId
-              }).catch((err) => console.error("[MyDocuments] manager notification error:", err));
-            }
-          });
-        }
+      onSuccess: () => {
+        invalidateComplianceQueries();
+        useToast.toast({ title: "Status updated", description: "Document status updated successfully." });
       },
       onError: (error) => {
         useToast.toast({
           title: "Error",
-          description: error.message,
+          description: error instanceof Error ? error.message : "Could not update status",
+          variant: "destructive"
+        });
+      }
+    });
+    const acknowledgeMutation = reactQuery.useMutation({
+      mutationFn: async ({ assignmentId }) => {
+        const completedAt = (/* @__PURE__ */ new Date()).toISOString();
+        const { error } = await supabase.from("document_assignments").update({ status: "Completed", completed_at: completedAt }).eq("assignment_id", assignmentId);
+        if (error) throw error;
+        return completedAt;
+      },
+      onSuccess: (completedAt, variables) => {
+        invalidateComplianceQueries();
+        useToast.toast({ title: "Acknowledged", description: "Document marked as completed." });
+        notifyManager(variables.documentTitle, completedAt);
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Could not acknowledge document",
+          variant: "destructive"
+        });
+      }
+    });
+    const signDocumentMutation = reactQuery.useMutation({
+      mutationFn: async ({
+        assignmentId,
+        documentId
+      }) => {
+        const { error } = await supabase.functions.invoke("sign-document", {
+          body: { document_id: documentId, assignment_id: assignmentId, typed_name: typedName }
+        });
+        if (error) throw error;
+      },
+      onSuccess: (_, variables) => {
+        invalidateComplianceQueries();
+        useToast.toast({ title: "Signed", description: "Document signed and marked as completed." });
+        notifyManager(variables.documentTitle, (/* @__PURE__ */ new Date()).toISOString());
+      },
+      onError: (error) => {
+        useToast.toast({
+          title: "Error",
+          description: error instanceof Error ? error.message : "Could not sign document",
           variant: "destructive"
         });
       }
@@ -8289,15 +8338,10 @@
         if (error) throw error;
       },
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["document-assignments"] });
-        queryClient.invalidateQueries({ queryKey: ["compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["document-compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["user-compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["department-compliance-stats"] });
-        queryClient.invalidateQueries({ queryKey: ["document-assignments-overview"] });
+        invalidateComplianceQueries();
         useToast.toast({
           title: "Completion reset",
-          description: "Status set to Not started and completion cleared. The user must acknowledge again."
+          description: "Status set to Not started. The user must acknowledge again."
         });
       },
       onError: (error) => {
@@ -8308,8 +8352,10 @@
         });
       }
     });
-    const handleStatusChange = (assignmentId, newStatus, documentTitle, previousStatus) => {
-      updateStatusMutation.mutate({ assignmentId, status: newStatus, documentTitle, previousStatus });
+    const handleStatusChange = (assignmentId, newStatus) => {
+      if (newStatus === "Not started" || newStatus === "In progress") {
+        updateStatusMutation.mutate({ assignmentId, status: newStatus });
+      }
     };
     const handleAdminResetCompletion = (assignmentId, documentTitle) => {
       if (!window.confirm(
@@ -8324,6 +8370,9 @@ The assignment will return to Not started and the user will need to acknowledge 
     const handleOpenDocument = async (documentId, url, fileName) => {
       if (!fileName && url) {
         window.open(url, "_blank", "noopener,noreferrer");
+        if (isOwnDocuments) {
+          supabase.rpc("record_document_open_self", { p_document_id: documentId }).then(() => queryClient.invalidateQueries({ queryKey: ["document-assignments", targetUserId] })).catch((err) => console.error("[MyDocuments] external open tracking error:", err));
+        }
         return;
       }
       if (!fileName) return;
@@ -8334,12 +8383,48 @@ The assignment will return to Not started and the user will need to acknowledge 
         });
         if (error) throw error;
         window.open(data.url, "_blank", "noopener,noreferrer");
+        queryClient.invalidateQueries({ queryKey: ["document-assignments", targetUserId] });
       } catch (err) {
-        useToast.toast({ title: "Error", description: err.message, variant: "destructive" });
+        useToast.toast({
+          title: "Error",
+          description: err instanceof Error ? err.message : "Could not open document",
+          variant: "destructive"
+        });
       } finally {
         setOpeningDocId(null);
       }
     };
+    const handleAcknowledge = (assignment) => {
+      setAcknowledgeTarget({
+        assignmentId: assignment.assignment_id,
+        documentId: assignment.document_id,
+        documentTitle: assignment.document.title,
+        isRequired: assignment.document.required
+      });
+      setAgreedToTerms(false);
+      setTypedName("");
+    };
+    const handleAcknowledgeConfirm = () => {
+      if (!acknowledgeTarget) return;
+      if (acknowledgeTarget.isRequired) {
+        signDocumentMutation.mutate({
+          assignmentId: acknowledgeTarget.assignmentId,
+          documentId: acknowledgeTarget.documentId,
+          documentTitle: acknowledgeTarget.documentTitle,
+          typedName
+        }, {
+          onSettled: () => setAcknowledgeTarget(null)
+        });
+      } else {
+        acknowledgeMutation.mutate({
+          assignmentId: acknowledgeTarget.assignmentId,
+          documentTitle: acknowledgeTarget.documentTitle
+        }, {
+          onSettled: () => setAcknowledgeTarget(null)
+        });
+      }
+    };
+    const isAcknowledgeConfirmDisabled = (acknowledgeTarget == null ? void 0 : acknowledgeTarget.isRequired) ? !agreedToTerms || !typedName.trim() || signDocumentMutation.isPending : !agreedToTerms || acknowledgeMutation.isPending;
     React.useEffect(() => {
       if (!assignments || assignments.length === 0) return;
       if (typeof sessionStorage === "undefined") return;
@@ -8372,6 +8457,16 @@ The assignment will return to Not started and the user will need to acknowledge 
     if (isLoading) {
       return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center justify-center h-64", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-32 w-32 border-b-2 border-primary" }) });
     }
+    const documentListProps = {
+      onStatusChange: handleStatusChange,
+      onOpenDocument: handleOpenDocument,
+      onAcknowledge: handleAcknowledge,
+      openingDocId,
+      isReadOnly: !isOwnDocuments,
+      canAdminResetCompletion: hasAdminAccess,
+      onAdminResetCompletion: handleAdminResetCompletion,
+      resetCompletionPending: resetCompletionMutation.isPending
+    };
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
@@ -8452,52 +8547,73 @@ The assignment will return to Not started and the user will need to acknowledge 
             ")"
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(
-          DocumentList,
-          {
-            assignments: filteredAssignments || [],
-            onStatusChange: handleStatusChange,
-            isReadOnly: !isOwnDocuments,
-            onOpenDocument: handleOpenDocument,
-            openingDocId,
-            canAdminResetCompletion: hasAdminAccess,
-            onAdminResetCompletion: handleAdminResetCompletion,
-            resetCompletionPending: resetCompletionMutation.isPending
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(
-          DocumentList,
-          {
-            assignments: requiredAssignments || [],
-            onStatusChange: handleStatusChange,
-            isReadOnly: !isOwnDocuments,
-            onOpenDocument: handleOpenDocument,
-            openingDocId,
-            canAdminResetCompletion: hasAdminAccess,
-            onAdminResetCompletion: handleAdminResetCompletion,
-            resetCompletionPending: resetCompletionMutation.isPending
-          }
-        ) }),
-        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(
-          DocumentList,
-          {
-            assignments: optionalAssignments || [],
-            onStatusChange: handleStatusChange,
-            isReadOnly: !isOwnDocuments,
-            onOpenDocument: handleOpenDocument,
-            openingDocId,
-            canAdminResetCompletion: hasAdminAccess,
-            onAdminResetCompletion: handleAdminResetCompletion,
-            resetCompletionPending: resetCompletionMutation.isPending
-          }
-        ) })
-      ] })
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "assigned", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: filteredAssignments || [], ...documentListProps }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "required", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: requiredAssignments || [], ...documentListProps }) }),
+        /* @__PURE__ */ jsxRuntime.jsx(tabs.TabsContent, { value: "optional", className: "space-y-4", children: /* @__PURE__ */ jsxRuntime.jsx(DocumentList, { assignments: optionalAssignments || [], ...documentListProps }) })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: !!acknowledgeTarget, onOpenChange: (open) => {
+        if (!open) setAcknowledgeTarget(null);
+      }, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "sm:max-w-md", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { className: "flex items-center gap-2", children: (acknowledgeTarget == null ? void 0 : acknowledgeTarget.isRequired) ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(PenLine, { className: "h-5 w-5" }),
+            " Sign: ",
+            acknowledgeTarget.documentTitle
+          ] }) : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+            /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-5 w-5" }),
+            " Acknowledge: ",
+            acknowledgeTarget == null ? void 0 : acknowledgeTarget.documentTitle
+          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: (acknowledgeTarget == null ? void 0 : acknowledgeTarget.isRequired) ? "Type your full name and confirm to create a signed record that you have read and understood this policy." : "Confirm that you have read and understood this document." })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4 py-2", children: [
+          (acknowledgeTarget == null ? void 0 : acknowledgeTarget.isRequired) && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "typed-name", children: "Full name" }),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              input.Input,
+              {
+                id: "typed-name",
+                placeholder: "Type your full name...",
+                value: typedName,
+                onChange: (e) => setTypedName(e.target.value),
+                autoComplete: "name"
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start gap-3", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(
+              checkbox.Checkbox,
+              {
+                id: "agree-terms",
+                checked: agreedToTerms,
+                onCheckedChange: (checked) => setAgreedToTerms(checked === true)
+              }
+            ),
+            /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "agree-terms", className: "leading-snug cursor-pointer", children: "I have read and understood this document and agree to comply with its requirements." })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogFooter, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setAcknowledgeTarget(null), children: "Cancel" }),
+          /* @__PURE__ */ jsxRuntime.jsxs(
+            button.Button,
+            {
+              onClick: handleAcknowledgeConfirm,
+              disabled: isAcknowledgeConfirmDisabled,
+              children: [
+                (acknowledgeMutation.isPending || signDocumentMutation.isPending) && /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 mr-1 animate-spin" }),
+                (acknowledgeTarget == null ? void 0 : acknowledgeTarget.isRequired) ? "Sign & Submit" : "Acknowledge"
+              ]
+            }
+          )
+        ] })
+      ] }) })
     ] });
   };
   const DocumentList = ({
     assignments,
     onStatusChange,
     onOpenDocument,
+    onAcknowledge,
     openingDocId,
     isReadOnly = false,
     canAdminResetCompletion = false,
@@ -8533,105 +8649,148 @@ The assignment will return to Not started and the user will need to acknowledge 
         /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-muted-foreground", children: "No documents found" })
       ] }) });
     }
-    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: assignments.map((assignment) => /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { className: isOverdue(assignment.due_date, assignment.status) ? "border-red-200" : "", children: [
-      /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start justify-between", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: assignment.document.title }),
-            assignment.document.required && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Required" }),
-            isOverdue(assignment.due_date, assignment.status) && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Overdue" })
-          ] }),
-          assignment.document.description && /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { className: "mt-2", children: assignment.document.description })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2", children: getStatusIcon(assignment.status) })
-      ] }) }),
-      /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between flex-wrap gap-3", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center gap-4 text-sm text-muted-foreground", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 shrink-0" }),
-            "Due: ",
-            new Date(assignment.due_date).toLocaleDateString()
-          ] }),
-          assignment.status === "Completed" && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 shrink-0 text-green-600" }),
-            /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-foreground", children: [
-              "Completed:",
-              " ",
-              assignment.completed_at ? new Date(assignment.completed_at).toLocaleDateString() : "—"
-            ] })
-          ] }),
-          assignment.document.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: assignment.document.category })
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
-          (assignment.document.url || assignment.document.file_name) && /* @__PURE__ */ jsxRuntime.jsxs(
-            button.Button,
-            {
-              variant: "outline",
-              size: "sm",
-              onClick: () => onOpenDocument(
-                assignment.document_id,
-                assignment.document.url,
-                assignment.document.file_name
-              ),
-              disabled: openingDocId === assignment.document_id,
-              children: [
-                openingDocId === assignment.document_id ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 mr-1 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-4 w-4 mr-1" }),
-                "View"
-              ]
-            }
-          ),
-          isReadOnly ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor(assignment.status), children: assignment.status }),
-            canAdminResetCompletion && assignment.status === "Completed" && onAdminResetCompletion && /* @__PURE__ */ jsxRuntime.jsxs(
-              button.Button,
-              {
-                type: "button",
-                variant: "outline",
-                size: "sm",
-                className: "text-muted-foreground",
-                onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
-                disabled: resetCompletionPending,
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
-                  "Reset completion"
-                ]
-              }
-            )
-          ] }) : assignment.status === "Completed" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor("Completed"), children: "Completed" }),
-            canAdminResetCompletion && onAdminResetCompletion && /* @__PURE__ */ jsxRuntime.jsxs(
-              button.Button,
-              {
-                type: "button",
-                variant: "outline",
-                size: "sm",
-                className: "text-muted-foreground",
-                onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
-                disabled: resetCompletionPending,
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
-                  "Reset completion"
-                ]
-              }
-            )
-          ] }) : /* @__PURE__ */ jsxRuntime.jsxs(
-            select.Select,
-            {
-              value: assignment.status,
-              onValueChange: (value) => onStatusChange(assignment.assignment_id, value, assignment.document.title, assignment.status),
-              children: [
-                /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
-                /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Not started", children: "Not Started" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "In progress", children: "In Progress" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Completed", children: "Completed" })
+    return /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-4", children: assignments.map((assignment) => {
+      const hasBeenOpened = !!assignment.first_opened_at;
+      const openCount = assignment.open_count ?? 0;
+      return /* @__PURE__ */ jsxRuntime.jsxs(
+        card.Card,
+        {
+          className: isOverdue(assignment.due_date, assignment.status) ? "border-red-200" : "",
+          children: [
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardHeader, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start justify-between", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-3", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(card.CardTitle, { className: "text-lg", children: assignment.document.title }),
+                  assignment.document.required && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Required" }),
+                  isOverdue(assignment.due_date, assignment.status) && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Overdue" })
+                ] }),
+                assignment.document.description && /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { className: "mt-2", children: assignment.document.description })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex items-center gap-2", children: getStatusIcon(assignment.status) })
+            ] }) }),
+            /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between flex-wrap gap-3", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center gap-4 text-sm text-muted-foreground", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(Calendar, { className: "h-4 w-4 shrink-0" }),
+                  "Due: ",
+                  new Date(assignment.due_date).toLocaleDateString()
+                ] }),
+                assignment.status === "Completed" && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-1", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 shrink-0 text-green-600" }),
+                  /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-foreground", children: [
+                    "Completed:",
+                    " ",
+                    assignment.completed_at ? new Date(assignment.completed_at).toLocaleDateString() : "—"
+                  ] })
+                ] }),
+                assignment.status !== "Completed" && !isReadOnly && (hasBeenOpened ? /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-xs text-muted-foreground", children: [
+                  "Opened ",
+                  openCount > 1 ? `${openCount} times` : "once"
+                ] }) : /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "flex items-center gap-1 text-xs text-amber-600", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(EyeOff, { className: "h-3.5 w-3.5" }),
+                  "Not yet opened"
+                ] })),
+                assignment.document.category && /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: assignment.document.category })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                (assignment.document.url || assignment.document.file_name) && /* @__PURE__ */ jsxRuntime.jsxs(
+                  button.Button,
+                  {
+                    variant: "outline",
+                    size: "sm",
+                    onClick: () => onOpenDocument(
+                      assignment.document_id,
+                      assignment.document.url,
+                      assignment.document.file_name
+                    ),
+                    disabled: openingDocId === assignment.document_id,
+                    children: [
+                      openingDocId === assignment.document_id ? /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 mr-1 animate-spin" }) : /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-4 w-4 mr-1" }),
+                      "View"
+                    ]
+                  }
+                ),
+                isReadOnly ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor(assignment.status), children: assignment.status }),
+                  canAdminResetCompletion && assignment.status === "Completed" && onAdminResetCompletion && /* @__PURE__ */ jsxRuntime.jsxs(
+                    button.Button,
+                    {
+                      type: "button",
+                      variant: "outline",
+                      size: "sm",
+                      className: "text-muted-foreground",
+                      onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
+                      disabled: resetCompletionPending,
+                      children: [
+                        /* @__PURE__ */ jsxRuntime.jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
+                        "Reset completion"
+                      ]
+                    }
+                  )
+                ] }) : assignment.status === "Completed" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { className: getStatusColor("Completed"), children: "Completed" }),
+                  canAdminResetCompletion && onAdminResetCompletion && /* @__PURE__ */ jsxRuntime.jsxs(
+                    button.Button,
+                    {
+                      type: "button",
+                      variant: "outline",
+                      size: "sm",
+                      className: "text-muted-foreground",
+                      onClick: () => onAdminResetCompletion(assignment.assignment_id, assignment.document.title),
+                      disabled: resetCompletionPending,
+                      children: [
+                        /* @__PURE__ */ jsxRuntime.jsx(RotateCcw, { className: "h-3.5 w-3.5 mr-1" }),
+                        "Reset completion"
+                      ]
+                    }
+                  )
+                ] }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+                  /* @__PURE__ */ jsxRuntime.jsxs(
+                    select.Select,
+                    {
+                      value: assignment.status,
+                      onValueChange: (value) => onStatusChange(assignment.assignment_id, value),
+                      children: [
+                        /* @__PURE__ */ jsxRuntime.jsx(select.SelectTrigger, { className: "w-[140px]", children: /* @__PURE__ */ jsxRuntime.jsx(select.SelectValue, {}) }),
+                        /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
+                          /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "Not started", children: "Not Started" }),
+                          /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "In progress", children: "In Progress" })
+                        ] })
+                      ]
+                    }
+                  ),
+                  hasBeenOpened ? /* @__PURE__ */ jsxRuntime.jsx(
+                    button.Button,
+                    {
+                      size: "sm",
+                      variant: assignment.document.required ? "default" : "outline",
+                      onClick: () => onAcknowledge(assignment),
+                      children: assignment.document.required ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntime.jsx(PenLine, { className: "h-4 w-4 mr-1" }),
+                        " Sign"
+                      ] }) : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+                        /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 mr-1" }),
+                        " Acknowledge"
+                      ] })
+                    }
+                  ) : /* @__PURE__ */ jsxRuntime.jsxs(tooltip.Tooltip, { children: [
+                    /* @__PURE__ */ jsxRuntime.jsx(tooltip.TooltipTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx("span", { children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", disabled: true, children: assignment.document.required ? /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(PenLine, { className: "h-4 w-4 mr-1" }),
+                      " Sign"
+                    ] }) : /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(CircleCheckBig, { className: "h-4 w-4 mr-1" }),
+                      " Acknowledge"
+                    ] }) }) }) }),
+                    /* @__PURE__ */ jsxRuntime.jsx(tooltip.TooltipContent, { children: "Open the document first to enable acknowledgment" })
+                  ] })
                 ] })
-              ]
-            }
-          )
-        ] })
-      ] }) })
-    ] }, assignment.assignment_id)) });
+              ] })
+            ] }) })
+          ]
+        },
+        assignment.assignment_id
+      );
+    }) });
   };
   const UserDepartmentsRolesTable = React.forwardRef(({ userId }, ref) => {
     const [newRows, setNewRows] = React.useState([]);

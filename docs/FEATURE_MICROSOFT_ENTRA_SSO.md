@@ -293,6 +293,33 @@ const hasOAuthIdentity =
 
 ---
 
+### ADR-3: Google SSO — deferred until customer demand
+
+**Context:** Google SSO is common in B2B SaaS. The question arose whether to support it alongside Microsoft Entra SSO.
+
+**Decision:** Deprioritise Google SSO. Do not implement unless a specific customer requests it.
+
+**Reasons:**
+
+1. **Enterprise ICP is Microsoft-dominant.** Our target customers are large IT organisations with centralised IAM — they run Microsoft 365 / Entra. Google Workspace is more prevalent in startups, education, and tech companies. Google SSO adds little value for the current buyer profile.
+
+2. **`hd` domain restriction cannot be used.** The standard way to make Google OAuth safe for B2B is the `hd` (hosted domain) parameter, which restricts login to a specific Google Workspace domain. Our clients use personal Gmail accounts — there is no Workspace domain to restrict to. Without `hd`, there is no tenant-level trust signal equivalent to Entra's `tid` + `oid`.
+
+3. **JIT auto-provisioning would be unsafe without `hd`.** The current Entra implementation auto-provisions a profile on first SSO login (see Phase A implementation log). With Google personal accounts, this would allow anyone with a Gmail to get a provisioned account simply by completing the OAuth flow — there is no organisational gate.
+
+4. **Account linking is more complex.** With Entra, a new user can SSO on first login. With Google personal accounts there is no reliable way to auto-match a Google identity to an existing provisioned user without trusting email, which is spoofable across providers. The safe design requires an explicit linking step: the user first authenticates with their password, then intentionally links their Google identity. This is materially more complex than the Entra flow.
+
+5. **Email-based auto-matching across providers must not be used.** A user could create a Gmail address matching another user's work email and potentially hijack their account via SSO if the system matches on email alone.
+
+**If Google SSO is added later:**
+- Estimated effort: **3–5 days** done carefully (more than Entra, due to the account-linking requirement)
+- Implementation must include: explicit account-linking flow (not first-login auto-provisioning), `google_sub` stored per user only after intentional linking, no email-based identity matching across providers
+- JIT auto-provisioning on first Google login must be disabled or gated behind an allowlist
+
+**Revisit trigger:** First customer request that specifically needs Google SSO.
+
+---
+
 ## References
 
 - **Supabase:** [Login with Azure](https://supabase.com/docs/guides/auth/social-login/auth-azure) (Azure provider setup).

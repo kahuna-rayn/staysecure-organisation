@@ -7,6 +7,7 @@
 export const useUserRole = () => {
   return {
     hasAdminAccess: false,
+    hasManagerAccess: false,
   };
 };
 

@@ -8267,7 +8267,7 @@ const AddEducationDialog = ({
 const MyDocuments = ({ userId }) => {
   const { supabaseClient: supabase2, basePath } = useOrganisationContext();
   const { user } = useAuth();
-  const { hasAdminAccess } = useUserRole();
+  const { hasAdminAccess, hasManagerAccess } = useUserRole();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -8276,6 +8276,7 @@ const MyDocuments = ({ userId }) => {
   const [acknowledgeTarget, setAcknowledgeTarget] = useState(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [typedName, setTypedName] = useState("");
+  const [resetConfirmTarget, setResetConfirmTarget] = useState(null);
   const targetUserId = userId || (user == null ? void 0 : user.id);
   const isOwnDocuments = !userId || userId === (user == null ? void 0 : user.id);
   const { data: assignments, isLoading } = useQuery({
@@ -8401,14 +8402,13 @@ const MyDocuments = ({ userId }) => {
     }
   };
   const handleAdminResetCompletion = (assignmentId, documentTitle) => {
-    if (!window.confirm(
-      `Reset completion for "${documentTitle}"?
-
-The assignment will return to Not started and the user will need to acknowledge this document again.`
-    )) {
-      return;
-    }
-    resetCompletionMutation.mutate({ assignmentId, documentTitle });
+    setResetConfirmTarget({ assignmentId, documentTitle });
+  };
+  const confirmResetCompletion = () => {
+    if (!resetConfirmTarget) return;
+    const payload = resetConfirmTarget;
+    setResetConfirmTarget(null);
+    resetCompletionMutation.mutate(payload);
   };
   const handleOpenDocument = async (documentId, url, fileName) => {
     if (!fileName && url) {
@@ -8506,7 +8506,7 @@ The assignment will return to Not started and the user will need to acknowledge 
     onAcknowledge: handleAcknowledge,
     openingDocId,
     isReadOnly: !isOwnDocuments,
-    canAdminResetCompletion: hasAdminAccess,
+    canAdminResetCompletion: hasAdminAccess || hasManagerAccess,
     onAdminResetCompletion: handleAdminResetCompletion,
     resetCompletionPending: resetCompletionMutation.isPending
   };
@@ -8645,6 +8645,31 @@ The assignment will return to Not started and the user will need to acknowledge 
             children: [
               (acknowledgeMutation.isPending || signDocumentMutation.isPending) && /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 mr-1 animate-spin" }),
               (acknowledgeTarget == null ? void 0 : acknowledgeTarget.isRequired) ? "Sign & Submit" : "Acknowledge"
+            ]
+          }
+        )
+      ] })
+    ] }) }),
+    /* @__PURE__ */ jsx(AlertDialog, { open: !!resetConfirmTarget, onOpenChange: (open) => !open && setResetConfirmTarget(null), children: /* @__PURE__ */ jsxs(AlertDialogContent, { children: [
+      /* @__PURE__ */ jsxs(AlertDialogHeader, { children: [
+        /* @__PURE__ */ jsxs(AlertDialogTitle, { children: [
+          "Reset completion for “",
+          resetConfirmTarget == null ? void 0 : resetConfirmTarget.documentTitle,
+          "”?"
+        ] }),
+        /* @__PURE__ */ jsx(AlertDialogDescription, { children: "The assignment will return to Not started and completion will be cleared. The user must open this document again and acknowledge it." })
+      ] }),
+      /* @__PURE__ */ jsxs(AlertDialogFooter, { children: [
+        /* @__PURE__ */ jsx(AlertDialogCancel, { disabled: resetCompletionMutation.isPending, children: "Cancel" }),
+        /* @__PURE__ */ jsxs(
+          AlertDialogAction,
+          {
+            onClick: () => confirmResetCompletion(),
+            disabled: resetCompletionMutation.isPending,
+            className: "inline-flex items-center gap-2",
+            children: [
+              resetCompletionMutation.isPending && /* @__PURE__ */ jsx(LoaderCircle, { className: "h-4 w-4 animate-spin shrink-0", "aria-hidden": true }),
+              "Reset completion"
             ]
           }
         )

@@ -8224,7 +8224,7 @@
   const MyDocuments = ({ userId }) => {
     const { supabaseClient: supabase, basePath } = useOrganisationContext();
     const { user } = staysecureAuth.useAuth();
-    const { hasAdminAccess } = useUserRole.useUserRole();
+    const { hasAdminAccess, hasManagerAccess } = useUserRole.useUserRole();
     const queryClient = reactQuery.useQueryClient();
     const [searchTerm, setSearchTerm] = React.useState("");
     const [statusFilter, setStatusFilter] = React.useState("all");
@@ -8233,6 +8233,7 @@
     const [acknowledgeTarget, setAcknowledgeTarget] = React.useState(null);
     const [agreedToTerms, setAgreedToTerms] = React.useState(false);
     const [typedName, setTypedName] = React.useState("");
+    const [resetConfirmTarget, setResetConfirmTarget] = React.useState(null);
     const targetUserId = userId || (user == null ? void 0 : user.id);
     const isOwnDocuments = !userId || userId === (user == null ? void 0 : user.id);
     const { data: assignments, isLoading } = reactQuery.useQuery({
@@ -8358,14 +8359,13 @@
       }
     };
     const handleAdminResetCompletion = (assignmentId, documentTitle) => {
-      if (!window.confirm(
-        `Reset completion for "${documentTitle}"?
-
-The assignment will return to Not started and the user will need to acknowledge this document again.`
-      )) {
-        return;
-      }
-      resetCompletionMutation.mutate({ assignmentId, documentTitle });
+      setResetConfirmTarget({ assignmentId, documentTitle });
+    };
+    const confirmResetCompletion = () => {
+      if (!resetConfirmTarget) return;
+      const payload = resetConfirmTarget;
+      setResetConfirmTarget(null);
+      resetCompletionMutation.mutate(payload);
     };
     const handleOpenDocument = async (documentId, url, fileName) => {
       if (!fileName && url) {
@@ -8463,7 +8463,7 @@ The assignment will return to Not started and the user will need to acknowledge 
       onAcknowledge: handleAcknowledge,
       openingDocId,
       isReadOnly: !isOwnDocuments,
-      canAdminResetCompletion: hasAdminAccess,
+      canAdminResetCompletion: hasAdminAccess || hasManagerAccess,
       onAdminResetCompletion: handleAdminResetCompletion,
       resetCompletionPending: resetCompletionMutation.isPending
     };
@@ -8602,6 +8602,31 @@ The assignment will return to Not started and the user will need to acknowledge 
               children: [
                 (acknowledgeMutation.isPending || signDocumentMutation.isPending) && /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 mr-1 animate-spin" }),
                 (acknowledgeTarget == null ? void 0 : acknowledgeTarget.isRequired) ? "Sign & Submit" : "Acknowledge"
+              ]
+            }
+          )
+        ] })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialog, { open: !!resetConfirmTarget, onOpenChange: (open) => !open && setResetConfirmTarget(null), children: /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogContent, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogHeader, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogTitle, { children: [
+            "Reset completion for “",
+            resetConfirmTarget == null ? void 0 : resetConfirmTarget.documentTitle,
+            "”?"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogDescription, { children: "The assignment will return to Not started and completion will be cleared. The user must open this document again and acknowledge it." })
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsxs(alertDialog.AlertDialogFooter, { children: [
+          /* @__PURE__ */ jsxRuntime.jsx(alertDialog.AlertDialogCancel, { disabled: resetCompletionMutation.isPending, children: "Cancel" }),
+          /* @__PURE__ */ jsxRuntime.jsxs(
+            alertDialog.AlertDialogAction,
+            {
+              onClick: () => confirmResetCompletion(),
+              disabled: resetCompletionMutation.isPending,
+              className: "inline-flex items-center gap-2",
+              children: [
+                resetCompletionMutation.isPending && /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-4 w-4 animate-spin shrink-0", "aria-hidden": true }),
+                "Reset completion"
               ]
             }
           )

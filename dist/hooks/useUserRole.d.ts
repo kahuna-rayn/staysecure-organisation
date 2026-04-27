@@ -5,5 +5,6 @@
  */
 export declare const useUserRole: () => {
     hasAdminAccess: boolean;
+    hasManagerAccess: boolean;
 };
 //# sourceMappingURL=useUserRole.d.ts.map

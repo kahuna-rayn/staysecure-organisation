@@ -22,6 +22,16 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
   FileText, Calendar, Circle, CheckCircle, Clock, ExternalLink,
   Search, Loader2, RotateCcw, EyeOff, PenLine,
 } from 'lucide-react';
@@ -60,6 +70,11 @@ interface AcknowledgeTarget {
   isRequired: boolean;
 }
 
+interface ResetCompletionTarget {
+  assignmentId: string;
+  documentTitle: string;
+}
+
 interface MyDocumentsProps {
   userId?: string;
 }
@@ -67,7 +82,7 @@ interface MyDocumentsProps {
 const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
   const { supabaseClient: supabase, basePath } = useOrganisationContext();
   const { user } = useAuth();
-  const { hasAdminAccess } = useUserRole();
+  const { hasAdminAccess, hasManagerAccess } = useUserRole();
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -76,6 +91,7 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
   const [acknowledgeTarget, setAcknowledgeTarget] = useState<AcknowledgeTarget | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [typedName, setTypedName] = useState('');
+  const [resetConfirmTarget, setResetConfirmTarget] = useState<ResetCompletionTarget | null>(null);
 
   const targetUserId = userId || user?.id;
   const isOwnDocuments = !userId || userId === user?.id;
@@ -241,14 +257,14 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
   };
 
   const handleAdminResetCompletion = (assignmentId: string, documentTitle: string) => {
-    if (
-      !window.confirm(
-        `Reset completion for "${documentTitle}"?\n\nThe assignment will return to Not started and the user will need to acknowledge this document again.`,
-      )
-    ) {
-      return;
-    }
-    resetCompletionMutation.mutate({ assignmentId, documentTitle });
+    setResetConfirmTarget({ assignmentId, documentTitle });
+  };
+
+  const confirmResetCompletion = () => {
+    if (!resetConfirmTarget) return;
+    const payload = resetConfirmTarget;
+    setResetConfirmTarget(null);
+    resetCompletionMutation.mutate(payload);
   };
 
   const handleOpenDocument = async (documentId: string, url?: string, fileName?: string) => {
@@ -372,7 +388,7 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
     onAcknowledge: handleAcknowledge,
     openingDocId,
     isReadOnly: !isOwnDocuments,
-    canAdminResetCompletion: hasAdminAccess,
+    canAdminResetCompletion: hasAdminAccess || hasManagerAccess,
     onAdminResetCompletion: handleAdminResetCompletion,
     resetCompletionPending: resetCompletionMutation.isPending,
   };
@@ -521,6 +537,33 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Admin or manager: reset completion — RAYN AlertDialog (replaces native window.confirm) */}
+      <AlertDialog open={!!resetConfirmTarget} onOpenChange={(open) => !open && setResetConfirmTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Reset completion for &ldquo;{resetConfirmTarget?.documentTitle}&rdquo;?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              The assignment will return to Not started and completion will be cleared. The user must open this document again and acknowledge it.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={resetCompletionMutation.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => confirmResetCompletion()}
+              disabled={resetCompletionMutation.isPending}
+              className="inline-flex items-center gap-2"
+            >
+              {resetCompletionMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin shrink-0" aria-hidden />
+              )}
+              Reset completion
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

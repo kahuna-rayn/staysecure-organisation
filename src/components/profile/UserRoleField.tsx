@@ -35,6 +35,22 @@ export const UserRoleField: React.FC<UserRoleFieldProps> = ({ userId }) => {
   });
 
   const isSuperAdmin = currentUserRole === 'super_admin';
+  const isAdmin = currentUserRole === 'client_admin' || isSuperAdmin;
+
+  // Check if the license has author seats available (org admins can assign author when seats > 0)
+  const { data: hasAuthorSeats } = useQuery({
+    queryKey: ['license-has-author-seats'],
+    queryFn: async () => {
+      const { data } = await supabaseClient
+        .from('customer_product_licenses')
+        .select('seats_author')
+        .gt('seats_author', 0)
+        .limit(1)
+        .maybeSingle();
+      return !!data;
+    },
+    enabled: isAdmin && !isSuperAdmin,
+  });
 
   // Define available roles - filter based on current user's permissions
   const allRoleOptions: { value: AppRole; label: string }[] = [
@@ -46,12 +62,10 @@ export const UserRoleField: React.FC<UserRoleFieldProps> = ({ userId }) => {
 
   // Filter roles based on current user's permissions:
   // - super_admin can assign all roles
-  // - client_admin can assign only: user, client_admin (NOT super_admin or author)
+  // - client_admin can assign author when author seats are licensed; never super_admin
   const roleOptions = allRoleOptions.filter(option => {
-    if (option.value === 'super_admin' || option.value === 'author') {
-      return isSuperAdmin; // Only super_admin can assign super_admin and author
-    }
-    // All other roles (user, client_admin) are available to both super_admin and client_admin
+    if (option.value === 'super_admin') return isSuperAdmin;
+    if (option.value === 'author') return isSuperAdmin || (isAdmin && !!hasAuthorSeats);
     return true;
   });
 

@@ -1335,6 +1335,15 @@
       enabled: !!(user == null ? void 0 : user.id)
     });
     const isSuperAdmin = currentUserRole === "super_admin";
+    const isAdmin = currentUserRole === "client_admin" || isSuperAdmin;
+    const { data: hasAuthorSeats } = reactQuery.useQuery({
+      queryKey: ["license-has-author-seats"],
+      queryFn: async () => {
+        const { data } = await supabaseClient.from("customer_product_licenses").select("seats_author").gt("seats_author", 0).limit(1).maybeSingle();
+        return !!data;
+      },
+      enabled: isAdmin && !isSuperAdmin
+    });
     const isFormValid = () => {
       var _a, _b, _c, _d;
       const requiredFields = [
@@ -1523,7 +1532,7 @@
                     /* @__PURE__ */ jsxRuntime.jsxs(select.SelectContent, { children: [
                       /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "user", children: "User" }),
                       /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "client_admin", children: "Admin" }),
-                      isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "author", children: "Author" }),
+                      (isSuperAdmin || isAdmin && hasAuthorSeats) && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "author", children: "Author" }),
                       isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx(select.SelectItem, { value: "super_admin", children: "Super Admin" })
                     ] })
                   ]
@@ -6803,15 +6812,19 @@
     return reactQuery.useQuery({
       queryKey: ["license-data"],
       queryFn: async () => {
-        const { data: licenses, error: licenseError } = await supabaseClient.from("customer_product_licenses").select("id, product_id, seats, start_date, end_date, products(name)");
+        const { data: licenses, error: licenseError } = await supabaseClient.from("customer_product_licenses").select("id, product_id, seats, seats_author, start_date, end_date, products(name)");
         if (licenseError) throw licenseError;
         if (!licenses || licenses.length === 0) return { products: [], assignments: [] };
         const licenseIds = licenses.map((l) => l.id);
         const { data: rawAssignments, error: assignError } = await supabaseClient.from("product_license_assignments").select("id, license_id, user_id, access_level, profiles(full_name, email)").in("license_id", licenseIds);
         if (assignError) throw assignError;
         const countByLicense = /* @__PURE__ */ new Map();
+        const authorCountByLicense = /* @__PURE__ */ new Map();
         (rawAssignments ?? []).forEach((a) => {
           countByLicense.set(a.license_id, (countByLicense.get(a.license_id) ?? 0) + 1);
+          if (a.access_level === "author") {
+            authorCountByLicense.set(a.license_id, (authorCountByLicense.get(a.license_id) ?? 0) + 1);
+          }
         });
         const msPerDay = 1e3 * 60 * 60 * 24;
         const products = licenses.map((l) => {
@@ -6820,6 +6833,8 @@
           const total = l.seats ?? 0;
           const available = Math.max(total - used, 0);
           const pctUsed = total > 0 ? used / total : 0;
+          const seatsAuthor = l.seats_author ?? 0;
+          const usedAuthorSeats = authorCountByLicense.get(l.id) ?? 0;
           const daysUntilExpiry = l.end_date ? Math.ceil((new Date(l.end_date).getTime() - Date.now()) / msPerDay) : null;
           return {
             licenseId: l.id,
@@ -6831,6 +6846,9 @@
             pctUsed,
             isNearCapacity: total > 0 && pctUsed >= NEAR_CAPACITY_THRESHOLD,
             isAtCapacity: total > 0 && used >= total,
+            seatsAuthor,
+            usedAuthorSeats,
+            availableAuthorSeats: Math.max(seatsAuthor - usedAuthorSeats, 0),
             startDate: l.start_date ?? null,
             endDate: l.end_date ?? null,
             daysUntilExpiry
@@ -6932,6 +6950,36 @@
             "% used"
           ] }) })
         ] }),
+        product.seatsAuthor > 0 && (() => {
+          const authorPct = Math.min(product.usedAuthorSeats / product.seatsAuthor * 100, 100);
+          const authorAtCap = product.usedAuthorSeats >= product.seatsAuthor;
+          const authorNearCap = !authorAtCap && authorPct >= 80;
+          const authorBarColor = authorAtCap ? "bg-destructive" : authorNearCap ? "bg-amber-500" : "bg-blue-500";
+          return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2 border-t pt-3", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "font-medium flex items-center gap-1", children: [
+                /* @__PURE__ */ jsxRuntime.jsx(Users, { className: "h-4 w-4 text-muted-foreground" }),
+                product.usedAuthorSeats,
+                " of ",
+                product.seatsAuthor,
+                " author seats used"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-muted-foreground", children: [
+                product.availableAuthorSeats,
+                " available"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-2 w-full rounded-full bg-muted overflow-hidden", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: `h-full rounded-full transition-all ${authorBarColor}`, style: { width: `${authorPct}%` } }) }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: authorAtCap ? /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", children: "Author seats full" }) : authorNearCap ? /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
+              Math.round(authorPct),
+              "% author seats used"
+            ] }) : /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-blue-500 text-blue-700 bg-blue-50", children: [
+              /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-3 w-3 mr-1" }),
+              Math.round(authorPct),
+              "% author seats used"
+            ] }) })
+          ] });
+        })(),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex flex-wrap gap-4 border-t pt-3", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-0.5", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-xs text-muted-foreground uppercase tracking-wide flex items-center gap-1", children: [
@@ -9590,6 +9638,15 @@
       enabled: !!(user == null ? void 0 : user.id)
     });
     const isSuperAdmin = currentUserRole === "super_admin";
+    const isAdmin = currentUserRole === "client_admin" || isSuperAdmin;
+    const { data: hasAuthorSeats } = reactQuery.useQuery({
+      queryKey: ["license-has-author-seats"],
+      queryFn: async () => {
+        const { data } = await supabaseClient.from("customer_product_licenses").select("seats_author").gt("seats_author", 0).limit(1).maybeSingle();
+        return !!data;
+      },
+      enabled: isAdmin && !isSuperAdmin
+    });
     const allRoleOptions = [
       { value: "user", label: "User" },
       { value: "author", label: "Author" },
@@ -9597,9 +9654,8 @@
       { value: "super_admin", label: "Super Admin" }
     ];
     const roleOptions = allRoleOptions.filter((option) => {
-      if (option.value === "super_admin" || option.value === "author") {
-        return isSuperAdmin;
-      }
+      if (option.value === "super_admin") return isSuperAdmin;
+      if (option.value === "author") return isSuperAdmin || isAdmin && !!hasAuthorSeats;
       return true;
     });
     if (isLoading) {

@@ -11,6 +11,11 @@ export interface ProductLicense {
   pctUsed: number;
   isNearCapacity: boolean;
   isAtCapacity: boolean;
+  /** Author seat quota (0 = no author seats licensed) */
+  seatsAuthor: number;
+  /** How many author assignments currently exist */
+  usedAuthorSeats: number;
+  availableAuthorSeats: number;
   startDate: string | null;
   endDate: string | null;
   daysUntilExpiry: number | null;
@@ -42,7 +47,7 @@ export function useLicenseData() {
       // 1. Fetch all customer product licenses joined with products for names
       const { data: licenses, error: licenseError } = await supabaseClient
         .from('customer_product_licenses')
-        .select('id, product_id, seats, start_date, end_date, products(name)');
+        .select('id, product_id, seats, seats_author, start_date, end_date, products(name)');
 
       if (licenseError) throw licenseError;
       if (!licenses || licenses.length === 0) return { products: [], assignments: [] };
@@ -57,10 +62,14 @@ export function useLicenseData() {
 
       if (assignError) throw assignError;
 
-      // 3. Build counts per license
+      // 3. Build counts per license (total and author-specific)
       const countByLicense = new Map<string, number>();
+      const authorCountByLicense = new Map<string, number>();
       (rawAssignments ?? []).forEach(a => {
         countByLicense.set(a.license_id, (countByLicense.get(a.license_id) ?? 0) + 1);
+        if (a.access_level === 'author') {
+          authorCountByLicense.set(a.license_id, (authorCountByLicense.get(a.license_id) ?? 0) + 1);
+        }
       });
 
       const msPerDay = 1000 * 60 * 60 * 24;
@@ -71,6 +80,8 @@ export function useLicenseData() {
         const total = l.seats ?? 0;
         const available = Math.max(total - used, 0);
         const pctUsed = total > 0 ? used / total : 0;
+        const seatsAuthor = (l as any).seats_author ?? 0;
+        const usedAuthorSeats = authorCountByLicense.get(l.id) ?? 0;
         const daysUntilExpiry = l.end_date
           ? Math.ceil((new Date(l.end_date).getTime() - Date.now()) / msPerDay)
           : null;
@@ -85,6 +96,9 @@ export function useLicenseData() {
           pctUsed,
           isNearCapacity: total > 0 && pctUsed >= NEAR_CAPACITY_THRESHOLD,
           isAtCapacity: total > 0 && used >= total,
+          seatsAuthor,
+          usedAuthorSeats,
+          availableAuthorSeats: Math.max(seatsAuthor - usedAuthorSeats, 0),
           startDate: l.start_date ?? null,
           endDate: l.end_date ?? null,
           daysUntilExpiry,

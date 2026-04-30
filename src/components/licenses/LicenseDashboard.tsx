@@ -48,7 +48,7 @@ function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense
         )}
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Seat bar */}
+        {/* User seat bar */}
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium flex items-center gap-1">
@@ -74,6 +74,41 @@ function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense
             )}
           </div>
         </div>
+
+        {/* Author seat bar — only shown when author seats are licensed */}
+        {product.seatsAuthor > 0 && (() => {
+          const authorPct = Math.min((product.usedAuthorSeats / product.seatsAuthor) * 100, 100);
+          const authorAtCap = product.usedAuthorSeats >= product.seatsAuthor;
+          const authorNearCap = !authorAtCap && authorPct >= 80;
+          const authorBarColor = authorAtCap ? 'bg-destructive' : authorNearCap ? 'bg-amber-500' : 'bg-blue-500';
+          return (
+            <div className="space-y-2 border-t pt-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium flex items-center gap-1">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  {product.usedAuthorSeats} of {product.seatsAuthor} author seats used
+                </span>
+                <span className="text-muted-foreground">{product.availableAuthorSeats} available</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                <div className={`h-full rounded-full transition-all ${authorBarColor}`} style={{ width: `${authorPct}%` }} />
+              </div>
+              <div className="flex justify-end">
+                {authorAtCap ? (
+                  <Badge variant="destructive">Author seats full</Badge>
+                ) : authorNearCap ? (
+                  <Badge variant="outline" className="border-amber-500 text-amber-700 bg-amber-50">
+                    {Math.round(authorPct)}% author seats used
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="border-blue-500 text-blue-700 bg-blue-50">
+                    <CheckCircle2 className="h-3 w-3 mr-1" />{Math.round(authorPct)}% author seats used
+                  </Badge>
+                )}
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Dates */}
         <div className="flex flex-wrap gap-4 border-t pt-3">

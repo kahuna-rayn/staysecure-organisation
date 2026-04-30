@@ -8,6 +8,11 @@ export interface ProductLicense {
     pctUsed: number;
     isNearCapacity: boolean;
     isAtCapacity: boolean;
+    /** Author seat quota (0 = no author seats licensed) */
+    seatsAuthor: number;
+    /** How many author assignments currently exist */
+    usedAuthorSeats: number;
+    availableAuthorSeats: number;
     startDate: string | null;
     endDate: string | null;
     daysUntilExpiry: number | null;

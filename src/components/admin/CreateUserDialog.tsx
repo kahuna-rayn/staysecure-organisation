@@ -34,7 +34,7 @@ const { supabaseClient } = useOrganisationContext();
 const [isFullNameManuallyEdited, setIsFullNameManuallyEdited] = useState(false);
 const { user } = useAuth();
 
-// Check if current user is super_admin
+// Check if current user is super_admin or client_admin
 const { data: currentUserRole } = useQuery({
   queryKey: ['user-role', user?.id],
   queryFn: async () => {
@@ -50,6 +50,22 @@ const { data: currentUserRole } = useQuery({
 });
 
 const isSuperAdmin = currentUserRole === 'super_admin';
+const isAdmin = currentUserRole === 'client_admin' || isSuperAdmin;
+
+// Check if the license has author seats (org admins can assign author when seats > 0)
+const { data: hasAuthorSeats } = useQuery({
+  queryKey: ['license-has-author-seats'],
+  queryFn: async () => {
+    const { data } = await supabaseClient
+      .from('customer_product_licenses')
+      .select('seats_author')
+      .gt('seats_author', 0)
+      .limit(1)
+      .maybeSingle();
+    return !!data;
+  },
+  enabled: isAdmin && !isSuperAdmin,
+});
 
   // Form validation
   const isFormValid = () => {
@@ -263,7 +279,7 @@ const handleFullNameChange = (value: string) => {
                 <SelectContent>
                   <SelectItem value="user">User</SelectItem>
                   <SelectItem value="client_admin">Admin</SelectItem>
-                  {isSuperAdmin && <SelectItem value="author">Author</SelectItem>}
+                  {(isSuperAdmin || (isAdmin && hasAuthorSeats)) && <SelectItem value="author">Author</SelectItem>}
                   {isSuperAdmin && <SelectItem value="super_admin">Super Admin</SelectItem>}
                 </SelectContent>
               </Select>

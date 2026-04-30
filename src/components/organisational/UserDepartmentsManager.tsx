@@ -7,6 +7,16 @@ import { useUserDepartments } from '@/hooks/useUserDepartments';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Plus, X, Star } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface UserDepartmentsManagerProps {
   userId: string;
@@ -14,13 +24,15 @@ interface UserDepartmentsManagerProps {
 
 export const UserDepartmentsManager: React.FC<UserDepartmentsManagerProps> = ({ userId }) => {
   const [selectedDepartmentId, setSelectedDepartmentId] = React.useState('');
+  const [assignmentPendingRemove, setAssignmentPendingRemove] = React.useState<string | null>(null);
   const { 
     userDepartments, 
     addDepartment, 
     removeDepartment, 
     setPrimaryDepartment,
     isLoading,
-    isAddingDepartment 
+    isAddingDepartment,
+    isRemovingDepartment 
   } = useUserDepartments(userId);
 
   // Fetch all available departments
@@ -50,12 +62,6 @@ export const UserDepartmentsManager: React.FC<UserDepartmentsManagerProps> = ({ 
         isPrimary 
       });
       setSelectedDepartmentId('');
-    }
-  };
-
-  const handleRemoveDepartment = (assignmentId: string) => {
-    if (confirm('Are you sure you want to remove this department assignment?')) {
-      removeDepartment(assignmentId);
     }
   };
 
@@ -101,7 +107,7 @@ export const UserDepartmentsManager: React.FC<UserDepartmentsManagerProps> = ({ 
                     size="sm"
                     variant="ghost"
                     className="h-4 w-4 p-0 hover:bg-destructive hover:text-destructive-foreground ml-1"
-                    onClick={() => handleRemoveDepartment(userDept.id)}
+                    onClick={() => setAssignmentPendingRemove(userDept.id)}
                   >
                     <X className="h-3 w-3" />
                   </Button>
@@ -163,6 +169,32 @@ export const UserDepartmentsManager: React.FC<UserDepartmentsManagerProps> = ({ 
           </div>
         )}
       </CardContent>
+
+      <AlertDialog open={!!assignmentPendingRemove} onOpenChange={(open) => !open && setAssignmentPendingRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove department assignment?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This user will no longer be linked to this department. You can add it again later if needed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isRemovingDepartment}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={isRemovingDepartment}
+              onClick={() => {
+                if (assignmentPendingRemove) {
+                  void removeDepartment(assignmentPendingRemove);
+                }
+                setAssignmentPendingRemove(null);
+              }}
+            >
+              Remove
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 };

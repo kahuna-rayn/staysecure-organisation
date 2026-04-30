@@ -206,12 +206,22 @@ export const LicenseDashboard: React.FC = () => {
         </Alert>
       ))}
 
-      {/* Per-product summary cards */}
-      <div className={`grid gap-4 ${data.products.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-lg'}`}>
-        {data.products.map(p => (
-          <ProductSummaryCard key={p.licenseId} product={p} isSuperAdmin={isSuperAdmin} />
-        ))}
-      </div>
+      {/* Per-product summary cards — preferred display order */}
+      {(() => {
+        const ORDER = ['LEARN', 'SHIELD', 'GOVERN', 'READY'];
+        const sortedProducts = [...data.products].sort((a, b) => {
+          const ai = ORDER.findIndex(k => a.productName.toUpperCase().includes(k));
+          const bi = ORDER.findIndex(k => b.productName.toUpperCase().includes(k));
+          return (ai === -1 ? ORDER.length : ai) - (bi === -1 ? ORDER.length : bi);
+        });
+        return (
+          <div className={`grid gap-4 ${sortedProducts.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-lg'}`}>
+            {sortedProducts.map(p => (
+              <ProductSummaryCard key={p.licenseId} product={p} isSuperAdmin={isSuperAdmin} />
+            ))}
+          </div>
+        );
+      })()}
 
       {/* Assigned users table — Staff Roster style */}
       <Card>

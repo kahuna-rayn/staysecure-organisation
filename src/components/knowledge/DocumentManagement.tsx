@@ -8,6 +8,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Plus, Search, Edit, Trash2, Calendar, Eye, Save, Upload, Link, Loader2, FileText } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useOrganisationContext } from '../../context/OrganisationContext';
@@ -54,6 +64,7 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const [openingDocId, setOpeningDocId] = useState<string | null>(null);
+  const [documentPendingDelete, setDocumentPendingDelete] = useState<Document | null>(null);
 
   const { data: documents, isLoading } = useQuery({
     queryKey: ['documents'],
@@ -302,11 +313,7 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
                     variant="outline"
                     size="icon"
                     disabled={!!document.is_system}
-                    onClick={() => {
-                      if (confirm('Are you sure you want to delete this document?')) {
-                        deleteDocumentMutation.mutate(document);
-                      }
-                    }}
+                    onClick={() => setDocumentPendingDelete(document)}
                     title={document.is_system ? 'System document — cannot be deleted' : 'Delete document'}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -331,7 +338,34 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
         ))}
       </div>
 
-      {/* Edit Dialog */}
+      {/* Delete confirmation */}
+      <AlertDialog open={!!documentPendingDelete} onOpenChange={(open) => !open && setDocumentPendingDelete(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete document?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove{' '}
+              <span className="font-medium">{documentPendingDelete?.title ?? 'this document'}</span> from the library.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleteDocumentMutation.isPending}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={deleteDocumentMutation.isPending}
+              onClick={() => {
+                if (documentPendingDelete) {
+                  deleteDocumentMutation.mutate(documentPendingDelete);
+                }
+                setDocumentPendingDelete(null);
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {editingDocument && (
         <Dialog open={!!editingDocument} onOpenChange={() => setEditingDocument(null)}>
           <DialogContent className="max-w-2xl">

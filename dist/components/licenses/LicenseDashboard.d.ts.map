@@ -1,1 +1,1 @@
-{"version":3,"file":"LicenseDashboard.d.ts","sourceRoot":"","sources":["../../../src/components/licenses/LicenseDashboard.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAqG1B,eAAO,MAAM,gBAAgB,EAAE,KAAK,CAAC,EA+KpC,CAAC;AAEF,eAAe,gBAAgB,CAAC"}
+{"version":3,"file":"LicenseDashboard.d.ts","sourceRoot":"","sources":["../../../src/components/licenses/LicenseDashboard.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAqG1B,eAAO,MAAM,gBAAgB,EAAE,KAAK,CAAC,EAyLpC,CAAC;AAEF,eAAe,gBAAgB,CAAC"}

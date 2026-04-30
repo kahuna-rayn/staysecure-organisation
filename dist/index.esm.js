@@ -7115,7 +7115,15 @@ const LicenseDashboard = () => {
         )
       ] })
     ] }, p.licenseId)),
-    /* @__PURE__ */ jsx("div", { className: `grid gap-4 ${data.products.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-lg"}`, children: data.products.map((p) => /* @__PURE__ */ jsx(ProductSummaryCard, { product: p, isSuperAdmin }, p.licenseId)) }),
+    (() => {
+      const ORDER = ["LEARN", "SHIELD", "GOVERN", "READY"];
+      const sortedProducts = [...data.products].sort((a, b) => {
+        const ai = ORDER.findIndex((k) => a.productName.toUpperCase().includes(k));
+        const bi = ORDER.findIndex((k) => b.productName.toUpperCase().includes(k));
+        return (ai === -1 ? ORDER.length : ai) - (bi === -1 ? ORDER.length : bi);
+      });
+      return /* @__PURE__ */ jsx("div", { className: `grid gap-4 ${sortedProducts.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-lg"}`, children: sortedProducts.map((p) => /* @__PURE__ */ jsx(ProductSummaryCard, { product: p, isSuperAdmin }, p.licenseId)) });
+    })(),
     /* @__PURE__ */ jsxs(Card, { children: [
       /* @__PURE__ */ jsxs(CardHeader, { children: [
         /* @__PURE__ */ jsx(CardTitle, { children: "Assigned Users" }),
@@ -11649,6 +11657,7 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [editingDocument, setEditingDocument] = useState(null);
   const [openingDocId, setOpeningDocId] = useState(null);
+  const [documentPendingDelete, setDocumentPendingDelete] = useState(null);
   const { data: documents, isLoading } = useQuery({
     queryKey: ["documents"],
     queryFn: async () => {
@@ -11838,11 +11847,7 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
               variant: "outline",
               size: "icon",
               disabled: !!document2.is_system,
-              onClick: () => {
-                if (confirm("Are you sure you want to delete this document?")) {
-                  deleteDocumentMutation.mutate(document2);
-                }
-              },
+              onClick: () => setDocumentPendingDelete(document2),
               title: document2.is_system ? "System document — cannot be deleted" : "Delete document",
               children: /* @__PURE__ */ jsx(Trash2, { className: "h-4 w-4" })
             }
@@ -11859,6 +11864,34 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
         document2.category && /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: document2.category })
       ] }) })
     ] }, document2.document_id)) }),
+    /* @__PURE__ */ jsx(AlertDialog, { open: !!documentPendingDelete, onOpenChange: (open) => !open && setDocumentPendingDelete(null), children: /* @__PURE__ */ jsxs(AlertDialogContent, { children: [
+      /* @__PURE__ */ jsxs(AlertDialogHeader, { children: [
+        /* @__PURE__ */ jsx(AlertDialogTitle, { children: "Delete document?" }),
+        /* @__PURE__ */ jsxs(AlertDialogDescription, { children: [
+          "This will permanently remove",
+          " ",
+          /* @__PURE__ */ jsx("span", { className: "font-medium", children: (documentPendingDelete == null ? void 0 : documentPendingDelete.title) ?? "this document" }),
+          " from the library."
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(AlertDialogFooter, { children: [
+        /* @__PURE__ */ jsx(AlertDialogCancel, { disabled: deleteDocumentMutation.isPending, children: "Cancel" }),
+        /* @__PURE__ */ jsx(
+          AlertDialogAction,
+          {
+            className: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+            disabled: deleteDocumentMutation.isPending,
+            onClick: () => {
+              if (documentPendingDelete) {
+                deleteDocumentMutation.mutate(documentPendingDelete);
+              }
+              setDocumentPendingDelete(null);
+            },
+            children: "Delete"
+          }
+        )
+      ] })
+    ] }) }),
     editingDocument && /* @__PURE__ */ jsx(Dialog, { open: !!editingDocument, onOpenChange: () => setEditingDocument(null), children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-2xl", children: [
       /* @__PURE__ */ jsxs(DialogHeader, { children: [
         /* @__PURE__ */ jsx(DialogTitle, { children: "Edit Document" }),

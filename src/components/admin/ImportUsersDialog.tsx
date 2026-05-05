@@ -836,15 +836,20 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
               // Collect successful additions (update mode only) as info items
               if ('additions' in result && result.additions && result.additions.length > 0) {
+                debug.log(`[ImportUsersDialog] additions for ${email}:`, result.additions);
                 result.additions.forEach((addition: { field: string; value: string }) => {
-                  warnings.push({
+                  const infoItem = {
                     rowNumber,
                     identifier: email,
                     field: addition.field,
                     error: addition.value,
                     type: 'info' as const,
-                  });
+                  };
+                  debug.log(`[ImportUsersDialog] pushing info item:`, infoItem);
+                  warnings.push(infoItem);
                 });
+              } else {
+                debug.log(`[ImportUsersDialog] no additions for ${email}. 'additions' in result:`, 'additions' in result, 'result.additions:', (result as any).additions);
               }
             } catch (error: any) {
               console.error(`Error importing user ${i + 1}:`, error);
@@ -961,8 +966,10 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           setIsOpen(false);
 
           // Split info items (successful additions) from real warnings for toast logic
+          debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map(w => ({ type: w.type, field: w.field, identifier: w.identifier })));
           const realWarnings = warnings.filter((w: any) => w.type !== 'info');
           const infoItems = warnings.filter((w: any) => w.type === 'info');
+          debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
           const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || (importMode === 'update' && infoItems.length > 0);
 
           // Show combined error / warning / additions report through parent component
@@ -1051,7 +1058,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           <DialogTitle>{importMode === 'update' ? 'Update Existing Users' : 'Import Users'}</DialogTitle>
           <DialogDescription>
             {importMode === 'update'
-              ? 'Upload a CSV to update existing users or create new ones. Existing users (matched by email) have their departments, roles, locations and profile fields updated. Unrecognised emails are created as new users.'
+              ? 'Upload a CSV to update existing users (matched by email) to add departments and roles to their profiles, and update their location and profile fields. Unrecognised emails are created as new users.'
               : 'Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don\'t already exist.'}
           </DialogDescription>
         </DialogHeader>

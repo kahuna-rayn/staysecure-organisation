@@ -35,8 +35,10 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
   importType
 }) => {
   // Split info (successful additions) from real warnings
+  console.log('[ImportErrorReport] received warnings:', warnings.map(w => ({ type: w.type, field: w.field, identifier: w.identifier })));
   const infoItems = warnings.filter(w => w.type === 'info');
   const realWarnings = warnings.filter(w => w.type !== 'info');
+  console.log('[ImportErrorReport] split — infoItems:', infoItems.length, 'realWarnings:', realWarnings.length);
 
   // Group info items by user (identifier) for a tidy per-user additions list
   const additionsByUser = infoItems.reduce<Record<string, { rowNumber: number; items: ImportError[] }>>(

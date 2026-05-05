@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, Key, AlertTriangle, CheckCircle2, Calendar, Users, ExternalLink, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
+import { Loader2, Key, AlertTriangle, CheckCircle2, Calendar, Users, Mail, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { useLicenseData, type ProductLicense } from '../../hooks/useLicenseData';
 import { useUserRole } from '@/hooks/useUserRole';
 
@@ -11,6 +11,12 @@ function formatDate(dateStr: string | null): string {
   return new Date(dateStr).toLocaleDateString(undefined, {
     year: 'numeric', month: 'short', day: 'numeric',
   });
+}
+
+const RAYN_EMAIL = 'sales@raynsecure.com';
+
+function buildMailto(subject: string, body: string): string {
+  return `mailto:${RAYN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function ExpiryBadge({ daysUntilExpiry }: { daysUntilExpiry: number | null }) {
@@ -22,7 +28,7 @@ function ExpiryBadge({ daysUntilExpiry }: { daysUntilExpiry: number | null }) {
   return <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">{daysUntilExpiry}d remaining</Badge>;
 }
 
-function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense; isSuperAdmin: boolean }) {
+function ProductSummaryCard({ product, hasAdminAccess }: { product: ProductLicense; hasAdminAccess: boolean }) {
   const pct = Math.min(product.pctUsed * 100, 100);
   const barColor = product.isAtCapacity ? 'bg-destructive' : product.isNearCapacity ? 'bg-amber-500' : 'bg-primary';
 
@@ -36,14 +42,15 @@ function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense
           </CardTitle>
           <CardDescription>Seat consumption</CardDescription>
         </div>
-        {isSuperAdmin && (
+        {hasAdminAccess && (
           <a
-            href="https://license.raynsecure.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href={buildMailto(
+              `License Management Request — ${product.productName}`,
+              `Hi RAYN Team,\n\nI'd like to discuss license management for ${product.productName}.\n\nCurrent usage: ${product.usedSeats} of ${product.seats} seats (${Math.round(product.pctUsed * 100)}%)\n\nPlease get in touch at your earliest convenience.\n\nThank you`
+            )}
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Manage <ExternalLink className="h-3 w-3" />
+            Manage Licenses <Mail className="h-3 w-3" />
           </a>
         )}
       </CardHeader>
@@ -146,7 +153,7 @@ function SortIcon({ col, sortCol, sortDir }: { col: SortCol; sortCol: SortCol; s
 
 export const LicenseDashboard: React.FC = () => {
   const { data, isLoading, error } = useLicenseData();
-  const { isSuperAdmin } = useUserRole();
+  const { hasAdminAccess } = useUserRole();
   const [sortCol, setSortCol] = useState<SortCol>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
 
@@ -185,10 +192,15 @@ export const LicenseDashboard: React.FC = () => {
         <AlertTitle>No licenses found</AlertTitle>
         <AlertDescription>
           No product licenses are configured for this organisation.{' '}
-          {isSuperAdmin && (
-            <a href="https://license.raynsecure.com" target="_blank" rel="noopener noreferrer"
-              className="underline inline-flex items-center gap-1">
-              Manage licenses <ExternalLink className="h-3 w-3" />
+          {hasAdminAccess && (
+            <a
+              href={buildMailto(
+                'License Configuration Request',
+                'Hi RAYN Team,\n\nNo product licenses appear to be configured for our organisation. Could you please assist?\n\nThank you'
+              )}
+              className="underline inline-flex items-center gap-1"
+            >
+              Manage Licenses <Mail className="h-3 w-3" />
             </a>
           )}
         </AlertDescription>
@@ -247,10 +259,15 @@ export const LicenseDashboard: React.FC = () => {
           <AlertTitle>{p.productName} — All seats in use</AlertTitle>
           <AlertDescription className="flex items-center justify-between flex-wrap gap-2">
             <span>All {p.seats} seats are in use. New users cannot be added until a seat is freed.</span>
-            {isSuperAdmin && (
-              <a href="https://license.raynsecure.com" target="_blank" rel="noopener noreferrer"
-                className="underline inline-flex items-center gap-1 whitespace-nowrap">
-                Add more seats <ExternalLink className="h-3 w-3" />
+            {hasAdminAccess && (
+              <a
+                href={buildMailto(
+                  `Seat Increase Request — ${p.productName}`,
+                  `Hi RAYN Team,\n\nWe have reached our seat limit for ${p.productName} (${p.seats} of ${p.seats} seats in use) and are unable to add new users.\n\nCould you please increase our seat allocation?\n\nRequested additional seats: [please fill in]\n\nThank you`
+                )}
+                className="underline inline-flex items-center gap-1 whitespace-nowrap"
+              >
+                Add more seats <Mail className="h-3 w-3" />
               </a>
             )}
           </AlertDescription>
@@ -262,10 +279,15 @@ export const LicenseDashboard: React.FC = () => {
           <AlertTitle className="text-amber-800">{p.productName} — Approaching seat limit</AlertTitle>
           <AlertDescription className="flex items-center justify-between flex-wrap gap-2 text-amber-700">
             <span>{p.usedSeats} of {p.seats} seats in use ({Math.round(p.pctUsed * 100)}%).</span>
-            {isSuperAdmin && (
-              <a href="https://license.raynsecure.com" target="_blank" rel="noopener noreferrer"
-                className="underline inline-flex items-center gap-1 whitespace-nowrap">
-                Increase your limit <ExternalLink className="h-3 w-3" />
+            {hasAdminAccess && (
+              <a
+                href={buildMailto(
+                  `Seat Increase Request — ${p.productName}`,
+                  `Hi RAYN Team,\n\nWe are approaching our seat limit for ${p.productName}.\n\nCurrent usage: ${p.usedSeats} of ${p.seats} seats (${Math.round(p.pctUsed * 100)}%)\n\nCould you please increase our seat allocation?\n\nRequested additional seats: [please fill in]\n\nThank you`
+                )}
+                className="underline inline-flex items-center gap-1 whitespace-nowrap"
+              >
+                Increase your limit <Mail className="h-3 w-3" />
               </a>
             )}
           </AlertDescription>
@@ -283,7 +305,7 @@ export const LicenseDashboard: React.FC = () => {
         return (
           <div className={`grid gap-4 ${sortedProducts.length > 1 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 max-w-lg'}`}>
             {sortedProducts.map(p => (
-              <ProductSummaryCard key={p.licenseId} product={p} isSuperAdmin={isSuperAdmin} />
+              <ProductSummaryCard key={p.licenseId} product={p} hasAdminAccess={hasAdminAccess} />
             ))}
           </div>
         );

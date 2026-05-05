@@ -2269,15 +2269,20 @@
                   });
                 }
                 if ("additions" in result && result.additions && result.additions.length > 0) {
+                  debug.log(`[ImportUsersDialog] additions for ${email}:`, result.additions);
                   result.additions.forEach((addition) => {
-                    warnings.push({
+                    const infoItem = {
                       rowNumber,
                       identifier: email,
                       field: addition.field,
                       error: addition.value,
                       type: "info"
-                    });
+                    };
+                    debug.log(`[ImportUsersDialog] pushing info item:`, infoItem);
+                    warnings.push(infoItem);
                   });
+                } else {
+                  debug.log(`[ImportUsersDialog] no additions for ${email}. 'additions' in result:`, "additions" in result, "result.additions:", result.additions);
                 }
               } catch (error) {
                 console.error(`Error importing user ${i + 1}:`, error);
@@ -2375,8 +2380,10 @@
             setSendActivationEmails(false);
             setIsProcessing(false);
             setIsOpen(false);
+            debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
             const realWarnings = warnings.filter((w) => w.type !== "info");
             const infoItems = warnings.filter((w) => w.type === "info");
+            debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
             const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || importMode === "update" && infoItems.length > 0;
             if (shouldShowReport && onImportError) {
               setTimeout(() => {
@@ -2449,7 +2456,7 @@
       /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: importMode === "update" ? "Update Existing Users" : "Import Users" }),
-          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: importMode === "update" ? "Upload a CSV to update existing users or create new ones. Existing users (matched by email) have their departments, roles, locations and profile fields updated. Unrecognised emails are created as new users." : "Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist." })
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: importMode === "update" ? "Upload a CSV to update existing users (matched by email) to add departments and roles to their profiles, and update their location and profile fields. Unrecognised emails are created as new users." : "Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist." })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex rounded-lg border overflow-hidden", children: [
@@ -7090,6 +7097,10 @@
       day: "numeric"
     });
   }
+  const RAYN_EMAIL = "sales@raynsecure.com";
+  function buildMailto(subject, body) {
+    return `mailto:${RAYN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
   function ExpiryBadge({ daysUntilExpiry }) {
     if (daysUntilExpiry === null) return null;
     if (daysUntilExpiry < 0)
@@ -7105,7 +7116,7 @@
       "d remaining"
     ] });
   }
-  function ProductSummaryCard({ product, isSuperAdmin }) {
+  function ProductSummaryCard({ product, hasAdminAccess }) {
     const pct = Math.min(product.pctUsed * 100, 100);
     const barColor = product.isAtCapacity ? "bg-destructive" : product.isNearCapacity ? "bg-amber-500" : "bg-primary";
     return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
@@ -7117,16 +7128,25 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Seat consumption" })
         ] }),
-        isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+        hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsxs(
           "a",
           {
-            href: "https://license.raynsecure.com",
-            target: "_blank",
-            rel: "noopener noreferrer",
+            href: buildMailto(
+              `License Management Request — ${product.productName}`,
+              `Hi RAYN Team,
+
+I'd like to discuss license management for ${product.productName}.
+
+Current usage: ${product.usedSeats} of ${product.seats} seats (${Math.round(product.pctUsed * 100)}%)
+
+Please get in touch at your earliest convenience.
+
+Thank you`
+            ),
             className: "inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors",
             children: [
-              "Manage ",
-              /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+              "Manage Licenses ",
+              /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-3 w-3" })
             ]
           }
         )
@@ -7215,7 +7235,7 @@
   }
   const LicenseDashboard = () => {
     const { data, isLoading, error } = useLicenseData();
-    const { isSuperAdmin } = useUserRole.useUserRole();
+    const { hasAdminAccess } = useUserRole.useUserRole();
     const [sortCol, setSortCol] = React.useState("name");
     const [sortDir, setSortDir] = React.useState("asc");
     const toggleSort = (col) => {
@@ -7246,16 +7266,17 @@
         /* @__PURE__ */ jsxRuntime.jsxs(alert.AlertDescription, { children: [
           "No product licenses are configured for this organisation.",
           " ",
-          isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+          hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsxs(
             "a",
             {
-              href: "https://license.raynsecure.com",
-              target: "_blank",
-              rel: "noopener noreferrer",
+              href: buildMailto(
+                "License Configuration Request",
+                "Hi RAYN Team,\n\nNo product licenses appear to be configured for our organisation. Could you please assist?\n\nThank you"
+              ),
               className: "underline inline-flex items-center gap-1",
               children: [
-                "Manage licenses ",
-                /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+                "Manage Licenses ",
+                /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-3 w-3" })
               ]
             }
           )
@@ -7306,16 +7327,25 @@
             p.seats,
             " seats are in use. New users cannot be added until a seat is freed."
           ] }),
-          isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+          hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsxs(
             "a",
             {
-              href: "https://license.raynsecure.com",
-              target: "_blank",
-              rel: "noopener noreferrer",
+              href: buildMailto(
+                `Seat Increase Request — ${p.productName}`,
+                `Hi RAYN Team,
+
+We have reached our seat limit for ${p.productName} (${p.seats} of ${p.seats} seats in use) and are unable to add new users.
+
+Could you please increase our seat allocation?
+
+Requested additional seats: [please fill in]
+
+Thank you`
+              ),
               className: "underline inline-flex items-center gap-1 whitespace-nowrap",
               children: [
                 "Add more seats ",
-                /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+                /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-3 w-3" })
               ]
             }
           )
@@ -7336,16 +7366,27 @@
             Math.round(p.pctUsed * 100),
             "%)."
           ] }),
-          isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsxs(
+          hasAdminAccess && /* @__PURE__ */ jsxRuntime.jsxs(
             "a",
             {
-              href: "https://license.raynsecure.com",
-              target: "_blank",
-              rel: "noopener noreferrer",
+              href: buildMailto(
+                `Seat Increase Request — ${p.productName}`,
+                `Hi RAYN Team,
+
+We are approaching our seat limit for ${p.productName}.
+
+Current usage: ${p.usedSeats} of ${p.seats} seats (${Math.round(p.pctUsed * 100)}%)
+
+Could you please increase our seat allocation?
+
+Requested additional seats: [please fill in]
+
+Thank you`
+              ),
               className: "underline inline-flex items-center gap-1 whitespace-nowrap",
               children: [
                 "Increase your limit ",
-                /* @__PURE__ */ jsxRuntime.jsx(ExternalLink, { className: "h-3 w-3" })
+                /* @__PURE__ */ jsxRuntime.jsx(Mail, { className: "h-3 w-3" })
               ]
             }
           )
@@ -7358,7 +7399,7 @@
           const bi = ORDER.findIndex((k) => b.productName.toUpperCase().includes(k));
           return (ai === -1 ? ORDER.length : ai) - (bi === -1 ? ORDER.length : bi);
         });
-        return /* @__PURE__ */ jsxRuntime.jsx("div", { className: `grid gap-4 ${sortedProducts.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-lg"}`, children: sortedProducts.map((p) => /* @__PURE__ */ jsxRuntime.jsx(ProductSummaryCard, { product: p, isSuperAdmin }, p.licenseId)) });
+        return /* @__PURE__ */ jsxRuntime.jsx("div", { className: `grid gap-4 ${sortedProducts.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-lg"}`, children: sortedProducts.map((p) => /* @__PURE__ */ jsxRuntime.jsx(ProductSummaryCard, { product: p, hasAdminAccess }, p.licenseId)) });
       })(),
       /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
         /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { children: [
@@ -11763,8 +11804,10 @@
     onClose,
     importType
   }) => {
+    console.log("[ImportErrorReport] received warnings:", warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
     const infoItems = warnings.filter((w) => w.type === "info");
     const realWarnings = warnings.filter((w) => w.type !== "info");
+    console.log("[ImportErrorReport] split — infoItems:", infoItems.length, "realWarnings:", realWarnings.length);
     const additionsByUser = infoItems.reduce(
       (acc, item) => {
         if (!acc[item.identifier]) acc[item.identifier] = { rowNumber: item.rowNumber, items: [] };

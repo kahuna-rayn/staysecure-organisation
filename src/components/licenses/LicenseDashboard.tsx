@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Loader2, Key, AlertTriangle, CheckCircle2, Calendar, Users, ExternalLink } from 'lucide-react';
+import { Loader2, Key, AlertTriangle, CheckCircle2, Calendar, Users, ExternalLink, ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-react';
 import { useLicenseData, type ProductLicense } from '../../hooks/useLicenseData';
 import { useUserRole } from '@/hooks/useUserRole';
 
@@ -24,7 +24,7 @@ function ExpiryBadge({ daysUntilExpiry }: { daysUntilExpiry: number | null }) {
 
 function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense; isSuperAdmin: boolean }) {
   const pct = Math.min(product.pctUsed * 100, 100);
-  const barColor = product.isAtCapacity ? 'bg-destructive' : product.isNearCapacity ? 'bg-amber-500' : 'bg-green-500';
+  const barColor = product.isAtCapacity ? 'bg-destructive' : product.isNearCapacity ? 'bg-amber-500' : 'bg-primary';
 
   return (
     <Card>
@@ -68,7 +68,7 @@ function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense
                 {Math.round(pct)}% used
               </Badge>
             ) : (
-              <Badge variant="outline" className="border-green-500 text-green-700 bg-green-50">
+              <Badge variant="outline" className="border-primary text-primary bg-primary/5">
                 <CheckCircle2 className="h-3 w-3 mr-1" />{Math.round(pct)}% used
               </Badge>
             )}
@@ -80,7 +80,7 @@ function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense
           const authorPct = Math.min((product.usedAuthorSeats / product.seatsAuthor) * 100, 100);
           const authorAtCap = product.usedAuthorSeats >= product.seatsAuthor;
           const authorNearCap = !authorAtCap && authorPct >= 80;
-          const authorBarColor = authorAtCap ? 'bg-destructive' : authorNearCap ? 'bg-amber-500' : 'bg-blue-500';
+          const authorBarColor = authorAtCap ? 'bg-destructive' : authorNearCap ? 'bg-amber-500' : 'bg-primary/60';
           return (
             <div className="space-y-2 border-t pt-3">
               <div className="flex items-center justify-between text-sm">
@@ -101,7 +101,7 @@ function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense
                     {Math.round(authorPct)}% author seats used
                   </Badge>
                 ) : (
-                  <Badge variant="outline" className="border-blue-500 text-blue-700 bg-blue-50">
+                  <Badge variant="outline" className="border-primary/60 text-primary bg-primary/5">
                     <CheckCircle2 className="h-3 w-3 mr-1" />{Math.round(authorPct)}% author seats used
                   </Badge>
                 )}
@@ -134,9 +134,30 @@ function ProductSummaryCard({ product, isSuperAdmin }: { product: ProductLicense
   );
 }
 
+type SortCol = 'name' | 'email' | 'product' | 'access';
+type SortDir = 'asc' | 'desc';
+
+function SortIcon({ col, sortCol, sortDir }: { col: SortCol; sortCol: SortCol; sortDir: SortDir }) {
+  if (col !== sortCol) return <ChevronsUpDown className="h-3 w-3 ml-1 opacity-40" />;
+  return sortDir === 'asc'
+    ? <ChevronUp className="h-3 w-3 ml-1" />
+    : <ChevronDown className="h-3 w-3 ml-1" />;
+}
+
 export const LicenseDashboard: React.FC = () => {
   const { data, isLoading, error } = useLicenseData();
   const { isSuperAdmin } = useUserRole();
+  const [sortCol, setSortCol] = useState<SortCol>('name');
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+
+  const toggleSort = (col: SortCol) => {
+    if (col === sortCol) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortCol(col);
+      setSortDir('asc');
+    }
+  };
 
   if (isLoading) {
     return (
@@ -203,9 +224,19 @@ export const LicenseDashboard: React.FC = () => {
     });
   });
 
-  const userGroups = Array.from(userMap.values()).sort((a, b) =>
-    (a.userName ?? '').localeCompare(b.userName ?? '')
-  );
+  const userGroups = Array.from(userMap.values()).sort((a, b) => {
+    let cmp = 0;
+    if (sortCol === 'name') {
+      cmp = (a.userName ?? '').localeCompare(b.userName ?? '');
+    } else if (sortCol === 'email') {
+      cmp = (a.userEmail ?? '').localeCompare(b.userEmail ?? '');
+    } else if (sortCol === 'product') {
+      cmp = (a.licenses[0]?.productName ?? '').localeCompare(b.licenses[0]?.productName ?? '');
+    } else if (sortCol === 'access') {
+      cmp = (a.licenses[0]?.accessLevel ?? '').localeCompare(b.licenses[0]?.accessLevel ?? '');
+    }
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
 
   return (
     <div className="space-y-6">
@@ -275,10 +306,25 @@ export const LicenseDashboard: React.FC = () => {
                 <table className="w-full text-sm">
                   <thead className="sticky top-0 z-10 bg-muted">
                     <tr className="border-b">
-                      <th className="text-left p-2 font-medium text-muted-foreground">Name</th>
-                      <th className="text-left p-2 font-medium text-muted-foreground">Email / Username</th>
-                      <th className="text-left p-2 font-medium text-muted-foreground">Product</th>
-                      <th className="text-left p-2 font-medium text-muted-foreground">Access Level</th>
+                      {(
+                        [
+                          { col: 'name' as SortCol, label: 'Name' },
+                          { col: 'email' as SortCol, label: 'Email / Username' },
+                          { col: 'product' as SortCol, label: 'Product' },
+                          { col: 'access' as SortCol, label: 'Access Level' },
+                        ] as const
+                      ).map(({ col, label }) => (
+                        <th
+                          key={col}
+                          className="text-left p-2 font-medium text-muted-foreground select-none cursor-pointer hover:text-foreground"
+                          onClick={() => toggleSort(col)}
+                        >
+                          <span className="inline-flex items-center">
+                            {label}
+                            <SortIcon col={col} sortCol={sortCol} sortDir={sortDir} />
+                          </span>
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>

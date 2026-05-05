@@ -28,6 +28,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [sendActivationEmails, setSendActivationEmails] = useState(false);
+  const [importMode, setImportMode] = useState<'create' | 'update'>('create');
 
   // Fetch valid locations for validation
   const { data: validLocations } = useQuery({
@@ -497,6 +498,155 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     };
   };
 
+  // ── Update mode: look up existing users by email and patch their data ──────
+  const processUserUpdate = async (
+    row: any,
+    locationCache: Map<string, string>,
+    departmentCache: Map<string, string>,
+    roleCache: Map<string, string>
+  ) => {
+    const email = (row['Email'] || row['email'] || '').trim();
+    if (!email) throw new Error('Email address is required for all users.');
+
+    // Resolve existing user by email
+    const { data: profileData, error: profileLookupError } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (profileLookupError) throw new Error(`Failed to look up user: ${profileLookupError.message}`);
+    if (!profileData) {
+      // User doesn't exist yet — create them just like create mode
+      return processUserImport(row, locationCache, departmentCache, roleCache);
+    };
+
+    const userId = profileData.id;
+    const warnings: any[] = [];
+    const additions: { field: string; value: string }[] = [];
+
+    const fullName = (row['Full Name'] || row['full_name'] || '').trim();
+    const firstName = (row['First Name'] || row['first_name'] || '').trim();
+    const lastName = (row['Last Name'] || row['last_name'] || '').trim();
+    const phone = (row['Phone'] || row['phone'] || '').trim();
+    const employeeId = (row['Employee ID'] || row['employee_id'] || '').trim();
+    const locationName = (row['Location'] || row['location'] || '').trim();
+    const departmentName = (row['Department'] || row['department'] || '').trim();
+    const roleName = (row['Role'] || row['role'] || '').trim();
+    const managerEmail = (row['Manager'] || row['manager'] || '').trim() || undefined;
+
+    const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : undefined;
+    const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : undefined;
+    const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
+    const roleId = roleName ? roleCache.get(roleKey) : undefined;
+
+    // Build profile patch (only fields that were provided)
+    const profileUpdates: Record<string, any> = {};
+    if (fullName) profileUpdates.full_name = fullName;
+    if (firstName) profileUpdates.first_name = firstName;
+    if (lastName) profileUpdates.last_name = lastName;
+    if (phone) profileUpdates.phone = phone;
+    if (employeeId) profileUpdates.employee_id = employeeId;
+    if (locationId) { profileUpdates.location = locationName; profileUpdates.location_id = locationId; }
+
+    if (Object.keys(profileUpdates).length > 0) {
+      const { error: updateError } = await supabase.from('profiles').update(profileUpdates).eq('id', userId);
+      if (updateError) {
+        warnings.push({ field: 'Profile', value: email, message: `Profile could not be updated: ${updateError.message}` });
+      } else {
+        const updatedFields = Object.keys(profileUpdates).filter(k => !['location', 'location_id'].includes(k));
+        if (updatedFields.length > 0) {
+          additions.push({ field: 'Profile', value: `Updated: ${updatedFields.join(', ')}` });
+        }
+      }
+    }
+
+    // Physical location access — add if not already present
+    if (locationId) {
+      const { data: existingAccess } = await supabase
+        .from('physical_location_access').select('id').eq('user_id', userId).eq('location_id', locationId).maybeSingle();
+      if (!existingAccess) {
+        const { error: locationError } = await supabase.from('physical_location_access').insert({
+          user_id: userId,
+          location_id: locationId,
+          full_name: fullName || profileData.full_name,
+          access_purpose: 'General Access',
+          status: 'Active',
+          date_access_created: new Date().toISOString()
+        });
+        if (locationError) {
+          warnings.push({ field: 'Location', value: locationName, message: `Location access could not be assigned: ${locationError.message}` });
+        } else {
+          additions.push({ field: 'Location', value: locationName });
+        }
+      }
+    } else if (locationName) {
+      warnings.push({ field: 'Location', value: locationName, message: `Location "${locationName}" not found — skipping assignment` });
+    }
+
+    // Helper: assign role (if not already present), closes over warnings + additions
+    const assignRole = async (rId: string, pairingId?: string) => {
+      const { data: existingRole } = await supabase
+        .from('user_profile_roles').select('id').eq('user_id', userId).eq('role_id', rId).maybeSingle();
+      if (existingRole) {
+        warnings.push({ field: 'Role', value: roleName, message: `Role "${roleName}" is already assigned — skipped` });
+        return;
+      }
+      const { data: allRoles } = await supabase.from('user_profile_roles').select('id').eq('user_id', userId);
+      const { error: roleError } = await supabase.from('user_profile_roles').insert({
+        user_id: userId, role_id: rId,
+        is_primary: !allRoles || allRoles.length === 0,
+        pairing_id: pairingId,
+        assigned_by: userId
+      });
+      if (roleError) {
+        warnings.push({ field: 'Role', value: roleName, message: `Role could not be assigned: ${roleError.message}` });
+      } else {
+        additions.push({ field: 'Role', value: roleName });
+      }
+    };
+
+    // Department assignment — add if not already present
+    if (departmentId) {
+      const { data: existingDept } = await supabase
+        .from('user_departments').select('id').eq('user_id', userId).eq('department_id', departmentId).maybeSingle();
+      if (existingDept) {
+        warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
+        if (roleId) await assignRole(roleId);
+      } else {
+        const pairingId = roleId ? crypto.randomUUID() : undefined;
+        const { data: allDepts } = await supabase.from('user_departments').select('id').eq('user_id', userId);
+        const { error: deptError } = await supabase.from('user_departments').insert({
+          user_id: userId, department_id: departmentId,
+          is_primary: !allDepts || allDepts.length === 0,
+          pairing_id: pairingId, assigned_by: userId
+        });
+        if (deptError) {
+          warnings.push({ field: 'Department', value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
+        } else {
+          additions.push({ field: 'Department', value: departmentName });
+        }
+        if (roleId) await assignRole(roleId, pairingId);
+      }
+    } else if (departmentName) {
+      warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" not found — skipping assignment` });
+      if (roleId) await assignRole(roleId);
+    } else if (roleId) {
+      await assignRole(roleId);
+    } else if (roleName) {
+      warnings.push({ field: 'Role', value: roleName, message: `Role "${roleName}" not found — skipping assignment` });
+    }
+
+    return {
+      email,
+      success: true,
+      userId,
+      managerEmail,
+      warnings: warnings.length > 0 ? warnings : null,
+      additions,
+    };
+  };
+
   const handleImport = async () => {
     if (!uploadedFile) {
       toast({
@@ -644,7 +794,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           });
           // ── End Pass 0 ─────────────────────────────────────────────────────
 
-          // Pass 1: Create all users (manager column is deferred to pass 2)
+          // Pass 1: Create or update users (manager column is deferred to pass 2)
           for (let i = 0; i < data.length; i++) {
             const row = data[i];
             
@@ -658,7 +808,9 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             
             try {
               debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
-              const result = await processUserImport(row, locationCache, departmentCache, roleCache);
+              const result = importMode === 'update'
+                ? await processUserUpdate(row, locationCache, departmentCache, roleCache)
+                : await processUserImport(row, locationCache, departmentCache, roleCache);
               successCount++;
               debug.log(`Successfully processed user ${i + 1}`);
               
@@ -678,6 +830,19 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                     field: warning.field,
                     error: warning.message,
                     rawData: row
+                  });
+                });
+              }
+
+              // Collect successful additions (update mode only) as info items
+              if ('additions' in result && result.additions && result.additions.length > 0) {
+                result.additions.forEach((addition: { field: string; value: string }) => {
+                  warnings.push({
+                    rowNumber,
+                    identifier: email,
+                    field: addition.field,
+                    error: addition.value,
+                    type: 'info' as const,
                   });
                 });
               }
@@ -751,7 +916,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
           debug.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
 
-          // Pass 3: Send activation emails if requested
+          // Pass 3: Send activation emails to newly created users if requested
           if (sendActivationEmails && createdUsers.length > 0) {
             const pathParts = window.location.pathname.split('/').filter(Boolean);
             const reserved = ['admin', 'activate-account', 'reset-password', 'forgot-password', 'email-notifications'];
@@ -795,35 +960,47 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           setIsProcessing(false);
           setIsOpen(false);
 
-          // Show combined error and warning report through parent component
-          if ((errors.length > 0 || warnings.length > 0) && onImportError) {
+          // Split info items (successful additions) from real warnings for toast logic
+          const realWarnings = warnings.filter((w: any) => w.type !== 'info');
+          const infoItems = warnings.filter((w: any) => w.type === 'info');
+          const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || (importMode === 'update' && infoItems.length > 0);
+
+          // Show combined error / warning / additions report through parent component
+          if (shouldShowReport && onImportError) {
             setTimeout(() => {
               onImportError(errors, warnings, { success: successCount, total: data.length });
             }, 300);
-            
-            if (errors.length > 0 && warnings.length > 0) {
+
+            if (errors.length > 0 && realWarnings.length > 0) {
               toast({
                 title: "Import completed with errors and warnings",
-                description: `${successCount} users imported successfully. ${errors.length} failed, ${warnings.length} have validation warnings.`,
+                description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
                 variant: "destructive",
               });
             } else if (errors.length > 0) {
               toast({
                 title: "Import completed with errors",
-                description: `${successCount} users imported successfully. ${errors.length} failed. Opening error report...`,
+                description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
                 variant: "destructive",
               });
-            } else if (warnings.length > 0) {
+            } else if (realWarnings.length > 0) {
               toast({
                 title: "Import completed with warnings",
-                description: `${successCount} users imported successfully. ${warnings.length} users have validation warnings. Opening warning report...`,
+                description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
                 variant: "default",
+              });
+            } else if (importMode === 'update' && infoItems.length > 0) {
+              toast({
+                title: "Update completed",
+                description: `${successCount} users updated. Opening additions report...`,
               });
             }
           } else {
             toast({
               title: "Import completed successfully",
-              description: `All ${successCount} users imported successfully. Users will need to activate their accounts via email.`,
+              description: importMode === 'update'
+                ? `All ${successCount} users updated successfully.`
+                : `All ${successCount} users imported successfully. Users will need to activate their accounts via email.`,
             });
           }
           
@@ -857,6 +1034,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     if (!open && !isProcessing) {
       setUploadedFile(null);
       setSendActivationEmails(false);
+      setImportMode('create');
     }
     setIsOpen(open);
   };
@@ -870,13 +1048,43 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       </DialogTrigger>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Import Users</DialogTitle>
+          <DialogTitle>{importMode === 'update' ? 'Update Existing Users' : 'Import Users'}</DialogTitle>
           <DialogDescription>
-            Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist.
+            {importMode === 'update'
+              ? 'Upload a CSV to update existing users or create new ones. Existing users (matched by email) have their departments, roles, locations and profile fields updated. Unrecognised emails are created as new users.'
+              : 'Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don\'t already exist.'}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-6">
+          {/* Mode toggle */}
+          <div className="flex rounded-lg border overflow-hidden">
+            <button
+              type="button"
+              onClick={() => { setImportMode('create'); setUploadedFile(null); }}
+              disabled={isProcessing}
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                importMode === 'create'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-background text-muted-foreground hover:bg-muted'
+              }`}
+            >
+              Create new users
+            </button>
+            <button
+              type="button"
+              onClick={() => { setImportMode('update'); setUploadedFile(null); setSendActivationEmails(false); }}
+              disabled={isProcessing}
+              className={`flex-1 py-2 text-sm font-medium transition-colors ${
+                importMode === 'update'
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-background text-muted-foreground hover:bg-muted'
+              }`}
+            >
+              Update existing users
+            </button>
+          </div>
+
           <div className="space-y-4">
             <div
               {...getRootProps()}
@@ -919,7 +1127,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                     disabled={isProcessing}
                   />
                   <Label htmlFor="send-activation-emails" className="text-sm font-normal cursor-pointer">
-                    Send activation emails to imported users
+                    Send activation emails to new users
                   </Label>
                 </div>
               <div className="flex gap-3">
@@ -971,28 +1179,40 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-semibold text-blue-900 mb-2">Available Columns</h4>
             <div className="flex flex-wrap gap-2 mb-4">
-              {[
-                'Email', 'Full Name', 'First Name', 'Last Name', 
-                'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager'
-              ].map((column) => (
+              {(importMode === 'update'
+                ? ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Location', 'Department', 'Role', 'Manager']
+                : ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager']
+              ).map((column) => (
                 <Badge key={column} variant="outline" className="text-xs">
                   {column}
                 </Badge>
               ))}
             </div>
-            <div className="text-sm text-blue-800 space-y-1">
-              <p>• <strong>Email</strong> is required for each user</p>
-              <p>• <strong>Full Name</strong> is required for each user</p>
-              <p>• <strong>First Name</strong> is required for each user</p>
-              <p>• <strong>Last Name</strong> is required for each user</p>
-              <p>• Users will be created with 'Pending' status and must activate via email</p>
-              <p>• <strong>Access Level</strong> - must be "User" or "Admin". Other values are not allowed.</p>
-              <p>• <strong>Location</strong> (optional) - created automatically if it doesn't exist</p>
-              <p>• <strong>Department</strong> (optional) - created automatically if it doesn't exist</p>
-              <p>• <strong>Role</strong> (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role.</p>
-              <p>• <strong>Manager</strong> (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported</p>
-              <p>• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided</p>
-            </div>
+            {importMode === 'update' ? (
+              <div className="text-sm text-blue-800 space-y-1">
+                <p>• <strong>Email</strong> is required — used to look up the existing user; if not found, the user will be created</p>
+                <p>• All other columns are optional for existing users — only populated fields are updated</p>
+                <p>• <strong>Location</strong> - must already exist in the system; updates the user's primary location and adds a physical access entry if not already present</p>
+                <p>• <strong>Department</strong> - must already exist; added to the user's departments if not already assigned</p>
+                <p>• <strong>Role</strong> - must already exist; added to the user's roles if not already assigned. If Department is also provided, role and department are linked with a pairing ID</p>
+                <p>• <strong>Manager</strong> - must be specified by email address; updates the user's manager field</p>
+                <p>• Existing assignments are never removed — this is an additive update</p>
+              </div>
+            ) : (
+              <div className="text-sm text-blue-800 space-y-1">
+                <p>• <strong>Email</strong> is required for each user</p>
+                <p>• <strong>Full Name</strong> is required for each user</p>
+                <p>• <strong>First Name</strong> is required for each user</p>
+                <p>• <strong>Last Name</strong> is required for each user</p>
+                <p>• Users will be created with 'Pending' status and must activate via email</p>
+                <p>• <strong>Access Level</strong> - must be "User" or "Admin". Other values are not allowed.</p>
+                <p>• <strong>Location</strong> (optional) - created automatically if it doesn't exist</p>
+                <p>• <strong>Department</strong> (optional) - created automatically if it doesn't exist</p>
+                <p>• <strong>Role</strong> (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role.</p>
+                <p>• <strong>Manager</strong> (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported</p>
+                <p>• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided</p>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>

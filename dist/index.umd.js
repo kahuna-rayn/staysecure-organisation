@@ -243,9 +243,25 @@
    * This source code is licensed under the ISC license.
    * See the LICENSE file in the root directory of this source tree.
    */
+  const ChevronDown = createLucideIcon("ChevronDown", [
+    ["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]
+  ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
   const ChevronRight = createLucideIcon("ChevronRight", [
     ["path", { d: "m9 18 6-6-6-6", key: "mthhwq" }]
   ]);
+  /**
+   * @license lucide-react v0.462.0 - ISC
+   *
+   * This source code is licensed under the ISC license.
+   * See the LICENSE file in the root directory of this source tree.
+   */
+  const ChevronUp = createLucideIcon("ChevronUp", [["path", { d: "m18 15-6-6-6 6", key: "153udz" }]]);
   /**
    * @license lucide-react v0.462.0 - ISC
    *
@@ -1644,6 +1660,7 @@
     const [uploadedFile, setUploadedFile] = React.useState(null);
     const [isProcessing, setIsProcessing] = React.useState(false);
     const [sendActivationEmails, setSendActivationEmails] = React.useState(false);
+    const [importMode, setImportMode] = React.useState("create");
     const { data: validLocations } = reactQuery.useQuery({
       queryKey: ["locations"],
       queryFn: async () => {
@@ -1981,6 +1998,130 @@
         warnings: warnings.length > 0 ? warnings : null
       };
     };
+    const processUserUpdate = async (row, locationCache, departmentCache, roleCache) => {
+      const email = (row["Email"] || row["email"] || "").trim();
+      if (!email) throw new Error("Email address is required for all users.");
+      const { data: profileData, error: profileLookupError } = await supabase.from("profiles").select("id, full_name").eq("email", email).maybeSingle();
+      if (profileLookupError) throw new Error(`Failed to look up user: ${profileLookupError.message}`);
+      if (!profileData) {
+        return processUserImport(row, locationCache, departmentCache, roleCache);
+      }
+      const userId = profileData.id;
+      const warnings = [];
+      const additions = [];
+      const fullName = (row["Full Name"] || row["full_name"] || "").trim();
+      const firstName = (row["First Name"] || row["first_name"] || "").trim();
+      const lastName = (row["Last Name"] || row["last_name"] || "").trim();
+      const phone = (row["Phone"] || row["phone"] || "").trim();
+      const employeeId = (row["Employee ID"] || row["employee_id"] || "").trim();
+      const locationName = (row["Location"] || row["location"] || "").trim();
+      const departmentName = (row["Department"] || row["department"] || "").trim();
+      const roleName = (row["Role"] || row["role"] || "").trim();
+      const managerEmail = (row["Manager"] || row["manager"] || "").trim() || void 0;
+      const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : void 0;
+      const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : void 0;
+      const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
+      const roleId = roleName ? roleCache.get(roleKey) : void 0;
+      const profileUpdates = {};
+      if (fullName) profileUpdates.full_name = fullName;
+      if (firstName) profileUpdates.first_name = firstName;
+      if (lastName) profileUpdates.last_name = lastName;
+      if (phone) profileUpdates.phone = phone;
+      if (employeeId) profileUpdates.employee_id = employeeId;
+      if (locationId) {
+        profileUpdates.location = locationName;
+        profileUpdates.location_id = locationId;
+      }
+      if (Object.keys(profileUpdates).length > 0) {
+        const { error: updateError } = await supabase.from("profiles").update(profileUpdates).eq("id", userId);
+        if (updateError) {
+          warnings.push({ field: "Profile", value: email, message: `Profile could not be updated: ${updateError.message}` });
+        } else {
+          const updatedFields = Object.keys(profileUpdates).filter((k) => !["location", "location_id"].includes(k));
+          if (updatedFields.length > 0) {
+            additions.push({ field: "Profile", value: `Updated: ${updatedFields.join(", ")}` });
+          }
+        }
+      }
+      if (locationId) {
+        const { data: existingAccess } = await supabase.from("physical_location_access").select("id").eq("user_id", userId).eq("location_id", locationId).maybeSingle();
+        if (!existingAccess) {
+          const { error: locationError } = await supabase.from("physical_location_access").insert({
+            user_id: userId,
+            location_id: locationId,
+            full_name: fullName || profileData.full_name,
+            access_purpose: "General Access",
+            status: "Active",
+            date_access_created: (/* @__PURE__ */ new Date()).toISOString()
+          });
+          if (locationError) {
+            warnings.push({ field: "Location", value: locationName, message: `Location access could not be assigned: ${locationError.message}` });
+          } else {
+            additions.push({ field: "Location", value: locationName });
+          }
+        }
+      } else if (locationName) {
+        warnings.push({ field: "Location", value: locationName, message: `Location "${locationName}" not found — skipping assignment` });
+      }
+      const assignRole = async (rId, pairingId) => {
+        const { data: existingRole } = await supabase.from("user_profile_roles").select("id").eq("user_id", userId).eq("role_id", rId).maybeSingle();
+        if (existingRole) {
+          warnings.push({ field: "Role", value: roleName, message: `Role "${roleName}" is already assigned — skipped` });
+          return;
+        }
+        const { data: allRoles } = await supabase.from("user_profile_roles").select("id").eq("user_id", userId);
+        const { error: roleError } = await supabase.from("user_profile_roles").insert({
+          user_id: userId,
+          role_id: rId,
+          is_primary: !allRoles || allRoles.length === 0,
+          pairing_id: pairingId,
+          assigned_by: userId
+        });
+        if (roleError) {
+          warnings.push({ field: "Role", value: roleName, message: `Role could not be assigned: ${roleError.message}` });
+        } else {
+          additions.push({ field: "Role", value: roleName });
+        }
+      };
+      if (departmentId) {
+        const { data: existingDept } = await supabase.from("user_departments").select("id").eq("user_id", userId).eq("department_id", departmentId).maybeSingle();
+        if (existingDept) {
+          warnings.push({ field: "Department", value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
+          if (roleId) await assignRole(roleId);
+        } else {
+          const pairingId = roleId ? crypto.randomUUID() : void 0;
+          const { data: allDepts } = await supabase.from("user_departments").select("id").eq("user_id", userId);
+          const { error: deptError } = await supabase.from("user_departments").insert({
+            user_id: userId,
+            department_id: departmentId,
+            is_primary: !allDepts || allDepts.length === 0,
+            pairing_id: pairingId,
+            assigned_by: userId
+          });
+          if (deptError) {
+            warnings.push({ field: "Department", value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
+          } else {
+            additions.push({ field: "Department", value: departmentName });
+          }
+          if (roleId) await assignRole(roleId, pairingId);
+        }
+      } else if (departmentName) {
+        warnings.push({ field: "Department", value: departmentName, message: `Department "${departmentName}" not found — skipping assignment` });
+        if (roleId) await assignRole(roleId);
+      } else if (roleId) {
+        await assignRole(roleId);
+      } else if (roleName) {
+        warnings.push({ field: "Role", value: roleName, message: `Role "${roleName}" not found — skipping assignment` });
+      }
+      return {
+        email,
+        success: true,
+        userId,
+        managerEmail,
+        warnings: warnings.length > 0 ? warnings : null,
+        additions
+      };
+    };
     const handleImport = async () => {
       if (!uploadedFile) {
         useToast$1.toast({
@@ -2106,7 +2247,7 @@
               const rowNumber = i + 2;
               try {
                 debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
-                const result = await processUserImport(row, locationCache, departmentCache, roleCache);
+                const result = importMode === "update" ? await processUserUpdate(row, locationCache, departmentCache, roleCache) : await processUserImport(row, locationCache, departmentCache, roleCache);
                 successCount++;
                 debug.log(`Successfully processed user ${i + 1}`);
                 createdUsers.push({
@@ -2124,6 +2265,17 @@
                       field: warning.field,
                       error: warning.message,
                       rawData: row
+                    });
+                  });
+                }
+                if ("additions" in result && result.additions && result.additions.length > 0) {
+                  result.additions.forEach((addition) => {
+                    warnings.push({
+                      rowNumber,
+                      identifier: email,
+                      field: addition.field,
+                      error: addition.value,
+                      type: "info"
                     });
                   });
                 }
@@ -2223,33 +2375,41 @@
             setSendActivationEmails(false);
             setIsProcessing(false);
             setIsOpen(false);
-            if ((errors.length > 0 || warnings.length > 0) && onImportError) {
+            const realWarnings = warnings.filter((w) => w.type !== "info");
+            const infoItems = warnings.filter((w) => w.type === "info");
+            const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || importMode === "update" && infoItems.length > 0;
+            if (shouldShowReport && onImportError) {
               setTimeout(() => {
                 onImportError(errors, warnings, { success: successCount, total: data.length });
               }, 300);
-              if (errors.length > 0 && warnings.length > 0) {
+              if (errors.length > 0 && realWarnings.length > 0) {
                 useToast$1.toast({
                   title: "Import completed with errors and warnings",
-                  description: `${successCount} users imported successfully. ${errors.length} failed, ${warnings.length} have validation warnings.`,
+                  description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
                   variant: "destructive"
                 });
               } else if (errors.length > 0) {
                 useToast$1.toast({
                   title: "Import completed with errors",
-                  description: `${successCount} users imported successfully. ${errors.length} failed. Opening error report...`,
+                  description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
                   variant: "destructive"
                 });
-              } else if (warnings.length > 0) {
+              } else if (realWarnings.length > 0) {
                 useToast$1.toast({
                   title: "Import completed with warnings",
-                  description: `${successCount} users imported successfully. ${warnings.length} users have validation warnings. Opening warning report...`,
+                  description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
                   variant: "default"
+                });
+              } else if (importMode === "update" && infoItems.length > 0) {
+                useToast$1.toast({
+                  title: "Update completed",
+                  description: `${successCount} users updated. Opening additions report...`
                 });
               }
             } else {
               useToast$1.toast({
                 title: "Import completed successfully",
-                description: `All ${successCount} users imported successfully. Users will need to activate their accounts via email.`
+                description: importMode === "update" ? `All ${successCount} users updated successfully.` : `All ${successCount} users imported successfully. Users will need to activate their accounts via email.`
               });
             }
             if (onImportComplete) {
@@ -2280,6 +2440,7 @@
       if (!open && !isProcessing) {
         setUploadedFile(null);
         setSendActivationEmails(false);
+        setImportMode("create");
       }
       setIsOpen(open);
     };
@@ -2287,10 +2448,39 @@
       /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", children: /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4 mr-2" }) }) }),
       /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
-          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: "Import Users" }),
-          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist." })
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: importMode === "update" ? "Update Existing Users" : "Import Users" }),
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: importMode === "update" ? "Upload a CSV to update existing users or create new ones. Existing users (matched by email) have their departments, roles, locations and profile fields updated. Unrecognised emails are created as new users." : "Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist." })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex rounded-lg border overflow-hidden", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => {
+                  setImportMode("create");
+                  setUploadedFile(null);
+                },
+                disabled: isProcessing,
+                className: `flex-1 py-2 text-sm font-medium transition-colors ${importMode === "create" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`,
+                children: "Create new users"
+              }
+            ),
+            /* @__PURE__ */ jsxRuntime.jsx(
+              "button",
+              {
+                type: "button",
+                onClick: () => {
+                  setImportMode("update");
+                  setUploadedFile(null);
+                  setSendActivationEmails(false);
+                },
+                disabled: isProcessing,
+                className: `flex-1 py-2 text-sm font-medium transition-colors ${importMode === "update" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`,
+                children: "Update existing users"
+              }
+            )
+          ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntime.jsxs(
               "div",
@@ -2322,7 +2512,7 @@
                     disabled: isProcessing
                   }
                 ),
-                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to imported users" })
+                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to new users" })
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-3", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(
@@ -2360,20 +2550,36 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
             /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: [
-              "Email",
-              "Full Name",
-              "First Name",
-              "Last Name",
-              "Phone",
-              "Employee ID",
-              "Access Level",
-              "Location",
-              "Department",
-              "Role",
-              "Manager"
-            ].map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+            importMode === "update" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Email" }),
+                " is required — used to look up the existing user; if not found, the user will be created"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• All other columns are optional for existing users — only populated fields are updated" }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Location" }),
+                " - must already exist in the system; updates the user's primary location and adds a physical access entry if not already present"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Department" }),
+                " - must already exist; added to the user's departments if not already assigned"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Role" }),
+                " - must already exist; added to the user's roles if not already assigned. If Department is also provided, role and department are linked with a pairing ID"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
+                "• ",
+                /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Manager" }),
+                " - must be specified by email address; updates the user's manager field"
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• Existing assignments are never removed — this is an additive update" })
+            ] }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Email" }),
@@ -6901,7 +7107,7 @@
   }
   function ProductSummaryCard({ product, isSuperAdmin }) {
     const pct = Math.min(product.pctUsed * 100, 100);
-    const barColor = product.isAtCapacity ? "bg-destructive" : product.isNearCapacity ? "bg-amber-500" : "bg-green-500";
+    const barColor = product.isAtCapacity ? "bg-destructive" : product.isNearCapacity ? "bg-amber-500" : "bg-primary";
     return /* @__PURE__ */ jsxRuntime.jsxs(card.Card, { children: [
       /* @__PURE__ */ jsxRuntime.jsxs(card.CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
         /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
@@ -6944,7 +7150,7 @@
           /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: product.isAtCapacity ? /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", children: "At capacity" }) : product.isNearCapacity ? /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
             Math.round(pct),
             "% used"
-          ] }) : /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-green-500 text-green-700 bg-green-50", children: [
+          ] }) : /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-primary text-primary bg-primary/5", children: [
             /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-3 w-3 mr-1" }),
             Math.round(pct),
             "% used"
@@ -6954,7 +7160,7 @@
           const authorPct = Math.min(product.usedAuthorSeats / product.seatsAuthor * 100, 100);
           const authorAtCap = product.usedAuthorSeats >= product.seatsAuthor;
           const authorNearCap = !authorAtCap && authorPct >= 80;
-          const authorBarColor = authorAtCap ? "bg-destructive" : authorNearCap ? "bg-amber-500" : "bg-blue-500";
+          const authorBarColor = authorAtCap ? "bg-destructive" : authorNearCap ? "bg-amber-500" : "bg-primary/60";
           return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2 border-t pt-3", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between text-sm", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "font-medium flex items-center gap-1", children: [
@@ -6973,7 +7179,7 @@
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: authorAtCap ? /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", children: "Author seats full" }) : authorNearCap ? /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
               Math.round(authorPct),
               "% author seats used"
-            ] }) : /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-blue-500 text-blue-700 bg-blue-50", children: [
+            ] }) : /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "border-primary/60 text-primary bg-primary/5", children: [
               /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-3 w-3 mr-1" }),
               Math.round(authorPct),
               "% author seats used"
@@ -7003,9 +7209,23 @@
       ] })
     ] });
   }
+  function SortIcon({ col, sortCol, sortDir }) {
+    if (col !== sortCol) return /* @__PURE__ */ jsxRuntime.jsx(ChevronsUpDown, { className: "h-3 w-3 ml-1 opacity-40" });
+    return sortDir === "asc" ? /* @__PURE__ */ jsxRuntime.jsx(ChevronUp, { className: "h-3 w-3 ml-1" }) : /* @__PURE__ */ jsxRuntime.jsx(ChevronDown, { className: "h-3 w-3 ml-1" });
+  }
   const LicenseDashboard = () => {
     const { data, isLoading, error } = useLicenseData();
     const { isSuperAdmin } = useUserRole.useUserRole();
+    const [sortCol, setSortCol] = React.useState("name");
+    const [sortDir, setSortDir] = React.useState("asc");
+    const toggleSort = (col) => {
+      if (col === sortCol) {
+        setSortDir((d) => d === "asc" ? "desc" : "asc");
+      } else {
+        setSortCol(col);
+        setSortDir("asc");
+      }
+    };
     if (isLoading) {
       return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 py-12 text-muted-foreground", children: [
         /* @__PURE__ */ jsxRuntime.jsx(LoaderCircle, { className: "h-5 w-5 animate-spin" }),
@@ -7059,9 +7279,20 @@
         accessLevel: a.accessLevel
       });
     });
-    const userGroups = Array.from(userMap.values()).sort(
-      (a, b) => (a.userName ?? "").localeCompare(b.userName ?? "")
-    );
+    const userGroups = Array.from(userMap.values()).sort((a, b) => {
+      var _a, _b, _c, _d;
+      let cmp = 0;
+      if (sortCol === "name") {
+        cmp = (a.userName ?? "").localeCompare(b.userName ?? "");
+      } else if (sortCol === "email") {
+        cmp = (a.userEmail ?? "").localeCompare(b.userEmail ?? "");
+      } else if (sortCol === "product") {
+        cmp = (((_a = a.licenses[0]) == null ? void 0 : _a.productName) ?? "").localeCompare(((_b = b.licenses[0]) == null ? void 0 : _b.productName) ?? "");
+      } else if (sortCol === "access") {
+        cmp = (((_c = a.licenses[0]) == null ? void 0 : _c.accessLevel) ?? "").localeCompare(((_d = b.licenses[0]) == null ? void 0 : _d.accessLevel) ?? "");
+      }
+      return sortDir === "asc" ? cmp : -cmp;
+    });
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       atCapacity.map((p) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "destructive", children: [
         /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-4 w-4" }),
@@ -7135,12 +7366,23 @@
           /* @__PURE__ */ jsxRuntime.jsx(card.CardDescription, { children: "Users who currently hold a license seat. Remove a user to free a seat." })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsx(card.CardContent, { children: userGroups.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx("p", { className: "py-8 text-center text-muted-foreground", children: "No seats are currently assigned." }) : /* @__PURE__ */ jsxRuntime.jsx("div", { className: "border rounded-lg overflow-hidden", children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "max-h-[480px] overflow-y-auto", children: /* @__PURE__ */ jsxRuntime.jsxs("table", { className: "w-full text-sm", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("thead", { className: "sticky top-0 z-10 bg-muted", children: /* @__PURE__ */ jsxRuntime.jsxs("tr", { className: "border-b", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Name" }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Email / Username" }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Product" }),
-            /* @__PURE__ */ jsxRuntime.jsx("th", { className: "text-left p-2 font-medium text-muted-foreground", children: "Access Level" })
-          ] }) }),
+          /* @__PURE__ */ jsxRuntime.jsx("thead", { className: "sticky top-0 z-10 bg-muted", children: /* @__PURE__ */ jsxRuntime.jsx("tr", { className: "border-b", children: [
+            { col: "name", label: "Name" },
+            { col: "email", label: "Email / Username" },
+            { col: "product", label: "Product" },
+            { col: "access", label: "Access Level" }
+          ].map(({ col, label: label2 }) => /* @__PURE__ */ jsxRuntime.jsx(
+            "th",
+            {
+              className: "text-left p-2 font-medium text-muted-foreground select-none cursor-pointer hover:text-foreground",
+              onClick: () => toggleSort(col),
+              children: /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "inline-flex items-center", children: [
+                label2,
+                /* @__PURE__ */ jsxRuntime.jsx(SortIcon, { col, sortCol, sortDir })
+              ] })
+            },
+            col
+          )) }) }),
           /* @__PURE__ */ jsxRuntime.jsx("tbody", { children: userGroups.flatMap(
             (user) => user.licenses.map((lic, licIdx) => /* @__PURE__ */ jsxRuntime.jsxs("tr", { className: "border-b last:border-0", children: [
               licIdx === 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
@@ -11521,11 +11763,22 @@
     onClose,
     importType
   }) => {
+    const infoItems = warnings.filter((w) => w.type === "info");
+    const realWarnings = warnings.filter((w) => w.type !== "info");
+    const additionsByUser = infoItems.reduce(
+      (acc, item) => {
+        if (!acc[item.identifier]) acc[item.identifier] = { rowNumber: item.rowNumber, items: [] };
+        acc[item.identifier].items.push(item);
+        return acc;
+      },
+      {}
+    );
     const downloadErrorReport = () => {
       const headers = ["Row Number", "Identifier", "Field", "Type", "Message"];
       const allIssues = [
         ...errors.map((err) => [err.rowNumber, err.identifier, err.field || "N/A", "Error", err.error]),
-        ...warnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error])
+        ...realWarnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error]),
+        ...infoItems.map((info) => [info.rowNumber, info.identifier, info.field || "N/A", "Added", info.error])
       ];
       const csvContent = [headers, ...allIssues].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -11559,10 +11812,13 @@
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-red-600", children: "Failed" })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-yellow-50 border border-yellow-200 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-yellow-700", children: warnings.length }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-yellow-700", children: realWarnings.length }),
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-yellow-600", children: "Warnings" })
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-blue-50 border border-blue-200 rounded-lg", children: [
+          infoItems.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-emerald-50 border border-emerald-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-emerald-700", children: infoItems.length }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-emerald-600", children: "Additions" })
+          ] }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-blue-50 border border-blue-200 rounded-lg", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-2xl font-bold text-blue-700", children: [
               errorRate,
               "%"
@@ -11570,14 +11826,44 @@
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-blue-600", children: "Error Rate" })
           ] })
         ] }),
-        (errors.length > 0 || warnings.length > 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: downloadErrorReport, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) }) }),
-        errors.length > 0 || warnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm", children: [
-            "Issues (",
-            errors.length + warnings.length,
+        (errors.length > 0 || realWarnings.length > 0 || infoItems.length > 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: downloadErrorReport, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) }) }),
+        infoItems.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm text-emerald-800", children: [
+            "Additions by user (",
+            Object.keys(additionsByUser).length,
+            " user",
+            Object.keys(additionsByUser).length !== 1 ? "s" : "",
+            ", ",
+            infoItems.length,
+            " change",
+            infoItems.length !== 1 ? "s" : "",
             ")"
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: "h-[400px] border rounded-lg p-4", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: `border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? "h-[200px]" : "h-[300px]"}`, children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-3", children: Object.entries(additionsByUser).map(([email, { rowNumber, items }]) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "default", className: "bg-emerald-50 border-emerald-200", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-4 w-4 text-emerald-600" }),
+            /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
+                  "Row ",
+                  rowNumber
+                ] }),
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm text-emerald-900", children: email })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-1 mt-1", children: items.map((item, i) => /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs bg-emerald-100 text-emerald-800", children: [
+                item.field,
+                ": ",
+                item.error
+              ] }, i)) })
+            ] }) })
+          ] }, email)) }) })
+        ] }),
+        errors.length > 0 || realWarnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm", children: [
+            "Issues (",
+            errors.length + realWarnings.length,
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: "h-[300px] border rounded-lg p-4", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
             errors.map((error, index) => /* @__PURE__ */ jsxRuntime.jsxs(
               alert.Alert,
               {
@@ -11608,7 +11894,7 @@
               },
               `error-${index}`
             )),
-            warnings.map((warning, index) => /* @__PURE__ */ jsxRuntime.jsxs(
+            realWarnings.map((warning, index) => /* @__PURE__ */ jsxRuntime.jsxs(
               alert.Alert,
               {
                 variant: "default",
@@ -11639,8 +11925,8 @@
               `warning-${index}`
             ))
           ] }) })
-        ] }) : /* @__PURE__ */ jsxRuntime.jsx(alert.Alert, { className: "bg-green-50 border-green-200", children: /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { className: "text-green-800", children: "All rows imported successfully! No errors or warnings to report." }) }),
-        (errors.length > 0 || warnings.length > 0) && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
+        ] }) : infoItems.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx(alert.Alert, { className: "bg-green-50 border-green-200", children: /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { className: "text-green-800", children: "All rows imported successfully! No errors or warnings to report." }) }) : null,
+        (errors.length > 0 || realWarnings.length > 0) && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
           /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-sm text-yellow-900 mb-2", children: "Troubleshooting Tips" }),
           /* @__PURE__ */ jsxRuntime.jsx("div", { className: "max-h-32 overflow-y-auto", children: /* @__PURE__ */ jsxRuntime.jsxs("ul", { className: "text-sm text-yellow-800 space-y-1 list-disc list-inside pr-2", children: [
             errors.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
@@ -11649,7 +11935,7 @@
               /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Ensure email addresses are valid and not duplicates" }),
               /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Review the error messages for specific guidance" })
             ] }),
-            warnings.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+            realWarnings.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
               /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Users with invalid locations were still created successfully" }),
               /* @__PURE__ */ jsxRuntime.jsx("li", { children: "You can assign locations manually after import using the user management interface" }),
               /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Check the locations table to see available valid location names" }),

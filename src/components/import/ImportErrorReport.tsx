@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Download, X, AlertTriangle } from 'lucide-react';
+import { AlertCircle, Download, X, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export interface ImportError {
@@ -12,7 +12,7 @@ export interface ImportError {
   field?: string;
   error: string;
   rawData?: any;
-  type?: 'error' | 'warning';
+  type?: 'error' | 'warning' | 'info';
 }
 
 interface ImportErrorReportProps {
@@ -34,11 +34,26 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
   onClose,
   importType
 }) => {
+  // Split info (successful additions) from real warnings
+  const infoItems = warnings.filter(w => w.type === 'info');
+  const realWarnings = warnings.filter(w => w.type !== 'info');
+
+  // Group info items by user (identifier) for a tidy per-user additions list
+  const additionsByUser = infoItems.reduce<Record<string, { rowNumber: number; items: ImportError[] }>>(
+    (acc, item) => {
+      if (!acc[item.identifier]) acc[item.identifier] = { rowNumber: item.rowNumber, items: [] };
+      acc[item.identifier].items.push(item);
+      return acc;
+    },
+    {}
+  );
+
   const downloadErrorReport = () => {
     const headers = ['Row Number', 'Identifier', 'Field', 'Type', 'Message'];
     const allIssues = [
       ...errors.map(err => [err.rowNumber, err.identifier, err.field || 'N/A', 'Error', err.error]),
-      ...warnings.map(warn => [warn.rowNumber, warn.identifier, warn.field || 'N/A', 'Warning', warn.error])
+      ...realWarnings.map(warn => [warn.rowNumber, warn.identifier, warn.field || 'N/A', 'Warning', warn.error]),
+      ...infoItems.map(info => [info.rowNumber, info.identifier, info.field || 'N/A', 'Added', info.error]),
     ];
     
     const csvContent = [headers, ...allIssues]
@@ -89,17 +104,24 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
               <div className="text-sm text-red-600">Failed</div>
             </div>
             <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-700">{warnings.length}</div>
+              <div className="text-2xl font-bold text-yellow-700">{realWarnings.length}</div>
               <div className="text-sm text-yellow-600">Warnings</div>
             </div>
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="text-2xl font-bold text-blue-700">{errorRate}%</div>
-              <div className="text-sm text-blue-600">Error Rate</div>
-            </div>
+            {infoItems.length > 0 ? (
+              <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
+                <div className="text-2xl font-bold text-emerald-700">{infoItems.length}</div>
+                <div className="text-sm text-emerald-600">Additions</div>
+              </div>
+            ) : (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <div className="text-2xl font-bold text-blue-700">{errorRate}%</div>
+                <div className="text-sm text-blue-600">Error Rate</div>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
-          {(errors.length > 0 || warnings.length > 0) && (
+          {(errors.length > 0 || realWarnings.length > 0 || infoItems.length > 0) && (
             <div className="flex gap-2">
               <Button onClick={downloadErrorReport} variant="outline" size="icon">
                 <Download className="h-4 w-4" />
@@ -107,13 +129,46 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
             </div>
           )}
 
+          {/* Additions section (update mode) — grouped per user */}
+          {infoItems.length > 0 && (
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm text-emerald-800">
+                Additions by user ({Object.keys(additionsByUser).length} user{Object.keys(additionsByUser).length !== 1 ? 's' : ''}, {infoItems.length} change{infoItems.length !== 1 ? 's' : ''})
+              </h4>
+              <ScrollArea className={`border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? 'h-[200px]' : 'h-[300px]'}`}>
+                <div className="space-y-3">
+                  {Object.entries(additionsByUser).map(([email, { rowNumber, items }]) => (
+                    <Alert key={email} variant="default" className="bg-emerald-50 border-emerald-200">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                      <AlertDescription>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <Badge variant="outline" className="text-xs">Row {rowNumber}</Badge>
+                            <span className="font-semibold text-sm text-emerald-900">{email}</span>
+                          </div>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {items.map((item, i) => (
+                              <Badge key={i} variant="secondary" className="text-xs bg-emerald-100 text-emerald-800">
+                                {item.field}: {item.error}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </AlertDescription>
+                    </Alert>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
+
           {/* Error/Warning List */}
-          {(errors.length > 0 || warnings.length > 0) ? (
+          {(errors.length > 0 || realWarnings.length > 0) ? (
             <div className="space-y-2">
               <h4 className="font-semibold text-sm">
-                Issues ({errors.length + warnings.length})
+                Issues ({errors.length + realWarnings.length})
               </h4>
-              <ScrollArea className="h-[400px] border rounded-lg p-4">
+              <ScrollArea className="h-[300px] border rounded-lg p-4">
                 <div className="space-y-3">
                   {/* Show errors first */}
                   {errors.map((error, index) => (
@@ -155,8 +210,8 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
                     </Alert>
                   ))}
                   
-                  {/* Show warnings second */}
-                  {warnings.map((warning, index) => (
+                  {/* Show real warnings second */}
+                  {realWarnings.map((warning, index) => (
                     <Alert 
                       key={`warning-${index}`} 
                       variant="default"
@@ -197,16 +252,16 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
                 </div>
               </ScrollArea>
             </div>
-          ) : (
+          ) : infoItems.length === 0 ? (
             <Alert className="bg-green-50 border-green-200">
               <AlertDescription className="text-green-800">
                 All rows imported successfully! No errors or warnings to report.
               </AlertDescription>
             </Alert>
-          )}
+          ) : null}
 
           {/* Common Error/Warning Patterns (if we detect them) */}
-          {(errors.length > 0 || warnings.length > 0) && (
+          {(errors.length > 0 || realWarnings.length > 0) && (
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <h4 className="font-semibold text-sm text-yellow-900 mb-2">
                 Troubleshooting Tips
@@ -221,7 +276,7 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
                       <li>Review the error messages for specific guidance</li>
                     </>
                   )}
-                  {warnings.length > 0 && (
+                  {realWarnings.length > 0 && (
                     <>
                       <li>Users with invalid locations were still created successfully</li>
                       <li>You can assign locations manually after import using the user management interface</li>

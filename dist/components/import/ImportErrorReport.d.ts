@@ -6,7 +6,7 @@ export interface ImportError {
     field?: string;
     error: string;
     rawData?: any;
-    type?: 'error' | 'warning';
+    type?: 'error' | 'warning' | 'info';
 }
 interface ImportErrorReportProps {
     errors: ImportError[];

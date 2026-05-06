@@ -10,7 +10,7 @@ import { Upload, FileText, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { getCurrentClientId } from '@/integrations/supabase/client';
 import Papa from 'papaparse';
-import { ImportError } from '@/components/import/ImportErrorReport';
+import { ImportError } from '../import/ImportErrorReport';
 import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '@/context/OrganisationContext';
 

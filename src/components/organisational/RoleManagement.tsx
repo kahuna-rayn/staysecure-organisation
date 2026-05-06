@@ -16,7 +16,7 @@ import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useManagerPermissions } from '@/hooks/useManagerPermissions';
 import type { Role, Department } from '../../types';
 import ImportRolesDialog from './ImportRolesDialog';
-import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
+import { ImportErrorReport, ImportError } from '../import/ImportErrorReport';
 import RoleMembersDialog from './RoleMembersDialog';
 
 export const RoleManagement: React.FC = () => {

@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/import/ImportErrorReport"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/ui/alert"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/ui/tooltip"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations"), require("@/components/ui/scroll-area")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/import/ImportErrorReport", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/ui/alert", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/ui/tooltip", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations", "@/components/ui/scroll-area"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.ImportErrorReport$1, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.alert, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.tooltip, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations, global.scrollArea));
-})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, ImportErrorReport$1, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, alert, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, tooltip, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations, scrollArea) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/ui/alert"), require("@/components/ui/scroll-area"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/ui/tooltip"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/ui/alert", "@/components/ui/scroll-area", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/ui/tooltip", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.alert, global.scrollArea, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.tooltip, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations));
+})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, alert, scrollArea, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, tooltip, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -2640,6 +2640,202 @@
       ] })
     ] });
   };
+  const ImportErrorReport = ({
+    errors,
+    warnings = [],
+    successCount,
+    totalCount,
+    isOpen,
+    onClose,
+    importType
+  }) => {
+    debug.log("[ImportErrorReport] received warnings:", warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
+    const infoItems = warnings.filter((w) => w.type === "info");
+    const realWarnings = warnings.filter((w) => w.type !== "info");
+    debug.log("[ImportErrorReport] split — infoItems:", infoItems.length, "realWarnings:", realWarnings.length);
+    const additionsByUser = infoItems.reduce(
+      (acc, item) => {
+        if (!acc[item.identifier]) acc[item.identifier] = { rowNumber: item.rowNumber, items: [] };
+        acc[item.identifier].items.push(item);
+        return acc;
+      },
+      {}
+    );
+    const downloadErrorReport = () => {
+      const headers = ["Row Number", "Identifier", "Field", "Type", "Message"];
+      const allIssues = [
+        ...errors.map((err) => [err.rowNumber, err.identifier, err.field || "N/A", "Error", err.error]),
+        ...realWarnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error]),
+        ...infoItems.map((info) => [info.rowNumber, info.identifier, info.field || "N/A", "Added", info.error])
+      ];
+      const csvContent = [headers, ...allIssues].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", `import_report_${(/* @__PURE__ */ new Date()).toISOString()}.csv`);
+      link.style.visibility = "hidden";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+    const errorRate = totalCount > 0 ? (errors.length / totalCount * 100).toFixed(1) : "0";
+    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-4xl max-h-[90vh]", children: [
+      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
+        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogTitle, { className: "flex items-center gap-2", children: [
+          errors.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }) : warnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-5 w-5 text-yellow-600" }) : /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }),
+          "Import Report: ",
+          importType
+        ] }),
+        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Review the import results and download detailed error and warning information" })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4 overflow-y-auto", children: [
+        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-4 gap-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-green-50 border border-green-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-700", children: successCount }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-green-600", children: "Successful" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-red-50 border border-red-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-700", children: errors.length }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-red-600", children: "Failed" })
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-yellow-50 border border-yellow-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-yellow-700", children: realWarnings.length }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-yellow-600", children: "Warnings" })
+          ] }),
+          infoItems.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-emerald-50 border border-emerald-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-emerald-700", children: infoItems.length }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-emerald-600", children: "Additions" })
+          ] }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-blue-50 border border-blue-200 rounded-lg", children: [
+            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-2xl font-bold text-blue-700", children: [
+              errorRate,
+              "%"
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-blue-600", children: "Error Rate" })
+          ] })
+        ] }),
+        (errors.length > 0 || realWarnings.length > 0 || infoItems.length > 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: downloadErrorReport, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) }) }),
+        infoItems.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm text-emerald-800", children: [
+            "Additions by user (",
+            Object.keys(additionsByUser).length,
+            " user",
+            Object.keys(additionsByUser).length !== 1 ? "s" : "",
+            ", ",
+            infoItems.length,
+            " change",
+            infoItems.length !== 1 ? "s" : "",
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: `border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? "h-[200px]" : "h-[300px]"}`, children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-3", children: Object.entries(additionsByUser).map(([email, { rowNumber, items }]) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "default", className: "bg-emerald-50 border-emerald-200", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-4 w-4 text-emerald-600" }),
+            /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
+                  "Row ",
+                  rowNumber
+                ] }),
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm text-emerald-900", children: email })
+              ] }),
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-1 mt-1", children: items.map((item, i) => /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs bg-emerald-100 text-emerald-800", children: [
+                item.field,
+                ": ",
+                item.error
+              ] }, i)) })
+            ] }) })
+          ] }, email)) }) })
+        ] }),
+        errors.length > 0 || realWarnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm", children: [
+            "Issues (",
+            errors.length + realWarnings.length,
+            ")"
+          ] }),
+          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: "h-[300px] border rounded-lg p-4", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
+            errors.map((error, index) => /* @__PURE__ */ jsxRuntime.jsxs(
+              alert.Alert,
+              {
+                variant: "destructive",
+                className: "relative",
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Error" }),
+                      /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
+                        "Row ",
+                        error.rowNumber
+                      ] }),
+                      /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm", children: error.identifier }),
+                      error.field && /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs", children: [
+                        "Field: ",
+                        error.field
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm mt-1 text-destructive", children: error.error }),
+                    error.rawData && /* @__PURE__ */ jsxRuntime.jsxs("details", { className: "mt-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
+                      /* @__PURE__ */ jsxRuntime.jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(error.rawData, null, 2) })
+                    ] })
+                  ] }) })
+                ]
+              },
+              `error-${index}`
+            )),
+            realWarnings.map((warning, index) => /* @__PURE__ */ jsxRuntime.jsxs(
+              alert.Alert,
+              {
+                variant: "default",
+                className: "relative bg-yellow-50 border-yellow-200 text-yellow-900",
+                children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-4 w-4" }),
+                  /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
+                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "secondary", className: "text-xs bg-yellow-200 text-yellow-800", children: "Warning" }),
+                      /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
+                        "Row ",
+                        warning.rowNumber
+                      ] }),
+                      /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm", children: warning.identifier }),
+                      warning.field && /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs", children: [
+                        "Field: ",
+                        warning.field
+                      ] })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm mt-1 text-yellow-800", children: warning.error }),
+                    warning.rawData && /* @__PURE__ */ jsxRuntime.jsxs("details", { className: "mt-2", children: [
+                      /* @__PURE__ */ jsxRuntime.jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
+                      /* @__PURE__ */ jsxRuntime.jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(warning.rawData, null, 2) })
+                    ] })
+                  ] }) })
+                ]
+              },
+              `warning-${index}`
+            ))
+          ] }) })
+        ] }) : infoItems.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx(alert.Alert, { className: "bg-green-50 border-green-200", children: /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { className: "text-green-800", children: "All rows imported successfully! No errors or warnings to report." }) }) : null,
+        (errors.length > 0 || realWarnings.length > 0) && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-sm text-yellow-900 mb-2", children: "Troubleshooting Tips" }),
+          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "max-h-32 overflow-y-auto", children: /* @__PURE__ */ jsxRuntime.jsxs("ul", { className: "text-sm text-yellow-800 space-y-1 list-disc list-inside pr-2", children: [
+            errors.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Verify that all required fields are present in your CSV" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Check for special characters or formatting issues" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Ensure email addresses are valid and not duplicates" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Review the error messages for specific guidance" })
+            ] }),
+            realWarnings.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Users with invalid locations were still created successfully" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "You can assign locations manually after import using the user management interface" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Check the locations table to see available valid location names" }),
+              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Consider updating your import template with correct location names" })
+            ] }),
+            /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Download the report to fix issues in bulk" })
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: onClose, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }) })
+    ] }) });
+  };
   const UserManagement = () => {
     const { supabaseClient } = useOrganisationContext();
     const { profiles, loading, updateProfile, refetch } = useUserProfiles.useUserProfiles();
@@ -2760,7 +2956,7 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
       /* @__PURE__ */ jsxRuntime.jsx(
-        ImportErrorReport$1.ImportErrorReport,
+        ImportErrorReport,
         {
           errors: importErrors,
           warnings: importWarnings,
@@ -3539,7 +3735,7 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       /* @__PURE__ */ jsxRuntime.jsx(
-        ImportErrorReport$1.ImportErrorReport,
+        ImportErrorReport,
         {
           errors: importErrors,
           warnings: importWarnings,
@@ -4485,7 +4681,7 @@
     }
     return /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
       /* @__PURE__ */ jsxRuntime.jsx(
-        ImportErrorReport$1.ImportErrorReport,
+        ImportErrorReport,
         {
           errors: importErrors,
           warnings: importWarnings,
@@ -11794,202 +11990,6 @@ Thank you`
         ] })
       ] }) })
     ] });
-  };
-  const ImportErrorReport = ({
-    errors,
-    warnings = [],
-    successCount,
-    totalCount,
-    isOpen,
-    onClose,
-    importType
-  }) => {
-    console.log("[ImportErrorReport] received warnings:", warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
-    const infoItems = warnings.filter((w) => w.type === "info");
-    const realWarnings = warnings.filter((w) => w.type !== "info");
-    console.log("[ImportErrorReport] split — infoItems:", infoItems.length, "realWarnings:", realWarnings.length);
-    const additionsByUser = infoItems.reduce(
-      (acc, item) => {
-        if (!acc[item.identifier]) acc[item.identifier] = { rowNumber: item.rowNumber, items: [] };
-        acc[item.identifier].items.push(item);
-        return acc;
-      },
-      {}
-    );
-    const downloadErrorReport = () => {
-      const headers = ["Row Number", "Identifier", "Field", "Type", "Message"];
-      const allIssues = [
-        ...errors.map((err) => [err.rowNumber, err.identifier, err.field || "N/A", "Error", err.error]),
-        ...realWarnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error]),
-        ...infoItems.map((info) => [info.rowNumber, info.identifier, info.field || "N/A", "Added", info.error])
-      ];
-      const csvContent = [headers, ...allIssues].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
-      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
-      const url = URL.createObjectURL(blob);
-      link.setAttribute("href", url);
-      link.setAttribute("download", `import_report_${(/* @__PURE__ */ new Date()).toISOString()}.csv`);
-      link.style.visibility = "hidden";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    };
-    const errorRate = totalCount > 0 ? (errors.length / totalCount * 100).toFixed(1) : "0";
-    return /* @__PURE__ */ jsxRuntime.jsx(dialog.Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-4xl max-h-[90vh]", children: [
-      /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
-        /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogTitle, { className: "flex items-center gap-2", children: [
-          errors.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }) : warnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-5 w-5 text-yellow-600" }) : /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }),
-          "Import Report: ",
-          importType
-        ] }),
-        /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: "Review the import results and download detailed error and warning information" })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4 overflow-y-auto", children: [
-        /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-4 gap-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-green-50 border border-green-200 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-green-700", children: successCount }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-green-600", children: "Successful" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-red-50 border border-red-200 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-red-700", children: errors.length }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-red-600", children: "Failed" })
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-yellow-50 border border-yellow-200 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-yellow-700", children: realWarnings.length }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-yellow-600", children: "Warnings" })
-          ] }),
-          infoItems.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-emerald-50 border border-emerald-200 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-2xl font-bold text-emerald-700", children: infoItems.length }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-emerald-600", children: "Additions" })
-          ] }) : /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "p-4 bg-blue-50 border border-blue-200 rounded-lg", children: [
-            /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-2xl font-bold text-blue-700", children: [
-              errorRate,
-              "%"
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "text-sm text-blue-600", children: "Error Rate" })
-          ] })
-        ] }),
-        (errors.length > 0 || realWarnings.length > 0 || infoItems.length > 0) && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: downloadErrorReport, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) }) }),
-        infoItems.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm text-emerald-800", children: [
-            "Additions by user (",
-            Object.keys(additionsByUser).length,
-            " user",
-            Object.keys(additionsByUser).length !== 1 ? "s" : "",
-            ", ",
-            infoItems.length,
-            " change",
-            infoItems.length !== 1 ? "s" : "",
-            ")"
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: `border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? "h-[200px]" : "h-[300px]"}`, children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-3", children: Object.entries(additionsByUser).map(([email, { rowNumber, items }]) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "default", className: "bg-emerald-50 border-emerald-200", children: [
-            /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-4 w-4 text-emerald-600" }),
-            /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
-              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
-                  "Row ",
-                  rowNumber
-                ] }),
-                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm text-emerald-900", children: email })
-              ] }),
-              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-1 mt-1", children: items.map((item, i) => /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs bg-emerald-100 text-emerald-800", children: [
-                item.field,
-                ": ",
-                item.error
-              ] }, i)) })
-            ] }) })
-          ] }, email)) }) })
-        ] }),
-        errors.length > 0 || realWarnings.length > 0 ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntime.jsxs("h4", { className: "font-semibold text-sm", children: [
-            "Issues (",
-            errors.length + realWarnings.length,
-            ")"
-          ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: "h-[300px] border rounded-lg p-4", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
-            errors.map((error, index) => /* @__PURE__ */ jsxRuntime.jsxs(
-              alert.Alert,
-              {
-                variant: "destructive",
-                className: "relative",
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
-                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                      /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "destructive", className: "text-xs", children: "Error" }),
-                      /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
-                        "Row ",
-                        error.rowNumber
-                      ] }),
-                      /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm", children: error.identifier }),
-                      error.field && /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs", children: [
-                        "Field: ",
-                        error.field
-                      ] })
-                    ] }),
-                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm mt-1 text-destructive", children: error.error }),
-                    error.rawData && /* @__PURE__ */ jsxRuntime.jsxs("details", { className: "mt-2", children: [
-                      /* @__PURE__ */ jsxRuntime.jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
-                      /* @__PURE__ */ jsxRuntime.jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(error.rawData, null, 2) })
-                    ] })
-                  ] }) })
-                ]
-              },
-              `error-${index}`
-            )),
-            realWarnings.map((warning, index) => /* @__PURE__ */ jsxRuntime.jsxs(
-              alert.Alert,
-              {
-                variant: "default",
-                className: "relative bg-yellow-50 border-yellow-200 text-yellow-900",
-                children: [
-                  /* @__PURE__ */ jsxRuntime.jsx(TriangleAlert, { className: "h-4 w-4" }),
-                  /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
-                    /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                      /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "secondary", className: "text-xs bg-yellow-200 text-yellow-800", children: "Warning" }),
-                      /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
-                        "Row ",
-                        warning.rowNumber
-                      ] }),
-                      /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm", children: warning.identifier }),
-                      warning.field && /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs", children: [
-                        "Field: ",
-                        warning.field
-                      ] })
-                    ] }),
-                    /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-sm mt-1 text-yellow-800", children: warning.error }),
-                    warning.rawData && /* @__PURE__ */ jsxRuntime.jsxs("details", { className: "mt-2", children: [
-                      /* @__PURE__ */ jsxRuntime.jsx("summary", { className: "text-xs cursor-pointer hover:underline", children: "View raw data" }),
-                      /* @__PURE__ */ jsxRuntime.jsx("pre", { className: "mt-1 text-xs bg-muted p-2 rounded overflow-x-auto", children: JSON.stringify(warning.rawData, null, 2) })
-                    ] })
-                  ] }) })
-                ]
-              },
-              `warning-${index}`
-            ))
-          ] }) })
-        ] }) : infoItems.length === 0 ? /* @__PURE__ */ jsxRuntime.jsx(alert.Alert, { className: "bg-green-50 border-green-200", children: /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { className: "text-green-800", children: "All rows imported successfully! No errors or warnings to report." }) }) : null,
-        (errors.length > 0 || realWarnings.length > 0) && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
-          /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-sm text-yellow-900 mb-2", children: "Troubleshooting Tips" }),
-          /* @__PURE__ */ jsxRuntime.jsx("div", { className: "max-h-32 overflow-y-auto", children: /* @__PURE__ */ jsxRuntime.jsxs("ul", { className: "text-sm text-yellow-800 space-y-1 list-disc list-inside pr-2", children: [
-            errors.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Verify that all required fields are present in your CSV" }),
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Check for special characters or formatting issues" }),
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Ensure email addresses are valid and not duplicates" }),
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Review the error messages for specific guidance" })
-            ] }),
-            realWarnings.length > 0 && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Users with invalid locations were still created successfully" }),
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "You can assign locations manually after import using the user management interface" }),
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Check the locations table to see available valid location names" }),
-              /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Consider updating your import template with correct location names" })
-            ] }),
-            /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Download the report to fix issues in bulk" })
-          ] }) })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: onClose, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }) })
-    ] }) });
   };
   const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments }) => {
     const { supabaseClient: supabase } = useOrganisationContext();

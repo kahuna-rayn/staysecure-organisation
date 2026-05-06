@@ -26,7 +26,7 @@ import UserList from './UserList';
 import UserTable from './UserTable';
 import CreateUserDialog from './CreateUserDialog';
 import ImportUsersDialog from './ImportUsersDialog';
-import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
+import { ImportErrorReport, ImportError } from '../import/ImportErrorReport';
 import debug from '../../utils/debug';
 
 

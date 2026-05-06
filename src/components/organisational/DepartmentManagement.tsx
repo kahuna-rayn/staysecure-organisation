@@ -14,7 +14,7 @@ import { useOrganisationContext } from '../../context/OrganisationContext';
 import { useManagerPermissions } from '@/hooks/useManagerPermissions';
 import type { Department } from '../../types';
 import ImportDepartmentsDialog from './ImportDepartmentsDialog';
-import { ImportErrorReport, ImportError } from '@/components/import/ImportErrorReport';
+import { ImportErrorReport, ImportError } from '../import/ImportErrorReport';
 import DepartmentMembersDialog from './DepartmentMembersDialog';
 
 interface Profile {

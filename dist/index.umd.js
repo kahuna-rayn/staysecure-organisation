@@ -2084,10 +2084,10 @@
         }
       };
       if (departmentId) {
-        const { data: existingDept } = await supabase.from("user_departments").select("id").eq("user_id", userId).eq("department_id", departmentId).maybeSingle();
+        const { data: existingDept } = await supabase.from("user_departments").select("id, pairing_id").eq("user_id", userId).eq("department_id", departmentId).maybeSingle();
         if (existingDept) {
           warnings.push({ field: "Department", value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
-          if (roleId) await assignRole(roleId);
+          if (roleId) await assignRole(roleId, existingDept.pairing_id ?? void 0);
         } else {
           const pairingId = roleId ? crypto.randomUUID() : void 0;
           const { data: allDepts } = await supabase.from("user_departments").select("id").eq("user_id", userId);
@@ -2276,7 +2276,8 @@
                       identifier: email,
                       field: addition.field,
                       error: addition.value,
-                      type: "info"
+                      type: "info",
+                      rawData: row
                     };
                     debug.log(`[ImportUsersDialog] pushing info item:`, infoItem);
                     warnings.push(infoItem);
@@ -2655,18 +2656,19 @@
     debug.log("[ImportErrorReport] split — infoItems:", infoItems.length, "realWarnings:", realWarnings.length);
     const additionsByUser = infoItems.reduce(
       (acc, item) => {
-        if (!acc[item.identifier]) acc[item.identifier] = { rowNumber: item.rowNumber, items: [] };
-        acc[item.identifier].items.push(item);
+        if (!acc[item.identifier]) acc[item.identifier] = {};
+        if (!acc[item.identifier][item.rowNumber]) acc[item.identifier][item.rowNumber] = [];
+        acc[item.identifier][item.rowNumber].push(item);
         return acc;
       },
       {}
     );
     const downloadErrorReport = () => {
-      const headers = ["Row Number", "Identifier", "Field", "Type", "Message"];
+      const headers = ["Row Number", "Identifier", "Field", "Type", "Message", "Raw Data"];
       const allIssues = [
-        ...errors.map((err) => [err.rowNumber, err.identifier, err.field || "N/A", "Error", err.error]),
-        ...realWarnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error]),
-        ...infoItems.map((info) => [info.rowNumber, info.identifier, info.field || "N/A", "Added", info.error])
+        ...errors.map((err) => [err.rowNumber, err.identifier, err.field || "N/A", "Error", err.error, err.rawData ? JSON.stringify(err.rawData) : ""]),
+        ...realWarnings.map((warn) => [warn.rowNumber, warn.identifier, warn.field || "N/A", "Warning", warn.error, warn.rawData ? JSON.stringify(warn.rawData) : ""]),
+        ...infoItems.map((info) => [info.rowNumber, info.identifier, info.field || "N/A", "Added", info.error, info.rawData ? JSON.stringify(info.rawData) : ""])
       ];
       const csvContent = [headers, ...allIssues].map((row) => row.map((field) => `"${field}"`).join(",")).join("\n");
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -2727,21 +2729,21 @@
             infoItems.length !== 1 ? "s" : "",
             ")"
           ] }),
-          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: `border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? "h-[200px]" : "h-[300px]"}`, children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-3", children: Object.entries(additionsByUser).map(([email, { rowNumber, items }]) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "default", className: "bg-emerald-50 border-emerald-200", children: [
+          /* @__PURE__ */ jsxRuntime.jsx(scrollArea.ScrollArea, { className: `border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? "h-[200px]" : "h-[300px]"}`, children: /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-3", children: Object.entries(additionsByUser).map(([email, rowMap]) => /* @__PURE__ */ jsxRuntime.jsxs(alert.Alert, { variant: "default", className: "bg-emerald-50 border-emerald-200", children: [
             /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-4 w-4 text-emerald-600" }),
-            /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-1", children: [
-              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
+            /* @__PURE__ */ jsxRuntime.jsx(alert.AlertDescription, { children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm text-emerald-900", children: email }),
+              Object.entries(rowMap).map(([rowNum, items]) => /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
                 /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "outline", className: "text-xs", children: [
                   "Row ",
-                  rowNumber
+                  rowNum
                 ] }),
-                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "font-semibold text-sm text-emerald-900", children: email })
-              ] }),
-              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-1 mt-1", children: items.map((item, i) => /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs bg-emerald-100 text-emerald-800", children: [
-                item.field,
-                ": ",
-                item.error
-              ] }, i)) })
+                items.map((item, i) => /* @__PURE__ */ jsxRuntime.jsxs(badge.Badge, { variant: "secondary", className: "text-xs bg-emerald-100 text-emerald-800", children: [
+                  item.field,
+                  ": ",
+                  item.error
+                ] }, i))
+              ] }, rowNum))
             ] }) })
           ] }, email)) }) })
         ] }),
@@ -2832,8 +2834,7 @@
             /* @__PURE__ */ jsxRuntime.jsx("li", { children: "Download the report to fix issues in bulk" })
           ] }) })
         ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex justify-end", children: /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: onClose, variant: "outline", size: "icon", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) }) })
+      ] })
     ] }) });
   };
   const UserManagement = () => {

@@ -609,10 +609,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     // Department assignment — add if not already present
     if (departmentId) {
       const { data: existingDept } = await supabase
-        .from('user_departments').select('id').eq('user_id', userId).eq('department_id', departmentId).maybeSingle();
+        .from('user_departments').select('id, pairing_id').eq('user_id', userId).eq('department_id', departmentId).maybeSingle();
       if (existingDept) {
         warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
-        if (roleId) await assignRole(roleId);
+        // Re-use the existing dept row's pairing_id so the role displays under the correct department in the UI
+        if (roleId) await assignRole(roleId, existingDept.pairing_id ?? undefined);
       } else {
         const pairingId = roleId ? crypto.randomUUID() : undefined;
         const { data: allDepts } = await supabase.from('user_departments').select('id').eq('user_id', userId);
@@ -844,6 +845,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                     field: addition.field,
                     error: addition.value,
                     type: 'info' as const,
+                    rawData: row,
                   };
                   debug.log(`[ImportUsersDialog] pushing info item:`, infoItem);
                   warnings.push(infoItem);

@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertCircle, Download, X, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, Download, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import debug from '../../utils/debug';
 
@@ -41,22 +41,23 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
   const realWarnings = warnings.filter(w => w.type !== 'info');
   debug.log('[ImportErrorReport] split — infoItems:', infoItems.length, 'realWarnings:', realWarnings.length);
 
-  // Group info items by user (identifier) for a tidy per-user additions list
-  const additionsByUser = infoItems.reduce<Record<string, { rowNumber: number; items: ImportError[] }>>(
+  // Group info items by user (identifier) → then by row number, so each source row is attributed correctly
+  const additionsByUser = infoItems.reduce<Record<string, Record<number, ImportError[]>>>(
     (acc, item) => {
-      if (!acc[item.identifier]) acc[item.identifier] = { rowNumber: item.rowNumber, items: [] };
-      acc[item.identifier].items.push(item);
+      if (!acc[item.identifier]) acc[item.identifier] = {};
+      if (!acc[item.identifier][item.rowNumber]) acc[item.identifier][item.rowNumber] = [];
+      acc[item.identifier][item.rowNumber].push(item);
       return acc;
     },
     {}
   );
 
   const downloadErrorReport = () => {
-    const headers = ['Row Number', 'Identifier', 'Field', 'Type', 'Message'];
+    const headers = ['Row Number', 'Identifier', 'Field', 'Type', 'Message', 'Raw Data'];
     const allIssues = [
-      ...errors.map(err => [err.rowNumber, err.identifier, err.field || 'N/A', 'Error', err.error]),
-      ...realWarnings.map(warn => [warn.rowNumber, warn.identifier, warn.field || 'N/A', 'Warning', warn.error]),
-      ...infoItems.map(info => [info.rowNumber, info.identifier, info.field || 'N/A', 'Added', info.error]),
+      ...errors.map(err => [err.rowNumber, err.identifier, err.field || 'N/A', 'Error', err.error, err.rawData ? JSON.stringify(err.rawData) : '']),
+      ...realWarnings.map(warn => [warn.rowNumber, warn.identifier, warn.field || 'N/A', 'Warning', warn.error, warn.rawData ? JSON.stringify(warn.rawData) : '']),
+      ...infoItems.map(info => [info.rowNumber, info.identifier, info.field || 'N/A', 'Added', info.error, info.rawData ? JSON.stringify(info.rawData) : '']),
     ];
     
     const csvContent = [headers, ...allIssues]
@@ -132,7 +133,7 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
             </div>
           )}
 
-          {/* Additions section (update mode) — grouped per user */}
+          {/* Additions section (update mode) — grouped per user, then per source row */}
           {infoItems.length > 0 && (
             <div className="space-y-2">
               <h4 className="font-semibold text-sm text-emerald-800">
@@ -140,22 +141,22 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
               </h4>
               <ScrollArea className={`border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? 'h-[200px]' : 'h-[300px]'}`}>
                 <div className="space-y-3">
-                  {Object.entries(additionsByUser).map(([email, { rowNumber, items }]) => (
+                  {Object.entries(additionsByUser).map(([email, rowMap]) => (
                     <Alert key={email} variant="default" className="bg-emerald-50 border-emerald-200">
                       <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                       <AlertDescription>
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <Badge variant="outline" className="text-xs">Row {rowNumber}</Badge>
-                            <span className="font-semibold text-sm text-emerald-900">{email}</span>
-                          </div>
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {items.map((item, i) => (
-                              <Badge key={i} variant="secondary" className="text-xs bg-emerald-100 text-emerald-800">
-                                {item.field}: {item.error}
-                              </Badge>
-                            ))}
-                          </div>
+                        <div className="space-y-2">
+                          <span className="font-semibold text-sm text-emerald-900">{email}</span>
+                          {Object.entries(rowMap).map(([rowNum, items]) => (
+                            <div key={rowNum} className="flex items-center gap-2 flex-wrap">
+                              <Badge variant="outline" className="text-xs">Row {rowNum}</Badge>
+                              {items.map((item, i) => (
+                                <Badge key={i} variant="secondary" className="text-xs bg-emerald-100 text-emerald-800">
+                                  {item.field}: {item.error}
+                                </Badge>
+                              ))}
+                            </div>
+                          ))}
                         </div>
                       </AlertDescription>
                     </Alert>
@@ -294,11 +295,6 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
           )}
         </div>
 
-        <div className="flex justify-end">
-          <Button onClick={onClose} variant="outline" size="icon">
-            <X className="h-4 w-4" />
-          </Button>
-        </div>
       </DialogContent>
     </Dialog>
   );

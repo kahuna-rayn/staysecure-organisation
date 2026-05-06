@@ -351,22 +351,16 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
       const pairingId = (row.departmentId && row.roleId) ? crypto.randomUUID() : undefined;
       debug.log('UserDepartmentsRolesTable: Generated pairingId:', pairingId);
       
-      // Add department if selected and not already assigned
+      // Add department if selected.
+      // When adding a paired dept+role (pairingId defined), always insert a new dept row —
+      // the new unique constraint (user_id, department_id, pairing_id) allows this.
+      // Only skip if this is a standalone dept-only addition and dept is already assigned.
       if (row.departmentId) {
-        const isDepartmentAlreadyAssigned = userDepartments.some(dept => dept.department_id === row.departmentId);
-        debug.log('UserDepartmentsRolesTable: Department already assigned?', isDepartmentAlreadyAssigned);
-        debug.log('UserDepartmentsRolesTable: Current userDepartments:', userDepartments);
-        debug.log('UserDepartmentsRolesTable: Looking for departmentId:', row.departmentId);
-        if (!isDepartmentAlreadyAssigned) {
+        const isDeptStandaloneAlreadyAssigned = !pairingId && userDepartments.some(dept => dept.department_id === row.departmentId);
+        debug.log('UserDepartmentsRolesTable: pairingId:', pairingId, 'isDeptStandaloneAlreadyAssigned:', isDeptStandaloneAlreadyAssigned);
+        if (!isDeptStandaloneAlreadyAssigned) {
           const isPrimary = userDepartments.length === 0;
-          debug.log('UserDepartmentsRolesTable: Adding department with isPrimary:', isPrimary);
-          debug.log('UserDepartmentsRolesTable: Department params:', { 
-            userId, 
-            departmentId: row.departmentId, 
-            isPrimary,
-            pairingId,
-            assignedBy: user?.id
-          });
+          debug.log('UserDepartmentsRolesTable: Adding department with isPrimary:', isPrimary, 'pairingId:', pairingId);
           await addDepartment({ 
             userId, 
             departmentId: row.departmentId, 
@@ -376,7 +370,7 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
           });
           debug.log('UserDepartmentsRolesTable: Department addition completed');
         } else {
-          debug.log('UserDepartmentsRolesTable: Department already assigned, skipping');
+          debug.log('UserDepartmentsRolesTable: Standalone department already assigned, skipping');
         }
       }
       

@@ -2063,7 +2063,8 @@
       } else if (locationName) {
         warnings.push({ field: "Location", value: locationName, message: `Location "${locationName}" not found — skipping assignment` });
       }
-      const assignRole = async (rId, pairingId) => {
+      const pairingId = departmentId && roleId ? crypto.randomUUID() : void 0;
+      const assignRole = async (rId, pairing) => {
         const { data: existingRole } = await supabase.from("user_profile_roles").select("id").eq("user_id", userId).eq("role_id", rId).maybeSingle();
         if (existingRole) {
           warnings.push({ field: "Role", value: roleName, message: `Role "${roleName}" is already assigned — skipped` });
@@ -2074,7 +2075,7 @@
           user_id: userId,
           role_id: rId,
           is_primary: !allRoles || allRoles.length === 0,
-          pairing_id: pairingId,
+          pairing_id: pairing,
           assigned_by: userId
         });
         if (roleError) {
@@ -2084,12 +2085,10 @@
         }
       };
       if (departmentId) {
-        const { data: existingDept } = await supabase.from("user_departments").select("id, pairing_id").eq("user_id", userId).eq("department_id", departmentId).maybeSingle();
-        if (existingDept) {
+        const isDeptStandaloneAlreadyAssigned = !pairingId && (await supabase.from("user_departments").select("id").eq("user_id", userId).eq("department_id", departmentId).maybeSingle()).data;
+        if (isDeptStandaloneAlreadyAssigned) {
           warnings.push({ field: "Department", value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
-          if (roleId) await assignRole(roleId, existingDept.pairing_id ?? void 0);
         } else {
-          const pairingId = roleId ? crypto.randomUUID() : void 0;
           const { data: allDepts } = await supabase.from("user_departments").select("id").eq("user_id", userId);
           const { error: deptError } = await supabase.from("user_departments").insert({
             user_id: userId,
@@ -2103,13 +2102,12 @@
           } else {
             additions.push({ field: "Department", value: departmentName });
           }
-          if (roleId) await assignRole(roleId, pairingId);
         }
       } else if (departmentName) {
         warnings.push({ field: "Department", value: departmentName, message: `Department "${departmentName}" not found — skipping assignment` });
-        if (roleId) await assignRole(roleId);
-      } else if (roleId) {
-        await assignRole(roleId);
+      }
+      if (roleId) {
+        await assignRole(roleId, pairingId);
       } else if (roleName) {
         warnings.push({ field: "Role", value: roleName, message: `Role "${roleName}" not found — skipping assignment` });
       }
@@ -2225,7 +2223,15 @@
                     roleCache.set(roleKey, newRole.role_id);
                     debug.log("[ImportUsersDialog] Auto-created role:", roleName, deptName ? `(${deptName})` : "(general)");
                   } else if (error) {
-                    debug.error("[ImportUsersDialog] Failed to create role:", roleName, error);
+                    debug.log("[ImportUsersDialog] Role insert failed, fetching existing:", roleName, deptName, error.message);
+                    const q = supabase.from("roles").select("role_id").eq("name", roleName).eq("is_active", true);
+                    const { data: existing } = await (deptId ? q.eq("department_id", deptId) : q.is("department_id", null)).maybeSingle();
+                    if (existing) {
+                      roleCache.set(roleKey, existing.role_id);
+                      debug.log("[ImportUsersDialog] Found existing role:", roleName, deptName ? `(${deptName})` : "(general)");
+                    } else {
+                      debug.error("[ImportUsersDialog] Could not find or create role:", roleName, deptName);
+                    }
                   }
                 } catch (err) {
                   debug.error("[ImportUsersDialog] Exception creating role:", roleName, err);
@@ -9584,20 +9590,11 @@ Thank you`
         const pairingId = row.departmentId && row.roleId ? crypto.randomUUID() : void 0;
         debug.log("UserDepartmentsRolesTable: Generated pairingId:", pairingId);
         if (row.departmentId) {
-          const isDepartmentAlreadyAssigned = userDepartments.some((dept) => dept.department_id === row.departmentId);
-          debug.log("UserDepartmentsRolesTable: Department already assigned?", isDepartmentAlreadyAssigned);
-          debug.log("UserDepartmentsRolesTable: Current userDepartments:", userDepartments);
-          debug.log("UserDepartmentsRolesTable: Looking for departmentId:", row.departmentId);
-          if (!isDepartmentAlreadyAssigned) {
+          const isDeptStandaloneAlreadyAssigned = !pairingId && userDepartments.some((dept) => dept.department_id === row.departmentId);
+          debug.log("UserDepartmentsRolesTable: pairingId:", pairingId, "isDeptStandaloneAlreadyAssigned:", isDeptStandaloneAlreadyAssigned);
+          if (!isDeptStandaloneAlreadyAssigned) {
             const isPrimary = userDepartments.length === 0;
-            debug.log("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary);
-            debug.log("UserDepartmentsRolesTable: Department params:", {
-              userId,
-              departmentId: row.departmentId,
-              isPrimary,
-              pairingId,
-              assignedBy: user == null ? void 0 : user.id
-            });
+            debug.log("UserDepartmentsRolesTable: Adding department with isPrimary:", isPrimary, "pairingId:", pairingId);
             await addDepartment({
               userId,
               departmentId: row.departmentId,
@@ -9607,7 +9604,7 @@ Thank you`
             });
             debug.log("UserDepartmentsRolesTable: Department addition completed");
           } else {
-            debug.log("UserDepartmentsRolesTable: Department already assigned, skipping");
+            debug.log("UserDepartmentsRolesTable: Standalone department already assigned, skipping");
           }
         }
         if (row.roleId) {

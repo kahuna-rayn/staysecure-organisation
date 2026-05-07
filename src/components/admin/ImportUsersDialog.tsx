@@ -584,45 +584,60 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       warnings.push({ field: 'Location', value: locationName, message: `Location "${locationName}" not found — skipping assignment` });
     }
 
-    // Mirror UserDepartmentsRolesTable.handleSaveNewRow: one pairing_id shared by dept + role
-    const pairingId = (departmentId && roleId) ? crypto.randomUUID() : undefined;
-
-    // Helper: assign role (if not already present), closes over warnings + additions
-    const assignRole = async (rId: string, pairing?: string) => {
-      const { data: existingRole } = await supabase
-        .from('user_profile_roles').select('id').eq('user_id', userId).eq('role_id', rId).maybeSingle();
-      if (existingRole) {
-        warnings.push({ field: 'Role', value: roleName, message: `Role "${roleName}" is already assigned — skipped` });
-        return;
-      }
-      const { data: allRoles } = await supabase.from('user_profile_roles').select('id').eq('user_id', userId);
-      const { error: roleError } = await supabase.from('user_profile_roles').insert({
-        user_id: userId, role_id: rId,
-        is_primary: !allRoles || allRoles.length === 0,
-        pairing_id: pairing,
-        assigned_by: userId
+    // Build a snapshot of existing assignments — mirrors the UI's three display states.
+    // Fetched once per user row; used for all three insert cases below.
+    const [{ data: existingDepts }, { data: existingRoles }] = await Promise.all([
+      supabase.from('user_departments').select('id, department_id, pairing_id').eq('user_id', userId),
+      supabase.from('user_profile_roles').select('id, role_id, pairing_id').eq('user_id', userId),
+    ]);
+    const existingPairs = (existingDepts || [])
+      .filter(d => d.pairing_id)
+      .flatMap(d => {
+        const matched = (existingRoles || []).filter(r => r.pairing_id === d.pairing_id);
+        return matched.map(r => ({ departmentId: d.department_id, roleId: r.role_id }));
       });
-      if (roleError) {
-        warnings.push({ field: 'Role', value: roleName, message: `Role could not be assigned: ${roleError.message}` });
-      } else {
-        additions.push({ field: 'Role', value: roleName });
-      }
-    };
+    const existingDeptIds = new Set((existingDepts || []).map(d => d.department_id));
+    const existingRoleIds = new Set((existingRoles || []).map(r => r.role_id));
 
-    // Department: when adding a paired dept+role (pairingId defined), always insert a new dept row —
-    // the new unique constraint (user_id, department_id, pairing_id) allows this.
-    // Only skip if this is a standalone dept-only addition and dept is already assigned.
-    if (departmentId) {
-      const isDeptStandaloneAlreadyAssigned = !pairingId && (await supabase
-        .from('user_departments').select('id').eq('user_id', userId).eq('department_id', departmentId).maybeSingle()).data;
-      if (isDeptStandaloneAlreadyAssigned) {
-        warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
+    if (departmentId && roleId) {
+      // Case a: paired dept+role — skip if this exact combo already exists
+      const pairExists = existingPairs.some(
+        p => p.departmentId === departmentId && p.roleId === roleId
+      );
+      if (pairExists) {
+        warnings.push({ field: 'Role', value: roleName, message: `"${departmentName} | ${roleName}" is already assigned — skipped` });
       } else {
-        const { data: allDepts } = await supabase.from('user_departments').select('id').eq('user_id', userId);
+        const pairingId = crypto.randomUUID();
         const { error: deptError } = await supabase.from('user_departments').insert({
           user_id: userId, department_id: departmentId,
-          is_primary: !allDepts || allDepts.length === 0,
+          is_primary: (existingDepts || []).length === 0,
           pairing_id: pairingId, assigned_by: userId
+        });
+        if (deptError) {
+          warnings.push({ field: 'Department', value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
+        } else {
+          additions.push({ field: 'Department', value: departmentName });
+        }
+        const { error: roleError } = await supabase.from('user_profile_roles').insert({
+          user_id: userId, role_id: roleId,
+          is_primary: (existingRoles || []).length === 0,
+          pairing_id: pairingId, assigned_by: userId
+        });
+        if (roleError) {
+          warnings.push({ field: 'Role', value: roleName, message: `Role could not be assigned: ${roleError.message}` });
+        } else {
+          additions.push({ field: 'Role', value: roleName });
+        }
+      }
+    } else if (departmentId) {
+      // Case b: dept-only — skip if dept already assigned
+      if (existingDeptIds.has(departmentId)) {
+        warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
+      } else {
+        const { error: deptError } = await supabase.from('user_departments').insert({
+          user_id: userId, department_id: departmentId,
+          is_primary: (existingDepts || []).length === 0,
+          pairing_id: null, assigned_by: userId
         });
         if (deptError) {
           warnings.push({ field: 'Department', value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
@@ -634,10 +649,23 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" not found — skipping assignment` });
     }
 
-    // Role: add independently using the same pairingId (mirrors handleSaveNewRow role section)
-    if (roleId) {
-      await assignRole(roleId, pairingId);
-    } else if (roleName) {
+    if (!departmentId && roleId) {
+      // Case c: role-only — skip if role already assigned
+      if (existingRoleIds.has(roleId)) {
+        warnings.push({ field: 'Role', value: roleName, message: `Role "${roleName}" is already assigned — skipped` });
+      } else {
+        const { error: roleError } = await supabase.from('user_profile_roles').insert({
+          user_id: userId, role_id: roleId,
+          is_primary: (existingRoles || []).length === 0,
+          pairing_id: null, assigned_by: userId
+        });
+        if (roleError) {
+          warnings.push({ field: 'Role', value: roleName, message: `Role could not be assigned: ${roleError.message}` });
+        } else {
+          additions.push({ field: 'Role', value: roleName });
+        }
+      }
+    } else if (!departmentId && roleName) {
       warnings.push({ field: 'Role', value: roleName, message: `Role "${roleName}" not found — skipping assignment` });
     }
 
@@ -723,81 +751,87 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             if (role) uniqueRolePairs.add(`${role}|||${dept}`);
           }
 
-          // Pass 0a: Ensure locations exist
-          for (const locName of uniqueLocations) {
-            const key = locName.toLowerCase();
-            if (!locationCache.has(key)) {
-              try {
-                const { data: newLoc, error } = await supabase
-                  .from('locations')
-                  .insert({ name: locName, status: 'Active' })
-                  .select('id')
-                  .single();
-                if (!error && newLoc) {
-                  locationCache.set(key, newLoc.id);
-                  debug.log('[ImportUsersDialog] Auto-created location:', locName);
-                } else if (error) {
-                  debug.error('[ImportUsersDialog] Failed to create location:', locName, error);
-                }
-              } catch (err) {
-                debug.error('[ImportUsersDialog] Exception creating location:', locName, err);
-              }
-            }
-          }
-
-          // Pass 0b: Ensure departments exist
-          for (const deptName of uniqueDepartments) {
-            const key = deptName.toLowerCase();
-            if (!departmentCache.has(key)) {
-              try {
-                const { data: newDept, error } = await supabase
-                  .from('departments')
-                  .insert({ name: deptName })
-                  .select('id')
-                  .single();
-                if (!error && newDept) {
-                  departmentCache.set(key, newDept.id);
-                  debug.log('[ImportUsersDialog] Auto-created department:', deptName);
-                } else if (error) {
-                  debug.error('[ImportUsersDialog] Failed to create department:', deptName, error);
-                }
-              } catch (err) {
-                debug.error('[ImportUsersDialog] Exception creating department:', deptName, err);
-              }
-            }
-          }
-
-          // Pass 0c: Ensure roles exist (needs departmentCache populated first)
-          for (const pair of uniqueRolePairs) {
-            const sep = pair.indexOf('|||');
-            const roleName = pair.slice(0, sep);
-            const deptName = pair.slice(sep + 3);
-            const roleKey = `${roleName.toLowerCase()}::${deptName.toLowerCase()}`;
-            if (!roleCache.has(roleKey)) {
-              const deptId = deptName ? (departmentCache.get(deptName.toLowerCase()) ?? null) : null;
-              try {
-                const { data: newRole, error } = await supabase
-                  .from('roles')
-                  .insert({ name: roleName, department_id: deptId, is_active: true })
-                  .select('role_id')
-                  .single();
-                if (!error && newRole) {
-                  roleCache.set(roleKey, newRole.role_id);
-                  debug.log('[ImportUsersDialog] Auto-created role:', roleName, deptName ? `(${deptName})` : '(general)');
-                } else if (error) {
-                  // Role may already exist from a prior import run — fall back to SELECT
-                  debug.log('[ImportUsersDialog] Role insert failed, fetching existing:', roleName, deptName, error.message);
-                  const q = supabase.from('roles').select('role_id').eq('name', roleName).eq('is_active', true);
-                  const { data: existing } = await (deptId ? q.eq('department_id', deptId) : q.is('department_id', null)).maybeSingle();
-                  if (existing) {
-                    roleCache.set(roleKey, existing.role_id);
-                    debug.log('[ImportUsersDialog] Found existing role:', roleName, deptName ? `(${deptName})` : '(general)');
-                  } else {
-                    debug.error('[ImportUsersDialog] Could not find or create role:', roleName, deptName);
+          // Pass 0a: Ensure locations exist (create mode only — update mode uses existing locations)
+          if (importMode === 'create') {
+            for (const locName of uniqueLocations) {
+              const key = locName.toLowerCase();
+              if (!locationCache.has(key)) {
+                try {
+                  const { data: newLoc, error } = await supabase
+                    .from('locations')
+                    .insert({ name: locName, status: 'Active' })
+                    .select('id')
+                    .single();
+                  if (!error && newLoc) {
+                    locationCache.set(key, newLoc.id);
+                    debug.log('[ImportUsersDialog] Auto-created location:', locName);
+                  } else if (error) {
+                    debug.error('[ImportUsersDialog] Failed to create location:', locName, error);
                   }
+                } catch (err) {
+                  debug.error('[ImportUsersDialog] Exception creating location:', locName, err);
                 }
-              } catch (err) {
-                debug.error('[ImportUsersDialog] Exception creating role:', roleName, err);
+              }
+            }
+          }
+
+          // Pass 0b: Ensure departments exist (create mode only — update mode uses existing departments)
+          if (importMode === 'create') {
+            for (const deptName of uniqueDepartments) {
+              const key = deptName.toLowerCase();
+              if (!departmentCache.has(key)) {
+                try {
+                  const { data: newDept, error } = await supabase
+                    .from('departments')
+                    .insert({ name: deptName })
+                    .select('id')
+                    .single();
+                  if (!error && newDept) {
+                    departmentCache.set(key, newDept.id);
+                    debug.log('[ImportUsersDialog] Auto-created department:', deptName);
+                  } else if (error) {
+                    debug.error('[ImportUsersDialog] Failed to create department:', deptName, error);
+                  }
+                } catch (err) {
+                  debug.error('[ImportUsersDialog] Exception creating department:', deptName, err);
+                }
+              }
+            }
+          }
+
+          // Pass 0c: Ensure roles exist (create mode only — update mode uses existing roles)
+          if (importMode === 'create') {
+            for (const pair of uniqueRolePairs) {
+              const sep = pair.indexOf('|||');
+              const roleName = pair.slice(0, sep);
+              const deptName = pair.slice(sep + 3);
+              const roleKey = `${roleName.toLowerCase()}::${deptName.toLowerCase()}`;
+              if (!roleCache.has(roleKey)) {
+                const deptId = deptName ? (departmentCache.get(deptName.toLowerCase()) ?? null) : null;
+                try {
+                  const { data: newRole, error } = await supabase
+                    .from('roles')
+                    .insert({ name: roleName, department_id: deptId, is_active: true })
+                    .select('role_id')
+                    .single();
+                  if (!error && newRole) {
+                    roleCache.set(roleKey, newRole.role_id);
+                    debug.log('[ImportUsersDialog] Auto-created role:', roleName, deptName ? `(${deptName})` : '(general)');
+                  } else if (error) {
+                    // Role may already exist from a prior import run — fall back to SELECT
+                    debug.log('[ImportUsersDialog] Role insert failed, fetching existing:', roleName, deptName, error.message);
+                    const q = supabase.from('roles').select('role_id').eq('name', roleName).eq('is_active', true);
+                    const { data: existing } = await (deptId ? q.eq('department_id', deptId) : q.is('department_id', null)).maybeSingle();
+                    if (existing) {
+                      roleCache.set(roleKey, existing.role_id);
+                      debug.log('[ImportUsersDialog] Found existing role:', roleName, deptName ? `(${deptName})` : '(general)');
+                    } else {
+                      debug.error('[ImportUsersDialog] Could not find or create role:', roleName, deptName);
+                    }
+                  }
+                } catch (err) {
+                  debug.error('[ImportUsersDialog] Exception creating role:', roleName, err);
+                }
               }
             }
           }

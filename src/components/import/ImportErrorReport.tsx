@@ -114,7 +114,7 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
             {infoItems.length > 0 ? (
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg">
                 <div className="text-2xl font-bold text-emerald-700">{infoItems.length}</div>
-                <div className="text-sm text-emerald-600">Additions</div>
+                <div className="text-sm text-emerald-600">Changes</div>
               </div>
             ) : (
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -137,7 +137,7 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
           {infoItems.length > 0 && (
             <div className="space-y-2">
               <h4 className="font-semibold text-sm text-emerald-800">
-                Additions by user ({Object.keys(additionsByUser).length} user{Object.keys(additionsByUser).length !== 1 ? 's' : ''}, {infoItems.length} change{infoItems.length !== 1 ? 's' : ''})
+                Changes by user ({Object.keys(additionsByUser).length} user{Object.keys(additionsByUser).length !== 1 ? 's' : ''}, {infoItems.length} change{infoItems.length !== 1 ? 's' : ''})
               </h4>
               <ScrollArea className={`border border-emerald-200 rounded-lg p-4 ${errors.length > 0 || realWarnings.length > 0 ? 'h-[200px]' : 'h-[300px]'}`}>
                 <div className="space-y-3">

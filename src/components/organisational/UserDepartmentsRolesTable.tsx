@@ -1,4 +1,4 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import debug from '../../utils/debug';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -103,6 +103,30 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
     },
     enabled: !!userId,
   });
+
+  // Local assignment tracker — kept in sync with userDepartments/userRoles but updated
+  // synchronously after each successful insert so duplicate checks are never stale.
+  const assignmentsRef = useRef({
+    pairs: [] as { departmentId: string; roleId: string }[],
+    deptIds: new Set<string>(),
+    roleIds: new Set<string>(),
+  });
+
+  // Sync the ref whenever React Query data refreshes
+  useEffect(() => {
+    const pairs = userDepartments
+      .filter(d => d.pairing_id)
+      .flatMap(d => {
+        const matched = userRoles.filter(r => r.pairing_id === d.pairing_id);
+        return matched.map(r => ({ departmentId: d.department_id, roleId: r.role_id }));
+      });
+    assignmentsRef.current = {
+      pairs,
+      deptIds: new Set(userDepartments.map(d => d.department_id)),
+      roleIds: new Set(userRoles.map(r => r.role_id)),
+    };
+    debug.log('UserDepartmentsRolesTable: assignmentsRef synced — pairs:', pairs.length, 'depts:', assignmentsRef.current.deptIds.size, 'roles:', assignmentsRef.current.roleIds.size);
+  }, [userDepartments, userRoles]);
 
   // Fetch all available roles
   const { data: allRoles = [] } = useQuery({
@@ -347,47 +371,55 @@ export const UserDepartmentsRolesTable = forwardRef<UserDepartmentsRolesTableRef
     }
 
     try {
-      // Generate pairing_id if both department and role are selected
-      const pairingId = (row.departmentId && row.roleId) ? crypto.randomUUID() : undefined;
-      debug.log('UserDepartmentsRolesTable: Generated pairingId:', pairingId);
-      
-      // Add department if selected.
-      // When adding a paired dept+role (pairingId defined), always insert a new dept row —
-      // the new unique constraint (user_id, department_id, pairing_id) allows this.
-      // Only skip if this is a standalone dept-only addition and dept is already assigned.
-      if (row.departmentId) {
-        const isDeptStandaloneAlreadyAssigned = !pairingId && userDepartments.some(dept => dept.department_id === row.departmentId);
-        debug.log('UserDepartmentsRolesTable: pairingId:', pairingId, 'isDeptStandaloneAlreadyAssigned:', isDeptStandaloneAlreadyAssigned);
-        if (!isDeptStandaloneAlreadyAssigned) {
-          const isPrimary = userDepartments.length === 0;
-          debug.log('UserDepartmentsRolesTable: Adding department with isPrimary:', isPrimary, 'pairingId:', pairingId);
-          await addDepartment({ 
-            userId, 
-            departmentId: row.departmentId, 
-            isPrimary,
-            pairingId,
-            assignedBy: user?.id
-          });
-          debug.log('UserDepartmentsRolesTable: Department addition completed');
-        } else {
-          debug.log('UserDepartmentsRolesTable: Standalone department already assigned, skipping');
+      // Read the current assignment state from the ref (always up-to-date,
+      // even if React Query hasn't re-rendered with fresh data yet).
+      debug.log('UserDepartmentsRolesTable: ✅ v-assignmentsRef handleSaveNewRow called');
+      const { pairs, deptIds, roleIds } = assignmentsRef.current;
+      debug.log('UserDepartmentsRolesTable: assignmentsRef — pairs:', pairs, 'deptIds:', [...deptIds], 'roleIds:', [...roleIds]);
+
+      if (row.departmentId && row.roleId) {
+        // Case a: paired dept+role — skip if this exact combo already exists
+        const pairExists = pairs.some(
+          p => p.departmentId === row.departmentId && p.roleId === row.roleId
+        );
+        debug.log('UserDepartmentsRolesTable: Paired add — pair already exists?', pairExists);
+        if (pairExists) {
+          toast.error('This department and role combination is already assigned');
+          return;
         }
-      }
-      
-      // Add role if selected and not already assigned
-      if (row.roleId) {
-        const isRoleAlreadyAssigned = userRoles.some(role => role.role_id === row.roleId);
-        debug.log('UserDepartmentsRolesTable: Role already assigned?', isRoleAlreadyAssigned);
-        debug.log('UserDepartmentsRolesTable: Checking roleId', row.roleId, 'against userRoles:', userRoles.map(r => r.role_id));
-        if (!isRoleAlreadyAssigned) {
-          debug.log('UserDepartmentsRolesTable: Adding role with roleId:', row.roleId);
-          await addRoleMutation.mutateAsync({ 
-            roleId: row.roleId,
-            pairingId
-          });
+        const pairingId = crypto.randomUUID();
+        const isPrimary = userDepartments.length === 0;
+        await addDepartment({ userId, departmentId: row.departmentId, isPrimary, pairingId, assignedBy: user?.id });
+        await addRoleMutation.mutateAsync({ roleId: row.roleId, pairingId });
+        // Update ref synchronously so subsequent adds in the same session see fresh state
+        assignmentsRef.current.pairs.push({ departmentId: row.departmentId, roleId: row.roleId });
+        assignmentsRef.current.deptIds.add(row.departmentId);
+        assignmentsRef.current.roleIds.add(row.roleId);
+
+      } else if (row.departmentId) {
+        // Case b: dept-only — skip if dept already assigned
+        const deptExists = deptIds.has(row.departmentId);
+        debug.log('UserDepartmentsRolesTable: Standalone dept — already assigned?', deptExists);
+        if (deptExists) {
+          toast.error('This department is already assigned');
+          return;
         }
+        const isPrimary = userDepartments.length === 0;
+        await addDepartment({ userId, departmentId: row.departmentId, isPrimary, pairingId: undefined, assignedBy: user?.id });
+        assignmentsRef.current.deptIds.add(row.departmentId);
+
+      } else if (row.roleId) {
+        // Case c: role-only — skip if role already assigned
+        const roleExists = roleIds.has(row.roleId);
+        debug.log('UserDepartmentsRolesTable: Standalone role — already assigned?', roleExists);
+        if (roleExists) {
+          toast.error('This role is already assigned');
+          return;
+        }
+        await addRoleMutation.mutateAsync({ roleId: row.roleId, pairingId: undefined });
+        assignmentsRef.current.roleIds.add(row.roleId);
       }
-      
+
       // Remove the new row after successful save
       setNewRows(prev => prev.filter((_, i) => i !== index));
       toast.success('Assignment saved successfully');

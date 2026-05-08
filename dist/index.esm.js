@@ -2093,6 +2093,7 @@ const ImportUsersDialog = ({ onImportStart }) => {
     ] })
   ] });
 };
+const firedJobIds = /* @__PURE__ */ new Set();
 const UserImportProgressBanner = ({
   job,
   onImportComplete,
@@ -2100,12 +2101,10 @@ const UserImportProgressBanner = ({
   onDismiss
 }) => {
   const [progress, setProgress] = useState({ processed: 0, total: job.totalRows, status: "pending" });
-  const [bannerState, setBannerState] = useState("running");
-  const [errorMessage, setErrorMessage] = useState(null);
   const cancelledRef = useRef(false);
-  const hasCompletedRef = useRef(false);
   const onImportCompleteRef = useRef(onImportComplete);
   const onImportErrorRef = useRef(onImportError);
+  const onDismissRef = useRef(onDismiss);
   const importModeRef = useRef(job.importMode);
   useEffect(() => {
     onImportCompleteRef.current = onImportComplete;
@@ -2113,6 +2112,9 @@ const UserImportProgressBanner = ({
   useEffect(() => {
     onImportErrorRef.current = onImportError;
   }, [onImportError]);
+  useEffect(() => {
+    onDismissRef.current = onDismiss;
+  }, [onDismiss]);
   useEffect(() => {
     importModeRef.current = job.importMode;
   }, [job.importMode]);
@@ -2123,7 +2125,6 @@ const UserImportProgressBanner = ({
   }, [supabase2]);
   useEffect(() => {
     cancelledRef.current = false;
-    hasCompletedRef.current = false;
     void (async () => {
       try {
         const result = await pollUserImportJob(
@@ -2135,36 +2136,33 @@ const UserImportProgressBanner = ({
           },
           () => cancelledRef.current
         );
-        if (cancelledRef.current || hasCompletedRef.current) return;
-        hasCompletedRef.current = true;
+        if (cancelledRef.current) return;
+        if (firedJobIds.has(job.jobId)) return;
+        firedJobIds.add(job.jobId);
         clearPersistedImportJob();
-        debug.log("[UserImportProgressBanner] job done", { successCount: result.successCount, errors: result.errors.length, failed: !!result.failureMessage });
-        if (result.failureMessage) {
-          setErrorMessage(result.failureMessage);
-          setBannerState("failed");
-          if (result.errors.length > 0) {
-            onImportErrorRef.current(result.errors, result.warnings, { success: result.successCount, total: result.total });
-          }
-          await onImportCompleteRef.current();
-          return;
-        }
-        setBannerState("done");
         const realWarnings = result.warnings.filter((w) => w.type !== "info");
         const infoItems = result.warnings.filter((w) => w.type === "info");
-        const shouldShowReport = result.errors.length > 0 || realWarnings.length > 0 || importModeRef.current === "update" && infoItems.length > 0;
-        if (shouldShowReport) {
-          onImportErrorRef.current(result.errors, result.warnings, { success: result.successCount, total: result.total });
-        }
-        await onImportCompleteRef.current();
+        const hasIssues = result.errors.length > 0 || realWarnings.length > 0 || result.failureMessage || importModeRef.current === "update" && infoItems.length > 0;
+        onImportErrorRef.current(
+          result.errors,
+          result.warnings,
+          { success: result.successCount, total: result.total }
+        );
+        void onImportCompleteRef.current();
+        onDismissRef.current();
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : String(err);
         if (errMsg === IMPORT_POLL_CANCELLED || cancelledRef.current) return;
-        debug.error("[UserImportProgressBanner] poll failed:", err);
+        if (firedJobIds.has(job.jobId)) return;
+        firedJobIds.add(job.jobId);
         clearPersistedImportJob();
-        if (!cancelledRef.current) {
-          setErrorMessage(errMsg || "Import job failed unexpectedly.");
-          setBannerState("failed");
-        }
+        onImportErrorRef.current(
+          [{ rowNumber: 0, identifier: "Import", error: errMsg }],
+          [],
+          { success: 0, total: job.totalRows }
+        );
+        void onImportCompleteRef.current();
+        onDismissRef.current();
       }
     })();
     return () => {
@@ -2172,66 +2170,31 @@ const UserImportProgressBanner = ({
     };
   }, [job.jobId, job.totalRows]);
   const pct = progress.total > 0 ? Math.round(progress.processed / progress.total * 100) : 0;
-  const isDone = bannerState === "done";
-  const isFailed = bannerState === "failed";
-  const isRunning = bannerState === "running";
-  return /* @__PURE__ */ jsxs(
-    "div",
-    {
-      className: `mx-0 mb-3 rounded-lg border px-4 py-2.5 flex items-center gap-3 text-sm ${isFailed ? "border-destructive/40 bg-destructive/5" : isDone ? "border-green-300 bg-green-50" : "border-primary/30 bg-primary/5"}`,
-      children: [
-        isDone && /* @__PURE__ */ jsx(CircleCheck, { className: "h-4 w-4 shrink-0 text-green-600" }),
-        isFailed && /* @__PURE__ */ jsx(CircleAlert, { className: "h-4 w-4 shrink-0 text-destructive" }),
-        isRunning && /* @__PURE__ */ jsx("div", { className: "h-4 w-4 shrink-0 rounded-full border-2 border-primary border-t-transparent animate-spin" }),
-        /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
-          isRunning && /* @__PURE__ */ jsxs(Fragment, { children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
-              /* @__PURE__ */ jsxs("span", { className: "font-medium text-foreground tabular-nums", children: [
-                "Importing users — ",
-                progress.processed,
-                " / ",
-                progress.total,
-                " rows"
-              ] }),
-              /* @__PURE__ */ jsxs("span", { className: "text-primary tabular-nums ml-4", children: [
-                pct,
-                "%"
-              ] })
-            ] }),
-            /* @__PURE__ */ jsx("div", { className: "h-1.5 rounded-full bg-primary/15 overflow-hidden", children: /* @__PURE__ */ jsx(
-              "div",
-              {
-                className: "h-full rounded-full bg-primary transition-all duration-500",
-                style: { width: `${pct}%` }
-              }
-            ) })
-          ] }),
-          isDone && /* @__PURE__ */ jsxs("span", { className: "font-medium text-green-800", children: [
-            "Import complete — ",
-            progress.processed,
-            " / ",
-            progress.total,
-            " rows processed"
-          ] }),
-          isFailed && /* @__PURE__ */ jsxs("span", { className: "font-medium text-destructive", children: [
-            "Import failed",
-            errorMessage ? `: ${errorMessage}` : ""
-          ] })
+  return /* @__PURE__ */ jsxs("div", { className: "mx-0 mb-3 rounded-lg border border-primary/30 bg-primary/5 px-4 py-2.5 flex items-center gap-3 text-sm", children: [
+    /* @__PURE__ */ jsx("div", { className: "h-4 w-4 shrink-0 rounded-full border-2 border-primary border-t-transparent animate-spin" }),
+    /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
+        /* @__PURE__ */ jsxs("span", { className: "font-medium text-foreground tabular-nums", children: [
+          "Importing users — ",
+          progress.processed,
+          " / ",
+          progress.total,
+          " rows"
         ] }),
-        (isDone || isFailed) && /* @__PURE__ */ jsx(
-          Button,
-          {
-            variant: "ghost",
-            size: "icon",
-            className: "h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground",
-            onClick: onDismiss,
-            "aria-label": "Dismiss",
-            children: /* @__PURE__ */ jsx(X, { className: "h-3.5 w-3.5" })
-          }
-        )
-      ]
-    }
-  );
+        /* @__PURE__ */ jsxs("span", { className: "text-primary tabular-nums ml-4", children: [
+          pct,
+          "%"
+        ] })
+      ] }),
+      /* @__PURE__ */ jsx("div", { className: "h-1.5 rounded-full bg-primary/15 overflow-hidden", children: /* @__PURE__ */ jsx(
+        "div",
+        {
+          className: "h-full rounded-full bg-primary transition-all duration-500",
+          style: { width: `${pct}%` }
+        }
+      ) })
+    ] })
+  ] });
 };
 const ImportErrorReport = ({
   errors,
@@ -2242,10 +2205,8 @@ const ImportErrorReport = ({
   onClose,
   importType
 }) => {
-  debug.log("[ImportErrorReport] received warnings:", warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
   const infoItems = warnings.filter((w) => w.type === "info");
   const realWarnings = warnings.filter((w) => w.type !== "info");
-  debug.log("[ImportErrorReport] split — infoItems:", infoItems.length, "realWarnings:", realWarnings.length);
   const additionsByUser = infoItems.reduce(
     (acc, item) => {
       if (!acc[item.identifier]) acc[item.identifier] = {};
@@ -2277,7 +2238,7 @@ const ImportErrorReport = ({
   return /* @__PURE__ */ jsx(Dialog, { open: isOpen, onOpenChange: onClose, children: /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-4xl max-h-[90vh]", children: [
     /* @__PURE__ */ jsxs(DialogHeader, { children: [
       /* @__PURE__ */ jsxs(DialogTitle, { className: "flex items-center gap-2", children: [
-        errors.length > 0 ? /* @__PURE__ */ jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }) : warnings.length > 0 ? /* @__PURE__ */ jsx(TriangleAlert, { className: "h-5 w-5 text-yellow-600" }) : /* @__PURE__ */ jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }),
+        errors.length > 0 ? /* @__PURE__ */ jsx(CircleAlert, { className: "h-5 w-5 text-destructive" }) : realWarnings.length > 0 ? /* @__PURE__ */ jsx(TriangleAlert, { className: "h-5 w-5 text-yellow-600" }) : /* @__PURE__ */ jsx(CircleCheck, { className: "h-5 w-5 text-green-600" }),
         "Import Report: ",
         importType
       ] }),

@@ -5,7 +5,7 @@ export interface ImportError {
     identifier: string;
     field?: string;
     error: string;
-    rawData?: any;
+    rawData?: Record<string, string>;
     type?: 'error' | 'warning' | 'info';
 }
 interface ImportErrorReportProps {

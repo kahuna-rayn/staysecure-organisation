@@ -5,14 +5,12 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Download, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import debug from '../../utils/debug';
-
 export interface ImportError {
   rowNumber: number;
   identifier: string; // email, name, or other identifying field
   field?: string;
   error: string;
-  rawData?: any;
+  rawData?: Record<string, string>;
   type?: 'error' | 'warning' | 'info';
 }
 
@@ -35,11 +33,8 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
   onClose,
   importType
 }) => {
-  // Split info (successful additions) from real warnings
-  debug.log('[ImportErrorReport] received warnings:', warnings.map(w => ({ type: w.type, field: w.field, identifier: w.identifier })));
   const infoItems = warnings.filter(w => w.type === 'info');
   const realWarnings = warnings.filter(w => w.type !== 'info');
-  debug.log('[ImportErrorReport] split — infoItems:', infoItems.length, 'realWarnings:', realWarnings.length);
 
   // Group info items by user (identifier) → then by row number, so each source row is attributed correctly
   const additionsByUser = infoItems.reduce<Record<string, Record<number, ImportError[]>>>(
@@ -84,10 +79,10 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
           <DialogTitle className="flex items-center gap-2">
             {errors.length > 0 ? (
               <AlertCircle className="h-5 w-5 text-destructive" />
-            ) : warnings.length > 0 ? (
+            ) : realWarnings.length > 0 ? (
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
             ) : (
-              <AlertCircle className="h-5 w-5 text-destructive" />
+              <CheckCircle2 className="h-5 w-5 text-green-600" />
             )}
             Import Report: {importType}
           </DialogTitle>

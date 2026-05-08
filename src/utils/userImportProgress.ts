@@ -22,6 +22,8 @@ export type ImportResult = {
   total: number;
   errors: ImportError[];
   warnings: ImportError[];
+  /** Set when the job ended in a failed/halted state rather than completed. */
+  failureMessage?: string;
 };
 
 const ADDITIONS_BLOCK = '\n__ADDITIONS__\n';
@@ -113,7 +115,32 @@ export async function pollUserImportJob(
       return { successCount: job.succeeded_rows ?? 0, total: job.total_rows ?? totalRows, errors, warnings };
     }
 
-    if (job.status === 'failed') throw new Error(job.last_error || 'Import job failed');
+    if (job.status === 'failed') {
+      // Fetch any rows that were individually failed so the report can show them.
+      const { data: failRows } = await supabase
+        .from('user_import_job_rows')
+        .select('row_index, row_payload, error_message')
+        .eq('job_id', jobId)
+        .eq('status', 'failed');
+
+      const errors: ImportError[] = (failRows || []).map((fr: any) => {
+        const row = fr.row_payload as Record<string, string>;
+        return {
+          rowNumber: (fr.row_index as number) + 2,
+          identifier: row['Email'] || row['email'] || 'Unknown',
+          error: fr.error_message || 'Failed',
+          rawData: row,
+        };
+      });
+
+      return {
+        successCount: job.succeeded_rows ?? 0,
+        total: job.total_rows ?? totalRows,
+        errors,
+        warnings: [],
+        failureMessage: job.last_error || 'Import job failed',
+      };
+    }
 
     await new Promise((r) => setTimeout(r, 2000));
   }

@@ -19,6 +19,8 @@ export type ImportResult = {
     total: number;
     errors: ImportError[];
     warnings: ImportError[];
+    /** Set when the job ended in a failed/halted state rather than completed. */
+    failureMessage?: string;
 };
 export declare function pollUserImportJob(supabase: SupabaseClient, jobId: string, totalRows: number, onProgress: (p: ImportProgress) => void, cancelled: () => boolean): Promise<ImportResult>;
 export declare function readPersistedImportJob(): PersistedImportJob | null;

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { X, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import debug from '../../utils/debug';
@@ -8,7 +8,6 @@ import {
   IMPORT_POLL_CANCELLED,
   pollUserImportJob,
   type ImportProgress,
-  type ImportResult,
   type PersistedImportJob,
 } from '../../utils/userImportProgress';
 import type { ImportError } from '../import/ImportErrorReport';
@@ -32,30 +31,16 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
   const [bannerState, setBannerState] = useState<BannerState>('running');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const cancelledRef = useRef(false);
+  // Store callbacks in refs so the polling effect never re-runs due to parent re-renders
+  // creating new inline function references.
+  const onImportCompleteRef = useRef(onImportComplete);
+  const onImportErrorRef = useRef(onImportError);
+  const importModeRef = useRef(job.importMode);
+  useEffect(() => { onImportCompleteRef.current = onImportComplete; }, [onImportComplete]);
+  useEffect(() => { onImportErrorRef.current = onImportError; }, [onImportError]);
+  useEffect(() => { importModeRef.current = job.importMode; }, [job.importMode]);
+
   const { supabaseClient: supabase } = useOrganisationContext();
-
-  const handleDone = useCallback(
-    async (result: ImportResult) => {
-      clearPersistedImportJob();
-      setBannerState('done');
-
-      debug.log('[UserImportProgressBanner] job done', { successCount: result.successCount, errors: result.errors.length });
-
-      const realWarnings = result.warnings.filter((w: any) => w.type !== 'info');
-      const infoItems = result.warnings.filter((w: any) => w.type === 'info');
-      const shouldShowReport =
-        result.errors.length > 0 ||
-        realWarnings.length > 0 ||
-        (job.importMode === 'update' && infoItems.length > 0);
-
-      if (shouldShowReport) {
-        onImportError(result.errors, result.warnings, { success: result.successCount, total: result.total });
-      }
-
-      await onImportComplete();
-    },
-    [job.importMode, onImportComplete, onImportError],
-  );
 
   useEffect(() => {
     cancelledRef.current = false;
@@ -71,15 +56,44 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
           },
           () => cancelledRef.current,
         );
-        if (!cancelledRef.current) {
-          await handleDone(result);
+        if (cancelledRef.current) return;
+
+        clearPersistedImportJob();
+
+        debug.log('[UserImportProgressBanner] job done', { successCount: result.successCount, errors: result.errors.length, failed: !!result.failureMessage });
+
+        if (result.failureMessage) {
+          // Job ended in a failed/halted state — show banner as failed and open report if there are row errors.
+          setErrorMessage(result.failureMessage);
+          setBannerState('failed');
+          if (result.errors.length > 0) {
+            onImportErrorRef.current(result.errors, result.warnings, { success: result.successCount, total: result.total });
+          }
+          await onImportCompleteRef.current();
+          return;
         }
-      } catch (err: any) {
-        if (err?.message === IMPORT_POLL_CANCELLED || cancelledRef.current) return;
+
+        setBannerState('done');
+
+        const realWarnings = result.warnings.filter((w) => w.type !== 'info');
+        const infoItems = result.warnings.filter((w) => w.type === 'info');
+        const shouldShowReport =
+          result.errors.length > 0 ||
+          realWarnings.length > 0 ||
+          (importModeRef.current === 'update' && infoItems.length > 0);
+
+        if (shouldShowReport) {
+          onImportErrorRef.current(result.errors, result.warnings, { success: result.successCount, total: result.total });
+        }
+
+        await onImportCompleteRef.current();
+      } catch (err: unknown) {
+        const errMsg = err instanceof Error ? err.message : String(err);
+        if (errMsg === IMPORT_POLL_CANCELLED || cancelledRef.current) return;
         debug.error('[UserImportProgressBanner] poll failed:', err);
         clearPersistedImportJob();
         if (!cancelledRef.current) {
-          setErrorMessage(err?.message || 'Import job failed unexpectedly.');
+          setErrorMessage(errMsg || 'Import job failed unexpectedly.');
           setBannerState('failed');
         }
       }
@@ -88,7 +102,7 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
     return () => {
       cancelledRef.current = true;
     };
-  }, [job.jobId, job.totalRows, supabase, handleDone]);
+  }, [job.jobId, job.totalRows, supabase]); // callbacks are intentionally read via refs
 
   const pct = progress.total > 0 ? Math.round((progress.processed / progress.total) * 100) : 0;
   const isDone = bannerState === 'done';
@@ -102,14 +116,14 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
           ? 'border-destructive/40 bg-destructive/5'
           : isDone
           ? 'border-green-300 bg-green-50'
-          : 'border-blue-200 bg-blue-50'
+          : 'border-primary/30 bg-primary/5'
       }`}
     >
       {/* Status icon */}
       {isDone && <CheckCircle2 className="h-4 w-4 shrink-0 text-green-600" />}
       {isFailed && <AlertCircle className="h-4 w-4 shrink-0 text-destructive" />}
       {isRunning && (
-        <div className="h-4 w-4 shrink-0 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" />
+        <div className="h-4 w-4 shrink-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       )}
 
       {/* Text + progress bar */}
@@ -117,14 +131,14 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
         {isRunning && (
           <>
             <div className="flex items-center justify-between mb-1">
-              <span className="font-medium text-blue-900 tabular-nums">
+              <span className="font-medium text-foreground tabular-nums">
                 Importing users — {progress.processed} / {progress.total} rows
               </span>
-              <span className="text-blue-700 tabular-nums ml-4">{pct}%</span>
+              <span className="text-primary tabular-nums ml-4">{pct}%</span>
             </div>
-            <div className="h-1.5 rounded-full bg-blue-100 overflow-hidden">
+            <div className="h-1.5 rounded-full bg-primary/15 overflow-hidden">
               <div
-                className="h-full rounded-full bg-blue-500 transition-all duration-500"
+                className="h-full rounded-full bg-primary transition-all duration-500"
                 style={{ width: `${pct}%` }}
               />
             </div>

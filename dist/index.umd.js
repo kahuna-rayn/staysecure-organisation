@@ -1720,7 +1720,25 @@
         }
         return { successCount: job.succeeded_rows ?? 0, total: job.total_rows ?? totalRows, errors, warnings };
       }
-      if (job.status === "failed") throw new Error(job.last_error || "Import job failed");
+      if (job.status === "failed") {
+        const { data: failRows } = await supabase.from("user_import_job_rows").select("row_index, row_payload, error_message").eq("job_id", jobId).eq("status", "failed");
+        const errors = (failRows || []).map((fr) => {
+          const row = fr.row_payload;
+          return {
+            rowNumber: fr.row_index + 2,
+            identifier: row["Email"] || row["email"] || "Unknown",
+            error: fr.error_message || "Failed",
+            rawData: row
+          };
+        });
+        return {
+          successCount: job.succeeded_rows ?? 0,
+          total: job.total_rows ?? totalRows,
+          errors,
+          warnings: [],
+          failureMessage: job.last_error || "Import job failed"
+        };
+      }
       await new Promise((r) => setTimeout(r, 2e3));
     }
     throw new Error("Import timed out after 2 hours.");
@@ -2043,22 +2061,19 @@
     const [bannerState, setBannerState] = React.useState("running");
     const [errorMessage, setErrorMessage] = React.useState(null);
     const cancelledRef = React.useRef(false);
+    const onImportCompleteRef = React.useRef(onImportComplete);
+    const onImportErrorRef = React.useRef(onImportError);
+    const importModeRef = React.useRef(job.importMode);
+    React.useEffect(() => {
+      onImportCompleteRef.current = onImportComplete;
+    }, [onImportComplete]);
+    React.useEffect(() => {
+      onImportErrorRef.current = onImportError;
+    }, [onImportError]);
+    React.useEffect(() => {
+      importModeRef.current = job.importMode;
+    }, [job.importMode]);
     const { supabaseClient: supabase } = useOrganisationContext();
-    const handleDone = React.useCallback(
-      async (result) => {
-        clearPersistedImportJob();
-        setBannerState("done");
-        debug.log("[UserImportProgressBanner] job done", { successCount: result.successCount, errors: result.errors.length });
-        const realWarnings = result.warnings.filter((w) => w.type !== "info");
-        const infoItems = result.warnings.filter((w) => w.type === "info");
-        const shouldShowReport = result.errors.length > 0 || realWarnings.length > 0 || job.importMode === "update" && infoItems.length > 0;
-        if (shouldShowReport) {
-          onImportError(result.errors, result.warnings, { success: result.successCount, total: result.total });
-        }
-        await onImportComplete();
-      },
-      [job.importMode, onImportComplete, onImportError]
-    );
     React.useEffect(() => {
       cancelledRef.current = false;
       void (async () => {
@@ -2072,15 +2087,33 @@
             },
             () => cancelledRef.current
           );
-          if (!cancelledRef.current) {
-            await handleDone(result);
+          if (cancelledRef.current) return;
+          clearPersistedImportJob();
+          debug.log("[UserImportProgressBanner] job done", { successCount: result.successCount, errors: result.errors.length, failed: !!result.failureMessage });
+          if (result.failureMessage) {
+            setErrorMessage(result.failureMessage);
+            setBannerState("failed");
+            if (result.errors.length > 0) {
+              onImportErrorRef.current(result.errors, result.warnings, { success: result.successCount, total: result.total });
+            }
+            await onImportCompleteRef.current();
+            return;
           }
+          setBannerState("done");
+          const realWarnings = result.warnings.filter((w) => w.type !== "info");
+          const infoItems = result.warnings.filter((w) => w.type === "info");
+          const shouldShowReport = result.errors.length > 0 || realWarnings.length > 0 || importModeRef.current === "update" && infoItems.length > 0;
+          if (shouldShowReport) {
+            onImportErrorRef.current(result.errors, result.warnings, { success: result.successCount, total: result.total });
+          }
+          await onImportCompleteRef.current();
         } catch (err) {
-          if ((err == null ? void 0 : err.message) === IMPORT_POLL_CANCELLED || cancelledRef.current) return;
+          const errMsg = err instanceof Error ? err.message : String(err);
+          if (errMsg === IMPORT_POLL_CANCELLED || cancelledRef.current) return;
           debug.error("[UserImportProgressBanner] poll failed:", err);
           clearPersistedImportJob();
           if (!cancelledRef.current) {
-            setErrorMessage((err == null ? void 0 : err.message) || "Import job failed unexpectedly.");
+            setErrorMessage(errMsg || "Import job failed unexpectedly.");
             setBannerState("failed");
           }
         }
@@ -2088,7 +2121,7 @@
       return () => {
         cancelledRef.current = true;
       };
-    }, [job.jobId, job.totalRows, supabase, handleDone]);
+    }, [job.jobId, job.totalRows, supabase]);
     const pct = progress2.total > 0 ? Math.round(progress2.processed / progress2.total * 100) : 0;
     const isDone = bannerState === "done";
     const isFailed = bannerState === "failed";
@@ -2096,30 +2129,30 @@
     return /* @__PURE__ */ jsxRuntime.jsxs(
       "div",
       {
-        className: `mx-0 mb-3 rounded-lg border px-4 py-2.5 flex items-center gap-3 text-sm ${isFailed ? "border-destructive/40 bg-destructive/5" : isDone ? "border-green-300 bg-green-50" : "border-blue-200 bg-blue-50"}`,
+        className: `mx-0 mb-3 rounded-lg border px-4 py-2.5 flex items-center gap-3 text-sm ${isFailed ? "border-destructive/40 bg-destructive/5" : isDone ? "border-green-300 bg-green-50" : "border-primary/30 bg-primary/5"}`,
         children: [
           isDone && /* @__PURE__ */ jsxRuntime.jsx(CircleCheck, { className: "h-4 w-4 shrink-0 text-green-600" }),
           isFailed && /* @__PURE__ */ jsxRuntime.jsx(CircleAlert, { className: "h-4 w-4 shrink-0 text-destructive" }),
-          isRunning && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-4 w-4 shrink-0 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" }),
+          isRunning && /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-4 w-4 shrink-0 rounded-full border-2 border-primary border-t-transparent animate-spin" }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex-1 min-w-0", children: [
             isRunning && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between mb-1", children: [
-                /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "font-medium text-blue-900 tabular-nums", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "font-medium text-foreground tabular-nums", children: [
                   "Importing users — ",
                   progress2.processed,
                   " / ",
                   progress2.total,
                   " rows"
                 ] }),
-                /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-blue-700 tabular-nums ml-4", children: [
+                /* @__PURE__ */ jsxRuntime.jsxs("span", { className: "text-primary tabular-nums ml-4", children: [
                   pct,
                   "%"
                 ] })
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-1.5 rounded-full bg-blue-100 overflow-hidden", children: /* @__PURE__ */ jsxRuntime.jsx(
+              /* @__PURE__ */ jsxRuntime.jsx("div", { className: "h-1.5 rounded-full bg-primary/15 overflow-hidden", children: /* @__PURE__ */ jsxRuntime.jsx(
                 "div",
                 {
-                  className: "h-full rounded-full bg-blue-500 transition-all duration-500",
+                  className: "h-full rounded-full bg-primary transition-all duration-500",
                   style: { width: `${pct}%` }
                 }
               ) })

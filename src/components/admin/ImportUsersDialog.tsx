@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import debug from '../../utils/debug';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -9,513 +9,130 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { getCurrentClientId } from '@/integrations/supabase/client';
-import { ImportError } from '../import/ImportErrorReport';
 import { useOrganisationContext } from '@/context/OrganisationContext';
-import type { SupabaseClient } from '@supabase/supabase-js';
-
-const USER_IMPORT_JOB_STORAGE_KEY = 'staysecure:user-import-active-job';
-const IMPORT_POLL_CANCELLED = 'IMPORT_POLL_CANCELLED';
-
-type PersistedImportJob = {
-  jobId: string;
-  totalRows: number;
-  importMode: 'create' | 'update';
-  activationEmailsRequested: boolean;
-};
-
-const ADDITIONS_BLOCK = '\n__ADDITIONS__\n';
-
-function parseImportJobRowMessage(msg: string | null): {
-  warningPart: string;
-  additions: { field: string; value: string }[];
-} {
-  if (!msg) return { warningPart: '', additions: [] };
-  const idx = msg.indexOf(ADDITIONS_BLOCK);
-  if (idx === -1) return { warningPart: msg, additions: [] };
-  const warningPart = msg.slice(0, idx).trim();
-  try {
-    const parsed = JSON.parse(msg.slice(idx + ADDITIONS_BLOCK.length)) as { field: string; value: string }[];
-    return { warningPart, additions: Array.isArray(parsed) ? parsed : [] };
-  } catch {
-    return { warningPart: msg, additions: [] };
-  }
-}
-
-async function pollUserImportJob(
-  supabase: SupabaseClient,
-  jobId: string,
-  totalRows: number,
-  onProgress: (p: { processed: number; total: number; status: string }) => void,
-  cancelled: () => boolean,
-): Promise<{ successCount: number; total: number; errors: ImportError[]; warnings: ImportError[] }> {
-  const deadline = Date.now() + 2 * 3600 * 1000;
-
-  while (Date.now() < deadline) {
-    if (cancelled()) {
-      throw new Error(IMPORT_POLL_CANCELLED);
-    }
-
-    const { data: job, error: jobErr } = await supabase
-      .from('user_import_jobs')
-      .select('*')
-      .eq('id', jobId)
-      .maybeSingle();
-
-    if (jobErr) {
-      throw new Error(jobErr.message);
-    }
-    if (!job) {
-      await new Promise((r) => setTimeout(r, 2000));
-      continue;
-    }
-
-    onProgress({
-      processed: job.processed_rows ?? 0,
-      total: job.total_rows ?? totalRows,
-      status: job.status,
-    });
-
-    if (job.status === 'completed') {
-      const { data: failRows } = await supabase
-        .from('user_import_job_rows')
-        .select('row_index, row_payload, error_message')
-        .eq('job_id', jobId)
-        .eq('status', 'failed');
-
-      const { data: warnRows } = await supabase
-        .from('user_import_job_rows')
-        .select('row_index, row_payload, error_message')
-        .eq('job_id', jobId)
-        .eq('status', 'succeeded')
-        .not('error_message', 'is', null);
-
-      const errors: ImportError[] = (failRows || []).map((fr: any) => {
-        const row = fr.row_payload as Record<string, string>;
-        const email = row['Email'] || row['email'] || 'Unknown';
-        return {
-          rowNumber: (fr.row_index as number) + 2,
-          identifier: email,
-          error: fr.error_message || 'Failed',
-          rawData: row,
-        };
-      });
-
-      const warnings: ImportError[] = [];
-      for (const wr of warnRows || []) {
-        const row = wr.row_payload as Record<string, string>;
-        const email = row['Email'] || row['email'] || 'Unknown';
-        const rowNumber = (wr.row_index as number) + 2;
-        const { warningPart, additions } = parseImportJobRowMessage(wr.error_message as string | null);
-        if (warningPart) {
-          warnings.push({
-            rowNumber,
-            identifier: email,
-            field: 'Assignment',
-            error: warningPart,
-            rawData: row,
-          });
-        }
-        for (const a of additions) {
-          warnings.push({
-            rowNumber,
-            identifier: email,
-            field: a.field,
-            error: a.value,
-            type: 'info',
-            rawData: row,
-          });
-        }
-      }
-
-      const successCount = job.succeeded_rows ?? 0;
-      return { successCount, total: job.total_rows ?? totalRows, errors, warnings };
-    }
-
-    if (job.status === 'failed') {
-      throw new Error(job.last_error || 'Import job failed');
-    }
-
-    await new Promise((r) => setTimeout(r, 2000));
-  }
-
-  throw new Error('Import timed out after 2 hours. Check User Management and the import job table.');
-}
-
-function readPersistedImportJob(): PersistedImportJob | null {
-  if (typeof sessionStorage === 'undefined') return null;
-  const raw = sessionStorage.getItem(USER_IMPORT_JOB_STORAGE_KEY);
-  if (!raw) return null;
-  try {
-    const p = JSON.parse(raw) as PersistedImportJob;
-    if (!p.jobId || typeof p.totalRows !== 'number') {
-      sessionStorage.removeItem(USER_IMPORT_JOB_STORAGE_KEY);
-      return null;
-    }
-    return p;
-  } catch {
-    sessionStorage.removeItem(USER_IMPORT_JOB_STORAGE_KEY);
-    return null;
-  }
-}
-
-function persistImportJob(p: PersistedImportJob): void {
-  if (typeof sessionStorage === 'undefined') return;
-  sessionStorage.setItem(USER_IMPORT_JOB_STORAGE_KEY, JSON.stringify(p));
-}
-
-function clearPersistedImportJob(): void {
-  if (typeof sessionStorage === 'undefined') return;
-  sessionStorage.removeItem(USER_IMPORT_JOB_STORAGE_KEY);
-}
-
-/** Prevents duplicate resume polling (e.g. Strict Mode remount clears this in cleanup). */
-const importResumeJobs = new Set<string>();
-
-type CloseBlockerEvent = { preventDefault(): void };
+import { persistImportJob, type PersistedImportJob } from '../../utils/userImportProgress';
 
 interface ImportUsersDialogProps {
-  onImportComplete?: () => Promise<void>;
-  onImportError?: (errors: ImportError[], warnings: ImportError[], stats: { success: number; total: number }) => void;
+  onImportStart?: (job: PersistedImportJob) => void;
 }
 
-
-const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete, onImportError }) => {
-  // Get supabaseClient from context (provided by consuming app via OrganisationProvider)
-  // DO NOT import supabase from '@/integrations/supabase/client' - it's a stub
+const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportStart }) => {
   const { supabaseClient: supabase } = useOrganisationContext();
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [sendActivationEmails, setSendActivationEmails] = useState(false);
   const [importMode, setImportMode] = useState<'create' | 'update'>('create');
-  const [bulkProgress, setBulkProgress] = useState<{ processed: number; total: number; status: string } | null>(null);
-  const resumeCancelledRef = useRef(false);
-  const completeImportDialogRef = useRef<
-    | ((
-        successCount: number,
-        total: number,
-        errors: ImportError[],
-        warnings: ImportError[],
-        activationEmailsRequested: boolean,
-        mode: 'create' | 'update',
-      ) => Promise<void>)
-    | null
-  >(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
     if (file) {
       if (!file.name.endsWith('.csv') && file.type !== 'text/csv') {
         toast({
-          title: "Invalid file type",
-          description: "Please upload a CSV file (.csv)",
-          variant: "destructive",
+          title: 'Invalid file type',
+          description: 'Please upload a CSV file (.csv)',
+          variant: 'destructive',
         });
         return;
       }
-      
       setUploadedFile(file);
-      toast({
-        title: "File uploaded",
-        description: `${file.name} is ready for import`,
-      });
+      toast({ title: 'File uploaded', description: `${file.name} is ready for import` });
     }
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'text/csv': ['.csv']
-    },
-    multiple: false
+    accept: { 'text/csv': ['.csv'] },
+    multiple: false,
   });
 
-    const generateSampleCSV = () => {
+  const generateSampleCSV = () => {
     const csvContent = `"Email","Full Name","First Name","Last Name","Phone","Employee ID","Access Level","Location","Department","Role","Manager"
 "john.doe@company.com","John Doe","John","Doe","+65-555-0123","EMP-2024-001","User","Main Office","Engineering","Software Engineer","jane.smith@company.com"
 "jane.smith@company.com","Jane Smith","Jane","Smith","+65-555-0124","EMP-2024-002","Admin","Branch Office","Human Resources","HR Manager",""`;
-    
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', 'user_import_template.csv');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'user_import_template.csv';
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
-
-  const completeImportDialog = async (
-    successCount: number,
-    total: number,
-    errors: ImportError[],
-    warnings: ImportError[],
-    activationEmailsRequested: boolean,
-    mode: 'create' | 'update',
-  ) => {
-    clearPersistedImportJob();
-    setUploadedFile(null);
-    setSendActivationEmails(false);
-    setIsProcessing(false);
-    setBulkProgress(null);
-    setIsOpen(false);
-
-    debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map(w => ({ type: (w as any).type, field: w.field, identifier: w.identifier })));
-    const realWarnings = warnings.filter((w: any) => w.type !== 'info');
-    const infoItems = warnings.filter((w: any) => w.type === 'info');
-    debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
-    const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || (mode === 'update' && infoItems.length > 0);
-
-    if (shouldShowReport && onImportError) {
-      setTimeout(() => {
-        onImportError(errors, warnings, { success: successCount, total });
-      }, 300);
-
-      if (errors.length > 0 && realWarnings.length > 0) {
-        toast({
-          title: "Import completed with errors and warnings",
-          description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
-          variant: "destructive",
-        });
-      } else if (errors.length > 0) {
-        toast({
-          title: "Import completed with errors",
-          description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
-          variant: "destructive",
-        });
-      } else if (realWarnings.length > 0) {
-        toast({
-          title: "Import completed with warnings",
-          description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
-          variant: "default",
-        });
-      } else if (mode === 'update' && infoItems.length > 0) {
-        toast({
-          title: "Update completed",
-          description: `${successCount} users updated. Opening additions report...`,
-        });
-      }
-    } else {
-      toast({
-        title: "Import completed successfully",
-        description: mode === 'update'
-          ? `All ${successCount} users updated successfully.`
-          : activationEmailsRequested
-            ? `All ${successCount} users imported successfully. Activation emails were sent (one per new user).`
-            : `All ${successCount} users imported successfully. No activation emails were sent — use "Send Activation Emails" on User Management when you're ready.`,
-      });
-    }
-
-    if (onImportComplete) {
-      await onImportComplete();
-    }
-  };
-
-  completeImportDialogRef.current = completeImportDialog;
-
-  const runBackgroundImport = async (
-    csvText: string,
-    activationEmailsRequested: boolean,
-    fileName: string,
-    mode: 'create' | 'update'
-  ): Promise<{ successCount: number; total: number; errors: ImportError[]; warnings: ImportError[] }> => {
-    const clientId = getCurrentClientId();
-    const clientPath = clientId ? `/${clientId}` : '';
-
-    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
-    if (sessionError || !sessionData?.session?.access_token) {
-      throw new Error('Unable to determine current session. Please refresh and try again.');
-    }
-
-    const { data, error } = await supabase.functions.invoke<{
-      ok?: boolean;
-      job_id?: string;
-      total_rows?: number;
-      error?: string;
-    }>('user-import-submit', {
-      body: {
-        csv_text: csvText,
-        original_filename: fileName,
-        options: {
-          import_mode: mode,
-          send_activation_email: activationEmailsRequested,
-          client_path: clientPath,
-        },
-      },
-    });
-
-    if (error) {
-      throw new Error(error.message || 'Failed to start background import');
-    }
-    if (!data?.ok || !data.job_id) {
-      throw new Error(data?.error || 'Failed to start background import');
-    }
-
-    const jobId = data.job_id;
-    const totalRows = data.total_rows ?? 0;
-    persistImportJob({
-      jobId,
-      totalRows,
-      importMode: mode,
-      activationEmailsRequested,
-    });
-    setBulkProgress({ processed: 0, total: totalRows, status: 'pending' });
-
-    return pollUserImportJob(supabase, jobId, totalRows, setBulkProgress, () => false);
-  };
-
   const handleImport = async () => {
     if (!uploadedFile) {
-      toast({
-        title: "No file selected",
-        description: "Please upload a file first",
-        variant: "destructive",
-      });
+      toast({ title: 'No file selected', description: 'Please upload a file first', variant: 'destructive' });
       return;
     }
 
-    setIsProcessing(true);
-    setBulkProgress(null);
-
+    setIsSubmitting(true);
     try {
-      const text = await uploadedFile.text();
+      const csvText = await uploadedFile.text();
+      const clientId = getCurrentClientId();
+      const clientPath = clientId ? `/${clientId}` : '';
       const activationEmailsRequested = sendActivationEmails;
+      const mode = importMode;
 
-      const result = await runBackgroundImport(
-        text,
-        activationEmailsRequested,
-        uploadedFile.name,
-        importMode
-      );
-      await completeImportDialog(
-        result.successCount,
-        result.total,
-        result.errors,
-        result.warnings,
-        activationEmailsRequested,
-        importMode
-      );
-    } catch (bulkErr: any) {
-      debug.error('[ImportUsersDialog] Background import failed:', bulkErr);
-      const cancelledPoll = bulkErr?.message === IMPORT_POLL_CANCELLED;
-      if (!cancelledPoll) {
-        clearPersistedImportJob();
-        toast({
-          title: 'Background import failed',
-          description: bulkErr?.message || 'Try again or use a smaller file.',
-          variant: 'destructive',
-        });
-      }
-      setIsProcessing(false);
-      setBulkProgress(null);
-    }
-  };
-
-  useEffect(() => {
-    resumeCancelledRef.current = false;
-    const persisted = readPersistedImportJob();
-    if (!persisted) {
-      return;
-    }
-
-    if (importResumeJobs.has(persisted.jobId)) {
-      return;
-    }
-    importResumeJobs.add(persisted.jobId);
-
-    void (async () => {
-      try {
-        const { data: job, error } = await supabase
-          .from('user_import_jobs')
-          .select('id,status,processed_rows,total_rows')
-          .eq('id', persisted.jobId)
-          .maybeSingle();
-
-        if (resumeCancelledRef.current) return;
-
-        if (error || !job) {
-          clearPersistedImportJob();
-          return;
-        }
-
-        if (job.status === 'completed' || job.status === 'failed') {
-          clearPersistedImportJob();
-          return;
-        }
-
-        setIsOpen(true);
-        setIsProcessing(true);
-        setImportMode(persisted.importMode);
-        setSendActivationEmails(persisted.activationEmailsRequested);
-        setUploadedFile(null);
-        setBulkProgress({
-          processed: job.processed_rows ?? 0,
-          total: job.total_rows ?? persisted.totalRows,
-          status: job.status,
-        });
-
-        const result = await pollUserImportJob(
-          supabase,
-          persisted.jobId,
-          persisted.totalRows,
-          setBulkProgress,
-          () => resumeCancelledRef.current,
-        );
-
-        if (resumeCancelledRef.current) return;
-
-        clearPersistedImportJob();
-        await completeImportDialogRef.current?.(
-          result.successCount,
-          result.total,
-          result.errors,
-          result.warnings,
-          persisted.activationEmailsRequested,
-          persisted.importMode,
-        );
-      } catch (e: any) {
-        if (e?.message === IMPORT_POLL_CANCELLED) {
-          return;
-        }
-        clearPersistedImportJob();
-        if (!resumeCancelledRef.current) {
-          debug.error('[ImportUsersDialog] Resume import failed:', e);
-          toast({
-            title: 'Import status could not be restored',
-            description:
-              e?.message ||
-              'The job may still be running in the background. Check User Management or try opening this dialog again.',
-            variant: 'destructive',
-          });
-          setIsProcessing(false);
-          setBulkProgress(null);
-        }
-      } finally {
-        importResumeJobs.delete(persisted.jobId);
-      }
-    })();
-
-    return () => {
-      resumeCancelledRef.current = true;
-      importResumeJobs.delete(persisted.jobId);
-    };
-  }, [supabase]);
-
-  const handleDialogClose = (open: boolean) => {
-    if (!open && isProcessing) {
-      toast({
-        title: 'Import in progress',
-        description: 'Wait for the server import to finish, or refresh the page and we will reconnect to the active job.',
+      const { data, error } = await supabase.functions.invoke<{
+        ok?: boolean;
+        job_id?: string;
+        total_rows?: number;
+        error?: string;
+      }>('user-import-submit', {
+        body: {
+          csv_text: csvText,
+          original_filename: uploadedFile.name,
+          options: {
+            import_mode: mode,
+            send_activation_email: activationEmailsRequested,
+            client_path: clientPath,
+          },
+        },
       });
-      return;
-    }
-    if (!open && !isProcessing) {
+
+      if (error) throw new Error(error.message || 'Failed to start background import');
+      if (!data?.ok || !data.job_id) throw new Error(data?.error || 'Failed to start background import');
+
+      const job: PersistedImportJob = {
+        jobId: data.job_id,
+        totalRows: data.total_rows ?? 0,
+        importMode: mode,
+        activationEmailsRequested,
+      };
+
+      persistImportJob(job);
+
+      debug.log('[ImportUsersDialog] job started', job);
+
+      // Notify parent and close immediately — progress tracked by UserImportProgressBanner
+      onImportStart?.(job);
       setUploadedFile(null);
       setSendActivationEmails(false);
       setImportMode('create');
-      setBulkProgress(null);
+      setIsOpen(false);
+
+      toast({
+        title: 'Import started',
+        description: `Processing ${job.totalRows} rows in the background. Progress is shown below the page header.`,
+      });
+    } catch (err: any) {
+      debug.error('[ImportUsersDialog] submit failed:', err);
+      toast({
+        title: 'Import failed to start',
+        description: err?.message || 'Try again or use a smaller file.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDialogClose = (open: boolean) => {
+    if (!open) {
+      setUploadedFile(null);
+      setSendActivationEmails(false);
+      setImportMode('create');
     }
     setIsOpen(open);
   };
@@ -527,31 +144,23 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           <Upload className="h-4 w-4 mr-2" />
         </Button>
       </DialogTrigger>
-      <DialogContent
-        className="max-w-3xl max-h-[90vh] overflow-y-auto"
-        onPointerDownOutside={(e: CloseBlockerEvent) => {
-          if (isProcessing) e.preventDefault();
-        }}
-        onEscapeKeyDown={(e: CloseBlockerEvent) => {
-          if (isProcessing) e.preventDefault();
-        }}
-      >
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{importMode === 'update' ? 'Update Existing Users' : 'Import Users'}</DialogTitle>
           <DialogDescription>
             {importMode === 'update'
-              ? 'Server-side background import (safe for large CSVs). Rows match users by email and update profile, locations, departments, and roles. Emails with no existing user create a new account; "Send activation emails" applies to those new users. If you reload this tab, progress reconnects automatically for the same browser session.'
-              : 'CSV import for new users runs on the server in the background (safe for large files). You can reload this tab—progress reconnects automatically for this session—or watch counts here while the dialog stays open. Locations, departments, and roles are created automatically if missing.'}
+              ? 'Server-side background import (safe for large CSVs). Rows match users by email and update profile, locations, departments, and roles. Emails with no existing user create a new account; "Send activation emails" applies to those new users. A progress bar appears on the page once the job starts.'
+              : 'CSV import for new users runs on the server in the background (safe for large files). A progress bar appears on the page once the job starts. Locations, departments, and roles are created automatically if missing.'}
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6">
           {/* Mode toggle */}
           <div className="flex rounded-lg border overflow-hidden">
             <button
               type="button"
               onClick={() => { setImportMode('create'); setUploadedFile(null); }}
-              disabled={isProcessing}
+              disabled={isSubmitting}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 importMode === 'create'
                   ? 'bg-primary text-primary-foreground'
@@ -563,7 +172,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             <button
               type="button"
               onClick={() => { setImportMode('update'); setUploadedFile(null); setSendActivationEmails(false); }}
-              disabled={isProcessing}
+              disabled={isSubmitting}
               className={`flex-1 py-2 text-sm font-medium transition-colors ${
                 importMode === 'update'
                   ? 'bg-primary text-primary-foreground'
@@ -587,21 +196,18 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
             >
               <input {...getInputProps()} />
               <Upload className="h-12 w-12 mx-auto mb-4 text-gray-400" />
-              
               {uploadedFile ? (
                 <div>
                   <p className="text-lg font-medium text-green-700">File Ready for Import</p>
                   <p className="text-sm text-green-600 mt-1">{uploadedFile.name}</p>
-                  <p className="text-xs text-gray-500 mt-2">
-                    Click to select a different file or drop a new one here
-                  </p>
+                  <p className="text-xs text-gray-500 mt-2">Click to select a different file or drop a new one here</p>
                 </div>
               ) : isDragActive ? (
                 <p className="text-lg font-medium text-blue-700">Drop your user file here</p>
               ) : (
                 <div>
                   <p className="text-lg font-medium">Drag and drop your user file here, or browse</p>
-                        <p className="text-sm text-gray-500 mt-1">Supports CSV files (.csv)</p>
+                  <p className="text-sm text-gray-500 mt-1">Supports CSV files (.csv)</p>
                 </div>
               )}
             </div>
@@ -613,7 +219,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                     id="send-activation-emails"
                     checked={sendActivationEmails}
                     onCheckedChange={(checked: boolean | 'indeterminate') => setSendActivationEmails(checked === true)}
-                    disabled={isProcessing}
+                    disabled={isSubmitting}
                     className="mt-1"
                   />
                   <div>
@@ -625,34 +231,18 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                     </p>
                   </div>
                 </div>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                  <div className="min-w-[200px] flex-1">
-                    {(bulkProgress || isProcessing) && (
-                      <p className="text-sm font-semibold text-foreground sm:text-base tabular-nums">
-                        Server import:{' '}
-                        {bulkProgress
-                          ? `${bulkProgress.processed} / ${bulkProgress.total} rows`
-                          : 'starting…'}{' '}
-                        {bulkProgress ? (
-                          <>
-                            · <span className="capitalize">{bulkProgress.status}</span>
-                          </>
-                        ) : null}
-                      </p>
+                <div className="flex justify-end gap-3">
+                  <Button onClick={handleImport} disabled={isSubmitting} className="flex items-center gap-2">
+                    {isSubmitting ? (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                    ) : (
+                      <Upload className="h-4 w-4" />
                     )}
-                  </div>
-                  <div className="flex shrink-0 gap-3">
-                    <Button onClick={handleImport} disabled={isProcessing} className="flex items-center gap-2">
-                      {isProcessing ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
-                      ) : (
-                        <Upload className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <Button variant="outline" onClick={() => setUploadedFile(null)} disabled={isProcessing}>
-                      X
-                    </Button>
-                  </div>
+                    {isSubmitting ? 'Starting…' : 'Start Import'}
+                  </Button>
+                  <Button variant="outline" onClick={() => setUploadedFile(null)} disabled={isSubmitting}>
+                    Clear
+                  </Button>
                 </div>
               </div>
             )}
@@ -661,7 +251,6 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <h4 className="text-sm font-medium text-yellow-800 mb-2">User Import Template</h4>
             <p className="text-sm text-yellow-700 mb-3">Download a template for importing users with sample data.</p>
-            
             <div className="space-y-2">
               <div className="flex items-center justify-between p-2 bg-white rounded border">
                 <div className="flex items-center gap-2">
@@ -683,9 +272,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                 ? ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Location', 'Department', 'Role', 'Manager']
                 : ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager']
               ).map((column) => (
-                <Badge key={column} variant="outline" className="text-xs">
-                  {column}
-                </Badge>
+                <Badge key={column} variant="outline" className="text-xs">{column}</Badge>
               ))}
             </div>
             {importMode === 'update' ? (

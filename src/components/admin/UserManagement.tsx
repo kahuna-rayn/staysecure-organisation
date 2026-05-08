@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useUserProfiles } from '@/hooks/useUserProfiles';
 import { useUserManagement } from '@/hooks/useUserManagement';
 import { useUserRole } from '@/hooks/useUserRole';
@@ -6,9 +6,10 @@ import { useViewPreference } from '@/hooks/useViewPreference';
 import { handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { LayoutGrid, List, Users, Search, Mail } from 'lucide-react';
+import { LayoutGrid, List, Users, Search, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useOrganisationContext } from '../../context/OrganisationContext';
 import { DeleteUserDialog } from '@/components/ui/delete-user-dialog';
 import { useToast } from '@/hooks/use-toast';
@@ -26,35 +27,53 @@ import UserList from './UserList';
 import UserTable from './UserTable';
 import CreateUserDialog from './CreateUserDialog';
 import ImportUsersDialog from './ImportUsersDialog';
+import UserImportProgressBanner from './UserImportProgressBanner';
 import { ImportErrorReport, ImportError } from '../import/ImportErrorReport';
+import { readPersistedImportJob, clearPersistedImportJob, type PersistedImportJob } from '../../utils/userImportProgress';
 import debug from '../../utils/debug';
 
+const PAGE_SIZE_STORAGE_KEY = 'staysecure:user-management-page-size';
+const VALID_PAGE_SIZES = [50, 100, 200] as const;
+type PageSize = (typeof VALID_PAGE_SIZES)[number];
+
+function readStoredPageSize(): PageSize {
+  try {
+    const raw = localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
+    const n = Number(raw);
+    return (VALID_PAGE_SIZES as readonly number[]).includes(n) ? (n as PageSize) : 50;
+  } catch {
+    return 50;
+  }
+}
 
 /**
  * User Management Component
- * 
+ *
  * Pattern: Gets supabaseClient from OrganisationContext and passes it to handleCreateUser/handleDeleteUser
  * This follows the same pattern as the auth module - client is provided via context, not imported from stub
  */
 const UserManagement: React.FC = () => {
-  // Get supabaseClient from context (provided by consuming app via OrganisationProvider)
-  // DO NOT import supabase from '@/integrations/supabase/client' - it's a stub
   const { supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
   const { isSuperAdmin } = useUserRole();
   const { toast } = useToast();
-  
+
   // Filter out super_admin users unless current user is also super_admin
-  // super_admin is an internal role, not client-facing
-  const visibleProfiles = isSuperAdmin 
-    ? profiles 
-    : profiles.filter(p => p.access_level !== 'super_admin');
-  
+  const visibleProfiles = isSuperAdmin
+    ? profiles
+    : profiles.filter((p) => p.access_level !== 'super_admin');
+
   const [viewMode, setViewMode] = useViewPreference('userManagement', 'cards');
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Filter by search term
-  const filteredProfiles = visibleProfiles.filter(p => {
+
+  // --- Pagination ---
+  const [pageSize, setPageSize] = useState<PageSize>(readStoredPageSize);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Reset to page 1 when search or pageSize changes
+  useEffect(() => { setCurrentPage(1); }, [searchTerm, pageSize]);
+
+  const filteredProfiles = visibleProfiles.filter((p) => {
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return (
@@ -64,18 +83,42 @@ const UserManagement: React.FC = () => {
       p.status?.toLowerCase().includes(search)
     );
   });
+
+  const totalPages = Math.max(1, Math.ceil(filteredProfiles.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedProfiles = filteredProfiles.slice((safePage - 1) * pageSize, safePage * pageSize);
+
+  const handlePageSizeChange = (val: string) => {
+    const n = Number(val) as PageSize;
+    setPageSize(n);
+    try { localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(n)); } catch { /* ignore */ }
+  };
+
+  // --- Delete ---
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<{ id: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // --- Import error report ---
   const [showImportErrorReport, setShowImportErrorReport] = useState(false);
   const [importErrors, setImportErrors] = useState<ImportError[]>([]);
   const [importWarnings, setImportWarnings] = useState<ImportError[]>([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
+
+  // --- Import progress banner ---
+  const [activeImportJob, setActiveImportJob] = useState<PersistedImportJob | null>(() => {
+    // Re-attach to any in-progress job from the previous session on this tab
+    return readPersistedImportJob();
+  });
+
+  // --- Create user ---
   const [isCreatingUser, setIsCreatingUser] = useState(false);
+
+  // --- Activation emails ---
   const [isSendingActivations, setIsSendingActivations] = useState(false);
   const [showActivationConfirm, setShowActivationConfirm] = useState(false);
 
-  const pendingProfiles = visibleProfiles.filter(p => p.status === 'Pending');
+  const pendingProfiles = visibleProfiles.filter((p) => p.status === 'Pending');
 
   const handleSendActivationEmails = async () => {
     if (pendingProfiles.length === 0) return;
@@ -97,21 +140,22 @@ const UserManagement: React.FC = () => {
 
     for (let i = 0; i < pendingProfiles.length; i += BATCH_SIZE) {
       const batch = pendingProfiles.slice(i, i + BATCH_SIZE);
-      await Promise.all(batch.map(async (profile) => {
-        try {
-          const { error } = await supabaseClient.functions.invoke('request-activation-link', {
-            body: { email: profile.email, redirectUrl },
-          });
-          if (error) throw error;
-          debug.log('[UserManagement.sendActivationEmails] sent to', profile.email);
-          sent++;
-        } catch (err) {
-          debug.error('[UserManagement.sendActivationEmails] failed for', profile.email, err);
-          failed++;
-        }
-      }));
+      await Promise.all(
+        batch.map(async (profile) => {
+          try {
+            const { error } = await supabaseClient.functions.invoke('request-activation-link', {
+              body: { email: profile.email, redirectUrl },
+            });
+            if (error) throw error;
+            sent++;
+          } catch (err) {
+            debug.error('[UserManagement.sendActivationEmails] failed for', profile.email, err);
+            failed++;
+          }
+        }),
+      );
       if (i + BATCH_SIZE < pendingProfiles.length) {
-        await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
+        await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
       }
     }
 
@@ -128,27 +172,21 @@ const UserManagement: React.FC = () => {
     setIsCreateDialogOpen,
     newUser,
     setNewUser,
-    resetNewUser
+    resetNewUser,
   } = useUserManagement();
 
   const onCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     setIsCreatingUser(true);
-    
     try {
       await handleCreateUser(supabaseClient, newUser, async (id, updates) => {
         await updateProfile(id, updates);
       }, async () => {
-        // Refresh the user list after successful creation
         await refetch();
       });
-      
-      // Close dialog and reset form only after successful creation
       setIsCreateDialogOpen(false);
       resetNewUser();
     } catch (error) {
-      // Keep dialog open on error so user can see the error and retry
       console.error('Error creating user:', error);
     } finally {
       setIsCreatingUser(false);
@@ -156,7 +194,7 @@ const UserManagement: React.FC = () => {
   };
 
   const onDeleteUser = (userId: string) => {
-    const user = visibleProfiles.find(p => p.id === userId);
+    const user = visibleProfiles.find((p) => p.id === userId);
     setUserToDelete({ id: userId, name: user?.full_name || 'Unknown User' });
     setIsDeleteDialogOpen(true);
   };
@@ -167,17 +205,12 @@ const UserManagement: React.FC = () => {
     try {
       const result = await handleDeleteUser(supabaseClient, userToDelete.id, userToDelete.name, reason);
       if (result.success) {
-        // Close dialog first
         setIsDeleteDialogOpen(false);
         setUserToDelete(null);
-        
-        // Show success toast after dialog is closed
         toast({
-          title: "Success",
+          title: 'Success',
           description: `User ${result.deletedUser?.name || userToDelete.name} has been successfully deleted`,
         });
-        
-        // Refresh the user list after successful deletion
         await refetch();
       }
     } finally {
@@ -205,7 +238,7 @@ const UserManagement: React.FC = () => {
         onClose={() => setShowImportErrorReport(false)}
         importType="Users"
       />
-      
+
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -215,14 +248,12 @@ const UserManagement: React.FC = () => {
                   <Users className="h-5 w-5" />
                   User Management
                 </CardTitle>
-                <CardDescription>
-                  Manage user accounts, roles, and permissions
-                </CardDescription>
+                <CardDescription>Manage user accounts, roles, and permissions</CardDescription>
               </div>
               <div className="flex items-center gap-4">
-                <ToggleGroup 
-                  type="single" 
-                  value={viewMode} 
+                <ToggleGroup
+                  type="single"
+                  value={viewMode}
                   onValueChange={(value) => value && setViewMode(value as 'cards' | 'list')}
                 >
                   <ToggleGroupItem value="cards" aria-label="Card view">
@@ -246,13 +277,9 @@ const UserManagement: React.FC = () => {
                       : `Send Activation Emails (${pendingProfiles.length})`}
                   </Button>
                 )}
-                <ImportUsersDialog 
-                  onImportComplete={refetch}
-                  onImportError={(errors, warnings, stats) => {
-                    setImportErrors(errors);
-                    setImportWarnings(warnings);
-                    setImportStats(stats);
-                    setShowImportErrorReport(true);
+                <ImportUsersDialog
+                  onImportStart={(job) => {
+                    setActiveImportJob(job);
                   }}
                 />
                 <CreateUserDialog
@@ -267,6 +294,27 @@ const UserManagement: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
+            {/* Import progress banner — shown between header and search when a job is active */}
+            {activeImportJob && (
+              <UserImportProgressBanner
+                key={activeImportJob.jobId}
+                job={activeImportJob}
+                onImportComplete={async () => {
+                  await refetch();
+                }}
+                onImportError={(errors, warnings, stats) => {
+                  setImportErrors(errors);
+                  setImportWarnings(warnings);
+                  setImportStats(stats);
+                  setShowImportErrorReport(true);
+                }}
+                onDismiss={() => {
+                  clearPersistedImportJob();
+                  setActiveImportJob(null);
+                }}
+              />
+            )}
+
             {/* Search */}
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
@@ -277,18 +325,56 @@ const UserManagement: React.FC = () => {
                 className="pl-10"
               />
             </div>
-            
+
             {viewMode === 'cards' ? (
-              <UserList
-                profiles={filteredProfiles}
-                onDelete={onDeleteUser}
-              />
+              <UserList profiles={paginatedProfiles} onDelete={onDeleteUser} />
             ) : (
-              <UserTable
-                profiles={filteredProfiles}
-                onDelete={onDeleteUser}
-                onUpdate={onUpdateProfile}
-              />
+              <UserTable profiles={paginatedProfiles} onDelete={onDeleteUser} onUpdate={onUpdateProfile} />
+            )}
+
+            {/* Pagination controls */}
+            {filteredProfiles.length > 0 && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>Rows per page:</span>
+                  <Select value={String(pageSize)} onValueChange={handlePageSizeChange}>
+                    <SelectTrigger className="h-8 w-[70px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {VALID_PAGE_SIZES.map((s) => (
+                        <SelectItem key={s} value={String(s)}>{s}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-1 text-sm">
+                  <span className="text-muted-foreground mr-2">
+                    {Math.min((safePage - 1) * pageSize + 1, filteredProfiles.length)}–
+                    {Math.min(safePage * pageSize, filteredProfiles.length)} of {filteredProfiles.length}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={safePage <= 1}
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-8 w-8"
+                    disabled={safePage >= totalPages}
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    aria-label="Next page"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             )}
           </CardContent>
         </Card>
@@ -307,19 +393,19 @@ const UserManagement: React.FC = () => {
           <AlertDialogHeader>
             <AlertDialogTitle>Send Activation Emails</AlertDialogTitle>
             <AlertDialogDescription>
-              This will send an activation email to <strong>{pendingProfiles.length}</strong> pending user{pendingProfiles.length !== 1 ? 's' : ''}.
-              They will receive a link to set their password and activate their account.
+              This will send an activation email to <strong>{pendingProfiles.length}</strong> pending user
+              {pendingProfiles.length !== 1 ? 's' : ''}. They will receive a link to set their password and activate
+              their account.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleSendActivationEmails}>
-              Send Emails
-            </AlertDialogAction>
+            <AlertDialogAction onClick={handleSendActivationEmails}>Send Emails</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </>
   );
 };
+
 export default UserManagement;

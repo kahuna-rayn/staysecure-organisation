@@ -1,12 +1,8 @@
 import { default as React } from 'react';
-import { ImportError } from '../import/ImportErrorReport';
+import { PersistedImportJob } from '../../utils/userImportProgress';
 
 interface ImportUsersDialogProps {
-    onImportComplete?: () => Promise<void>;
-    onImportError?: (errors: ImportError[], warnings: ImportError[], stats: {
-        success: number;
-        total: number;
-    }) => void;
+    onImportStart?: (job: PersistedImportJob) => void;
 }
 declare const ImportUsersDialog: React.FC<ImportUsersDialogProps>;
 export default ImportUsersDialog;

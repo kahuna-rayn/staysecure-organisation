@@ -1,5 +1,5 @@
 import { jsx, jsxs } from "react/jsx-runtime";
-import React, { Fragment, forwardRef, createElement, createContext, useContext, useState, useRef, useCallback, useEffect, useMemo, useImperativeHandle  } from "react";
+import React, { Fragment, forwardRef, createElement, createContext, useContext, useState, useCallback, useRef, useEffect, useMemo, useImperativeHandle  } from "react";
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -18,6 +18,7 @@ import { toast } from "@/components/ui/use-toast";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { DeleteUserDialog } from "@/components/ui/delete-user-dialog";
 import { toast as toast$1, useToast } from "@/hooks/use-toast";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
@@ -29,7 +30,6 @@ import { useUserProfileRoles as useUserProfileRoles2 } from "@/hooks/useUserProf
 import { EditableTable } from "@/components/ui/editable-table";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useAuth } from "staysecure-auth";
@@ -287,6 +287,15 @@ const Check = createLucideIcon("Check", [["path", { d: "M20 6 9 17l-5-5", key: "
  */
 const ChevronDown = createLucideIcon("ChevronDown", [
   ["path", { d: "m6 9 6 6 6-6", key: "qrunsl" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+const ChevronLeft = createLucideIcon("ChevronLeft", [
+  ["path", { d: "m15 18-6-6 6-6", key: "1wnfg3" }]
 ]);
 /**
  * @license lucide-react v0.462.0 - ISC
@@ -1714,13 +1723,9 @@ function parseImportJobRowMessage(msg) {
 async function pollUserImportJob(supabase2, jobId, totalRows, onProgress, cancelled) {
   const deadline = Date.now() + 2 * 3600 * 1e3;
   while (Date.now() < deadline) {
-    if (cancelled()) {
-      throw new Error(IMPORT_POLL_CANCELLED);
-    }
+    if (cancelled()) throw new Error(IMPORT_POLL_CANCELLED);
     const { data: job, error: jobErr } = await supabase2.from("user_import_jobs").select("*").eq("id", jobId).maybeSingle();
-    if (jobErr) {
-      throw new Error(jobErr.message);
-    }
+    if (jobErr) throw new Error(jobErr.message);
     if (!job) {
       await new Promise((r) => setTimeout(r, 2e3));
       continue;
@@ -1735,10 +1740,9 @@ async function pollUserImportJob(supabase2, jobId, totalRows, onProgress, cancel
       const { data: warnRows } = await supabase2.from("user_import_job_rows").select("row_index, row_payload, error_message").eq("job_id", jobId).eq("status", "succeeded").not("error_message", "is", null);
       const errors = (failRows || []).map((fr) => {
         const row = fr.row_payload;
-        const email = row["Email"] || row["email"] || "Unknown";
         return {
           rowNumber: fr.row_index + 2,
-          identifier: email,
+          identifier: row["Email"] || row["email"] || "Unknown",
           error: fr.error_message || "Failed",
           rawData: row
         };
@@ -1750,40 +1754,23 @@ async function pollUserImportJob(supabase2, jobId, totalRows, onProgress, cancel
         const rowNumber = wr.row_index + 2;
         const { warningPart, additions } = parseImportJobRowMessage(wr.error_message);
         if (warningPart) {
-          warnings.push({
-            rowNumber,
-            identifier: email,
-            field: "Assignment",
-            error: warningPart,
-            rawData: row
-          });
+          warnings.push({ rowNumber, identifier: email, field: "Assignment", error: warningPart, rawData: row });
         }
         for (const a of additions) {
-          warnings.push({
-            rowNumber,
-            identifier: email,
-            field: a.field,
-            error: a.value,
-            type: "info",
-            rawData: row
-          });
+          warnings.push({ rowNumber, identifier: email, field: a.field, error: a.value, type: "info", rawData: row });
         }
       }
-      const successCount = job.succeeded_rows ?? 0;
-      return { successCount, total: job.total_rows ?? totalRows, errors, warnings };
+      return { successCount: job.succeeded_rows ?? 0, total: job.total_rows ?? totalRows, errors, warnings };
     }
-    if (job.status === "failed") {
-      throw new Error(job.last_error || "Import job failed");
-    }
+    if (job.status === "failed") throw new Error(job.last_error || "Import job failed");
     await new Promise((r) => setTimeout(r, 2e3));
   }
-  throw new Error("Import timed out after 2 hours. Check User Management and the import job table.");
+  throw new Error("Import timed out after 2 hours.");
 }
 function readPersistedImportJob() {
-  if (typeof sessionStorage === "undefined") return null;
-  const raw = sessionStorage.getItem(USER_IMPORT_JOB_STORAGE_KEY);
-  if (!raw) return null;
   try {
+    const raw = sessionStorage.getItem(USER_IMPORT_JOB_STORAGE_KEY);
+    if (!raw) return null;
     const p = JSON.parse(raw);
     if (!p.jobId || typeof p.totalRows !== "number") {
       sessionStorage.removeItem(USER_IMPORT_JOB_STORAGE_KEY);
@@ -1796,24 +1783,24 @@ function readPersistedImportJob() {
   }
 }
 function persistImportJob(p) {
-  if (typeof sessionStorage === "undefined") return;
-  sessionStorage.setItem(USER_IMPORT_JOB_STORAGE_KEY, JSON.stringify(p));
+  try {
+    sessionStorage.setItem(USER_IMPORT_JOB_STORAGE_KEY, JSON.stringify(p));
+  } catch {
+  }
 }
 function clearPersistedImportJob() {
-  if (typeof sessionStorage === "undefined") return;
-  sessionStorage.removeItem(USER_IMPORT_JOB_STORAGE_KEY);
+  try {
+    sessionStorage.removeItem(USER_IMPORT_JOB_STORAGE_KEY);
+  } catch {
+  }
 }
-const importResumeJobs = /* @__PURE__ */ new Set();
-const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
+const ImportUsersDialog = ({ onImportStart }) => {
   const { supabaseClient: supabase2 } = useOrganisationContext();
   const [isOpen, setIsOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [sendActivationEmails, setSendActivationEmails] = useState(false);
   const [importMode, setImportMode] = useState("create");
-  const [bulkProgress, setBulkProgress] = useState(null);
-  const resumeCancelledRef = useRef(false);
-  const completeImportDialogRef = useRef(null);
   const onDrop = useCallback((acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
@@ -1826,17 +1813,12 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
         return;
       }
       setUploadedFile(file);
-      toast$1({
-        title: "File uploaded",
-        description: `${file.name} is ready for import`
-      });
+      toast$1({ title: "File uploaded", description: `${file.name} is ready for import` });
     }
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      "text/csv": [".csv"]
-    },
+    accept: { "text/csv": [".csv"] },
     multiple: false
   });
   const generateSampleCSV = () => {
@@ -1845,435 +1827,371 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
 "jane.smith@company.com","Jane Smith","Jane","Smith","+65-555-0124","EMP-2024-002","Admin","Branch Office","Human Resources","HR Manager",""`;
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "user_import_template.csv");
+    link.href = URL.createObjectURL(blob);
+    link.download = "user_import_template.csv";
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-  const completeImportDialog = async (successCount, total, errors, warnings, activationEmailsRequested, mode) => {
-    clearPersistedImportJob();
-    setUploadedFile(null);
-    setSendActivationEmails(false);
-    setIsProcessing(false);
-    setBulkProgress(null);
-    setIsOpen(false);
-    debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
-    const realWarnings = warnings.filter((w) => w.type !== "info");
-    const infoItems = warnings.filter((w) => w.type === "info");
-    debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
-    const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || mode === "update" && infoItems.length > 0;
-    if (shouldShowReport && onImportError) {
-      setTimeout(() => {
-        onImportError(errors, warnings, { success: successCount, total });
-      }, 300);
-      if (errors.length > 0 && realWarnings.length > 0) {
-        toast$1({
-          title: "Import completed with errors and warnings",
-          description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
-          variant: "destructive"
-        });
-      } else if (errors.length > 0) {
-        toast$1({
-          title: "Import completed with errors",
-          description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
-          variant: "destructive"
-        });
-      } else if (realWarnings.length > 0) {
-        toast$1({
-          title: "Import completed with warnings",
-          description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
-          variant: "default"
-        });
-      } else if (mode === "update" && infoItems.length > 0) {
-        toast$1({
-          title: "Update completed",
-          description: `${successCount} users updated. Opening additions report...`
-        });
-      }
-    } else {
-      toast$1({
-        title: "Import completed successfully",
-        description: mode === "update" ? `All ${successCount} users updated successfully.` : activationEmailsRequested ? `All ${successCount} users imported successfully. Activation emails were sent (one per new user).` : `All ${successCount} users imported successfully. No activation emails were sent — use "Send Activation Emails" on User Management when you're ready.`
-      });
-    }
-    if (onImportComplete) {
-      await onImportComplete();
-    }
-  };
-  completeImportDialogRef.current = completeImportDialog;
-  const runBackgroundImport = async (csvText, activationEmailsRequested, fileName, mode) => {
-    var _a;
-    const clientId = getCurrentClientId();
-    const clientPath = clientId ? `/${clientId}` : "";
-    const { data: sessionData, error: sessionError } = await supabase2.auth.getSession();
-    if (sessionError || !((_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token)) {
-      throw new Error("Unable to determine current session. Please refresh and try again.");
-    }
-    const { data, error } = await supabase2.functions.invoke("user-import-submit", {
-      body: {
-        csv_text: csvText,
-        original_filename: fileName,
-        options: {
-          import_mode: mode,
-          send_activation_email: activationEmailsRequested,
-          client_path: clientPath
-        }
-      }
-    });
-    if (error) {
-      throw new Error(error.message || "Failed to start background import");
-    }
-    if (!(data == null ? void 0 : data.ok) || !data.job_id) {
-      throw new Error((data == null ? void 0 : data.error) || "Failed to start background import");
-    }
-    const jobId = data.job_id;
-    const totalRows = data.total_rows ?? 0;
-    persistImportJob({
-      jobId,
-      totalRows,
-      importMode: mode,
-      activationEmailsRequested
-    });
-    setBulkProgress({ processed: 0, total: totalRows, status: "pending" });
-    return pollUserImportJob(supabase2, jobId, totalRows, setBulkProgress, () => false);
-  };
   const handleImport = async () => {
     if (!uploadedFile) {
-      toast$1({
-        title: "No file selected",
-        description: "Please upload a file first",
-        variant: "destructive"
-      });
+      toast$1({ title: "No file selected", description: "Please upload a file first", variant: "destructive" });
       return;
     }
-    setIsProcessing(true);
-    setBulkProgress(null);
+    setIsSubmitting(true);
     try {
-      const text = await uploadedFile.text();
+      const csvText = await uploadedFile.text();
+      const clientId = getCurrentClientId();
+      const clientPath = clientId ? `/${clientId}` : "";
       const activationEmailsRequested = sendActivationEmails;
-      const result = await runBackgroundImport(
-        text,
-        activationEmailsRequested,
-        uploadedFile.name,
-        importMode
-      );
-      await completeImportDialog(
-        result.successCount,
-        result.total,
-        result.errors,
-        result.warnings,
-        activationEmailsRequested,
-        importMode
-      );
-    } catch (bulkErr) {
-      debug.error("[ImportUsersDialog] Background import failed:", bulkErr);
-      const cancelledPoll = (bulkErr == null ? void 0 : bulkErr.message) === IMPORT_POLL_CANCELLED;
-      if (!cancelledPoll) {
-        clearPersistedImportJob();
-        toast$1({
-          title: "Background import failed",
-          description: (bulkErr == null ? void 0 : bulkErr.message) || "Try again or use a smaller file.",
-          variant: "destructive"
-        });
-      }
-      setIsProcessing(false);
-      setBulkProgress(null);
-    }
-  };
-  useEffect(() => {
-    resumeCancelledRef.current = false;
-    const persisted = readPersistedImportJob();
-    if (!persisted) {
-      return;
-    }
-    if (importResumeJobs.has(persisted.jobId)) {
-      return;
-    }
-    importResumeJobs.add(persisted.jobId);
-    void (async () => {
-      var _a;
-      try {
-        const { data: job, error } = await supabase2.from("user_import_jobs").select("id,status,processed_rows,total_rows").eq("id", persisted.jobId).maybeSingle();
-        if (resumeCancelledRef.current) return;
-        if (error || !job) {
-          clearPersistedImportJob();
-          return;
+      const mode = importMode;
+      const { data, error } = await supabase2.functions.invoke("user-import-submit", {
+        body: {
+          csv_text: csvText,
+          original_filename: uploadedFile.name,
+          options: {
+            import_mode: mode,
+            send_activation_email: activationEmailsRequested,
+            client_path: clientPath
+          }
         }
-        if (job.status === "completed" || job.status === "failed") {
-          clearPersistedImportJob();
-          return;
-        }
-        setIsOpen(true);
-        setIsProcessing(true);
-        setImportMode(persisted.importMode);
-        setSendActivationEmails(persisted.activationEmailsRequested);
-        setUploadedFile(null);
-        setBulkProgress({
-          processed: job.processed_rows ?? 0,
-          total: job.total_rows ?? persisted.totalRows,
-          status: job.status
-        });
-        const result = await pollUserImportJob(
-          supabase2,
-          persisted.jobId,
-          persisted.totalRows,
-          setBulkProgress,
-          () => resumeCancelledRef.current
-        );
-        if (resumeCancelledRef.current) return;
-        clearPersistedImportJob();
-        await ((_a = completeImportDialogRef.current) == null ? void 0 : _a.call(
-          completeImportDialogRef,
-          result.successCount,
-          result.total,
-          result.errors,
-          result.warnings,
-          persisted.activationEmailsRequested,
-          persisted.importMode
-        ));
-      } catch (e) {
-        if ((e == null ? void 0 : e.message) === IMPORT_POLL_CANCELLED) {
-          return;
-        }
-        clearPersistedImportJob();
-        if (!resumeCancelledRef.current) {
-          debug.error("[ImportUsersDialog] Resume import failed:", e);
-          toast$1({
-            title: "Import status could not be restored",
-            description: (e == null ? void 0 : e.message) || "The job may still be running in the background. Check User Management or try opening this dialog again.",
-            variant: "destructive"
-          });
-          setIsProcessing(false);
-          setBulkProgress(null);
-        }
-      } finally {
-        importResumeJobs.delete(persisted.jobId);
-      }
-    })();
-    return () => {
-      resumeCancelledRef.current = true;
-      importResumeJobs.delete(persisted.jobId);
-    };
-  }, [supabase2]);
-  const handleDialogClose = (open) => {
-    if (!open && isProcessing) {
-      toast$1({
-        title: "Import in progress",
-        description: "Wait for the server import to finish, or refresh the page and we will reconnect to the active job."
       });
-      return;
-    }
-    if (!open && !isProcessing) {
+      if (error) throw new Error(error.message || "Failed to start background import");
+      if (!(data == null ? void 0 : data.ok) || !data.job_id) throw new Error((data == null ? void 0 : data.error) || "Failed to start background import");
+      const job = {
+        jobId: data.job_id,
+        totalRows: data.total_rows ?? 0,
+        importMode: mode,
+        activationEmailsRequested
+      };
+      persistImportJob(job);
+      debug.log("[ImportUsersDialog] job started", job);
+      onImportStart == null ? void 0 : onImportStart(job);
       setUploadedFile(null);
       setSendActivationEmails(false);
       setImportMode("create");
-      setBulkProgress(null);
+      setIsOpen(false);
+      toast$1({
+        title: "Import started",
+        description: `Processing ${job.totalRows} rows in the background. Progress is shown below the page header.`
+      });
+    } catch (err) {
+      debug.error("[ImportUsersDialog] submit failed:", err);
+      toast$1({
+        title: "Import failed to start",
+        description: (err == null ? void 0 : err.message) || "Try again or use a smaller file.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const handleDialogClose = (open) => {
+    if (!open) {
+      setUploadedFile(null);
+      setSendActivationEmails(false);
+      setImportMode("create");
     }
     setIsOpen(open);
   };
   return /* @__PURE__ */ jsxs(Dialog, { open: isOpen, onOpenChange: handleDialogClose, children: [
     /* @__PURE__ */ jsx(DialogTrigger, { asChild: true, children: /* @__PURE__ */ jsx(Button, { variant: "outline", children: /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4 mr-2" }) }) }),
-    /* @__PURE__ */ jsxs(
-      DialogContent,
-      {
-        className: "max-w-3xl max-h-[90vh] overflow-y-auto",
-        onPointerDownOutside: (e) => {
-          if (isProcessing) e.preventDefault();
-        },
-        onEscapeKeyDown: (e) => {
-          if (isProcessing) e.preventDefault();
-        },
-        children: [
-          /* @__PURE__ */ jsxs(DialogHeader, { children: [
-            /* @__PURE__ */ jsx(DialogTitle, { children: importMode === "update" ? "Update Existing Users" : "Import Users" }),
-            /* @__PURE__ */ jsx(DialogDescription, { children: importMode === "update" ? 'Server-side background import (safe for large CSVs). Rows match users by email and update profile, locations, departments, and roles. Emails with no existing user create a new account; "Send activation emails" applies to those new users. If you reload this tab, progress reconnects automatically for the same browser session.' : "CSV import for new users runs on the server in the background (safe for large files). You can reload this tab—progress reconnects automatically for this session—or watch counts here while the dialog stays open. Locations, departments, and roles are created automatically if missing." })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex rounded-lg border overflow-hidden", children: [
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  type: "button",
-                  onClick: () => {
-                    setImportMode("create");
-                    setUploadedFile(null);
-                  },
-                  disabled: isProcessing,
-                  className: `flex-1 py-2 text-sm font-medium transition-colors ${importMode === "create" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`,
-                  children: "Create new users"
-                }
-              ),
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  type: "button",
-                  onClick: () => {
-                    setImportMode("update");
-                    setUploadedFile(null);
-                    setSendActivationEmails(false);
-                  },
-                  disabled: isProcessing,
-                  className: `flex-1 py-2 text-sm font-medium transition-colors ${importMode === "update" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`,
-                  children: "Update existing users"
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
-              /* @__PURE__ */ jsxs(
-                "div",
-                {
-                  ...getRootProps(),
-                  className: `border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-blue-400 bg-blue-50" : uploadedFile ? "border-green-400 bg-green-50" : "border-gray-300 hover:border-gray-400"}`,
-                  children: [
-                    /* @__PURE__ */ jsx("input", { ...getInputProps() }),
-                    /* @__PURE__ */ jsx(Upload, { className: "h-12 w-12 mx-auto mb-4 text-gray-400" }),
-                    uploadedFile ? /* @__PURE__ */ jsxs("div", { children: [
-                      /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-green-700", children: "File Ready for Import" }),
-                      /* @__PURE__ */ jsx("p", { className: "text-sm text-green-600 mt-1", children: uploadedFile.name }),
-                      /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-2", children: "Click to select a different file or drop a new one here" })
-                    ] }) : isDragActive ? /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-blue-700", children: "Drop your user file here" }) : /* @__PURE__ */ jsxs("div", { children: [
-                      /* @__PURE__ */ jsx("p", { className: "text-lg font-medium", children: "Drag and drop your user file here, or browse" }),
-                      /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV files (.csv)" })
-                    ] })
-                  ]
-                }
-              ),
-              uploadedFile && /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex items-start gap-2", children: [
-                  /* @__PURE__ */ jsx(
-                    Checkbox,
-                    {
-                      id: "send-activation-emails",
-                      checked: sendActivationEmails,
-                      onCheckedChange: (checked) => setSendActivationEmails(checked === true),
-                      disabled: isProcessing,
-                      className: "mt-1"
-                    }
-                  ),
-                  /* @__PURE__ */ jsxs("div", { children: [
-                    /* @__PURE__ */ jsx(Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to new users" }),
-                    /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground mt-1", children: "When unchecked, accounts are created without sending mail; you can use Send Activation Emails on User Management when ready." })
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center gap-x-4 gap-y-2", children: [
-                  /* @__PURE__ */ jsx("div", { className: "min-w-[200px] flex-1", children: (bulkProgress || isProcessing) && /* @__PURE__ */ jsxs("p", { className: "text-sm font-semibold text-foreground sm:text-base tabular-nums", children: [
-                    "Server import:",
-                    " ",
-                    bulkProgress ? `${bulkProgress.processed} / ${bulkProgress.total} rows` : "starting…",
-                    " ",
-                    bulkProgress ? /* @__PURE__ */ jsxs(Fragment, { children: [
-                      "· ",
-                      /* @__PURE__ */ jsx("span", { className: "capitalize", children: bulkProgress.status })
-                    ] }) : null
-                  ] }) }),
-                  /* @__PURE__ */ jsxs("div", { className: "flex shrink-0 gap-3", children: [
-                    /* @__PURE__ */ jsx(Button, { onClick: handleImport, disabled: isProcessing, className: "flex items-center gap-2", children: isProcessing ? /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) }),
-                    /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setUploadedFile(null), disabled: isProcessing, children: "X" })
-                  ] })
+    /* @__PURE__ */ jsxs(DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
+      /* @__PURE__ */ jsxs(DialogHeader, { children: [
+        /* @__PURE__ */ jsx(DialogTitle, { children: importMode === "update" ? "Update Existing Users" : "Import Users" }),
+        /* @__PURE__ */ jsx(DialogDescription, { children: importMode === "update" ? 'Server-side background import (safe for large CSVs). Rows match users by email and update profile, locations, departments, and roles. Emails with no existing user create a new account; "Send activation emails" applies to those new users. A progress bar appears on the page once the job starts.' : "CSV import for new users runs on the server in the background (safe for large files). A progress bar appears on the page once the job starts. Locations, departments, and roles are created automatically if missing." })
+      ] }),
+      /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+        /* @__PURE__ */ jsxs("div", { className: "flex rounded-lg border overflow-hidden", children: [
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => {
+                setImportMode("create");
+                setUploadedFile(null);
+              },
+              disabled: isSubmitting,
+              className: `flex-1 py-2 text-sm font-medium transition-colors ${importMode === "create" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`,
+              children: "Create new users"
+            }
+          ),
+          /* @__PURE__ */ jsx(
+            "button",
+            {
+              type: "button",
+              onClick: () => {
+                setImportMode("update");
+                setUploadedFile(null);
+                setSendActivationEmails(false);
+              },
+              disabled: isSubmitting,
+              className: `flex-1 py-2 text-sm font-medium transition-colors ${importMode === "update" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`,
+              children: "Update existing users"
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+          /* @__PURE__ */ jsxs(
+            "div",
+            {
+              ...getRootProps(),
+              className: `border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive ? "border-blue-400 bg-blue-50" : uploadedFile ? "border-green-400 bg-green-50" : "border-gray-300 hover:border-gray-400"}`,
+              children: [
+                /* @__PURE__ */ jsx("input", { ...getInputProps() }),
+                /* @__PURE__ */ jsx(Upload, { className: "h-12 w-12 mx-auto mb-4 text-gray-400" }),
+                uploadedFile ? /* @__PURE__ */ jsxs("div", { children: [
+                  /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-green-700", children: "File Ready for Import" }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm text-green-600 mt-1", children: uploadedFile.name }),
+                  /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-2", children: "Click to select a different file or drop a new one here" })
+                ] }) : isDragActive ? /* @__PURE__ */ jsx("p", { className: "text-lg font-medium text-blue-700", children: "Drop your user file here" }) : /* @__PURE__ */ jsxs("div", { children: [
+                  /* @__PURE__ */ jsx("p", { className: "text-lg font-medium", children: "Drag and drop your user file here, or browse" }),
+                  /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-500 mt-1", children: "Supports CSV files (.csv)" })
                 ] })
+              ]
+            }
+          ),
+          uploadedFile && /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-start gap-2", children: [
+              /* @__PURE__ */ jsx(
+                Checkbox,
+                {
+                  id: "send-activation-emails",
+                  checked: sendActivationEmails,
+                  onCheckedChange: (checked) => setSendActivationEmails(checked === true),
+                  disabled: isSubmitting,
+                  className: "mt-1"
+                }
+              ),
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx(Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to new users" }),
+                /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground mt-1", children: "When unchecked, accounts are created without sending mail; you can use Send Activation Emails on User Management when ready." })
               ] })
             ] }),
-            /* @__PURE__ */ jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
-              /* @__PURE__ */ jsx("h4", { className: "text-sm font-medium text-yellow-800 mb-2", children: "User Import Template" }),
-              /* @__PURE__ */ jsx("p", { className: "text-sm text-yellow-700 mb-3", children: "Download a template for importing users with sample data." }),
-              /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-2 bg-white rounded border", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-                  /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4" }),
-                  /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" }),
-                  /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
-                ] }),
-                /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
-              ] }) })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
-              /* @__PURE__ */ jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-              /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
-              importMode === "update" ? /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Email" }),
-                  " is required — used to look up the existing user; if not found, the user will be created"
-                ] }),
-                /* @__PURE__ */ jsx("p", { children: "• All other columns are optional for existing users — only populated fields are updated" }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Location" }),
-                  " - must already exist in the system; updates the user's primary location and adds a physical access entry if not already present"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Department" }),
-                  " - must already exist; added to the user's departments if not already assigned"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Role" }),
-                  " - must already exist; added to the user's roles if not already assigned. If Department is also provided, role and department are linked with a pairing ID"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Manager" }),
-                  " - must be specified by email address; updates the user's manager field"
-                ] }),
-                /* @__PURE__ */ jsx("p", { children: "• Existing assignments are never removed — this is an additive update" })
-              ] }) : /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Email" }),
-                  " is required for each user"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Full Name" }),
-                  " is required for each user"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "First Name" }),
-                  " is required for each user"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Last Name" }),
-                  " is required for each user"
-                ] }),
-                /* @__PURE__ */ jsx("p", { children: "• Users will be created with 'Pending' status; use the checkbox above to send (or not send) activation email as each account is created, or use Send Activation Emails in User Management later" }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Access Level" }),
-                  ' - must be "User" or "Admin". Other values are not allowed.'
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Location" }),
-                  " (optional) - created automatically if it doesn't exist"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Department" }),
-                  " (optional) - created automatically if it doesn't exist"
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Role" }),
-                  " (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role."
-                ] }),
-                /* @__PURE__ */ jsxs("p", { children: [
-                  "• ",
-                  /* @__PURE__ */ jsx("strong", { children: "Manager" }),
-                  " (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported"
-                ] }),
-                /* @__PURE__ */ jsx("p", { children: "• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided" })
-              ] })
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-end gap-3", children: [
+              /* @__PURE__ */ jsxs(Button, { onClick: handleImport, disabled: isSubmitting, className: "flex items-center gap-2", children: [
+                isSubmitting ? /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }),
+                isSubmitting ? "Starting…" : "Start Import"
+              ] }),
+              /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setUploadedFile(null), disabled: isSubmitting, children: "Clear" })
             ] })
           ] })
-        ]
-      }
-    )
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "bg-yellow-50 border border-yellow-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsx("h4", { className: "text-sm font-medium text-yellow-800 mb-2", children: "User Import Template" }),
+          /* @__PURE__ */ jsx("p", { className: "text-sm text-yellow-700 mb-3", children: "Download a template for importing users with sample data." }),
+          /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-2 bg-white rounded border", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4" }),
+              /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
+            ] }),
+            /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
+          ] }) })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
+          /* @__PURE__ */ jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+          importMode === "update" ? /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Email" }),
+              " is required — used to look up the existing user; if not found, the user will be created"
+            ] }),
+            /* @__PURE__ */ jsx("p", { children: "• All other columns are optional for existing users — only populated fields are updated" }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Location" }),
+              " - must already exist in the system; updates the user's primary location and adds a physical access entry if not already present"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Department" }),
+              " - must already exist; added to the user's departments if not already assigned"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Role" }),
+              " - must already exist; added to the user's roles if not already assigned. If Department is also provided, role and department are linked with a pairing ID"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Manager" }),
+              " - must be specified by email address; updates the user's manager field"
+            ] }),
+            /* @__PURE__ */ jsx("p", { children: "• Existing assignments are never removed — this is an additive update" })
+          ] }) : /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Email" }),
+              " is required for each user"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Full Name" }),
+              " is required for each user"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "First Name" }),
+              " is required for each user"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Last Name" }),
+              " is required for each user"
+            ] }),
+            /* @__PURE__ */ jsx("p", { children: "• Users will be created with 'Pending' status; use the checkbox above to send (or not send) activation email as each account is created, or use Send Activation Emails in User Management later" }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Access Level" }),
+              ' - must be "User" or "Admin". Other values are not allowed.'
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Location" }),
+              " (optional) - created automatically if it doesn't exist"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Department" }),
+              " (optional) - created automatically if it doesn't exist"
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Role" }),
+              " (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role."
+            ] }),
+            /* @__PURE__ */ jsxs("p", { children: [
+              "• ",
+              /* @__PURE__ */ jsx("strong", { children: "Manager" }),
+              " (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported"
+            ] }),
+            /* @__PURE__ */ jsx("p", { children: "• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided" })
+          ] })
+        ] })
+      ] })
+    ] })
   ] });
+};
+const UserImportProgressBanner = ({
+  job,
+  onImportComplete,
+  onImportError,
+  onDismiss
+}) => {
+  const [progress, setProgress] = useState({ processed: 0, total: job.totalRows, status: "pending" });
+  const [bannerState, setBannerState] = useState("running");
+  const [errorMessage, setErrorMessage] = useState(null);
+  const cancelledRef = useRef(false);
+  const { supabaseClient: supabase2 } = useOrganisationContext();
+  const handleDone = useCallback(
+    async (result) => {
+      clearPersistedImportJob();
+      setBannerState("done");
+      debug.log("[UserImportProgressBanner] job done", { successCount: result.successCount, errors: result.errors.length });
+      const realWarnings = result.warnings.filter((w) => w.type !== "info");
+      const infoItems = result.warnings.filter((w) => w.type === "info");
+      const shouldShowReport = result.errors.length > 0 || realWarnings.length > 0 || job.importMode === "update" && infoItems.length > 0;
+      if (shouldShowReport) {
+        onImportError(result.errors, result.warnings, { success: result.successCount, total: result.total });
+      }
+      await onImportComplete();
+    },
+    [job.importMode, onImportComplete, onImportError]
+  );
+  useEffect(() => {
+    cancelledRef.current = false;
+    void (async () => {
+      try {
+        const result = await pollUserImportJob(
+          supabase2,
+          job.jobId,
+          job.totalRows,
+          (p) => {
+            if (!cancelledRef.current) setProgress(p);
+          },
+          () => cancelledRef.current
+        );
+        if (!cancelledRef.current) {
+          await handleDone(result);
+        }
+      } catch (err) {
+        if ((err == null ? void 0 : err.message) === IMPORT_POLL_CANCELLED || cancelledRef.current) return;
+        debug.error("[UserImportProgressBanner] poll failed:", err);
+        clearPersistedImportJob();
+        if (!cancelledRef.current) {
+          setErrorMessage((err == null ? void 0 : err.message) || "Import job failed unexpectedly.");
+          setBannerState("failed");
+        }
+      }
+    })();
+    return () => {
+      cancelledRef.current = true;
+    };
+  }, [job.jobId, job.totalRows, supabase2, handleDone]);
+  const pct = progress.total > 0 ? Math.round(progress.processed / progress.total * 100) : 0;
+  const isDone = bannerState === "done";
+  const isFailed = bannerState === "failed";
+  const isRunning = bannerState === "running";
+  return /* @__PURE__ */ jsxs(
+    "div",
+    {
+      className: `mx-0 mb-3 rounded-lg border px-4 py-2.5 flex items-center gap-3 text-sm ${isFailed ? "border-destructive/40 bg-destructive/5" : isDone ? "border-green-300 bg-green-50" : "border-blue-200 bg-blue-50"}`,
+      children: [
+        isDone && /* @__PURE__ */ jsx(CircleCheck, { className: "h-4 w-4 shrink-0 text-green-600" }),
+        isFailed && /* @__PURE__ */ jsx(CircleAlert, { className: "h-4 w-4 shrink-0 text-destructive" }),
+        isRunning && /* @__PURE__ */ jsx("div", { className: "h-4 w-4 shrink-0 rounded-full border-2 border-blue-400 border-t-transparent animate-spin" }),
+        /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+          isRunning && /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-1", children: [
+              /* @__PURE__ */ jsxs("span", { className: "font-medium text-blue-900 tabular-nums", children: [
+                "Importing users — ",
+                progress.processed,
+                " / ",
+                progress.total,
+                " rows"
+              ] }),
+              /* @__PURE__ */ jsxs("span", { className: "text-blue-700 tabular-nums ml-4", children: [
+                pct,
+                "%"
+              ] })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "h-1.5 rounded-full bg-blue-100 overflow-hidden", children: /* @__PURE__ */ jsx(
+              "div",
+              {
+                className: "h-full rounded-full bg-blue-500 transition-all duration-500",
+                style: { width: `${pct}%` }
+              }
+            ) })
+          ] }),
+          isDone && /* @__PURE__ */ jsxs("span", { className: "font-medium text-green-800", children: [
+            "Import complete — ",
+            progress.processed,
+            " / ",
+            progress.total,
+            " rows processed"
+          ] }),
+          isFailed && /* @__PURE__ */ jsxs("span", { className: "font-medium text-destructive", children: [
+            "Import failed",
+            errorMessage ? `: ${errorMessage}` : ""
+          ] })
+        ] }),
+        (isDone || isFailed) && /* @__PURE__ */ jsx(
+          Button,
+          {
+            variant: "ghost",
+            size: "icon",
+            className: "h-6 w-6 shrink-0 text-muted-foreground hover:text-foreground",
+            onClick: onDismiss,
+            "aria-label": "Dismiss",
+            children: /* @__PURE__ */ jsx(X, { className: "h-3.5 w-3.5" })
+          }
+        )
+      ]
+    }
+  );
 };
 const ImportErrorReport = ({
   errors,
@@ -2471,6 +2389,17 @@ const ImportErrorReport = ({
     ] })
   ] }) });
 };
+const PAGE_SIZE_STORAGE_KEY = "staysecure:user-management-page-size";
+const VALID_PAGE_SIZES = [50, 100, 200];
+function readStoredPageSize() {
+  try {
+    const raw = localStorage.getItem(PAGE_SIZE_STORAGE_KEY);
+    const n = Number(raw);
+    return VALID_PAGE_SIZES.includes(n) ? n : 50;
+  } catch {
+    return 50;
+  }
+}
 const UserManagement = () => {
   const { supabaseClient } = useOrganisationContext();
   const { profiles, loading, updateProfile, refetch } = useUserProfiles();
@@ -2479,12 +2408,28 @@ const UserManagement = () => {
   const visibleProfiles = isSuperAdmin ? profiles : profiles.filter((p) => p.access_level !== "super_admin");
   const [viewMode, setViewMode] = useViewPreference("userManagement", "cards");
   const [searchTerm, setSearchTerm] = useState("");
+  const [pageSize, setPageSize] = useState(readStoredPageSize);
+  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, pageSize]);
   const filteredProfiles = visibleProfiles.filter((p) => {
     var _a, _b, _c, _d;
     if (!searchTerm) return true;
     const search = searchTerm.toLowerCase();
     return ((_a = p.full_name) == null ? void 0 : _a.toLowerCase().includes(search)) || ((_b = p.email) == null ? void 0 : _b.toLowerCase().includes(search)) || ((_c = p.location) == null ? void 0 : _c.toLowerCase().includes(search)) || ((_d = p.status) == null ? void 0 : _d.toLowerCase().includes(search));
   });
+  const totalPages = Math.max(1, Math.ceil(filteredProfiles.length / pageSize));
+  const safePage = Math.min(currentPage, totalPages);
+  const paginatedProfiles = filteredProfiles.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const handlePageSizeChange = (val) => {
+    const n = Number(val);
+    setPageSize(n);
+    try {
+      localStorage.setItem(PAGE_SIZE_STORAGE_KEY, String(n));
+    } catch {
+    }
+  };
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -2492,6 +2437,9 @@ const UserManagement = () => {
   const [importErrors, setImportErrors] = useState([]);
   const [importWarnings, setImportWarnings] = useState([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
+  const [activeImportJob, setActiveImportJob] = useState(() => {
+    return readPersistedImportJob();
+  });
   const [isCreatingUser, setIsCreatingUser] = useState(false);
   const [isSendingActivations, setIsSendingActivations] = useState(false);
   const [showActivationConfirm, setShowActivationConfirm] = useState(false);
@@ -2510,19 +2458,20 @@ const UserManagement = () => {
     const BATCH_DELAY_MS = 1e3;
     for (let i = 0; i < pendingProfiles.length; i += BATCH_SIZE) {
       const batch = pendingProfiles.slice(i, i + BATCH_SIZE);
-      await Promise.all(batch.map(async (profile) => {
-        try {
-          const { error } = await supabaseClient.functions.invoke("request-activation-link", {
-            body: { email: profile.email, redirectUrl }
-          });
-          if (error) throw error;
-          debug.log("[UserManagement.sendActivationEmails] sent to", profile.email);
-          sent++;
-        } catch (err) {
-          debug.error("[UserManagement.sendActivationEmails] failed for", profile.email, err);
-          failed++;
-        }
-      }));
+      await Promise.all(
+        batch.map(async (profile) => {
+          try {
+            const { error } = await supabaseClient.functions.invoke("request-activation-link", {
+              body: { email: profile.email, redirectUrl }
+            });
+            if (error) throw error;
+            sent++;
+          } catch (err) {
+            debug.error("[UserManagement.sendActivationEmails] failed for", profile.email, err);
+            failed++;
+          }
+        })
+      );
       if (i + BATCH_SIZE < pendingProfiles.length) {
         await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
       }
@@ -2642,12 +2591,8 @@ const UserManagement = () => {
             /* @__PURE__ */ jsx(
               ImportUsersDialog,
               {
-                onImportComplete: refetch,
-                onImportError: (errors, warnings, stats) => {
-                  setImportErrors(errors);
-                  setImportWarnings(warnings);
-                  setImportStats(stats);
-                  setShowImportErrorReport(true);
+                onImportStart: (job) => {
+                  setActiveImportJob(job);
                 }
               }
             ),
@@ -2665,6 +2610,26 @@ const UserManagement = () => {
           ] })
         ] }) }),
         /* @__PURE__ */ jsxs(CardContent, { children: [
+          activeImportJob && /* @__PURE__ */ jsx(
+            UserImportProgressBanner,
+            {
+              job: activeImportJob,
+              onImportComplete: async () => {
+                await refetch();
+              },
+              onImportError: (errors, warnings, stats) => {
+                setImportErrors(errors);
+                setImportWarnings(warnings);
+                setImportStats(stats);
+                setShowImportErrorReport(true);
+              },
+              onDismiss: () => {
+                clearPersistedImportJob();
+                setActiveImportJob(null);
+              }
+            },
+            activeImportJob.jobId
+          ),
           /* @__PURE__ */ jsxs("div", { className: "relative mb-4", children: [
             /* @__PURE__ */ jsx(Search, { className: "absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" }),
             /* @__PURE__ */ jsx(
@@ -2677,20 +2642,49 @@ const UserManagement = () => {
               }
             )
           ] }),
-          viewMode === "cards" ? /* @__PURE__ */ jsx(
-            UserList,
-            {
-              profiles: filteredProfiles,
-              onDelete: onDeleteUser
-            }
-          ) : /* @__PURE__ */ jsx(
-            UserTable,
-            {
-              profiles: filteredProfiles,
-              onDelete: onDeleteUser,
-              onUpdate: onUpdateProfile
-            }
-          )
+          viewMode === "cards" ? /* @__PURE__ */ jsx(UserList, { profiles: paginatedProfiles, onDelete: onDeleteUser }) : /* @__PURE__ */ jsx(UserTable, { profiles: paginatedProfiles, onDelete: onDeleteUser, onUpdate: onUpdateProfile }),
+          filteredProfiles.length > 0 && /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mt-4 pt-4 border-t", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm text-muted-foreground", children: [
+              /* @__PURE__ */ jsx("span", { children: "Rows per page:" }),
+              /* @__PURE__ */ jsxs(Select, { value: String(pageSize), onValueChange: handlePageSizeChange, children: [
+                /* @__PURE__ */ jsx(SelectTrigger, { className: "h-8 w-[70px]", children: /* @__PURE__ */ jsx(SelectValue, {}) }),
+                /* @__PURE__ */ jsx(SelectContent, { children: VALID_PAGE_SIZES.map((s) => /* @__PURE__ */ jsx(SelectItem, { value: String(s), children: s }, s)) })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1 text-sm", children: [
+              /* @__PURE__ */ jsxs("span", { className: "text-muted-foreground mr-2", children: [
+                Math.min((safePage - 1) * pageSize + 1, filteredProfiles.length),
+                "–",
+                Math.min(safePage * pageSize, filteredProfiles.length),
+                " of ",
+                filteredProfiles.length
+              ] }),
+              /* @__PURE__ */ jsx(
+                Button,
+                {
+                  variant: "outline",
+                  size: "icon",
+                  className: "h-8 w-8",
+                  disabled: safePage <= 1,
+                  onClick: () => setCurrentPage((p) => Math.max(1, p - 1)),
+                  "aria-label": "Previous page",
+                  children: /* @__PURE__ */ jsx(ChevronLeft, { className: "h-4 w-4" })
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                Button,
+                {
+                  variant: "outline",
+                  size: "icon",
+                  className: "h-8 w-8",
+                  disabled: safePage >= totalPages,
+                  onClick: () => setCurrentPage((p) => Math.min(totalPages, p + 1)),
+                  "aria-label": "Next page",
+                  children: /* @__PURE__ */ jsx(ChevronRight, { className: "h-4 w-4" })
+                }
+              )
+            ] })
+          ] })
         ] })
       ] }),
       /* @__PURE__ */ jsx(
@@ -16142,6 +16136,7 @@ export {
   RoleManagement,
   UserCard,
   UserDetailView,
+  UserImportProgressBanner,
   UserList,
   UserManagement,
   UserTable,

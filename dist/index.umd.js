@@ -2061,6 +2061,7 @@
     const [bannerState, setBannerState] = React.useState("running");
     const [errorMessage, setErrorMessage] = React.useState(null);
     const cancelledRef = React.useRef(false);
+    const hasCompletedRef = React.useRef(false);
     const onImportCompleteRef = React.useRef(onImportComplete);
     const onImportErrorRef = React.useRef(onImportError);
     const importModeRef = React.useRef(job.importMode);
@@ -2074,12 +2075,17 @@
       importModeRef.current = job.importMode;
     }, [job.importMode]);
     const { supabaseClient: supabase } = useOrganisationContext();
+    const supabaseRef = React.useRef(supabase);
+    React.useEffect(() => {
+      supabaseRef.current = supabase;
+    }, [supabase]);
     React.useEffect(() => {
       cancelledRef.current = false;
+      hasCompletedRef.current = false;
       void (async () => {
         try {
           const result = await pollUserImportJob(
-            supabase,
+            supabaseRef.current,
             job.jobId,
             job.totalRows,
             (p) => {
@@ -2087,7 +2093,8 @@
             },
             () => cancelledRef.current
           );
-          if (cancelledRef.current) return;
+          if (cancelledRef.current || hasCompletedRef.current) return;
+          hasCompletedRef.current = true;
           clearPersistedImportJob();
           debug.log("[UserImportProgressBanner] job done", { successCount: result.successCount, errors: result.errors.length, failed: !!result.failureMessage });
           if (result.failureMessage) {
@@ -2121,7 +2128,7 @@
       return () => {
         cancelledRef.current = true;
       };
-    }, [job.jobId, job.totalRows, supabase]);
+    }, [job.jobId, job.totalRows]);
     const pct = progress2.total > 0 ? Math.round(progress2.processed / progress2.total * 100) : 0;
     const isDone = bannerState === "done";
     const isFailed = bannerState === "failed";

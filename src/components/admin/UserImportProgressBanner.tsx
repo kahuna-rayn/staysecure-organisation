@@ -31,8 +31,9 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
   const [bannerState, setBannerState] = useState<BannerState>('running');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const cancelledRef = useRef(false);
-  // Store callbacks in refs so the polling effect never re-runs due to parent re-renders
-  // creating new inline function references.
+  const hasCompletedRef = useRef(false);
+  // Store all unstable values in refs so the polling effect never re-runs due to
+  // parent re-renders creating new object/function references.
   const onImportCompleteRef = useRef(onImportComplete);
   const onImportErrorRef = useRef(onImportError);
   const importModeRef = useRef(job.importMode);
@@ -41,14 +42,17 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
   useEffect(() => { importModeRef.current = job.importMode; }, [job.importMode]);
 
   const { supabaseClient: supabase } = useOrganisationContext();
+  const supabaseRef = useRef(supabase);
+  useEffect(() => { supabaseRef.current = supabase; }, [supabase]);
 
   useEffect(() => {
     cancelledRef.current = false;
+    hasCompletedRef.current = false;
 
     void (async () => {
       try {
         const result = await pollUserImportJob(
-          supabase,
+          supabaseRef.current,
           job.jobId,
           job.totalRows,
           (p) => {
@@ -56,7 +60,8 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
           },
           () => cancelledRef.current,
         );
-        if (cancelledRef.current) return;
+        if (cancelledRef.current || hasCompletedRef.current) return;
+        hasCompletedRef.current = true;
 
         clearPersistedImportJob();
 
@@ -102,7 +107,7 @@ const UserImportProgressBanner: React.FC<UserImportProgressBannerProps> = ({
     return () => {
       cancelledRef.current = true;
     };
-  }, [job.jobId, job.totalRows, supabase]); // callbacks are intentionally read via refs
+  }, [job.jobId, job.totalRows]); // all other values read via refs to prevent re-polling on parent re-renders
 
   const pct = progress.total > 0 ? Math.round((progress.processed / progress.total) * 100) : 0;
   const isDone = bannerState === 'done';

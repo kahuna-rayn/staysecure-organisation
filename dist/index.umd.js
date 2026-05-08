@@ -1,6 +1,6 @@
 (function(global, factory) {
-  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("papaparse"), require("@/components/ui/alert"), require("@/components/ui/scroll-area"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/ui/tooltip"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "papaparse", "@/components/ui/alert", "@/components/ui/scroll-area", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/ui/tooltip", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.Papa, global.alert, global.scrollArea, global.table, global._switch, global.useManagerPermissions, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.tooltip, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations));
-})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, Papa, alert, scrollArea, table, _switch, useManagerPermissions, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, tooltip, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations) {
+  typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("react/jsx-runtime"), require("react"), require("react-router-dom"), require("@/components/ui/card"), require("@/components/ui/tabs"), require("@/components/ui/badge"), require("@/hooks/useUserProfiles"), require("@/hooks/useUserManagement"), require("@/hooks/useUserRole"), require("@/hooks/useViewPreference"), require("staysecure-notifications"), require("@/integrations/supabase/client"), require("@/components/ui/use-toast"), require("@/components/ui/toggle-group"), require("@/components/ui/input"), require("@/components/ui/button"), require("@/components/ui/delete-user-dialog"), require("@/hooks/use-toast"), require("@/components/ui/alert-dialog"), require("@/components/ui/avatar"), require("@/hooks/useUserDepartments"), require("@/hooks/useUserProfileRoles"), require("@/components/ui/editable-table"), require("@/components/ui/dialog"), require("@/components/ui/label"), require("@/components/ui/select"), require("@/components/ui/textarea"), require("@tanstack/react-query"), require("staysecure-auth"), require("@/components/ui/checkbox"), require("react-dropzone"), require("@/components/ui/alert"), require("@/components/ui/scroll-area"), require("@/components/ui/table"), require("@/components/ui/switch"), require("@/hooks/useManagerPermissions"), require("papaparse"), require("xlsx"), require("jspdf"), require("jspdf-autotable"), require("react-to-print"), require("@/components/ui/separator"), require("sonner"), require("@/lib/utils"), require("@/components/ui/command"), require("@/components/ui/popover"), require("@/components/HardwareInventory"), require("@/components/SoftwareAccounts"), require("@/hooks/useInventory"), require("@/hooks/useUserAssets"), require("@/components/ui/progress"), require("@/components/ui/tooltip"), require("@/components/LearningTracksTab"), require("@/hooks/useUserRoleById"), require("@/hooks/useProfile"), require("@/hooks/useUserPhysicalLocations")) : typeof define === "function" && define.amd ? define(["exports", "react/jsx-runtime", "react", "react-router-dom", "@/components/ui/card", "@/components/ui/tabs", "@/components/ui/badge", "@/hooks/useUserProfiles", "@/hooks/useUserManagement", "@/hooks/useUserRole", "@/hooks/useViewPreference", "staysecure-notifications", "@/integrations/supabase/client", "@/components/ui/use-toast", "@/components/ui/toggle-group", "@/components/ui/input", "@/components/ui/button", "@/components/ui/delete-user-dialog", "@/hooks/use-toast", "@/components/ui/alert-dialog", "@/components/ui/avatar", "@/hooks/useUserDepartments", "@/hooks/useUserProfileRoles", "@/components/ui/editable-table", "@/components/ui/dialog", "@/components/ui/label", "@/components/ui/select", "@/components/ui/textarea", "@tanstack/react-query", "staysecure-auth", "@/components/ui/checkbox", "react-dropzone", "@/components/ui/alert", "@/components/ui/scroll-area", "@/components/ui/table", "@/components/ui/switch", "@/hooks/useManagerPermissions", "papaparse", "xlsx", "jspdf", "jspdf-autotable", "react-to-print", "@/components/ui/separator", "sonner", "@/lib/utils", "@/components/ui/command", "@/components/ui/popover", "@/components/HardwareInventory", "@/components/SoftwareAccounts", "@/hooks/useInventory", "@/hooks/useUserAssets", "@/components/ui/progress", "@/components/ui/tooltip", "@/components/LearningTracksTab", "@/hooks/useUserRoleById", "@/hooks/useProfile", "@/hooks/useUserPhysicalLocations"], factory) : (global = typeof globalThis !== "undefined" ? globalThis : global || self, factory(global.OrganisationManagement = {}, global["react/jsx-runtime"], global.React, global.ReactRouterDOM, global.card, global.tabs, global.badge, global.useUserProfiles, global.useUserManagement, global.useUserRole, global.useViewPreference, global.StaySecureNotifications, global.client, global.useToast, global.toggleGroup, global.input, global.button, global.deleteUserDialog, global.useToast$1, global.alertDialog, global.avatar, global.useUserDepartments, global.useUserProfileRoles, global.editableTable, global.dialog, global.label, global.select, global.textarea, global.ReactQuery, global.StaySecureAuth, global.checkbox, global.reactDropzone, global.alert, global.scrollArea, global.table, global._switch, global.useManagerPermissions, global.Papa, global.XLSX, global.jsPDF, global.autoTable, global.reactToPrint, global.separator, global.sonner, global.utils, global.command, global.popover, global.HardwareInventory, global.SoftwareAccounts, global.useInventory, global.useUserAssets, global.progress, global.tooltip, global.LearningTracksTab, global.useUserRoleById, global.useProfile, global.useUserPhysicalLocations));
+})(this, function(exports2, jsxRuntime, React, reactRouterDom, card, tabs, badge, useUserProfiles, useUserManagement, useUserRole, useViewPreference, staysecureNotifications, client, useToast, toggleGroup, input, button, deleteUserDialog, useToast$1, alertDialog, avatar, useUserDepartments, useUserProfileRoles, editableTable, dialog, label, select, textarea, reactQuery, staysecureAuth, checkbox, reactDropzone, alert, scrollArea, table, _switch, useManagerPermissions, Papa, XLSX, jsPDF, autoTable, reactToPrint, separator, sonner, utils, command, popover, HardwareInventory, SoftwareAccounts, useInventory, useUserAssets, progress, tooltip, LearningTracksTab, useUserRoleById, useProfile, useUserPhysicalLocations) {
   "use strict";
   function _interopNamespaceDefault(e) {
     const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
@@ -1661,38 +1661,7 @@
     const [isProcessing, setIsProcessing] = React.useState(false);
     const [sendActivationEmails, setSendActivationEmails] = React.useState(false);
     const [importMode, setImportMode] = React.useState("create");
-    const { data: validLocations } = reactQuery.useQuery({
-      queryKey: ["locations"],
-      queryFn: async () => {
-        const { data, error } = await supabase.from("locations").select("id, name").eq("status", "Active").order("name");
-        if (error) throw error;
-        return data || [];
-      }
-    });
-    const { data: validDepartments } = reactQuery.useQuery({
-      queryKey: ["departments"],
-      queryFn: async () => {
-        const { data, error } = await supabase.from("departments").select("id, name").order("name");
-        if (error) throw error;
-        return data || [];
-      }
-    });
-    const { data: validRoles } = reactQuery.useQuery({
-      queryKey: ["roles"],
-      queryFn: async () => {
-        const { data, error } = await supabase.from("roles").select("role_id, name, department_id, is_active").eq("is_active", true).order("name");
-        if (error) throw error;
-        return data || [];
-      }
-    });
-    const { data: existingProfiles } = reactQuery.useQuery({
-      queryKey: ["profiles-for-manager-validation"],
-      queryFn: async () => {
-        const { data, error } = await supabase.from("profiles").select("id, full_name, email").order("full_name");
-        if (error) throw error;
-        return data || [];
-      }
-    });
+    const [bulkProgress, setBulkProgress] = React.useState(null);
     const onDrop = React.useCallback((acceptedFiles) => {
       const file = acceptedFiles[0];
       if (file) {
@@ -1732,428 +1701,154 @@
       link.click();
       document.body.removeChild(link);
     };
-    const validateAccessLevel = (accessLevel) => {
-      if (!accessLevel) {
-        return { isValid: false };
+    const completeImportDialog = async (successCount, total, errors, warnings, activationEmailsRequested, mode) => {
+      setUploadedFile(null);
+      setSendActivationEmails(false);
+      setIsProcessing(false);
+      setBulkProgress(null);
+      setIsOpen(false);
+      debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
+      const realWarnings = warnings.filter((w) => w.type !== "info");
+      const infoItems = warnings.filter((w) => w.type === "info");
+      debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
+      const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || mode === "update" && infoItems.length > 0;
+      if (shouldShowReport && onImportError) {
+        setTimeout(() => {
+          onImportError(errors, warnings, { success: successCount, total });
+        }, 300);
+        if (errors.length > 0 && realWarnings.length > 0) {
+          useToast$1.toast({
+            title: "Import completed with errors and warnings",
+            description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
+            variant: "destructive"
+          });
+        } else if (errors.length > 0) {
+          useToast$1.toast({
+            title: "Import completed with errors",
+            description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
+            variant: "destructive"
+          });
+        } else if (realWarnings.length > 0) {
+          useToast$1.toast({
+            title: "Import completed with warnings",
+            description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
+            variant: "default"
+          });
+        } else if (mode === "update" && infoItems.length > 0) {
+          useToast$1.toast({
+            title: "Update completed",
+            description: `${successCount} users updated. Opening additions report...`
+          });
+        }
+      } else {
+        useToast$1.toast({
+          title: "Import completed successfully",
+          description: mode === "update" ? `All ${successCount} users updated successfully.` : activationEmailsRequested ? `All ${successCount} users imported successfully. Activation emails were sent (one per new user).` : `All ${successCount} users imported successfully. No activation emails were sent — use "Send Activation Emails" on User Management when you're ready.`
+        });
       }
-      const trimmedLevel = accessLevel.trim().toLowerCase();
-      const validLevels = ["user", "client_admin"];
-      const levelMapping = {
-        "admin": "client_admin",
-        "client admin": "client_admin"
-      };
-      const backendValue = levelMapping[trimmedLevel] || trimmedLevel;
-      const isValid2 = validLevels.includes(backendValue);
-      return {
-        isValid: isValid2,
-        value: isValid2 ? backendValue : void 0
-      };
+      if (onImportComplete) {
+        await onImportComplete();
+      }
     };
-    const translateError = (error) => {
-      const errorMessage = (error == null ? void 0 : error.message) || (error == null ? void 0 : error.error) || "Unknown error";
-      debug.log("Translating error:", { originalError: error, errorMessage });
-      if (errorMessage.includes("Edge Function returned a non-2xx status code")) {
-        return "Server error occurred while creating user. Please try again or contact support.";
+    const ADDITIONS_BLOCK = "\n__ADDITIONS__\n";
+    function parseImportJobRowMessage(msg) {
+      if (!msg) return { warningPart: "", additions: [] };
+      const idx = msg.indexOf(ADDITIONS_BLOCK);
+      if (idx === -1) return { warningPart: msg, additions: [] };
+      const warningPart = msg.slice(0, idx).trim();
+      try {
+        const parsed = JSON.parse(msg.slice(idx + ADDITIONS_BLOCK.length));
+        return { warningPart, additions: Array.isArray(parsed) ? parsed : [] };
+      } catch {
+        return { warningPart: msg, additions: [] };
       }
-      if (errorMessage.includes("already registered") || errorMessage.includes("User already registered") || errorMessage.includes("has already been registered")) {
-        return "A user with this email address already exists.";
-      }
-      if (errorMessage.includes("Failed to create user:")) {
-        if (errorMessage.includes("User already registered") || errorMessage.includes("already registered")) {
-          return "A user with this email address already exists.";
-        }
-        if (errorMessage.includes("Invalid email")) {
-          return "The email address format is invalid.";
-        }
-        if (errorMessage.includes("Password should be at least")) {
-          return "Password does not meet security requirements.";
-        }
-        return "Failed to create user account. Please check the email address and try again.";
-      }
-      const fullErrorMessage = JSON.stringify(error);
-      if (fullErrorMessage.includes("already registered") || fullErrorMessage.includes("User already registered") || fullErrorMessage.includes("has already been registered")) {
-        return "A user with this email address already exists.";
-      }
-      if (fullErrorMessage.includes("Invalid email") || fullErrorMessage.includes("invalid email") || errorMessage.includes("Invalid email") || errorMessage.includes("invalid email")) {
-        return "The email address format is invalid.";
-      }
-      if (errorMessage.includes("Profile creation failed")) {
-        return "User account was created but profile setup failed. Please contact support.";
-      }
-      if (errorMessage.includes("Database error")) {
-        return "Database error occurred. Please try again or contact support.";
-      }
-      if (errorMessage.includes("Missing email")) {
-        return "Email address is required for all users.";
-      }
-      if (errorMessage.includes("fetch")) {
-        return "Network error occurred. Please check your connection and try again.";
-      }
-      if (errorMessage.includes("timeout")) {
-        return "Request timed out. Please try again.";
-      }
-      if (errorMessage === "Unknown error" && fullErrorMessage.includes("FunctionsHttpError")) {
-        if ((error == null ? void 0 : error.context) || (error == null ? void 0 : error.hint)) {
-          const context = error.context || "";
-          const hint = error.hint || "";
-          if (context.includes("already") || hint.includes("already")) {
-            return "A user with this email address already exists.";
-          }
-        }
-        return "Server error occurred while creating user. Please try again or contact support.";
-      }
-      return errorMessage.length > 100 ? "An unexpected error occurred while creating the user. Please try again." : errorMessage;
-    };
-    const processUserImport = async (row, locationCache, departmentCache, roleCache) => {
-      var _a;
-      const email = row["Email"] || row["email"];
-      if (!email) {
-        console.error("Missing email for row:", row);
-        throw new Error("Email address is required for all users.");
-      }
-      const fullName = row["Full Name"] || row["full_name"] || "";
-      const firstName = row["First Name"] || row["first_name"] || "";
-      const lastName = row["Last Name"] || row["last_name"] || "";
-      if (!fullName || !fullName.trim()) {
-        throw new Error("Full Name is required for all users.");
-      }
-      if (!firstName || !firstName.trim()) {
-        throw new Error("First Name is required for all users.");
-      }
-      if (!lastName || !lastName.trim()) {
-        throw new Error("Last Name is required for all users.");
-      }
-      debug.log("Processing user:", email);
-      const accessLevelValue = row["Access Level"] || row["access_level"] || "";
-      const accessLevelValidation = validateAccessLevel(accessLevelValue);
-      if (!accessLevelValidation.isValid) {
-        throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
-      }
-      const locationName = (row["Location"] || row["location"] || "").trim();
-      const departmentName = (row["Department"] || row["department"] || "").trim();
-      const roleName = (row["Role"] || row["role"] || "").trim();
-      const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : void 0;
-      const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : void 0;
-      const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
-      const roleId = roleName ? roleCache.get(roleKey) : void 0;
-      const managerEmail = (row["Manager"] || row["manager"] || "").trim() || void 0;
+    }
+    const runBackgroundImport = async (csvText, activationEmailsRequested, fileName, mode) => {
       const clientId = client.getCurrentClientId();
       const clientPath = clientId ? `/${clientId}` : "";
-      const { data: authData, error: authError } = await supabase.functions.invoke("create-user", {
+      const { data, error } = await supabase.functions.invoke("user-import-submit", {
         body: {
-          email,
-          full_name: fullName.trim(),
-          first_name: firstName.trim(),
-          last_name: lastName.trim(),
-          phone: row["Phone"] || row["phone"] || "",
-          status: "Pending",
-          employee_id: row["Employee ID"] || row["employee_id"] || "",
-          access_level: accessLevelValidation.value,
-          manager: null,
-          // Manager assigned in pass 2 after all users exist
-          clientPath
+          csv_text: csvText,
+          original_filename: fileName,
+          options: {
+            import_mode: mode,
+            send_activation_email: activationEmailsRequested,
+            client_path: clientPath
+          }
         }
       });
-      if (authError) {
-        console.error("Auth error for user:", email, authError);
-        const friendlyError = translateError(authError);
-        throw new Error(friendlyError);
+      if (error) {
+        throw new Error(error.message || "Failed to start background import");
       }
-      if (authData && authData.user) {
-        debug.log("User created successfully:", email);
-      } else if (authData && authData.error) {
-        console.error("Create user error:", authData.error);
-        const friendlyError = translateError(authData.error);
-        throw new Error(friendlyError);
+      if (!(data == null ? void 0 : data.ok) || !data.job_id) {
+        throw new Error((data == null ? void 0 : data.error) || "Failed to start background import");
       }
-      const userId = (_a = authData == null ? void 0 : authData.user) == null ? void 0 : _a.id;
-      if (!userId) {
-        throw new Error("User created but user ID not returned");
-      }
-      const warnings = [];
-      if (locationName) {
-        if (locationId) {
-          try {
-            const { error: locationError } = await supabase.from("physical_location_access").insert({
-              user_id: userId,
-              location_id: locationId,
-              full_name: fullName.trim(),
-              access_purpose: "General Access",
-              status: "Active",
-              date_access_created: (/* @__PURE__ */ new Date()).toISOString()
-            });
-            if (locationError) {
-              console.error("Error assigning location to physical_location_access:", locationError);
-              warnings.push({
-                field: "Location",
-                value: locationName,
-                message: `Location "${locationName}" could not be assigned: ${locationError.message}`
-              });
-            } else {
-              const { error: profileError } = await supabase.from("profiles").update({ location: locationName, location_id: locationId }).eq("id", userId);
-              if (profileError) {
-                console.error("Error updating profile location:", profileError);
-                warnings.push({
-                  field: "Location",
-                  value: locationName,
-                  message: `Location "${locationName}" was assigned but could not be saved to profile: ${profileError.message}`
-                });
-              }
-            }
-          } catch (locationError) {
-            console.error("Exception assigning location:", locationError);
-            warnings.push({
-              field: "Location",
-              value: locationName,
-              message: `Location "${locationName}" could not be assigned: ${locationError.message}`
-            });
-          }
-        } else {
-          warnings.push({
-            field: "Location",
-            value: locationName,
-            message: `Location "${locationName}" could not be created or found — skipping assignment`
-          });
+      const jobId = data.job_id;
+      const totalRows = data.total_rows ?? 0;
+      setBulkProgress({ processed: 0, total: totalRows, status: "pending" });
+      const deadline = Date.now() + 2 * 3600 * 1e3;
+      while (Date.now() < deadline) {
+        const { data: job, error: jobErr } = await supabase.from("user_import_jobs").select("*").eq("id", jobId).maybeSingle();
+        if (jobErr) {
+          throw new Error(jobErr.message);
         }
-      }
-      if (departmentName && !departmentId) {
-        warnings.push({
-          field: "Department",
-          value: departmentName,
-          message: `Department "${departmentName}" could not be created or found — skipping assignment`
+        if (!job) {
+          await new Promise((r) => setTimeout(r, 2e3));
+          continue;
+        }
+        setBulkProgress({
+          processed: job.processed_rows ?? 0,
+          total: job.total_rows ?? totalRows,
+          status: job.status
         });
-      }
-      if (roleName && !roleId) {
-        warnings.push({
-          field: "Role",
-          value: roleName,
-          message: `Role "${roleName}" could not be created or found — skipping assignment`
-        });
-      }
-      if (departmentId || roleId) {
-        try {
-          const pairingId = departmentId && roleId ? crypto.randomUUID() : void 0;
-          if (departmentId) {
-            const { error: deptError } = await supabase.from("user_departments").insert({
-              user_id: userId,
-              department_id: departmentId,
-              is_primary: false,
-              // Will be set to true if this is the first department
-              pairing_id: pairingId,
-              assigned_by: userId
-              // In production, this should be the current admin user ID
-            });
-            if (deptError) {
-              console.error("Error assigning department:", deptError);
+        if (job.status === "completed") {
+          const { data: failRows } = await supabase.from("user_import_job_rows").select("row_index, row_payload, error_message").eq("job_id", jobId).eq("status", "failed");
+          const { data: warnRows } = await supabase.from("user_import_job_rows").select("row_index, row_payload, error_message").eq("job_id", jobId).eq("status", "succeeded").not("error_message", "is", null);
+          const errors = (failRows || []).map((fr) => {
+            const row = fr.row_payload;
+            const email = row["Email"] || row["email"] || "Unknown";
+            return {
+              rowNumber: fr.row_index + 2,
+              identifier: email,
+              error: fr.error_message || "Failed",
+              rawData: row
+            };
+          });
+          const warnings = [];
+          for (const wr of warnRows || []) {
+            const row = wr.row_payload;
+            const email = row["Email"] || row["email"] || "Unknown";
+            const rowNumber = wr.row_index + 2;
+            const { warningPart, additions } = parseImportJobRowMessage(wr.error_message);
+            if (warningPart) {
               warnings.push({
-                field: "Department",
-                value: departmentName,
-                message: `Department "${departmentName}" could not be assigned: ${deptError.message}`
+                rowNumber,
+                identifier: email,
+                field: "Assignment",
+                error: warningPart,
+                rawData: row
               });
-            } else {
-              const { data: existingDepts } = await supabase.from("user_departments").select("id").eq("user_id", userId);
-              if (existingDepts && existingDepts.length === 1) {
-                await supabase.from("user_departments").update({ is_primary: true }).eq("user_id", userId).eq("department_id", departmentId);
-              }
+            }
+            for (const a of additions) {
+              warnings.push({
+                rowNumber,
+                identifier: email,
+                field: a.field,
+                error: a.value,
+                type: "info",
+                rawData: row
+              });
             }
           }
-          if (roleId) {
-            const { error: roleError } = await supabase.from("user_profile_roles").insert({
-              user_id: userId,
-              role_id: roleId,
-              is_primary: false,
-              // Will be set to true if this is the first role
-              pairing_id: pairingId,
-              assigned_by: userId
-              // In production, this should be the current admin user ID
-            });
-            if (roleError) {
-              console.error("Error assigning role:", roleError);
-              warnings.push({
-                field: "Role",
-                value: roleName,
-                message: `Role "${roleName}" could not be assigned: ${roleError.message}`
-              });
-            } else {
-              const { data: existingRoles } = await supabase.from("user_profile_roles").select("id").eq("user_id", userId);
-              if (existingRoles && existingRoles.length === 1) {
-                await supabase.from("user_profile_roles").update({ is_primary: true }).eq("user_id", userId).eq("role_id", roleId);
-              }
-            }
-          }
-        } catch (assignmentError) {
-          console.error("Exception assigning department/role:", assignmentError);
-          warnings.push({
-            field: "Department/Role",
-            value: `${departmentName || ""} / ${roleName || ""}`,
-            message: `Could not assign department/role: ${assignmentError.message}`
-          });
+          const successCount = job.succeeded_rows ?? 0;
+          return { successCount, total: job.total_rows ?? totalRows, errors, warnings };
         }
-      }
-      return {
-        email,
-        success: true,
-        userId,
-        managerEmail,
-        warnings: warnings.length > 0 ? warnings : null
-      };
-    };
-    const processUserUpdate = async (row, locationCache, departmentCache, roleCache) => {
-      const email = (row["Email"] || row["email"] || "").trim();
-      if (!email) throw new Error("Email address is required for all users.");
-      const { data: profileData, error: profileLookupError } = await supabase.from("profiles").select("id, full_name").eq("email", email).maybeSingle();
-      if (profileLookupError) throw new Error(`Failed to look up user: ${profileLookupError.message}`);
-      if (!profileData) {
-        return processUserImport(row, locationCache, departmentCache, roleCache);
-      }
-      const userId = profileData.id;
-      const warnings = [];
-      const additions = [];
-      const fullName = (row["Full Name"] || row["full_name"] || "").trim();
-      const firstName = (row["First Name"] || row["first_name"] || "").trim();
-      const lastName = (row["Last Name"] || row["last_name"] || "").trim();
-      const phone = (row["Phone"] || row["phone"] || "").trim();
-      const employeeId = (row["Employee ID"] || row["employee_id"] || "").trim();
-      const locationName = (row["Location"] || row["location"] || "").trim();
-      const departmentName = (row["Department"] || row["department"] || "").trim();
-      const roleName = (row["Role"] || row["role"] || "").trim();
-      const managerEmail = (row["Manager"] || row["manager"] || "").trim() || void 0;
-      const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : void 0;
-      const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : void 0;
-      const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
-      const roleId = roleName ? roleCache.get(roleKey) : void 0;
-      const profileUpdates = {};
-      if (fullName) profileUpdates.full_name = fullName;
-      if (firstName) profileUpdates.first_name = firstName;
-      if (lastName) profileUpdates.last_name = lastName;
-      if (phone) profileUpdates.phone = phone;
-      if (employeeId) profileUpdates.employee_id = employeeId;
-      if (locationId) {
-        profileUpdates.location = locationName;
-        profileUpdates.location_id = locationId;
-      }
-      if (Object.keys(profileUpdates).length > 0) {
-        const { error: updateError } = await supabase.from("profiles").update(profileUpdates).eq("id", userId);
-        if (updateError) {
-          warnings.push({ field: "Profile", value: email, message: `Profile could not be updated: ${updateError.message}` });
-        } else {
-          const updatedFields = Object.keys(profileUpdates).filter((k) => !["location", "location_id"].includes(k));
-          if (updatedFields.length > 0) {
-            additions.push({ field: "Profile", value: `Updated: ${updatedFields.join(", ")}` });
-          }
+        if (job.status === "failed") {
+          throw new Error(job.last_error || "Import job failed");
         }
+        await new Promise((r) => setTimeout(r, 2e3));
       }
-      if (locationId) {
-        const { data: existingAccess } = await supabase.from("physical_location_access").select("id").eq("user_id", userId).eq("location_id", locationId).maybeSingle();
-        if (!existingAccess) {
-          const { error: locationError } = await supabase.from("physical_location_access").insert({
-            user_id: userId,
-            location_id: locationId,
-            full_name: fullName || profileData.full_name,
-            access_purpose: "General Access",
-            status: "Active",
-            date_access_created: (/* @__PURE__ */ new Date()).toISOString()
-          });
-          if (locationError) {
-            warnings.push({ field: "Location", value: locationName, message: `Location access could not be assigned: ${locationError.message}` });
-          } else {
-            additions.push({ field: "Location", value: locationName });
-          }
-        }
-      } else if (locationName) {
-        warnings.push({ field: "Location", value: locationName, message: `Location "${locationName}" not found — skipping assignment` });
-      }
-      const [{ data: existingDepts }, { data: existingRoles }] = await Promise.all([
-        supabase.from("user_departments").select("id, department_id, pairing_id").eq("user_id", userId),
-        supabase.from("user_profile_roles").select("id, role_id, pairing_id").eq("user_id", userId)
-      ]);
-      const existingPairs = (existingDepts || []).filter((d) => d.pairing_id).flatMap((d) => {
-        const matched = (existingRoles || []).filter((r) => r.pairing_id === d.pairing_id);
-        return matched.map((r) => ({ departmentId: d.department_id, roleId: r.role_id }));
-      });
-      const existingDeptIds = new Set((existingDepts || []).map((d) => d.department_id));
-      const existingRoleIds = new Set((existingRoles || []).map((r) => r.role_id));
-      if (departmentId && roleId) {
-        const pairExists = existingPairs.some(
-          (p) => p.departmentId === departmentId && p.roleId === roleId
-        );
-        if (pairExists) {
-          warnings.push({ field: "Role", value: roleName, message: `"${departmentName} | ${roleName}" is already assigned — skipped` });
-        } else {
-          const pairingId = crypto.randomUUID();
-          const { error: deptError } = await supabase.from("user_departments").insert({
-            user_id: userId,
-            department_id: departmentId,
-            is_primary: (existingDepts || []).length === 0,
-            pairing_id: pairingId,
-            assigned_by: userId
-          });
-          if (deptError) {
-            warnings.push({ field: "Department", value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
-          } else {
-            additions.push({ field: "Department", value: departmentName });
-          }
-          const { error: roleError } = await supabase.from("user_profile_roles").insert({
-            user_id: userId,
-            role_id: roleId,
-            is_primary: (existingRoles || []).length === 0,
-            pairing_id: pairingId,
-            assigned_by: userId
-          });
-          if (roleError) {
-            warnings.push({ field: "Role", value: roleName, message: `Role could not be assigned: ${roleError.message}` });
-          } else {
-            additions.push({ field: "Role", value: roleName });
-          }
-        }
-      } else if (departmentId) {
-        if (existingDeptIds.has(departmentId)) {
-          warnings.push({ field: "Department", value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
-        } else {
-          const { error: deptError } = await supabase.from("user_departments").insert({
-            user_id: userId,
-            department_id: departmentId,
-            is_primary: (existingDepts || []).length === 0,
-            pairing_id: null,
-            assigned_by: userId
-          });
-          if (deptError) {
-            warnings.push({ field: "Department", value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
-          } else {
-            additions.push({ field: "Department", value: departmentName });
-          }
-        }
-      } else if (departmentName) {
-        warnings.push({ field: "Department", value: departmentName, message: `Department "${departmentName}" not found — skipping assignment` });
-      }
-      if (!departmentId && roleId) {
-        if (existingRoleIds.has(roleId)) {
-          warnings.push({ field: "Role", value: roleName, message: `Role "${roleName}" is already assigned — skipped` });
-        } else {
-          const { error: roleError } = await supabase.from("user_profile_roles").insert({
-            user_id: userId,
-            role_id: roleId,
-            is_primary: (existingRoles || []).length === 0,
-            pairing_id: null,
-            assigned_by: userId
-          });
-          if (roleError) {
-            warnings.push({ field: "Role", value: roleName, message: `Role could not be assigned: ${roleError.message}` });
-          } else {
-            additions.push({ field: "Role", value: roleName });
-          }
-        }
-      } else if (!departmentId && roleName) {
-        warnings.push({ field: "Role", value: roleName, message: `Role "${roleName}" not found — skipping assignment` });
-      }
-      return {
-        email,
-        success: true,
-        userId,
-        managerEmail,
-        warnings: warnings.length > 0 ? warnings : null,
-        additions
-      };
+      throw new Error("Import timed out after 2 hours. Check User Management and the import job table.");
     };
     const handleImport = async () => {
       if (!uploadedFile) {
@@ -2165,330 +1860,33 @@
         return;
       }
       setIsProcessing(true);
+      setBulkProgress(null);
       try {
         const text = await uploadedFile.text();
-        Papa.parse(text, {
-          header: true,
-          complete: async (results) => {
-            const data = results.data;
-            if (data.length === 0) {
-              useToast$1.toast({
-                title: "Empty file",
-                description: "The uploaded file contains no data",
-                variant: "destructive"
-              });
-              setIsProcessing(false);
-              return;
-            }
-            debug.log("Processing", data.length, "rows");
-            let successCount = 0;
-            const errors = [];
-            const warnings = [];
-            const createdUsers = [];
-            const locationCache = /* @__PURE__ */ new Map();
-            const departmentCache = /* @__PURE__ */ new Map();
-            const roleCache = /* @__PURE__ */ new Map();
-            (validLocations || []).forEach(
-              (loc) => locationCache.set(loc.name.toLowerCase(), loc.id)
-            );
-            (validDepartments || []).forEach(
-              (dept) => departmentCache.set(dept.name.toLowerCase(), dept.id)
-            );
-            const deptIdToName = /* @__PURE__ */ new Map();
-            (validDepartments || []).forEach(
-              (dept) => deptIdToName.set(dept.id, dept.name.toLowerCase())
-            );
-            (validRoles || []).forEach((role) => {
-              const deptKey = role.department_id ? deptIdToName.get(role.department_id) ?? "" : "";
-              roleCache.set(`${role.name.toLowerCase()}::${deptKey}`, role.role_id);
-            });
-            const uniqueLocations = /* @__PURE__ */ new Set();
-            const uniqueDepartments = /* @__PURE__ */ new Set();
-            const uniqueRolePairs = /* @__PURE__ */ new Set();
-            for (const row of data) {
-              const loc = (row["Location"] || row["location"] || "").trim();
-              const dept = (row["Department"] || row["department"] || "").trim();
-              const role = (row["Role"] || row["role"] || "").trim();
-              if (loc) uniqueLocations.add(loc);
-              if (dept) uniqueDepartments.add(dept);
-              if (role) uniqueRolePairs.add(`${role}|||${dept}`);
-            }
-            if (importMode === "create") {
-              for (const locName of uniqueLocations) {
-                const key = locName.toLowerCase();
-                if (!locationCache.has(key)) {
-                  try {
-                    const { data: newLoc, error } = await supabase.from("locations").insert({ name: locName, status: "Active" }).select("id").single();
-                    if (!error && newLoc) {
-                      locationCache.set(key, newLoc.id);
-                      debug.log("[ImportUsersDialog] Auto-created location:", locName);
-                    } else if (error) {
-                      debug.error("[ImportUsersDialog] Failed to create location:", locName, error);
-                    }
-                  } catch (err) {
-                    debug.error("[ImportUsersDialog] Exception creating location:", locName, err);
-                  }
-                }
-              }
-            }
-            if (importMode === "create") {
-              for (const deptName of uniqueDepartments) {
-                const key = deptName.toLowerCase();
-                if (!departmentCache.has(key)) {
-                  try {
-                    const { data: newDept, error } = await supabase.from("departments").insert({ name: deptName }).select("id").single();
-                    if (!error && newDept) {
-                      departmentCache.set(key, newDept.id);
-                      debug.log("[ImportUsersDialog] Auto-created department:", deptName);
-                    } else if (error) {
-                      debug.error("[ImportUsersDialog] Failed to create department:", deptName, error);
-                    }
-                  } catch (err) {
-                    debug.error("[ImportUsersDialog] Exception creating department:", deptName, err);
-                  }
-                }
-              }
-            }
-            if (importMode === "create") {
-              for (const pair of uniqueRolePairs) {
-                const sep = pair.indexOf("|||");
-                const roleName = pair.slice(0, sep);
-                const deptName = pair.slice(sep + 3);
-                const roleKey = `${roleName.toLowerCase()}::${deptName.toLowerCase()}`;
-                if (!roleCache.has(roleKey)) {
-                  const deptId = deptName ? departmentCache.get(deptName.toLowerCase()) ?? null : null;
-                  try {
-                    const { data: newRole, error } = await supabase.from("roles").insert({ name: roleName, department_id: deptId, is_active: true }).select("role_id").single();
-                    if (!error && newRole) {
-                      roleCache.set(roleKey, newRole.role_id);
-                      debug.log("[ImportUsersDialog] Auto-created role:", roleName, deptName ? `(${deptName})` : "(general)");
-                    } else if (error) {
-                      debug.log("[ImportUsersDialog] Role insert failed, fetching existing:", roleName, deptName, error.message);
-                      const q = supabase.from("roles").select("role_id").eq("name", roleName).eq("is_active", true);
-                      const { data: existing } = await (deptId ? q.eq("department_id", deptId) : q.is("department_id", null)).maybeSingle();
-                      if (existing) {
-                        roleCache.set(roleKey, existing.role_id);
-                        debug.log("[ImportUsersDialog] Found existing role:", roleName, deptName ? `(${deptName})` : "(general)");
-                      } else {
-                        debug.error("[ImportUsersDialog] Could not find or create role:", roleName, deptName);
-                      }
-                    }
-                  } catch (err) {
-                    debug.error("[ImportUsersDialog] Exception creating role:", roleName, err);
-                  }
-                }
-              }
-            }
-            debug.log("[ImportUsersDialog] Pass 0 complete. Cache sizes:", {
-              locations: locationCache.size,
-              departments: departmentCache.size,
-              roles: roleCache.size
-            });
-            for (let i = 0; i < data.length; i++) {
-              const row = data[i];
-              if (!row["Email"] && !row["email"] && !row["Full Name"] && !row["full_name"]) {
-                debug.log("Skipping empty row at index", i);
-                continue;
-              }
-              const email = row["Email"] || row["email"] || "Unknown";
-              const rowNumber = i + 2;
-              try {
-                debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
-                const result = importMode === "update" ? await processUserUpdate(row, locationCache, departmentCache, roleCache) : await processUserImport(row, locationCache, departmentCache, roleCache);
-                successCount++;
-                debug.log(`Successfully processed user ${i + 1}`);
-                createdUsers.push({
-                  rowNumber,
-                  email,
-                  userId: result.userId,
-                  managerEmail: result.managerEmail,
-                  row
-                });
-                if (result.warnings) {
-                  result.warnings.forEach((warning) => {
-                    warnings.push({
-                      rowNumber,
-                      identifier: email,
-                      field: warning.field,
-                      error: warning.message,
-                      rawData: row
-                    });
-                  });
-                }
-                if ("additions" in result && result.additions && result.additions.length > 0) {
-                  debug.log(`[ImportUsersDialog] additions for ${email}:`, result.additions);
-                  result.additions.forEach((addition) => {
-                    const infoItem = {
-                      rowNumber,
-                      identifier: email,
-                      field: addition.field,
-                      error: addition.value,
-                      type: "info",
-                      rawData: row
-                    };
-                    debug.log(`[ImportUsersDialog] pushing info item:`, infoItem);
-                    warnings.push(infoItem);
-                  });
-                } else {
-                  debug.log(`[ImportUsersDialog] no additions for ${email}. 'additions' in result:`, "additions" in result, "result.additions:", result.additions);
-                }
-              } catch (error) {
-                console.error(`Error importing user ${i + 1}:`, error);
-                const friendlyError = translateError(error);
-                errors.push({
-                  rowNumber,
-                  identifier: email,
-                  field: !row["Email"] && !row["email"] ? "Email" : void 0,
-                  error: friendlyError,
-                  rawData: row
-                });
-              }
-              if (i < data.length - 1) {
-                await new Promise((resolve) => setTimeout(resolve, 500));
-              }
-            }
-            const emailToId = /* @__PURE__ */ new Map();
-            (existingProfiles || []).forEach((p) => {
-              const e = (p.email ?? "").trim().toLowerCase();
-              if (e) emailToId.set(e, p.id);
-            });
-            createdUsers.forEach((u) => {
-              const e = u.email.trim().toLowerCase();
-              if (e) emailToId.set(e, u.userId);
-            });
-            for (const u of createdUsers) {
-              if (!u.managerEmail) continue;
-              const managerId = emailToId.get(u.managerEmail.trim().toLowerCase());
-              if (managerId) {
-                try {
-                  const { error: managerUpdateError } = await supabase.from("profiles").update({ manager: managerId }).eq("id", u.userId);
-                  if (managerUpdateError) {
-                    warnings.push({
-                      rowNumber: u.rowNumber,
-                      identifier: u.email,
-                      field: "Manager",
-                      error: `Manager could not be assigned: ${managerUpdateError.message}`,
-                      rawData: u.row
-                    });
-                  } else {
-                    debug.log(`Assigned manager ${u.managerEmail} for user ${u.email}`);
-                  }
-                } catch (err) {
-                  warnings.push({
-                    rowNumber: u.rowNumber,
-                    identifier: u.email,
-                    field: "Manager",
-                    error: `Manager could not be assigned: ${(err == null ? void 0 : err.message) ?? err}`,
-                    rawData: u.row
-                  });
-                }
-              } else {
-                warnings.push({
-                  rowNumber: u.rowNumber,
-                  identifier: u.email,
-                  field: "Manager",
-                  error: `Manager email "${u.managerEmail}" does not exist in the system - user created without manager assignment`,
-                  rawData: u.row
-                });
-              }
-            }
-            debug.log("Import completed. Success:", successCount, "Errors:", errors.length, "Warnings:", warnings.length);
-            if (sendActivationEmails && createdUsers.length > 0) {
-              const pathParts = window.location.pathname.split("/").filter(Boolean);
-              const reserved = ["admin", "activate-account", "reset-password", "forgot-password", "email-notifications"];
-              const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : "";
-              const redirectUrl = clientSegment ? `${window.location.origin}/${clientSegment}/activate-account` : `${window.location.origin}/activate-account`;
-              debug.log("[ImportUsersDialog] Sending activation emails to", createdUsers.length, "users, redirectUrl:", redirectUrl);
-              const BATCH_SIZE = 5;
-              const BATCH_DELAY_MS = 1e3;
-              let emailsSent = 0;
-              let emailsFailed = 0;
-              for (let i = 0; i < createdUsers.length; i += BATCH_SIZE) {
-                const batch = createdUsers.slice(i, i + BATCH_SIZE);
-                await Promise.all(batch.map(async (u) => {
-                  try {
-                    const { error: emailError } = await supabase.functions.invoke("request-activation-link", {
-                      body: { email: u.email, redirectUrl }
-                    });
-                    if (emailError) throw emailError;
-                    debug.log("[ImportUsersDialog] Activation email sent to", u.email);
-                    emailsSent++;
-                  } catch (err) {
-                    debug.error("[ImportUsersDialog] Failed to send activation email to", u.email, err);
-                    emailsFailed++;
-                  }
-                }));
-                if (i + BATCH_SIZE < createdUsers.length) {
-                  await new Promise((resolve) => setTimeout(resolve, BATCH_DELAY_MS));
-                }
-              }
-              debug.log("[ImportUsersDialog] Activation emails done. Sent:", emailsSent, "Failed:", emailsFailed);
-            }
-            setUploadedFile(null);
-            setSendActivationEmails(false);
-            setIsProcessing(false);
-            setIsOpen(false);
-            debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map((w) => ({ type: w.type, field: w.field, identifier: w.identifier })));
-            const realWarnings = warnings.filter((w) => w.type !== "info");
-            const infoItems = warnings.filter((w) => w.type === "info");
-            debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
-            const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || importMode === "update" && infoItems.length > 0;
-            if (shouldShowReport && onImportError) {
-              setTimeout(() => {
-                onImportError(errors, warnings, { success: successCount, total: data.length });
-              }, 300);
-              if (errors.length > 0 && realWarnings.length > 0) {
-                useToast$1.toast({
-                  title: "Import completed with errors and warnings",
-                  description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
-                  variant: "destructive"
-                });
-              } else if (errors.length > 0) {
-                useToast$1.toast({
-                  title: "Import completed with errors",
-                  description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
-                  variant: "destructive"
-                });
-              } else if (realWarnings.length > 0) {
-                useToast$1.toast({
-                  title: "Import completed with warnings",
-                  description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
-                  variant: "default"
-                });
-              } else if (importMode === "update" && infoItems.length > 0) {
-                useToast$1.toast({
-                  title: "Update completed",
-                  description: `${successCount} users updated. Opening additions report...`
-                });
-              }
-            } else {
-              useToast$1.toast({
-                title: "Import completed successfully",
-                description: importMode === "update" ? `All ${successCount} users updated successfully.` : `All ${successCount} users imported successfully. Users will need to activate their accounts via email.`
-              });
-            }
-            if (onImportComplete) {
-              await onImportComplete();
-            }
-          },
-          error: (error) => {
-            console.error("Parse error:", error);
-            useToast$1.toast({
-              title: "Parse error",
-              description: "Failed to parse the CSV file",
-              variant: "destructive"
-            });
-            setIsProcessing(false);
-          }
-        });
-      } catch (error) {
-        console.error("Import error:", error);
+        const activationEmailsRequested = sendActivationEmails;
+        const result = await runBackgroundImport(
+          text,
+          activationEmailsRequested,
+          uploadedFile.name,
+          importMode
+        );
+        await completeImportDialog(
+          result.successCount,
+          result.total,
+          result.errors,
+          result.warnings,
+          activationEmailsRequested,
+          importMode
+        );
+      } catch (bulkErr) {
+        debug.error("[ImportUsersDialog] Background import failed:", bulkErr);
         useToast$1.toast({
-          title: "Import failed",
-          description: "An error occurred while importing the file",
+          title: "Background import failed",
+          description: (bulkErr == null ? void 0 : bulkErr.message) || "Try again or use a smaller file.",
           variant: "destructive"
         });
         setIsProcessing(false);
+        setBulkProgress(null);
       }
     };
     const handleDialogClose = (open) => {
@@ -2496,6 +1894,7 @@
         setUploadedFile(null);
         setSendActivationEmails(false);
         setImportMode("create");
+        setBulkProgress(null);
       }
       setIsOpen(open);
     };
@@ -2504,7 +1903,7 @@
       /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogContent, { className: "max-w-3xl max-h-[90vh] overflow-y-auto", children: [
         /* @__PURE__ */ jsxRuntime.jsxs(dialog.DialogHeader, { children: [
           /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogTitle, { children: importMode === "update" ? "Update Existing Users" : "Import Users" }),
-          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: importMode === "update" ? "Upload a CSV to update existing users (matched by email) to add departments and roles to their profiles, and update their location and profile fields. Unrecognised emails are created as new users." : "Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don't already exist." })
+          /* @__PURE__ */ jsxRuntime.jsx(dialog.DialogDescription, { children: importMode === "update" ? 'Server-side background import (safe for large CSVs). Rows match users by email and update profile, locations, departments, and roles. Emails with no existing user create a new account; "Send activation emails" applies to those new users.' : "CSV import for new users runs on the server in the background (safe for large files). You can leave this page; refresh User Management to watch progress. Locations, departments, and roles are created automatically if missing." })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-6", children: [
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex rounded-lg border overflow-hidden", children: [
@@ -2557,17 +1956,29 @@
               }
             ),
             uploadedFile && /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-3", children: [
-              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-start gap-2", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(
                   checkbox.Checkbox,
                   {
                     id: "send-activation-emails",
                     checked: sendActivationEmails,
                     onCheckedChange: (checked) => setSendActivationEmails(checked === true),
-                    disabled: isProcessing
+                    disabled: isProcessing,
+                    className: "mt-1"
                   }
                 ),
-                /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to new users" })
+                /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
+                  /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "send-activation-emails", className: "text-sm font-normal cursor-pointer", children: "Send activation emails to new users" }),
+                  /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground mt-1", children: "When unchecked, accounts are created without sending mail; you can use Send Activation Emails on User Management when ready." })
+                ] })
+              ] }),
+              bulkProgress && /* @__PURE__ */ jsxRuntime.jsxs("p", { className: "text-xs text-muted-foreground", children: [
+                "Server import: ",
+                bulkProgress.processed,
+                " / ",
+                bulkProgress.total,
+                " rows · status: ",
+                bulkProgress.status
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex gap-3", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(
@@ -2655,7 +2066,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Last Name" }),
                 " is required for each user"
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• Users will be created with 'Pending' status and must activate via email" }),
+              /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• Users will be created with 'Pending' status; use the checkbox above to send (or not send) activation email as each account is created, or use Send Activation Emails in User Management later" }),
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Access Level" }),

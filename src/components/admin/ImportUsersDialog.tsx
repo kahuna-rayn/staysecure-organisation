@@ -9,9 +9,7 @@ import { useDropzone } from 'react-dropzone';
 import { Upload, FileText, Download } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { getCurrentClientId } from '@/integrations/supabase/client';
-import Papa from 'papaparse';
 import { ImportError } from '../import/ImportErrorReport';
-import { useQuery } from '@tanstack/react-query';
 import { useOrganisationContext } from '@/context/OrganisationContext';
 
 interface ImportUsersDialogProps {
@@ -29,61 +27,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   const [isProcessing, setIsProcessing] = useState(false);
   const [sendActivationEmails, setSendActivationEmails] = useState(false);
   const [importMode, setImportMode] = useState<'create' | 'update'>('create');
-
-  // Fetch valid locations for validation
-  const { data: validLocations } = useQuery({
-    queryKey: ['locations'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('locations')
-        .select('id, name')
-        .eq('status', 'Active')
-        .order('name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch valid departments for validation
-  const { data: validDepartments } = useQuery({
-    queryKey: ['departments'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('departments')
-        .select('id, name')
-        .order('name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch valid roles for validation
-  const { data: validRoles } = useQuery({
-    queryKey: ['roles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('roles')
-        .select('role_id, name, department_id, is_active')
-        .eq('is_active', true)
-        .order('name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
-  // Fetch all existing profiles for manager validation
-  const { data: existingProfiles } = useQuery({
-    queryKey: ['profiles-for-manager-validation'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, full_name, email')
-        .order('full_name');
-      if (error) throw error;
-      return data || [];
-    },
-  });
-
+  const [bulkProgress, setBulkProgress] = useState<{ processed: number; total: number; status: string } | null>(null);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -130,553 +74,213 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
   };
 
 
-  // Helper function to validate access level
-  const validateAccessLevel = (accessLevel: string): { isValid: boolean; value?: string } => {
-    if (!accessLevel) {
-      return { isValid: false };
-    }
-
-    const trimmedLevel = accessLevel.trim().toLowerCase();
-    const validLevels = ['user', 'client_admin'];
-    
-    // Map display values to backend values
-    const levelMapping: { [key: string]: string } = {
-      'admin': 'client_admin',
-      'client admin': 'client_admin'
-    };
-
-    const backendValue = levelMapping[trimmedLevel] || trimmedLevel;
-    const isValid = validLevels.includes(backendValue);
-
-    return {
-      isValid,
-      value: isValid ? backendValue : undefined
-    };
-  };
-
-  // Helper function to translate technical errors to user-friendly messages
-  const translateError = (error: any): string => {
-    const errorMessage = error?.message || error?.error || 'Unknown error';
-    
-    debug.log('Translating error:', { originalError: error, errorMessage });
-    
-    // Handle specific Supabase/Edge Function errors
-    if (errorMessage.includes('Edge Function returned a non-2xx status code')) {
-      return 'Server error occurred while creating user. Please try again or contact support.';
-    }
-    
-    // Check for "already registered" patterns first (most common case)
-    if (errorMessage.includes('already registered') || errorMessage.includes('User already registered') || 
-        errorMessage.includes('has already been registered')) {
-      return 'A user with this email address already exists.';
-    }
-    
-    if (errorMessage.includes('Failed to create user:')) {
-      if (errorMessage.includes('User already registered') || errorMessage.includes('already registered')) {
-        return 'A user with this email address already exists.';
-      }
-      if (errorMessage.includes('Invalid email')) {
-        return 'The email address format is invalid.';
-      }
-      if (errorMessage.includes('Password should be at least')) {
-        return 'Password does not meet security requirements.';
-      }
-      return 'Failed to create user account. Please check the email address and try again.';
-    }
-    
-    // Handle Supabase Auth specific errors - check the original error object too
-    const fullErrorMessage = JSON.stringify(error);
-    if (fullErrorMessage.includes('already registered') || fullErrorMessage.includes('User already registered') || 
-        fullErrorMessage.includes('has already been registered')) {
-      return 'A user with this email address already exists.';
-    }
-    
-    if (fullErrorMessage.includes('Invalid email') || fullErrorMessage.includes('invalid email') ||
-        errorMessage.includes('Invalid email') || errorMessage.includes('invalid email')) {
-      return 'The email address format is invalid.';
-    }
-    
-    if (errorMessage.includes('Profile creation failed')) {
-      return 'User account was created but profile setup failed. Please contact support.';
-    }
-    
-    if (errorMessage.includes('Database error')) {
-      return 'Database error occurred. Please try again or contact support.';
-    }
-    
-    if (errorMessage.includes('Missing email')) {
-      return 'Email address is required for all users.';
-    }
-    
-    // Handle network/connection errors
-    if (errorMessage.includes('fetch')) {
-      return 'Network error occurred. Please check your connection and try again.';
-    }
-    
-    // Handle timeout errors
-    if (errorMessage.includes('timeout')) {
-      return 'Request timed out. Please try again.';
-    }
-    
-    // Handle FunctionsHttpError specifically
-    if (errorMessage === 'Unknown error' && fullErrorMessage.includes('FunctionsHttpError')) {
-      // This is likely a user already exists error that's not being properly translated
-      // Check if we can extract more info from the error object
-      if (error?.context || error?.hint) {
-        const context = error.context || '';
-        const hint = error.hint || '';
-        if (context.includes('already') || hint.includes('already')) {
-          return 'A user with this email address already exists.';
-        }
-      }
-      return 'Server error occurred while creating user. Please try again or contact support.';
-    }
-    
-    // Default fallback - return a more user-friendly version of the original error
-    return errorMessage.length > 100 
-      ? 'An unexpected error occurred while creating the user. Please try again.'
-      : errorMessage;
-  };
-
-  const processUserImport = async (
-    row: any,
-    locationCache: Map<string, string>,
-    departmentCache: Map<string, string>,
-    roleCache: Map<string, string>
+  const completeImportDialog = async (
+    successCount: number,
+    total: number,
+    errors: ImportError[],
+    warnings: ImportError[],
+    activationEmailsRequested: boolean,
+    mode: 'create' | 'update'
   ) => {
-    const email = row['Email'] || row['email'];
-    
-    if (!email) {
-      console.error('Missing email for row:', row);
-      throw new Error('Email address is required for all users.');
+    setUploadedFile(null);
+    setSendActivationEmails(false);
+    setIsProcessing(false);
+    setBulkProgress(null);
+    setIsOpen(false);
+
+    debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map(w => ({ type: (w as any).type, field: w.field, identifier: w.identifier })));
+    const realWarnings = warnings.filter((w: any) => w.type !== 'info');
+    const infoItems = warnings.filter((w: any) => w.type === 'info');
+    debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
+    const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || (mode === 'update' && infoItems.length > 0);
+
+    if (shouldShowReport && onImportError) {
+      setTimeout(() => {
+        onImportError(errors, warnings, { success: successCount, total });
+      }, 300);
+
+      if (errors.length > 0 && realWarnings.length > 0) {
+        toast({
+          title: "Import completed with errors and warnings",
+          description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
+          variant: "destructive",
+        });
+      } else if (errors.length > 0) {
+        toast({
+          title: "Import completed with errors",
+          description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
+          variant: "destructive",
+        });
+      } else if (realWarnings.length > 0) {
+        toast({
+          title: "Import completed with warnings",
+          description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
+          variant: "default",
+        });
+      } else if (mode === 'update' && infoItems.length > 0) {
+        toast({
+          title: "Update completed",
+          description: `${successCount} users updated. Opening additions report...`,
+        });
+      }
+    } else {
+      toast({
+        title: "Import completed successfully",
+        description: mode === 'update'
+          ? `All ${successCount} users updated successfully.`
+          : activationEmailsRequested
+            ? `All ${successCount} users imported successfully. Activation emails were sent (one per new user).`
+            : `All ${successCount} users imported successfully. No activation emails were sent — use "Send Activation Emails" on User Management when you're ready.`,
+      });
     }
 
-    // Validate required name fields
-    const fullName = row['Full Name'] || row['full_name'] || '';
-    const firstName = row['First Name'] || row['first_name'] || '';
-    const lastName = row['Last Name'] || row['last_name'] || '';
-    
-    if (!fullName || !fullName.trim()) {
-      throw new Error('Full Name is required for all users.');
+    if (onImportComplete) {
+      await onImportComplete();
     }
-    
-    if (!firstName || !firstName.trim()) {
-      throw new Error('First Name is required for all users.');
+  };
+
+  const ADDITIONS_BLOCK = '\n__ADDITIONS__\n';
+
+  function parseImportJobRowMessage(msg: string | null): {
+    warningPart: string;
+    additions: { field: string; value: string }[];
+  } {
+    if (!msg) return { warningPart: '', additions: [] };
+    const idx = msg.indexOf(ADDITIONS_BLOCK);
+    if (idx === -1) return { warningPart: msg, additions: [] };
+    const warningPart = msg.slice(0, idx).trim();
+    try {
+      const parsed = JSON.parse(msg.slice(idx + ADDITIONS_BLOCK.length)) as { field: string; value: string }[];
+      return { warningPart, additions: Array.isArray(parsed) ? parsed : [] };
+    } catch {
+      return { warningPart: msg, additions: [] };
     }
-    
-    if (!lastName || !lastName.trim()) {
-      throw new Error('Last Name is required for all users.');
-    }
+  }
 
-    debug.log('Processing user:', email);
-
-    const accessLevelValue = row['Access Level'] || row['access_level'] || '';
-    const accessLevelValidation = validateAccessLevel(accessLevelValue);
-    
-    if (!accessLevelValidation.isValid) {
-      throw new Error(`Access Level "${accessLevelValue}" is invalid. Only "user" and "admin" are allowed.`);
-    }
-
-    const locationName = (row['Location'] || row['location'] || '').trim();
-    const departmentName = (row['Department'] || row['department'] || '').trim();
-    const roleName = (row['Role'] || row['role'] || '').trim();
-
-    // Resolve IDs from pre-built caches (populated in Pass 0)
-    const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : undefined;
-    const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : undefined;
-    const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
-    const roleId = roleName ? roleCache.get(roleKey) : undefined;
-
-    // Manager is assigned in pass 2 (after all users created) so order in CSV doesn't matter
-    const managerEmail = (row['Manager'] || row['manager'] || '').trim() || undefined;
-
-    // Extract client path using the same logic as client.ts
+  const runBackgroundImport = async (
+    csvText: string,
+    activationEmailsRequested: boolean,
+    fileName: string,
+    mode: 'create' | 'update'
+  ): Promise<{ successCount: number; total: number; errors: ImportError[]; warnings: ImportError[] }> => {
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : '';
-    
-    // Use our create-user edge function instead of direct signUp
-    const { data: authData, error: authError } = await supabase.functions.invoke('create-user', {
+
+    const { data, error } = await supabase.functions.invoke<{
+      ok?: boolean;
+      job_id?: string;
+      total_rows?: number;
+      error?: string;
+    }>('user-import-submit', {
       body: {
-        email: email,
-        full_name: fullName.trim(),
-        first_name: firstName.trim(),
-        last_name: lastName.trim(),
-        phone: row['Phone'] || row['phone'] || '',
-        status: 'Pending',
-        employee_id: row['Employee ID'] || row['employee_id'] || '',
-        access_level: accessLevelValidation.value!,
-        manager: null, // Manager assigned in pass 2 after all users exist
-        clientPath
-      }
+        csv_text: csvText,
+        original_filename: fileName,
+        options: {
+          import_mode: mode,
+          send_activation_email: activationEmailsRequested,
+          client_path: clientPath,
+        },
+      },
     });
 
-    if (authError) {
-      console.error('Auth error for user:', email, authError);
-      const friendlyError = translateError(authError);
-      throw new Error(friendlyError);
+    if (error) {
+      throw new Error(error.message || 'Failed to start background import');
+    }
+    if (!data?.ok || !data.job_id) {
+      throw new Error(data?.error || 'Failed to start background import');
     }
 
-    if (authData && authData.user) {
-      debug.log('User created successfully:', email);
-    } else if (authData && authData.error) {
-      console.error('Create user error:', authData.error);
-      const friendlyError = translateError(authData.error);
-      throw new Error(friendlyError);
-    }
+    const jobId = data.job_id;
+    const totalRows = data.total_rows ?? 0;
+    setBulkProgress({ processed: 0, total: totalRows, status: 'pending' });
 
-    const userId = authData?.user?.id;
-    if (!userId) {
-      throw new Error('User created but user ID not returned');
-    }
+    const deadline = Date.now() + 2 * 3600 * 1000;
 
-    // Collect all warnings (manager assignment happens in pass 2)
-    const warnings = [];
+    while (Date.now() < deadline) {
+      const { data: job, error: jobErr } = await supabase
+        .from('user_import_jobs')
+        .select('*')
+        .eq('id', jobId)
+        .maybeSingle();
 
-    // Assign location if provided
-    if (locationName) {
-      if (locationId) {
-        try {
-          const { error: locationError } = await supabase
-            .from('physical_location_access')
-            .insert({
-              user_id: userId,
-              location_id: locationId,
-              full_name: fullName.trim(),
-              access_purpose: 'General Access',
-              status: 'Active',
-              date_access_created: new Date().toISOString()
-            });
-
-          if (locationError) {
-            console.error('Error assigning location to physical_location_access:', locationError);
-            warnings.push({
-              field: 'Location',
-              value: locationName,
-              message: `Location "${locationName}" could not be assigned: ${locationError.message}`
-            });
-          } else {
-            const { error: profileError } = await supabase
-              .from('profiles')
-              .update({ location: locationName, location_id: locationId })
-              .eq('id', userId);
-
-            if (profileError) {
-              console.error('Error updating profile location:', profileError);
-              warnings.push({
-                field: 'Location',
-                value: locationName,
-                message: `Location "${locationName}" was assigned but could not be saved to profile: ${profileError.message}`
-              });
-            }
-          }
-        } catch (locationError: any) {
-          console.error('Exception assigning location:', locationError);
-          warnings.push({
-            field: 'Location',
-            value: locationName,
-            message: `Location "${locationName}" could not be assigned: ${locationError.message}`
-          });
-        }
-      } else {
-        warnings.push({
-          field: 'Location',
-          value: locationName,
-          message: `Location "${locationName}" could not be created or found — skipping assignment`
-        });
+      if (jobErr) {
+        throw new Error(jobErr.message);
       }
-    }
+      if (!job) {
+        await new Promise((r) => setTimeout(r, 2000));
+        continue;
+      }
 
-    // Assign department and/or role if provided (warn for any that couldn't be resolved)
-    if (departmentName && !departmentId) {
-      warnings.push({
-        field: 'Department',
-        value: departmentName,
-        message: `Department "${departmentName}" could not be created or found — skipping assignment`
+      setBulkProgress({
+        processed: job.processed_rows ?? 0,
+        total: job.total_rows ?? totalRows,
+        status: job.status,
       });
-    }
-    if (roleName && !roleId) {
-      warnings.push({
-        field: 'Role',
-        value: roleName,
-        message: `Role "${roleName}" could not be created or found — skipping assignment`
-      });
-    }
 
-    if (departmentId || roleId) {
-      try {
-        const pairingId = (departmentId && roleId) ? crypto.randomUUID() : undefined;
+      if (job.status === 'completed') {
+        const { data: failRows } = await supabase
+          .from('user_import_job_rows')
+          .select('row_index, row_payload, error_message')
+          .eq('job_id', jobId)
+          .eq('status', 'failed');
 
-        // Assign department if provided
-        if (departmentId) {
-          const { error: deptError } = await supabase
-            .from('user_departments')
-            .insert({
-              user_id: userId,
-              department_id: departmentId,
-              is_primary: false, // Will be set to true if this is the first department
-              pairing_id: pairingId,
-              assigned_by: userId // In production, this should be the current admin user ID
-            });
+        const { data: warnRows } = await supabase
+          .from('user_import_job_rows')
+          .select('row_index, row_payload, error_message')
+          .eq('job_id', jobId)
+          .eq('status', 'succeeded')
+          .not('error_message', 'is', null);
 
-          if (deptError) {
-            console.error('Error assigning department:', deptError);
+        const errors: ImportError[] = (failRows || []).map((fr: any) => {
+          const row = fr.row_payload as Record<string, string>;
+          const email = row['Email'] || row['email'] || 'Unknown';
+          return {
+            rowNumber: (fr.row_index as number) + 2,
+            identifier: email,
+            error: fr.error_message || 'Failed',
+            rawData: row,
+          };
+        });
+
+        const warnings: ImportError[] = [];
+        for (const wr of warnRows || []) {
+          const row = wr.row_payload as Record<string, string>;
+          const email = row['Email'] || row['email'] || 'Unknown';
+          const rowNumber = (wr.row_index as number) + 2;
+          const { warningPart, additions } = parseImportJobRowMessage(wr.error_message as string | null);
+          if (warningPart) {
             warnings.push({
-              field: 'Department',
-              value: departmentName,
-              message: `Department "${departmentName}" could not be assigned: ${deptError.message}`
+              rowNumber,
+              identifier: email,
+              field: 'Assignment',
+              error: warningPart,
+              rawData: row,
             });
-          } else {
-            // Set as primary if this is the first department (check if any exist)
-            const { data: existingDepts } = await supabase
-              .from('user_departments')
-              .select('id')
-              .eq('user_id', userId);
-            
-            if (existingDepts && existingDepts.length === 1) {
-              // This is the first department, set as primary
-              await supabase
-                .from('user_departments')
-                .update({ is_primary: true })
-                .eq('user_id', userId)
-                .eq('department_id', departmentId);
-            }
+          }
+          for (const a of additions) {
+            warnings.push({
+              rowNumber,
+              identifier: email,
+              field: a.field,
+              error: a.value,
+              type: 'info',
+              rawData: row,
+            });
           }
         }
 
-        // Assign role if provided
-        if (roleId) {
-          const { error: roleError } = await supabase
-            .from('user_profile_roles')
-            .insert({
-              user_id: userId,
-              role_id: roleId,
-              is_primary: false, // Will be set to true if this is the first role
-              pairing_id: pairingId,
-              assigned_by: userId // In production, this should be the current admin user ID
-            });
-
-          if (roleError) {
-            console.error('Error assigning role:', roleError);
-            warnings.push({
-              field: 'Role',
-              value: roleName,
-              message: `Role "${roleName}" could not be assigned: ${roleError.message}`
-            });
-          } else {
-            // Set as primary if this is the first role (check if any exist)
-            const { data: existingRoles } = await supabase
-              .from('user_profile_roles')
-              .select('id')
-              .eq('user_id', userId);
-            
-            if (existingRoles && existingRoles.length === 1) {
-              // This is the first role, set as primary
-              await supabase
-                .from('user_profile_roles')
-                .update({ is_primary: true })
-                .eq('user_id', userId)
-                .eq('role_id', roleId);
-            }
-          }
-        }
-      } catch (assignmentError: any) {
-        console.error('Exception assigning department/role:', assignmentError);
-        warnings.push({
-          field: 'Department/Role',
-          value: `${departmentName || ''} / ${roleName || ''}`,
-          message: `Could not assign department/role: ${assignmentError.message}`
-        });
+        const successCount = job.succeeded_rows ?? 0;
+        return { successCount, total: job.total_rows ?? totalRows, errors, warnings };
       }
+
+      if (job.status === 'failed') {
+        throw new Error(job.last_error || 'Import job failed');
+      }
+
+      await new Promise((r) => setTimeout(r, 2000));
     }
 
-    return { 
-      email, 
-      success: true, 
-      userId,
-      managerEmail,
-      warnings: warnings.length > 0 ? warnings : null
-    };
-  };
-
-  // ── Update mode: look up existing users by email and patch their data ──────
-  const processUserUpdate = async (
-    row: any,
-    locationCache: Map<string, string>,
-    departmentCache: Map<string, string>,
-    roleCache: Map<string, string>
-  ) => {
-    const email = (row['Email'] || row['email'] || '').trim();
-    if (!email) throw new Error('Email address is required for all users.');
-
-    // Resolve existing user by email
-    const { data: profileData, error: profileLookupError } = await supabase
-      .from('profiles')
-      .select('id, full_name')
-      .eq('email', email)
-      .maybeSingle();
-
-    if (profileLookupError) throw new Error(`Failed to look up user: ${profileLookupError.message}`);
-    if (!profileData) {
-      // User doesn't exist yet — create them just like create mode
-      return processUserImport(row, locationCache, departmentCache, roleCache);
-    };
-
-    const userId = profileData.id;
-    const warnings: any[] = [];
-    const additions: { field: string; value: string }[] = [];
-
-    const fullName = (row['Full Name'] || row['full_name'] || '').trim();
-    const firstName = (row['First Name'] || row['first_name'] || '').trim();
-    const lastName = (row['Last Name'] || row['last_name'] || '').trim();
-    const phone = (row['Phone'] || row['phone'] || '').trim();
-    const employeeId = (row['Employee ID'] || row['employee_id'] || '').trim();
-    const locationName = (row['Location'] || row['location'] || '').trim();
-    const departmentName = (row['Department'] || row['department'] || '').trim();
-    const roleName = (row['Role'] || row['role'] || '').trim();
-    const managerEmail = (row['Manager'] || row['manager'] || '').trim() || undefined;
-
-    const locationId = locationName ? locationCache.get(locationName.toLowerCase()) : undefined;
-    const departmentId = departmentName ? departmentCache.get(departmentName.toLowerCase()) : undefined;
-    const roleKey = `${roleName.toLowerCase()}::${departmentName.toLowerCase()}`;
-    const roleId = roleName ? roleCache.get(roleKey) : undefined;
-
-    // Build profile patch (only fields that were provided)
-    const profileUpdates: Record<string, any> = {};
-    if (fullName) profileUpdates.full_name = fullName;
-    if (firstName) profileUpdates.first_name = firstName;
-    if (lastName) profileUpdates.last_name = lastName;
-    if (phone) profileUpdates.phone = phone;
-    if (employeeId) profileUpdates.employee_id = employeeId;
-    if (locationId) { profileUpdates.location = locationName; profileUpdates.location_id = locationId; }
-
-    if (Object.keys(profileUpdates).length > 0) {
-      const { error: updateError } = await supabase.from('profiles').update(profileUpdates).eq('id', userId);
-      if (updateError) {
-        warnings.push({ field: 'Profile', value: email, message: `Profile could not be updated: ${updateError.message}` });
-      } else {
-        const updatedFields = Object.keys(profileUpdates).filter(k => !['location', 'location_id'].includes(k));
-        if (updatedFields.length > 0) {
-          additions.push({ field: 'Profile', value: `Updated: ${updatedFields.join(', ')}` });
-        }
-      }
-    }
-
-    // Physical location access — add if not already present
-    if (locationId) {
-      const { data: existingAccess } = await supabase
-        .from('physical_location_access').select('id').eq('user_id', userId).eq('location_id', locationId).maybeSingle();
-      if (!existingAccess) {
-        const { error: locationError } = await supabase.from('physical_location_access').insert({
-          user_id: userId,
-          location_id: locationId,
-          full_name: fullName || profileData.full_name,
-          access_purpose: 'General Access',
-          status: 'Active',
-          date_access_created: new Date().toISOString()
-        });
-        if (locationError) {
-          warnings.push({ field: 'Location', value: locationName, message: `Location access could not be assigned: ${locationError.message}` });
-        } else {
-          additions.push({ field: 'Location', value: locationName });
-        }
-      }
-    } else if (locationName) {
-      warnings.push({ field: 'Location', value: locationName, message: `Location "${locationName}" not found — skipping assignment` });
-    }
-
-    // Build a snapshot of existing assignments — mirrors the UI's three display states.
-    // Fetched once per user row; used for all three insert cases below.
-    const [{ data: existingDepts }, { data: existingRoles }] = await Promise.all([
-      supabase.from('user_departments').select('id, department_id, pairing_id').eq('user_id', userId),
-      supabase.from('user_profile_roles').select('id, role_id, pairing_id').eq('user_id', userId),
-    ]);
-    const existingPairs = (existingDepts || [])
-      .filter(d => d.pairing_id)
-      .flatMap(d => {
-        const matched = (existingRoles || []).filter(r => r.pairing_id === d.pairing_id);
-        return matched.map(r => ({ departmentId: d.department_id, roleId: r.role_id }));
-      });
-    const existingDeptIds = new Set((existingDepts || []).map(d => d.department_id));
-    const existingRoleIds = new Set((existingRoles || []).map(r => r.role_id));
-
-    if (departmentId && roleId) {
-      // Case a: paired dept+role — skip if this exact combo already exists
-      const pairExists = existingPairs.some(
-        p => p.departmentId === departmentId && p.roleId === roleId
-      );
-      if (pairExists) {
-        warnings.push({ field: 'Role', value: roleName, message: `"${departmentName} | ${roleName}" is already assigned — skipped` });
-      } else {
-        const pairingId = crypto.randomUUID();
-        const { error: deptError } = await supabase.from('user_departments').insert({
-          user_id: userId, department_id: departmentId,
-          is_primary: (existingDepts || []).length === 0,
-          pairing_id: pairingId, assigned_by: userId
-        });
-        if (deptError) {
-          warnings.push({ field: 'Department', value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
-        } else {
-          additions.push({ field: 'Department', value: departmentName });
-        }
-        const { error: roleError } = await supabase.from('user_profile_roles').insert({
-          user_id: userId, role_id: roleId,
-          is_primary: (existingRoles || []).length === 0,
-          pairing_id: pairingId, assigned_by: userId
-        });
-        if (roleError) {
-          warnings.push({ field: 'Role', value: roleName, message: `Role could not be assigned: ${roleError.message}` });
-        } else {
-          additions.push({ field: 'Role', value: roleName });
-        }
-      }
-    } else if (departmentId) {
-      // Case b: dept-only — skip if dept already assigned
-      if (existingDeptIds.has(departmentId)) {
-        warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" is already assigned — skipped` });
-      } else {
-        const { error: deptError } = await supabase.from('user_departments').insert({
-          user_id: userId, department_id: departmentId,
-          is_primary: (existingDepts || []).length === 0,
-          pairing_id: null, assigned_by: userId
-        });
-        if (deptError) {
-          warnings.push({ field: 'Department', value: departmentName, message: `Department could not be assigned: ${deptError.message}` });
-        } else {
-          additions.push({ field: 'Department', value: departmentName });
-        }
-      }
-    } else if (departmentName) {
-      warnings.push({ field: 'Department', value: departmentName, message: `Department "${departmentName}" not found — skipping assignment` });
-    }
-
-    if (!departmentId && roleId) {
-      // Case c: role-only — skip if role already assigned
-      if (existingRoleIds.has(roleId)) {
-        warnings.push({ field: 'Role', value: roleName, message: `Role "${roleName}" is already assigned — skipped` });
-      } else {
-        const { error: roleError } = await supabase.from('user_profile_roles').insert({
-          user_id: userId, role_id: roleId,
-          is_primary: (existingRoles || []).length === 0,
-          pairing_id: null, assigned_by: userId
-        });
-        if (roleError) {
-          warnings.push({ field: 'Role', value: roleName, message: `Role could not be assigned: ${roleError.message}` });
-        } else {
-          additions.push({ field: 'Role', value: roleName });
-        }
-      }
-    } else if (!departmentId && roleName) {
-      warnings.push({ field: 'Role', value: roleName, message: `Role "${roleName}" not found — skipping assignment` });
-    }
-
-    return {
-      email,
-      success: true,
-      userId,
-      managerEmail,
-      warnings: warnings.length > 0 ? warnings : null,
-      additions,
-    };
+    throw new Error('Import timed out after 2 hours. Check User Management and the import job table.');
   };
 
   const handleImport = async () => {
@@ -690,398 +294,35 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     }
 
     setIsProcessing(true);
+    setBulkProgress(null);
 
     try {
       const text = await uploadedFile.text();
-      
-      Papa.parse(text, {
-        header: true,
-        complete: async (results) => {
-          const data = results.data as any[];
-          
-          if (data.length === 0) {
-            toast({
-              title: "Empty file",
-              description: "The uploaded file contains no data",
-              variant: "destructive",
-            });
-            setIsProcessing(false);
-            return;
-          }
+      const activationEmailsRequested = sendActivationEmails;
 
-          debug.log('Processing', data.length, 'rows');
-          let successCount = 0;
-          const errors: ImportError[] = [];
-          const warnings: ImportError[] = [];
-          const createdUsers: Array<{ rowNumber: number; email: string; userId: string; managerEmail?: string; row: any }> = [];
-
-          // ── Pass 0: Build location / department / role caches ───────────────
-          // Seed caches from what already exists in the DB
-          const locationCache = new Map<string, string>(); // lower_name → id
-          const departmentCache = new Map<string, string>(); // lower_name → id
-          const roleCache = new Map<string, string>(); // `${role_lower}::${dept_lower}` → role_id
-
-          (validLocations || []).forEach((loc: { id: string; name: string }) =>
-            locationCache.set(loc.name.toLowerCase(), loc.id)
-          );
-          (validDepartments || []).forEach((dept: { id: string; name: string }) =>
-            departmentCache.set(dept.name.toLowerCase(), dept.id)
-          );
-          // For existing roles build key as `name::dept_name_lower` using reverse dept id→name map
-          const deptIdToName = new Map<string, string>();
-          (validDepartments || []).forEach((dept: { id: string; name: string }) =>
-            deptIdToName.set(dept.id, dept.name.toLowerCase())
-          );
-          (validRoles || []).forEach((role: { role_id: string; name: string; department_id: string | null }) => {
-            const deptKey = role.department_id ? (deptIdToName.get(role.department_id) ?? '') : '';
-            roleCache.set(`${role.name.toLowerCase()}::${deptKey}`, role.role_id);
-          });
-
-          // Collect unique locations / departments / (role, department) pairs from CSV
-          const uniqueLocations = new Set<string>();
-          const uniqueDepartments = new Set<string>();
-          const uniqueRolePairs = new Set<string>(); // `${roleName}|||${deptName}`
-
-          for (const row of data) {
-            const loc = (row['Location'] || row['location'] || '').trim();
-            const dept = (row['Department'] || row['department'] || '').trim();
-            const role = (row['Role'] || row['role'] || '').trim();
-            if (loc) uniqueLocations.add(loc);
-            if (dept) uniqueDepartments.add(dept);
-            if (role) uniqueRolePairs.add(`${role}|||${dept}`);
-          }
-
-          // Pass 0a: Ensure locations exist (create mode only — update mode uses existing locations)
-          if (importMode === 'create') {
-            for (const locName of uniqueLocations) {
-              const key = locName.toLowerCase();
-              if (!locationCache.has(key)) {
-                try {
-                  const { data: newLoc, error } = await supabase
-                    .from('locations')
-                    .insert({ name: locName, status: 'Active' })
-                    .select('id')
-                    .single();
-                  if (!error && newLoc) {
-                    locationCache.set(key, newLoc.id);
-                    debug.log('[ImportUsersDialog] Auto-created location:', locName);
-                  } else if (error) {
-                    debug.error('[ImportUsersDialog] Failed to create location:', locName, error);
-                  }
-                } catch (err) {
-                  debug.error('[ImportUsersDialog] Exception creating location:', locName, err);
-                }
-              }
-            }
-          }
-
-          // Pass 0b: Ensure departments exist (create mode only — update mode uses existing departments)
-          if (importMode === 'create') {
-            for (const deptName of uniqueDepartments) {
-              const key = deptName.toLowerCase();
-              if (!departmentCache.has(key)) {
-                try {
-                  const { data: newDept, error } = await supabase
-                    .from('departments')
-                    .insert({ name: deptName })
-                    .select('id')
-                    .single();
-                  if (!error && newDept) {
-                    departmentCache.set(key, newDept.id);
-                    debug.log('[ImportUsersDialog] Auto-created department:', deptName);
-                  } else if (error) {
-                    debug.error('[ImportUsersDialog] Failed to create department:', deptName, error);
-                  }
-                } catch (err) {
-                  debug.error('[ImportUsersDialog] Exception creating department:', deptName, err);
-                }
-              }
-            }
-          }
-
-          // Pass 0c: Ensure roles exist (create mode only — update mode uses existing roles)
-          if (importMode === 'create') {
-            for (const pair of uniqueRolePairs) {
-              const sep = pair.indexOf('|||');
-              const roleName = pair.slice(0, sep);
-              const deptName = pair.slice(sep + 3);
-              const roleKey = `${roleName.toLowerCase()}::${deptName.toLowerCase()}`;
-              if (!roleCache.has(roleKey)) {
-                const deptId = deptName ? (departmentCache.get(deptName.toLowerCase()) ?? null) : null;
-                try {
-                  const { data: newRole, error } = await supabase
-                    .from('roles')
-                    .insert({ name: roleName, department_id: deptId, is_active: true })
-                    .select('role_id')
-                    .single();
-                  if (!error && newRole) {
-                    roleCache.set(roleKey, newRole.role_id);
-                    debug.log('[ImportUsersDialog] Auto-created role:', roleName, deptName ? `(${deptName})` : '(general)');
-                  } else if (error) {
-                    // Role may already exist from a prior import run — fall back to SELECT
-                    debug.log('[ImportUsersDialog] Role insert failed, fetching existing:', roleName, deptName, error.message);
-                    const q = supabase.from('roles').select('role_id').eq('name', roleName).eq('is_active', true);
-                    const { data: existing } = await (deptId ? q.eq('department_id', deptId) : q.is('department_id', null)).maybeSingle();
-                    if (existing) {
-                      roleCache.set(roleKey, existing.role_id);
-                      debug.log('[ImportUsersDialog] Found existing role:', roleName, deptName ? `(${deptName})` : '(general)');
-                    } else {
-                      debug.error('[ImportUsersDialog] Could not find or create role:', roleName, deptName);
-                    }
-                  }
-                } catch (err) {
-                  debug.error('[ImportUsersDialog] Exception creating role:', roleName, err);
-                }
-              }
-            }
-          }
-
-          debug.log('[ImportUsersDialog] Pass 0 complete. Cache sizes:', {
-            locations: locationCache.size, departments: departmentCache.size, roles: roleCache.size,
-          });
-          // ── End Pass 0 ─────────────────────────────────────────────────────
-
-          // Pass 1: Create or update users (manager column is deferred to pass 2)
-          for (let i = 0; i < data.length; i++) {
-            const row = data[i];
-            
-            if (!row['Email'] && !row['email'] && !row['Full Name'] && !row['full_name']) {
-              debug.log('Skipping empty row at index', i);
-              continue;
-            }
-
-            const email = row['Email'] || row['email'] || 'Unknown';
-            const rowNumber = i + 2;
-            
-            try {
-              debug.log(`Processing user ${i + 1} of ${data.length}:`, email);
-              const result = importMode === 'update'
-                ? await processUserUpdate(row, locationCache, departmentCache, roleCache)
-                : await processUserImport(row, locationCache, departmentCache, roleCache);
-              successCount++;
-              debug.log(`Successfully processed user ${i + 1}`);
-              
-              createdUsers.push({
-                rowNumber,
-                email,
-                userId: result.userId,
-                managerEmail: result.managerEmail,
-                row
-              });
-              
-              if (result.warnings) {
-                result.warnings.forEach((warning: any) => {
-                  warnings.push({
-                    rowNumber,
-                    identifier: email,
-                    field: warning.field,
-                    error: warning.message,
-                    rawData: row
-                  });
-                });
-              }
-
-              // Collect successful additions (update mode only) as info items
-              if ('additions' in result && result.additions && result.additions.length > 0) {
-                debug.log(`[ImportUsersDialog] additions for ${email}:`, result.additions);
-                result.additions.forEach((addition: { field: string; value: string }) => {
-                  const infoItem = {
-                    rowNumber,
-                    identifier: email,
-                    field: addition.field,
-                    error: addition.value,
-                    type: 'info' as const,
-                    rawData: row,
-                  };
-                  debug.log(`[ImportUsersDialog] pushing info item:`, infoItem);
-                  warnings.push(infoItem);
-                });
-              } else {
-                debug.log(`[ImportUsersDialog] no additions for ${email}. 'additions' in result:`, 'additions' in result, 'result.additions:', (result as any).additions);
-              }
-            } catch (error: any) {
-              console.error(`Error importing user ${i + 1}:`, error);
-              const friendlyError = translateError(error);
-              errors.push({
-                rowNumber,
-                identifier: email,
-                field: !row['Email'] && !row['email'] ? 'Email' : undefined,
-                error: friendlyError,
-                rawData: row
-              });
-            }
-
-            if (i < data.length - 1) {
-              await new Promise(resolve => setTimeout(resolve, 500));
-            }
-          }
-
-          // Pass 2: Assign managers (all users from CSV now exist, so order doesn't matter)
-          const emailToId = new Map<string, string>();
-          (existingProfiles || []).forEach((p: { id: string; email?: string }) => {
-            const e = (p.email ?? '').trim().toLowerCase();
-            if (e) emailToId.set(e, p.id);
-          });
-          createdUsers.forEach((u) => {
-            const e = u.email.trim().toLowerCase();
-            if (e) emailToId.set(e, u.userId);
-          });
-
-          for (const u of createdUsers) {
-            if (!u.managerEmail) continue;
-            const managerId = emailToId.get(u.managerEmail.trim().toLowerCase());
-            if (managerId) {
-              try {
-                const { error: managerUpdateError } = await supabase
-                  .from('profiles')
-                  .update({ manager: managerId })
-                  .eq('id', u.userId);
-                if (managerUpdateError) {
-                  warnings.push({
-                    rowNumber: u.rowNumber,
-                    identifier: u.email,
-                    field: 'Manager',
-                    error: `Manager could not be assigned: ${managerUpdateError.message}`,
-                    rawData: u.row
-                  });
-                } else {
-                  debug.log(`Assigned manager ${u.managerEmail} for user ${u.email}`);
-                }
-              } catch (err: any) {
-                warnings.push({
-                  rowNumber: u.rowNumber,
-                  identifier: u.email,
-                  field: 'Manager',
-                  error: `Manager could not be assigned: ${err?.message ?? err}`,
-                  rawData: u.row
-                });
-              }
-            } else {
-              warnings.push({
-                rowNumber: u.rowNumber,
-                identifier: u.email,
-                field: 'Manager',
-                error: `Manager email "${u.managerEmail}" does not exist in the system - user created without manager assignment`,
-                rawData: u.row
-              });
-            }
-          }
-
-          debug.log('Import completed. Success:', successCount, 'Errors:', errors.length, 'Warnings:', warnings.length);
-
-          // Pass 3: Send activation emails to newly created users if requested
-          if (sendActivationEmails && createdUsers.length > 0) {
-            const pathParts = window.location.pathname.split('/').filter(Boolean);
-            const reserved = ['admin', 'activate-account', 'reset-password', 'forgot-password', 'email-notifications'];
-            const clientSegment = pathParts[0] && !reserved.includes(pathParts[0]) ? pathParts[0] : '';
-            const redirectUrl = clientSegment
-              ? `${window.location.origin}/${clientSegment}/activate-account`
-              : `${window.location.origin}/activate-account`;
-
-            debug.log('[ImportUsersDialog] Sending activation emails to', createdUsers.length, 'users, redirectUrl:', redirectUrl);
-
-            const BATCH_SIZE = 5;
-            const BATCH_DELAY_MS = 1000;
-            let emailsSent = 0;
-            let emailsFailed = 0;
-
-            for (let i = 0; i < createdUsers.length; i += BATCH_SIZE) {
-              const batch = createdUsers.slice(i, i + BATCH_SIZE);
-              await Promise.all(batch.map(async (u) => {
-                try {
-                  const { error: emailError } = await supabase.functions.invoke('request-activation-link', {
-                    body: { email: u.email, redirectUrl },
-                  });
-                  if (emailError) throw emailError;
-                  debug.log('[ImportUsersDialog] Activation email sent to', u.email);
-                  emailsSent++;
-                } catch (err) {
-                  debug.error('[ImportUsersDialog] Failed to send activation email to', u.email, err);
-                  emailsFailed++;
-                }
-              }));
-              if (i + BATCH_SIZE < createdUsers.length) {
-                await new Promise(resolve => setTimeout(resolve, BATCH_DELAY_MS));
-              }
-            }
-
-            debug.log('[ImportUsersDialog] Activation emails done. Sent:', emailsSent, 'Failed:', emailsFailed);
-          }
-
-          setUploadedFile(null);
-          setSendActivationEmails(false);
-          setIsProcessing(false);
-          setIsOpen(false);
-
-          // Split info items (successful additions) from real warnings for toast logic
-          debug.log(`[ImportUsersDialog] warnings array (${warnings.length} items):`, warnings.map(w => ({ type: w.type, field: w.field, identifier: w.identifier })));
-          const realWarnings = warnings.filter((w: any) => w.type !== 'info');
-          const infoItems = warnings.filter((w: any) => w.type === 'info');
-          debug.log(`[ImportUsersDialog] split — realWarnings:${realWarnings.length} infoItems:${infoItems.length}`);
-          const shouldShowReport = errors.length > 0 || realWarnings.length > 0 || (importMode === 'update' && infoItems.length > 0);
-
-          // Show combined error / warning / additions report through parent component
-          if (shouldShowReport && onImportError) {
-            setTimeout(() => {
-              onImportError(errors, warnings, { success: successCount, total: data.length });
-            }, 300);
-
-            if (errors.length > 0 && realWarnings.length > 0) {
-              toast({
-                title: "Import completed with errors and warnings",
-                description: `${successCount} users processed. ${errors.length} failed, ${realWarnings.length} have validation warnings.`,
-                variant: "destructive",
-              });
-            } else if (errors.length > 0) {
-              toast({
-                title: "Import completed with errors",
-                description: `${successCount} users processed. ${errors.length} failed. Opening error report...`,
-                variant: "destructive",
-              });
-            } else if (realWarnings.length > 0) {
-              toast({
-                title: "Import completed with warnings",
-                description: `${successCount} users processed. ${realWarnings.length} have validation warnings. Opening report...`,
-                variant: "default",
-              });
-            } else if (importMode === 'update' && infoItems.length > 0) {
-              toast({
-                title: "Update completed",
-                description: `${successCount} users updated. Opening additions report...`,
-              });
-            }
-          } else {
-            toast({
-              title: "Import completed successfully",
-              description: importMode === 'update'
-                ? `All ${successCount} users updated successfully.`
-                : `All ${successCount} users imported successfully. Users will need to activate their accounts via email.`,
-            });
-          }
-          
-          // Refresh the user list after successful import
-          if (onImportComplete) {
-            await onImportComplete();
-          }
-        },
-        error: (error: any) => {
-          console.error('Parse error:', error);
-          toast({
-            title: "Parse error",
-            description: "Failed to parse the CSV file",
-            variant: "destructive",
-          });
-          setIsProcessing(false);
-        }
-      });
-    } catch (error) {
-      console.error('Import error:', error);
+      const result = await runBackgroundImport(
+        text,
+        activationEmailsRequested,
+        uploadedFile.name,
+        importMode
+      );
+      await completeImportDialog(
+        result.successCount,
+        result.total,
+        result.errors,
+        result.warnings,
+        activationEmailsRequested,
+        importMode
+      );
+    } catch (bulkErr: any) {
+      debug.error('[ImportUsersDialog] Background import failed:', bulkErr);
       toast({
-        title: "Import failed",
-        description: "An error occurred while importing the file",
+        title: "Background import failed",
+        description: bulkErr?.message || 'Try again or use a smaller file.',
         variant: "destructive",
       });
       setIsProcessing(false);
+      setBulkProgress(null);
     }
   };
 
@@ -1090,6 +331,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
       setUploadedFile(null);
       setSendActivationEmails(false);
       setImportMode('create');
+      setBulkProgress(null);
     }
     setIsOpen(open);
   };
@@ -1106,8 +348,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
           <DialogTitle>{importMode === 'update' ? 'Update Existing Users' : 'Import Users'}</DialogTitle>
           <DialogDescription>
             {importMode === 'update'
-              ? 'Upload a CSV to update existing users (matched by email) to add departments and roles to their profiles, and update their location and profile fields. Unrecognised emails are created as new users.'
-              : 'Upload a CSV file to import users in bulk. Locations, departments, and roles will be created automatically if they don\'t already exist.'}
+              ? 'Server-side background import (safe for large CSVs). Rows match users by email and update profile, locations, departments, and roles. Emails with no existing user create a new account; "Send activation emails" applies to those new users.'
+              : 'CSV import for new users runs on the server in the background (safe for large files). You can leave this page; refresh User Management to watch progress. Locations, departments, and roles are created automatically if missing.'}
           </DialogDescription>
         </DialogHeader>
         
@@ -1174,18 +416,29 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
 
             {uploadedFile && (
               <div className="space-y-3">
-                <div className="flex items-center gap-2">
+                <div className="flex items-start gap-2">
                   <Checkbox
                     id="send-activation-emails"
                     checked={sendActivationEmails}
                     onCheckedChange={(checked: boolean | 'indeterminate') => setSendActivationEmails(checked === true)}
                     disabled={isProcessing}
+                    className="mt-1"
                   />
-                  <Label htmlFor="send-activation-emails" className="text-sm font-normal cursor-pointer">
-                    Send activation emails to new users
-                  </Label>
+                  <div>
+                    <Label htmlFor="send-activation-emails" className="text-sm font-normal cursor-pointer">
+                      Send activation emails to new users
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      When unchecked, accounts are created without sending mail; you can use Send Activation Emails on User Management when ready.
+                    </p>
+                  </div>
                 </div>
-              <div className="flex gap-3">
+                {bulkProgress && (
+                  <p className="text-xs text-muted-foreground">
+                    Server import: {bulkProgress.processed} / {bulkProgress.total} rows · status: {bulkProgress.status}
+                  </p>
+                )}
+                <div className="flex gap-3">
                 <Button
                   onClick={handleImport}
                   disabled={isProcessing}
@@ -1259,7 +512,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
                 <p>• <strong>Full Name</strong> is required for each user</p>
                 <p>• <strong>First Name</strong> is required for each user</p>
                 <p>• <strong>Last Name</strong> is required for each user</p>
-                <p>• Users will be created with 'Pending' status and must activate via email</p>
+                <p>• Users will be created with &apos;Pending&apos; status; use the checkbox above to send (or not send) activation email as each account is created, or use Send Activation Emails in User Management later</p>
                 <p>• <strong>Access Level</strong> - must be "User" or "Admin". Other values are not allowed.</p>
                 <p>• <strong>Location</strong> (optional) - created automatically if it doesn't exist</p>
                 <p>• <strong>Department</strong> (optional) - created automatically if it doesn't exist</p>

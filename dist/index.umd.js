@@ -1764,8 +1764,13 @@
       }
     }
     const runBackgroundImport = async (csvText, activationEmailsRequested, fileName, mode) => {
+      var _a;
       const clientId = client.getCurrentClientId();
       const clientPath = clientId ? `/${clientId}` : "";
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !((_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token)) {
+        throw new Error("Unable to determine current session. Please refresh and try again.");
+      }
       const { data, error } = await supabase.functions.invoke("user-import-submit", {
         body: {
           csv_text: csvText,

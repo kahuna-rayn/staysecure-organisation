@@ -166,6 +166,11 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportComplete,
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : '';
 
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError || !sessionData?.session?.access_token) {
+      throw new Error('Unable to determine current session. Please refresh and try again.');
+    }
+
     const { data, error } = await supabase.functions.invoke<{
       ok?: boolean;
       job_id?: string;

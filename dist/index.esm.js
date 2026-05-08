@@ -1806,8 +1806,13 @@ const ImportUsersDialog = ({ onImportComplete, onImportError }) => {
     }
   }
   const runBackgroundImport = async (csvText, activationEmailsRequested, fileName, mode) => {
+    var _a;
     const clientId = getCurrentClientId();
     const clientPath = clientId ? `/${clientId}` : "";
+    const { data: sessionData, error: sessionError } = await supabase2.auth.getSession();
+    if (sessionError || !((_a = sessionData == null ? void 0 : sessionData.session) == null ? void 0 : _a.access_token)) {
+      throw new Error("Unable to determine current session. Please refresh and try again.");
+    }
     const { data, error } = await supabase2.functions.invoke("user-import-submit", {
       body: {
         csv_text: csvText,

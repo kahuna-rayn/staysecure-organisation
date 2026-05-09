@@ -2,11 +2,10 @@ import React, { useCallback, useState } from 'react';
 import debug from '../../utils/debug';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useDropzone } from 'react-dropzone';
-import { Upload, FileText, Download } from 'lucide-react';
+import { Upload, FileText, Download, X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { getCurrentClientId } from '@/integrations/supabase/client';
 import { useOrganisationContext } from '@/context/OrganisationContext';
@@ -232,16 +231,15 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportStart }) 
                   </div>
                 </div>
                 <div className="flex justify-end gap-3">
-                  <Button onClick={handleImport} disabled={isSubmitting} className="flex items-center gap-2">
+                  <Button onClick={handleImport} disabled={isSubmitting} size="icon" aria-label="Start import">
                     {isSubmitting ? (
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
                     ) : (
                       <Upload className="h-4 w-4" />
                     )}
-                    {isSubmitting ? 'Starting…' : 'Start Import'}
                   </Button>
-                  <Button variant="outline" onClick={() => setUploadedFile(null)} disabled={isSubmitting}>
-                    Clear
+                  <Button variant="outline" size="icon" onClick={() => setUploadedFile(null)} disabled={isSubmitting} aria-label="Clear file">
+                    <X className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -256,7 +254,6 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportStart }) 
                 <div className="flex items-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span className="text-sm font-medium">Users Template (CSV)</span>
-                  <Badge variant="secondary" className="text-xs">Ready to use template</Badge>
                 </div>
                 <Button size="sm" variant="outline" onClick={generateSampleCSV} className="gap-2">
                   <Download className="h-4 w-4" />

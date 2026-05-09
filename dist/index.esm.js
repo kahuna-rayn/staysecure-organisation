@@ -3,7 +3,7 @@ import React, { Fragment, forwardRef, createElement, createContext, useContext, 
 import { useNavigate, useSearchParams, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
+import { Badge as Badge$1 } from "@/components/ui/badge";
 import { useUserProfiles } from "@/hooks/useUserProfiles";
 import { useUserProfiles as useUserProfiles2 } from "@/hooks/useUserProfiles";
 import { useUserManagement } from "@/hooks/useUserManagement";
@@ -1231,7 +1231,7 @@ const DepartmentRolePairsDisplay = ({ userId }) => {
   if (!displayText) {
     return /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "No assignments" });
   }
-  return /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: displayText });
+  return /* @__PURE__ */ jsx(Badge$1, { variant: "secondary", className: "text-xs", children: displayText });
 };
 const UserCard = ({ user, onDelete }) => {
   var _a;
@@ -1265,7 +1265,7 @@ const UserCard = ({ user, onDelete }) => {
           /* @__PURE__ */ jsx("div", { className: "text-sm text-muted-foreground", children: /* @__PURE__ */ jsx(DepartmentRolePairsDisplay, { userId: user.id }) })
         ] })
       ] }),
-      /* @__PURE__ */ jsx(Badge, { className: `${getStatusColor(user.status || "Active")} text-white`, children: user.status || "Active" })
+      /* @__PURE__ */ jsx(Badge$1, { className: `${getStatusColor(user.status || "Active")} text-white`, children: user.status || "Active" })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "space-y-2 text-sm", children: [
       /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
@@ -1988,11 +1988,8 @@ const ImportUsersDialog = ({ onImportStart }) => {
               ] })
             ] }),
             /* @__PURE__ */ jsxs("div", { className: "flex justify-end gap-3", children: [
-              /* @__PURE__ */ jsxs(Button, { onClick: handleImport, disabled: isSubmitting, className: "flex items-center gap-2", children: [
-                isSubmitting ? /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }),
-                isSubmitting ? "Starting…" : "Start Import"
-              ] }),
-              /* @__PURE__ */ jsx(Button, { variant: "outline", onClick: () => setUploadedFile(null), disabled: isSubmitting, children: "Clear" })
+              /* @__PURE__ */ jsx(Button, { onClick: handleImport, disabled: isSubmitting, size: "icon", "aria-label": "Start import", children: isSubmitting ? /* @__PURE__ */ jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsx(Upload, { className: "h-4 w-4" }) }),
+              /* @__PURE__ */ jsx(Button, { variant: "outline", size: "icon", onClick: () => setUploadedFile(null), disabled: isSubmitting, "aria-label": "Clear file", children: /* @__PURE__ */ jsx(X, { className: "h-4 w-4" }) })
             ] })
           ] })
         ] }),
@@ -2002,8 +1999,7 @@ const ImportUsersDialog = ({ onImportStart }) => {
           /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-2 bg-white rounded border", children: [
             /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4" }),
-              /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
+              /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" })
             ] }),
             /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
           ] }) })
@@ -2287,11 +2283,11 @@ const ImportErrorReport = ({
           /* @__PURE__ */ jsx(AlertDescription, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
             /* @__PURE__ */ jsx("span", { className: "font-semibold text-sm text-emerald-900", children: email }),
             Object.entries(rowMap).map(([rowNum, items]) => /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-              /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "text-xs", children: [
+              /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "text-xs", children: [
                 "Row ",
                 rowNum
               ] }),
-              items.map((item, i) => /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs bg-emerald-100 text-emerald-800", children: [
+              items.map((item, i) => /* @__PURE__ */ jsxs(Badge$1, { variant: "secondary", className: "text-xs bg-emerald-100 text-emerald-800", children: [
                 item.field,
                 ": ",
                 item.error
@@ -2316,13 +2312,13 @@ const ImportErrorReport = ({
                 /* @__PURE__ */ jsx(CircleAlert, { className: "h-4 w-4" }),
                 /* @__PURE__ */ jsx(AlertDescription, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
                   /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                    /* @__PURE__ */ jsx(Badge, { variant: "destructive", className: "text-xs", children: "Error" }),
-                    /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "text-xs", children: [
+                    /* @__PURE__ */ jsx(Badge$1, { variant: "destructive", className: "text-xs", children: "Error" }),
+                    /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "text-xs", children: [
                       "Row ",
                       error.rowNumber
                     ] }),
                     /* @__PURE__ */ jsx("span", { className: "font-semibold text-sm", children: error.identifier }),
-                    error.field && /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs", children: [
+                    error.field && /* @__PURE__ */ jsxs(Badge$1, { variant: "secondary", className: "text-xs", children: [
                       "Field: ",
                       error.field
                     ] })
@@ -2346,13 +2342,13 @@ const ImportErrorReport = ({
                 /* @__PURE__ */ jsx(TriangleAlert, { className: "h-4 w-4" }),
                 /* @__PURE__ */ jsx(AlertDescription, { children: /* @__PURE__ */ jsxs("div", { className: "space-y-1", children: [
                   /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
-                    /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs bg-yellow-200 text-yellow-800", children: "Warning" }),
-                    /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "text-xs", children: [
+                    /* @__PURE__ */ jsx(Badge$1, { variant: "secondary", className: "text-xs bg-yellow-200 text-yellow-800", children: "Warning" }),
+                    /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "text-xs", children: [
                       "Row ",
                       warning.rowNumber
                     ] }),
                     /* @__PURE__ */ jsx("span", { className: "font-semibold text-sm", children: warning.identifier }),
-                    warning.field && /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs", children: [
+                    warning.field && /* @__PURE__ */ jsxs(Badge$1, { variant: "secondary", className: "text-xs", children: [
                       "Field: ",
                       warning.field
                     ] })
@@ -3003,14 +2999,14 @@ const ImportRolesDialog = ({ onImportComplete, onImportError }) => {
             /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4" }),
               /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Roles Template (CSV)" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
+              /* @__PURE__ */ jsx(Badge$1, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
             ] }),
             /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
           ] }) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
           /* @__PURE__ */ jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: ["Name", "Description", "Department"].map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: ["Name", "Description", "Department"].map((column) => /* @__PURE__ */ jsx(Badge$1, { variant: "outline", className: "text-xs", children: column }, column)) }),
           /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
@@ -3174,7 +3170,7 @@ const RoleMembersDialog = ({
         /* @__PURE__ */ jsx(TableCell, { children: member.userName }),
         /* @__PURE__ */ jsx(TableCell, { children: member.departmentName }),
         /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground", children: member.email }),
-        /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
+        /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
       ] }, index)) })
     ] }) })
   ] }) });
@@ -3536,7 +3532,7 @@ const RoleManagement = () => {
             /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: role.name }),
             /* @__PURE__ */ jsx(TableCell, { children: role.description || /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "No description" }) }),
             /* @__PURE__ */ jsx(TableCell, { children: getDepartmentName(role.department_id) }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: role.is_active ? "default" : "secondary", children: role.is_active ? "Active" : "Inactive" }) }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: role.is_active ? "default" : "secondary", children: role.is_active ? "Active" : "Inactive" }) }),
             /* @__PURE__ */ jsx(TableCell, { children: new Date(role.created_at).toLocaleDateString() }),
             hasPermission("canManageRoles") && /* @__PURE__ */ jsx(TableCell, { className: "text-right", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-end gap-2", children: [
               /* @__PURE__ */ jsx(
@@ -3943,14 +3939,14 @@ const ImportDepartmentsDialog = ({ onImportComplete, onImportError }) => {
             /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
               /* @__PURE__ */ jsx(FileText, { className: "h-4 w-4" }),
               /* @__PURE__ */ jsx("span", { className: "text-sm font-medium", children: "Departments Template (CSV)" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
+              /* @__PURE__ */ jsx(Badge$1, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
             ] }),
             /* @__PURE__ */ jsx(Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsx(Download, { className: "h-4 w-4" }) })
           ] }) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
           /* @__PURE__ */ jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: ["Name", "Description", "Manager"].map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: ["Name", "Description", "Manager"].map((column) => /* @__PURE__ */ jsx(Badge$1, { variant: "outline", className: "text-xs", children: column }, column)) }),
           /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
@@ -4127,7 +4123,7 @@ const DepartmentMembersDialog = ({
         /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: member.userName }),
         /* @__PURE__ */ jsx(TableCell, { children: member.roleName }),
         /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground", children: member.email }),
-        /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
+        /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
       ] }, index)) })
     ] }) }),
     /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t text-sm text-muted-foreground", children: [
@@ -4723,7 +4719,7 @@ const LocationMembersDialog = ({
         /* @__PURE__ */ jsx(TableCell, { children: member.roleName }),
         /* @__PURE__ */ jsx(TableCell, { children: member.departmentName }),
         /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground", children: member.email }),
-        /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
+        /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: member.status === "Active" ? "default" : "secondary", children: member.status }) })
       ] }, index)) })
     ] }) }),
     /* @__PURE__ */ jsxs("div", { className: "pt-2 border-t text-sm text-muted-foreground", children: [
@@ -5550,7 +5546,7 @@ const OrganisationCertificates = () => {
               getTypeIcon(cert.type),
               /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
             ] }),
-            /* @__PURE__ */ jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsx(Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
+            /* @__PURE__ */ jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsx(Badge$1, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-4 gap-4 text-sm ml-8", children: [
             /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
@@ -5579,7 +5575,7 @@ const OrganisationCertificates = () => {
               /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Added by:" }),
               /* @__PURE__ */ jsx("span", { className: "font-medium", children: getUserDisplayName(cert.user_id) })
             ] }),
-            /* @__PURE__ */ jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsx(Badge, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }) })
+            /* @__PURE__ */ jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsx(Badge$1, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }) })
           ] })
         ] }, cert.id);
       }) }),
@@ -6930,14 +6926,14 @@ function buildMailto(subject, body) {
 function ExpiryBadge({ daysUntilExpiry }) {
   if (daysUntilExpiry === null) return null;
   if (daysUntilExpiry < 0)
-    return /* @__PURE__ */ jsx(Badge, { variant: "destructive", children: "Expired" });
+    return /* @__PURE__ */ jsx(Badge$1, { variant: "destructive", children: "Expired" });
   if (daysUntilExpiry <= 30)
-    return /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
+    return /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
       "Expires in ",
       daysUntilExpiry,
       "d"
     ] });
-  return /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "border-green-500 text-green-700 bg-green-50", children: [
+  return /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "border-green-500 text-green-700 bg-green-50", children: [
     daysUntilExpiry,
     "d remaining"
   ] });
@@ -6993,10 +6989,10 @@ Thank you`
           ] })
         ] }),
         /* @__PURE__ */ jsx("div", { className: "h-2 w-full rounded-full bg-muted overflow-hidden", children: /* @__PURE__ */ jsx("div", { className: `h-full rounded-full transition-all ${barColor}`, style: { width: `${pct}%` } }) }),
-        /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: product.isAtCapacity ? /* @__PURE__ */ jsx(Badge, { variant: "destructive", children: "At capacity" }) : product.isNearCapacity ? /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
+        /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: product.isAtCapacity ? /* @__PURE__ */ jsx(Badge$1, { variant: "destructive", children: "At capacity" }) : product.isNearCapacity ? /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
           Math.round(pct),
           "% used"
-        ] }) : /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "border-primary text-primary bg-primary/5", children: [
+        ] }) : /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "border-primary text-primary bg-primary/5", children: [
           /* @__PURE__ */ jsx(CircleCheck, { className: "h-3 w-3 mr-1" }),
           Math.round(pct),
           "% used"
@@ -7022,10 +7018,10 @@ Thank you`
             ] })
           ] }),
           /* @__PURE__ */ jsx("div", { className: "h-2 w-full rounded-full bg-muted overflow-hidden", children: /* @__PURE__ */ jsx("div", { className: `h-full rounded-full transition-all ${authorBarColor}`, style: { width: `${authorPct}%` } }) }),
-          /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: authorAtCap ? /* @__PURE__ */ jsx(Badge, { variant: "destructive", children: "Author seats full" }) : authorNearCap ? /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
+          /* @__PURE__ */ jsx("div", { className: "flex justify-end", children: authorAtCap ? /* @__PURE__ */ jsx(Badge$1, { variant: "destructive", children: "Author seats full" }) : authorNearCap ? /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "border-amber-500 text-amber-700 bg-amber-50", children: [
             Math.round(authorPct),
             "% author seats used"
-          ] }) : /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "border-primary/60 text-primary bg-primary/5", children: [
+          ] }) : /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "border-primary/60 text-primary bg-primary/5", children: [
             /* @__PURE__ */ jsx(CircleCheck, { className: "h-3 w-3 mr-1" }),
             Math.round(authorPct),
             "% author seats used"
@@ -7271,7 +7267,7 @@ Thank you`
               )
             ] }),
             /* @__PURE__ */ jsx("td", { className: "p-2", children: lic.productName }),
-            /* @__PURE__ */ jsx("td", { className: "p-2", children: /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "capitalize", children: lic.accessLevel.replace("_", " ") }) })
+            /* @__PURE__ */ jsx("td", { className: "p-2", children: /* @__PURE__ */ jsx(Badge$1, { variant: "outline", className: "capitalize", children: lic.accessLevel.replace("_", " ") }) })
           ] }, `${user.userId}-${licIdx}`))
         ) })
       ] }) }) }) })
@@ -7328,7 +7324,7 @@ const OrganisationPanel = ({
         /* @__PURE__ */ jsx("h1", { className: "text-3xl font-bold", children: title }),
         /* @__PURE__ */ jsx("p", { className: "text-muted-foreground", children: description })
       ] }),
-      showAdminBadge && /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "flex items-center gap-2", children: [
+      showAdminBadge && /* @__PURE__ */ jsxs(Badge$1, { variant: "secondary", className: "flex items-center gap-2", children: [
         /* @__PURE__ */ jsx(Settings, { className: "h-4 w-4" }),
         "Administrator"
       ] })
@@ -7453,7 +7449,7 @@ const EditableCertificates = ({ profile }) => {
             getTypeIcon(cert.type),
             /* @__PURE__ */ jsx("h3", { className: "font-semibold text-lg truncate", children: cert.name })
           ] }),
-          /* @__PURE__ */ jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsx(Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
+          /* @__PURE__ */ jsx("div", { className: "flex items-center flex-shrink-0", children: /* @__PURE__ */ jsx(Badge$1, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1`, children: cert.type || "Certificate" }) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-4 gap-4 text-sm ml-8", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
@@ -7471,7 +7467,7 @@ const EditableCertificates = ({ profile }) => {
             /* @__PURE__ */ jsx("span", { className: "font-medium", children: formatDate2(cert.expiryDate) })
           ] }),
           /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-end gap-2", children: [
-            /* @__PURE__ */ jsx(Badge, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }),
+            /* @__PURE__ */ jsx(Badge$1, { className: `${getValidityStatusColor(validityStatus)} text-white`, children: validityStatus }),
             cert.certificate_url && cert.id && /* @__PURE__ */ jsx(
               Button,
               {
@@ -8851,8 +8847,8 @@ const DocumentList = ({
             /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
               /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
                 /* @__PURE__ */ jsx(CardTitle, { className: "text-lg", children: assignment.document.title }),
-                assignment.document.required && /* @__PURE__ */ jsx(Badge, { variant: "destructive", className: "text-xs", children: "Required" }),
-                isOverdue(assignment.due_date, assignment.status) && /* @__PURE__ */ jsx(Badge, { variant: "destructive", className: "text-xs", children: "Overdue" })
+                assignment.document.required && /* @__PURE__ */ jsx(Badge$1, { variant: "destructive", className: "text-xs", children: "Required" }),
+                isOverdue(assignment.due_date, assignment.status) && /* @__PURE__ */ jsx(Badge$1, { variant: "destructive", className: "text-xs", children: "Overdue" })
               ] }),
               assignment.document.description && /* @__PURE__ */ jsx(CardDescription, { className: "mt-2", children: assignment.document.description })
             ] }),
@@ -8880,7 +8876,7 @@ const DocumentList = ({
                 /* @__PURE__ */ jsx(EyeOff, { className: "h-3.5 w-3.5" }),
                 "Not yet opened"
               ] })),
-              assignment.document.category && /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: assignment.document.category })
+              assignment.document.category && /* @__PURE__ */ jsx(Badge$1, { variant: "outline", className: "text-xs", children: assignment.document.category })
             ] }),
             /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
               (assignment.document.url || assignment.document.file_name) && /* @__PURE__ */ jsxs(
@@ -8901,7 +8897,7 @@ const DocumentList = ({
                 }
               ),
               isReadOnly ? /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
-                /* @__PURE__ */ jsx(Badge, { className: getStatusColor(assignment.status), children: assignment.status }),
+                /* @__PURE__ */ jsx(Badge$1, { className: getStatusColor(assignment.status), children: assignment.status }),
                 canAdminResetCompletion && assignment.status === "Completed" && onAdminResetCompletion && /* @__PURE__ */ jsxs(
                   Button,
                   {
@@ -8918,7 +8914,7 @@ const DocumentList = ({
                   }
                 )
               ] }) : assignment.status === "Completed" ? /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center justify-end gap-2", children: [
-                /* @__PURE__ */ jsx(Badge, { className: getStatusColor("Completed"), children: "Completed" }),
+                /* @__PURE__ */ jsx(Badge$1, { className: getStatusColor("Completed"), children: "Completed" }),
                 canAdminResetCompletion && onAdminResetCompletion && /* @__PURE__ */ jsxs(
                   Button,
                   {
@@ -9333,7 +9329,7 @@ const UserDepartmentsRolesTable = forwardRef(({ userId }, ref) => {
             ]
           }
         ) : pair.departmentName ? /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsx(Badge, { variant: pair.isDepartmentPrimary ? "default" : "secondary", children: pair.departmentName }),
+          /* @__PURE__ */ jsx(Badge$1, { variant: pair.isDepartmentPrimary ? "default" : "secondary", children: pair.departmentName }),
           pair.isDepartmentPrimary && /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" })
         ] }) : /* @__PURE__ */ jsx("span", { className: "text-muted-foreground italic", children: "No department" }) }),
         /* @__PURE__ */ jsx(TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxs(
@@ -9353,7 +9349,7 @@ const UserDepartmentsRolesTable = forwardRef(({ userId }, ref) => {
             ]
           }
         ) : pair.roleName ? /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
-          /* @__PURE__ */ jsx(Badge, { variant: pair.isRolePrimary ? "default" : "secondary", children: pair.roleName }),
+          /* @__PURE__ */ jsx(Badge$1, { variant: pair.isRolePrimary ? "default" : "secondary", children: pair.roleName }),
           pair.isRolePrimary && /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" })
         ] }) : /* @__PURE__ */ jsx("span", { className: "text-muted-foreground italic", children: "No role" }) }),
         /* @__PURE__ */ jsx(TableCell, { children: pair.isNewRow ? /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
@@ -9796,7 +9792,7 @@ const UserRoleField = ({ userId }) => {
     return /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsx(Key, { className: "h-4 w-4 text-muted-foreground" }),
       /* @__PURE__ */ jsx(
-        Badge,
+        Badge$1,
         {
           variant: getRoleBadgeVariant(role),
           className: `text-sm ${hasAdminAccess ? "cursor-pointer hover:bg-muted/50 px-2 py-1 rounded transition-colors" : ""}`,
@@ -9854,7 +9850,7 @@ const ProfileContactInfo = ({
   return /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-end space-y-3 ml-auto", children: [
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
       /* @__PURE__ */ jsx(Shield, { className: "h-4 w-4 text-muted-foreground" }),
-      /* @__PURE__ */ jsx(Badge, { variant: status === "Active" ? "default" : "secondary", children: status || "Active" })
+      /* @__PURE__ */ jsx(Badge$1, { variant: status === "Active" ? "default" : "secondary", children: status || "Active" })
     ] }),
     /* @__PURE__ */ jsx("div", { className: "flex items-center justify-end gap-2 text-sm", children: /* @__PURE__ */ jsx(UserRoleField, { userId }) }),
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
@@ -9873,7 +9869,7 @@ const ProfileContactInfo = ({
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 text-sm", children: [
       /* @__PURE__ */ jsx(ShieldCheck, { className: `h-4 w-4 ${twoFactorEnabled ? "text-green-500" : "text-muted-foreground"}` }),
-      /* @__PURE__ */ jsx(Badge, { variant: twoFactorEnabled ? "default" : "secondary", children: twoFactorEnabled ? "2FA enabled" : "2FA not set up" })
+      /* @__PURE__ */ jsx(Badge$1, { variant: twoFactorEnabled ? "default" : "secondary", children: twoFactorEnabled ? "2FA enabled" : "2FA not set up" })
     ] })
   ] });
 };
@@ -10523,7 +10519,7 @@ const EditableProfileHeader = ({
         /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }) }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2", children: [
           primaryDepartment && /* @__PURE__ */ jsxs(
-            Badge,
+            Badge$1,
             {
               className: "text-white flex items-center gap-1",
               style: { backgroundColor: "#026473" },
@@ -10534,7 +10530,7 @@ const EditableProfileHeader = ({
             }
           ),
           primaryRole && /* @__PURE__ */ jsxs(
-            Badge,
+            Badge$1,
             {
               className: "text-white flex items-center gap-1",
               style: { backgroundColor: "#359D8A" },
@@ -10994,7 +10990,7 @@ const Certificates = ({ profile }) => {
             "ID: ",
             cert.credentialId
           ] }),
-          /* @__PURE__ */ jsx(Badge, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1 flex-shrink-0`, children: cert.type || "Certificate" })
+          /* @__PURE__ */ jsx(Badge$1, { className: `${getTypeColor(cert.type)} text-white text-sm px-2 py-1 flex-shrink-0`, children: cert.type || "Certificate" })
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-3 gap-4 text-sm ml-8", children: [
@@ -11009,7 +11005,7 @@ const Certificates = ({ profile }) => {
           /* @__PURE__ */ jsx("span", { className: "font-medium", children: formatDate2(cert.expiryDate) })
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-end gap-2", children: [
-          /* @__PURE__ */ jsx(Badge, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }),
+          /* @__PURE__ */ jsx(Badge$1, { className: `${getStatusColor(cert.status)} text-white`, children: cert.status }),
           cert.certificate_url && cert.id && /* @__PURE__ */ jsx(
             Button,
             {
@@ -11426,11 +11422,11 @@ const ProfileBasicInfo = ({
         /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-4 w-full", children: [
           primaryDepartment && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
             /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryDepartment.department_name })
+            /* @__PURE__ */ jsx(Badge$1, { variant: "default", children: primaryDepartment.department_name })
           ] }),
           primaryRole && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
             /* @__PURE__ */ jsx(Star, { className: "h-3 w-3 fill-current text-yellow-500" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "default", children: primaryRole.role_name })
+            /* @__PURE__ */ jsx(Badge$1, { variant: "default", children: primaryRole.role_name })
           ] })
         ] })
       ] })
@@ -11569,7 +11565,7 @@ const MultipleRolesField = ({
     /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 flex-wrap", children: [
       userRoles == null ? void 0 : userRoles.map((userRole) => /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-1", children: [
         /* @__PURE__ */ jsxs(
-          Badge,
+          Badge$1,
           {
             variant: userRole.is_primary ? "default" : "secondary",
             className: "flex items-center gap-1",
@@ -11791,15 +11787,15 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
         /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-3", children: [
             /* @__PURE__ */ jsx(CardTitle, { className: "text-lg", children: document2.title }),
-            document2.required && /* @__PURE__ */ jsx(Badge, { variant: "destructive", className: "text-xs", children: "Required" }),
-            /* @__PURE__ */ jsxs(Badge, { variant: "outline", className: "text-xs", children: [
+            document2.required && /* @__PURE__ */ jsx(Badge$1, { variant: "destructive", className: "text-xs", children: "Required" }),
+            /* @__PURE__ */ jsxs(Badge$1, { variant: "outline", className: "text-xs", children: [
               "v",
               document2.version
             ] }),
-            document2.file_name ? /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs gap-1", children: [
+            document2.file_name ? /* @__PURE__ */ jsxs(Badge$1, { variant: "secondary", className: "text-xs gap-1", children: [
               /* @__PURE__ */ jsx(FileText, { className: "h-3 w-3" }),
               "File"
-            ] }) : document2.url ? /* @__PURE__ */ jsxs(Badge, { variant: "secondary", className: "text-xs gap-1", children: [
+            ] }) : document2.url ? /* @__PURE__ */ jsxs(Badge$1, { variant: "secondary", className: "text-xs gap-1", children: [
               /* @__PURE__ */ jsx(Link, { className: "h-3 w-3" }),
               "URL"
             ] }) : null
@@ -11848,7 +11844,7 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
           document2.due_days,
           " days"
         ] }),
-        document2.category && /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: document2.category })
+        document2.category && /* @__PURE__ */ jsx(Badge$1, { variant: "outline", className: "text-xs", children: document2.category })
       ] }) })
     ] }, document2.document_id)) }),
     /* @__PURE__ */ jsx(AlertDialog, { open: !!documentPendingDelete, onOpenChange: (open) => !open && setDocumentPendingDelete(null), children: /* @__PURE__ */ jsxs(AlertDialogContent, { children: [
@@ -12457,7 +12453,7 @@ const DocumentAssignmentsDrillDown = ({
             ] })
           ] })
         ] }),
-        /* @__PURE__ */ jsx(Badge, { variant: badgeProps.variant, className: badgeProps.className, children: status })
+        /* @__PURE__ */ jsx(Badge$1, { variant: badgeProps.variant, className: badgeProps.className, children: status })
       ] }) }) }, profile.id);
     }) }) });
   };
@@ -14431,14 +14427,14 @@ const ComplianceUserDetail = ({ userId, userName, department, onBack }) => {
   };
   const getStatusBadge = (assignment) => {
     if (assignment.status === "Completed") {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-green-100 text-green-800", children: "Completed" });
     } else if (assignment.days_overdue > 0) {
-      return /* @__PURE__ */ jsxs(Badge, { className: "bg-red-100 text-red-800", children: [
+      return /* @__PURE__ */ jsxs(Badge$1, { className: "bg-red-100 text-red-800", children: [
         assignment.days_overdue,
         "d overdue"
       ] });
     } else {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
     }
   };
   if (isLoading) {
@@ -14521,7 +14517,7 @@ const ComplianceUserDetail = ({ userId, userName, department, onBack }) => {
               getStatusBadge(assignment)
             ] }) }),
             /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: assignment.document_title }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "outline", children: assignment.document_category }) }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: "outline", children: assignment.document_category }) }),
             /* @__PURE__ */ jsx(TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
             /* @__PURE__ */ jsx(TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" }),
             /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground", children: format(new Date(assignment.assigned_at), "MMM dd, yyyy") })
@@ -14598,14 +14594,14 @@ const ComplianceDocumentDetail = ({ documentId, documentTitle, onBack }) => {
   };
   const getStatusBadge = (assignment) => {
     if (assignment.status === "Completed") {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-green-100 text-green-800", children: "Completed" });
     } else if (assignment.days_overdue > 0) {
-      return /* @__PURE__ */ jsxs(Badge, { className: "bg-red-100 text-red-800", children: [
+      return /* @__PURE__ */ jsxs(Badge$1, { className: "bg-red-100 text-red-800", children: [
         assignment.days_overdue,
         "d overdue"
       ] });
     } else {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
     }
   };
   if (isLoading) {
@@ -14626,8 +14622,8 @@ const ComplianceDocumentDetail = ({ documentId, documentTitle, onBack }) => {
       /* @__PURE__ */ jsxs("div", { children: [
         /* @__PURE__ */ jsx("h3", { className: "text-2xl font-bold", children: documentTitle }),
         documentInfo && /* @__PURE__ */ jsxs("div", { className: "flex items-center gap-2 mt-1", children: [
-          /* @__PURE__ */ jsx(Badge, { variant: "outline", children: documentInfo.category }),
-          documentInfo.required && /* @__PURE__ */ jsx(Badge, { className: "bg-red-100 text-red-800", children: "Required" }),
+          /* @__PURE__ */ jsx(Badge$1, { variant: "outline", children: documentInfo.category }),
+          documentInfo.required && /* @__PURE__ */ jsx(Badge$1, { className: "bg-red-100 text-red-800", children: "Required" }),
           /* @__PURE__ */ jsxs("span", { className: "text-sm text-muted-foreground", children: [
             "Due in ",
             documentInfo.due_days,
@@ -14703,7 +14699,7 @@ const ComplianceDocumentDetail = ({ documentId, documentTitle, onBack }) => {
               getStatusBadge(assignment)
             ] }) }),
             /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: assignment.user_name }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "outline", children: assignment.department }) }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: "outline", children: assignment.department }) }),
             /* @__PURE__ */ jsx(TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
             /* @__PURE__ */ jsx(TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" }),
             /* @__PURE__ */ jsx(TableCell, { className: "text-muted-foreground", children: format(new Date(assignment.assigned_at), "MMM dd, yyyy") })
@@ -14808,14 +14804,14 @@ const ComplianceDepartmentDetail = ({ department, onBack }) => {
   };
   const getStatusBadge = (assignment) => {
     if (assignment.status === "Completed") {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-green-100 text-green-800", children: "Completed" });
     } else if (assignment.days_overdue > 0) {
-      return /* @__PURE__ */ jsxs(Badge, { className: "bg-red-100 text-red-800", children: [
+      return /* @__PURE__ */ jsxs(Badge$1, { className: "bg-red-100 text-red-800", children: [
         assignment.days_overdue,
         "d overdue"
       ] });
     } else {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
     }
   };
   if (isLoading) {
@@ -14889,7 +14885,7 @@ const ComplianceDepartmentDetail = ({ department, onBack }) => {
         /* @__PURE__ */ jsx("div", { className: "grid gap-4", children: userStats.map((user) => /* @__PURE__ */ jsxs(Card, { children: [
           /* @__PURE__ */ jsx(CardHeader, { className: "pb-2", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
             /* @__PURE__ */ jsx(CardTitle, { className: "text-lg", children: user.user_name }),
-            /* @__PURE__ */ jsxs(Badge, { className: user.compliance_rate >= 90 ? "bg-green-100 text-green-800" : user.compliance_rate >= 70 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800", children: [
+            /* @__PURE__ */ jsxs(Badge$1, { className: user.compliance_rate >= 90 ? "bg-green-100 text-green-800" : user.compliance_rate >= 70 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800", children: [
               Math.round(user.compliance_rate),
               "% Complete"
             ] })
@@ -14944,7 +14940,7 @@ const ComplianceDepartmentDetail = ({ department, onBack }) => {
             ] }) }),
             /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: assignment.user_name }),
             /* @__PURE__ */ jsx(TableCell, { children: assignment.document_title }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "outline", children: assignment.document_category }) }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: "outline", children: assignment.document_category }) }),
             /* @__PURE__ */ jsx(TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
             /* @__PURE__ */ jsx(TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" })
           ] }, assignment.assignment_id)) })
@@ -15064,14 +15060,14 @@ const ComplianceRoleDetail = ({ role, onBack }) => {
   };
   const getStatusBadge = (assignment) => {
     if (assignment.status === "Completed") {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-green-100 text-green-800", children: "Completed" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-green-100 text-green-800", children: "Completed" });
     } else if (assignment.days_overdue > 0) {
-      return /* @__PURE__ */ jsxs(Badge, { className: "bg-red-100 text-red-800", children: [
+      return /* @__PURE__ */ jsxs(Badge$1, { className: "bg-red-100 text-red-800", children: [
         assignment.days_overdue,
         "d overdue"
       ] });
     } else {
-      return /* @__PURE__ */ jsx(Badge, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
+      return /* @__PURE__ */ jsx(Badge$1, { className: "bg-yellow-100 text-yellow-800", children: "Pending" });
     }
   };
   if (isLoading) {
@@ -15148,7 +15144,7 @@ const ComplianceRoleDetail = ({ role, onBack }) => {
               /* @__PURE__ */ jsx(CardTitle, { className: "text-lg", children: user.user_name }),
               /* @__PURE__ */ jsx(CardDescription, { children: user.department })
             ] }),
-            /* @__PURE__ */ jsxs(Badge, { className: user.compliance_rate >= 90 ? "bg-green-100 text-green-800" : user.compliance_rate >= 70 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800", children: [
+            /* @__PURE__ */ jsxs(Badge$1, { className: user.compliance_rate >= 90 ? "bg-green-100 text-green-800" : user.compliance_rate >= 70 ? "bg-yellow-100 text-yellow-800" : "bg-red-100 text-red-800", children: [
               Math.round(user.compliance_rate),
               "% Complete"
             ] })
@@ -15203,9 +15199,9 @@ const ComplianceRoleDetail = ({ role, onBack }) => {
               getStatusBadge(assignment)
             ] }) }),
             /* @__PURE__ */ jsx(TableCell, { className: "font-medium", children: assignment.user_name }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "outline", children: assignment.department }) }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: "outline", children: assignment.department }) }),
             /* @__PURE__ */ jsx(TableCell, { children: assignment.document_title }),
-            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge, { variant: "outline", children: assignment.document_category }) }),
+            /* @__PURE__ */ jsx(TableCell, { children: /* @__PURE__ */ jsx(Badge$1, { variant: "outline", children: assignment.document_category }) }),
             /* @__PURE__ */ jsx(TableCell, { children: format(new Date(assignment.due_date), "MMM dd, yyyy") }),
             /* @__PURE__ */ jsx(TableCell, { children: assignment.completed_at ? format(new Date(assignment.completed_at), "MMM dd, yyyy") : "-" })
           ] }, assignment.assignment_id)) })
@@ -15739,7 +15735,7 @@ const ComplianceTracking = () => {
                   "/",
                   user.total_assignments
                 ] }),
-                /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(user.compliance_rate)} whitespace-nowrap`, children: [
+                /* @__PURE__ */ jsxs(Badge$1, { className: `${getComplianceBadge(user.compliance_rate)} whitespace-nowrap`, children: [
                   Math.round(user.compliance_rate),
                   "%"
                 ] }),
@@ -15801,7 +15797,7 @@ const ComplianceTracking = () => {
                   "/",
                   doc.total_assignments
                 ] }),
-                /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(doc.compliance_rate)} whitespace-nowrap`, children: [
+                /* @__PURE__ */ jsxs(Badge$1, { className: `${getComplianceBadge(doc.compliance_rate)} whitespace-nowrap`, children: [
                   Math.round(doc.compliance_rate),
                   "%"
                 ] }),
@@ -15864,7 +15860,7 @@ const ComplianceTracking = () => {
                   "/",
                   dept.total_assignments
                 ] }),
-                /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(dept.compliance_rate)} whitespace-nowrap`, children: [
+                /* @__PURE__ */ jsxs(Badge$1, { className: `${getComplianceBadge(dept.compliance_rate)} whitespace-nowrap`, children: [
                   Math.round(dept.compliance_rate),
                   "%"
                 ] }),
@@ -15933,7 +15929,7 @@ const ComplianceTracking = () => {
                       "/",
                       role.total_assignments
                     ] }),
-                    /* @__PURE__ */ jsxs(Badge, { className: `${getComplianceBadge(role.compliance_rate)} whitespace-nowrap`, children: [
+                    /* @__PURE__ */ jsxs(Badge$1, { className: `${getComplianceBadge(role.compliance_rate)} whitespace-nowrap`, children: [
                       Math.round(role.compliance_rate),
                       "%"
                     ] }),
@@ -15978,7 +15974,7 @@ const ComplianceTracking = () => {
                 ")"
               ] })
             ] }),
-            /* @__PURE__ */ jsxs(Badge, { className: "bg-green-100 text-green-800", children: [
+            /* @__PURE__ */ jsxs(Badge$1, { className: "bg-green-100 text-green-800", children: [
               /* @__PURE__ */ jsx(CircleCheckBig, { className: "h-3 w-3 mr-1" }),
               "Completed"
             ] })
@@ -16027,7 +16023,7 @@ const ComplianceTracking = () => {
                 ")"
               ] })
             ] }),
-            /* @__PURE__ */ jsxs(Badge, { className: "bg-red-100 text-red-800", children: [
+            /* @__PURE__ */ jsxs(Badge$1, { className: "bg-red-100 text-red-800", children: [
               /* @__PURE__ */ jsx(CircleAlert, { className: "h-3 w-3 mr-1" }),
               detail.days_overdue,
               " days overdue"

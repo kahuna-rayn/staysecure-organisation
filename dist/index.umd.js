@@ -1946,11 +1946,8 @@
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex justify-end gap-3", children: [
-                /* @__PURE__ */ jsxRuntime.jsxs(button.Button, { onClick: handleImport, disabled: isSubmitting, className: "flex items-center gap-2", children: [
-                  isSubmitting ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }),
-                  isSubmitting ? "Starting…" : "Start Import"
-                ] }),
-                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", onClick: () => setUploadedFile(null), disabled: isSubmitting, children: "Clear" })
+                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { onClick: handleImport, disabled: isSubmitting, size: "icon", "aria-label": "Start import", children: isSubmitting ? /* @__PURE__ */ jsxRuntime.jsx("div", { className: "animate-spin rounded-full h-4 w-4 border-b-2 border-white" }) : /* @__PURE__ */ jsxRuntime.jsx(Upload, { className: "h-4 w-4" }) }),
+                /* @__PURE__ */ jsxRuntime.jsx(button.Button, { variant: "outline", size: "icon", onClick: () => setUploadedFile(null), disabled: isSubmitting, "aria-label": "Clear file", children: /* @__PURE__ */ jsxRuntime.jsx(X, { className: "h-4 w-4" }) })
               ] })
             ] })
           ] }),
@@ -1960,15 +1957,14 @@
             /* @__PURE__ */ jsxRuntime.jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between p-2 bg-white rounded border", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center gap-2", children: [
                 /* @__PURE__ */ jsxRuntime.jsx(FileText, { className: "h-4 w-4" }),
-                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" }),
-                /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "secondary", className: "text-xs", children: "Ready to use template" })
+                /* @__PURE__ */ jsxRuntime.jsx("span", { className: "text-sm font-medium", children: "Users Template (CSV)" })
               ] }),
               /* @__PURE__ */ jsxRuntime.jsx(button.Button, { size: "sm", variant: "outline", onClick: generateSampleCSV, className: "gap-2", children: /* @__PURE__ */ jsxRuntime.jsx(Download, { className: "h-4 w-4" }) })
             ] }) })
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
             /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsxRuntime.jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
             importMode === "update" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",

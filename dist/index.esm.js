@@ -2210,7 +2210,8 @@ const ImportErrorReport = ({
   totalCount,
   isOpen,
   onClose,
-  importType
+  importType,
+  jobMeta
 }) => {
   const infoItems = warnings.filter((w) => w.type === "info");
   const realWarnings = warnings.filter((w) => w.type !== "info");
@@ -2252,6 +2253,16 @@ const ImportErrorReport = ({
       /* @__PURE__ */ jsx(DialogDescription, { children: "Review the import results and download detailed error and warning information" })
     ] }),
     /* @__PURE__ */ jsxs("div", { className: "space-y-4 overflow-y-auto", children: [
+      jobMeta && /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground border-b pb-3", children: [
+        jobMeta.filename && /* @__PURE__ */ jsx("span", { className: "font-medium text-foreground", children: jobMeta.filename }),
+        jobMeta.importMode && /* @__PURE__ */ jsx("span", { className: "capitalize", children: jobMeta.importMode === "update" ? "Update existing" : "Create new" }),
+        jobMeta.status && /* @__PURE__ */ jsx(Badge, { variant: "outline", className: jobMeta.status === "completed" ? "border-green-300 text-green-700" : jobMeta.status === "failed" ? "border-destructive text-destructive" : "border-muted text-muted-foreground", children: jobMeta.status }),
+        jobMeta.createdByName && /* @__PURE__ */ jsxs("span", { children: [
+          "by ",
+          jobMeta.createdByName
+        ] }),
+        jobMeta.createdAt && /* @__PURE__ */ jsx("span", { children: new Date(jobMeta.createdAt).toLocaleString() })
+      ] }),
       /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-4 gap-4", children: [
         /* @__PURE__ */ jsxs("div", { className: "p-4 bg-green-50 border border-green-200 rounded-lg", children: [
           /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-green-700", children: successCount }),
@@ -2445,10 +2456,11 @@ const UserManagement = () => {
   const [importErrors, setImportErrors] = useState([]);
   const [importWarnings, setImportWarnings] = useState([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
+  const [importJobMeta, setImportJobMeta] = useState(void 0);
   const [lastJobMeta, setLastJobMeta] = useState(null);
   const [isLoadingLastJob, setIsLoadingLastJob] = useState(false);
   const fetchLastJob = async () => {
-    const { data } = await supabaseClient.from("user_import_jobs").select("id, original_filename, import_mode, status, succeeded_rows, failed_rows, total_rows, last_error").order("created_at", { ascending: false }).limit(1).maybeSingle();
+    const { data } = await supabaseClient.from("user_import_jobs").select("id, original_filename, import_mode, status, succeeded_rows, failed_rows, total_rows, last_error, created_by, created_at").order("created_at", { ascending: false }).limit(1).maybeSingle();
     setLastJobMeta(data ?? null);
   };
   useEffect(() => {
@@ -2471,9 +2483,17 @@ const UserManagement = () => {
         const rowNumber = wr.row_index + 2;
         if (wr.error_message) warnings.push({ rowNumber, identifier: email, field: "Note", error: wr.error_message, rawData: row });
       }
+      const creator = lastJobMeta.created_by ? profiles.find((p) => p.id === lastJobMeta.created_by || p["user_id"] === lastJobMeta.created_by) : null;
       setImportErrors(errors);
       setImportWarnings(warnings);
       setImportStats({ success: lastJobMeta.succeeded_rows, total: lastJobMeta.total_rows });
+      setImportJobMeta({
+        filename: lastJobMeta.original_filename,
+        importMode: lastJobMeta.import_mode,
+        status: lastJobMeta.status,
+        createdByName: (creator == null ? void 0 : creator.full_name) || (creator == null ? void 0 : creator.email) || null,
+        createdAt: lastJobMeta.created_at
+      });
       setShowImportErrorReport(true);
     } finally {
       setIsLoadingLastJob(false);
@@ -2590,7 +2610,8 @@ const UserManagement = () => {
         totalCount: importStats.total,
         isOpen: showImportErrorReport,
         onClose: () => setShowImportErrorReport(false),
-        importType: "Users"
+        importType: "Users",
+        jobMeta: importJobMeta
       }
     ),
     /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
@@ -2676,6 +2697,7 @@ const UserManagement = () => {
                 setImportErrors(errors);
                 setImportWarnings(warnings);
                 setImportStats(stats);
+                setImportJobMeta(void 0);
                 setShowImportErrorReport(true);
               },
               onDismiss: () => {

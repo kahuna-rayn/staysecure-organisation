@@ -14,6 +14,14 @@ export interface ImportError {
   type?: 'error' | 'warning' | 'info';
 }
 
+export interface ImportJobMeta {
+  filename?: string | null;
+  importMode?: string | null;
+  status?: string | null;
+  createdByName?: string | null;
+  createdAt?: string | null;
+}
+
 interface ImportErrorReportProps {
   errors: ImportError[];
   warnings?: ImportError[];
@@ -21,7 +29,8 @@ interface ImportErrorReportProps {
   totalCount: number;
   isOpen: boolean;
   onClose: () => void;
-  importType: string; // "users", "hardware", "software", etc.
+  importType: string;
+  jobMeta?: ImportJobMeta;
 }
 
 export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
@@ -31,7 +40,8 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
   totalCount,
   isOpen,
   onClose,
-  importType
+  importType,
+  jobMeta,
 }) => {
   const infoItems = warnings.filter(w => w.type === 'info');
   const realWarnings = warnings.filter(w => w.type !== 'info');
@@ -92,6 +102,29 @@ export const ImportErrorReport: React.FC<ImportErrorReportProps> = ({
         </DialogHeader>
 
         <div className="space-y-4 overflow-y-auto">
+          {/* Job metadata */}
+          {jobMeta && (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground border-b pb-3">
+              {jobMeta.filename && <span className="font-medium text-foreground">{jobMeta.filename}</span>}
+              {jobMeta.importMode && (
+                <span className="capitalize">{jobMeta.importMode === 'update' ? 'Update existing' : 'Create new'}</span>
+              )}
+              {jobMeta.status && (
+                <Badge variant="outline" className={
+                  jobMeta.status === 'completed' ? 'border-green-300 text-green-700' :
+                  jobMeta.status === 'failed' ? 'border-destructive text-destructive' :
+                  'border-muted text-muted-foreground'
+                }>
+                  {jobMeta.status}
+                </Badge>
+              )}
+              {jobMeta.createdByName && <span>by {jobMeta.createdByName}</span>}
+              {jobMeta.createdAt && (
+                <span>{new Date(jobMeta.createdAt).toLocaleString()}</span>
+              )}
+            </div>
+          )}
+
           {/* Summary Stats */}
           <div className="grid grid-cols-4 gap-4">
             <div className="p-4 bg-green-50 border border-green-200 rounded-lg">

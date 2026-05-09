@@ -8,6 +8,13 @@ export interface ImportError {
     rawData?: Record<string, string>;
     type?: 'error' | 'warning' | 'info';
 }
+export interface ImportJobMeta {
+    filename?: string | null;
+    importMode?: string | null;
+    status?: string | null;
+    createdByName?: string | null;
+    createdAt?: string | null;
+}
 interface ImportErrorReportProps {
     errors: ImportError[];
     warnings?: ImportError[];
@@ -16,6 +23,7 @@ interface ImportErrorReportProps {
     isOpen: boolean;
     onClose: () => void;
     importType: string;
+    jobMeta?: ImportJobMeta;
 }
 export declare const ImportErrorReport: React.FC<ImportErrorReportProps>;
 export {};

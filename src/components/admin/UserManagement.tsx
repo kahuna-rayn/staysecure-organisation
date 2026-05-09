@@ -28,7 +28,7 @@ import UserTable from './UserTable';
 import CreateUserDialog from './CreateUserDialog';
 import ImportUsersDialog from './ImportUsersDialog';
 import UserImportProgressBanner from './UserImportProgressBanner';
-import { ImportErrorReport, ImportError } from '../import/ImportErrorReport';
+import { ImportErrorReport, ImportError, type ImportJobMeta } from '../import/ImportErrorReport';
 import { readPersistedImportJob, clearPersistedImportJob, type PersistedImportJob } from '../../utils/userImportProgress';
 import debug from '../../utils/debug';
 
@@ -104,11 +104,13 @@ const UserManagement: React.FC = () => {
   const [importErrors, setImportErrors] = useState<ImportError[]>([]);
   const [importWarnings, setImportWarnings] = useState<ImportError[]>([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
+  const [importJobMeta, setImportJobMeta] = useState<ImportJobMeta | undefined>(undefined);
 
   // --- Last import job (for History button) ---
   const [lastJobMeta, setLastJobMeta] = useState<{
     id: string; original_filename: string | null; import_mode: string;
-    status: string; succeeded_rows: number; failed_rows: number; total_rows: number; last_error: string | null;
+    status: string; succeeded_rows: number; failed_rows: number; total_rows: number;
+    last_error: string | null; created_by: string | null; created_at: string;
   } | null>(null);
   const [isLoadingLastJob, setIsLoadingLastJob] = useState(false);
 
@@ -116,7 +118,7 @@ const UserManagement: React.FC = () => {
   const fetchLastJob = async () => {
     const { data } = await supabaseClient
       .from('user_import_jobs')
-      .select('id, original_filename, import_mode, status, succeeded_rows, failed_rows, total_rows, last_error')
+      .select('id, original_filename, import_mode, status, succeeded_rows, failed_rows, total_rows, last_error, created_by, created_at')
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
@@ -155,9 +157,20 @@ const UserManagement: React.FC = () => {
         if (wr.error_message) warnings.push({ rowNumber, identifier: email, field: 'Note', error: wr.error_message, rawData: row });
       }
 
+      const creator = lastJobMeta.created_by
+        ? profiles.find((p) => p.id === lastJobMeta.created_by || (p as unknown as Record<string, string>)['user_id'] === lastJobMeta.created_by)
+        : null;
+
       setImportErrors(errors);
       setImportWarnings(warnings);
       setImportStats({ success: lastJobMeta.succeeded_rows, total: lastJobMeta.total_rows });
+      setImportJobMeta({
+        filename: lastJobMeta.original_filename,
+        importMode: lastJobMeta.import_mode,
+        status: lastJobMeta.status,
+        createdByName: creator?.full_name || creator?.email || null,
+        createdAt: lastJobMeta.created_at,
+      });
       setShowImportErrorReport(true);
     } finally {
       setIsLoadingLastJob(false);
@@ -296,6 +309,7 @@ const UserManagement: React.FC = () => {
         isOpen={showImportErrorReport}
         onClose={() => setShowImportErrorReport(false)}
         importType="Users"
+        jobMeta={importJobMeta}
       />
 
       <div className="space-y-6">
@@ -376,6 +390,8 @@ const UserManagement: React.FC = () => {
                   setImportErrors(errors);
                   setImportWarnings(warnings);
                   setImportStats(stats);
+                  // jobMeta will be populated after fetchLastJob() runs in onImportComplete
+                  setImportJobMeta(undefined);
                   setShowImportErrorReport(true);
                 }}
                 onDismiss={() => {

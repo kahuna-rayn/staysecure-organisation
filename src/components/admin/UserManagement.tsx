@@ -6,7 +6,7 @@ import { useViewPreference } from '@/hooks/useViewPreference';
 import { handleCreateUser, handleDeleteUser } from '../../utils/userManagementActions';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
-import { LayoutGrid, List, Users, Search, Mail, ChevronLeft, ChevronRight } from 'lucide-react';
+import { LayoutGrid, List, Users, Search, Mail, ChevronLeft, ChevronRight, History } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -104,6 +104,65 @@ const UserManagement: React.FC = () => {
   const [importErrors, setImportErrors] = useState<ImportError[]>([]);
   const [importWarnings, setImportWarnings] = useState<ImportError[]>([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
+
+  // --- Last import job (for History button) ---
+  const [lastJobMeta, setLastJobMeta] = useState<{
+    id: string; original_filename: string | null; import_mode: string;
+    status: string; succeeded_rows: number; failed_rows: number; total_rows: number; last_error: string | null;
+  } | null>(null);
+  const [isLoadingLastJob, setIsLoadingLastJob] = useState(false);
+
+  // Fetch the most recent job on mount and after each import completes.
+  const fetchLastJob = async () => {
+    const { data } = await supabaseClient
+      .from('user_import_jobs')
+      .select('id, original_filename, import_mode, status, succeeded_rows, failed_rows, total_rows, last_error')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    setLastJobMeta(data ?? null);
+  };
+
+  useEffect(() => { void fetchLastJob(); }, []); // mount-only: fetchLastJob is stable (refs supabaseClient from closure)
+
+  const handleShowLastImport = async () => {
+    if (!lastJobMeta) return;
+    setIsLoadingLastJob(true);
+    try {
+      const { data: failRows } = await supabaseClient
+        .from('user_import_job_rows')
+        .select('row_index, row_payload, error_message')
+        .eq('job_id', lastJobMeta.id)
+        .eq('status', 'failed');
+
+      const { data: warnRows } = await supabaseClient
+        .from('user_import_job_rows')
+        .select('row_index, row_payload, error_message')
+        .eq('job_id', lastJobMeta.id)
+        .eq('status', 'succeeded')
+        .not('error_message', 'is', null);
+
+      const errors: ImportError[] = (failRows || []).map((fr) => {
+        const row = fr.row_payload as Record<string, string>;
+        return { rowNumber: (fr.row_index as number) + 2, identifier: row['Email'] || row['email'] || 'Unknown', error: fr.error_message || 'Failed', rawData: row };
+      });
+
+      const warnings: ImportError[] = [];
+      for (const wr of warnRows || []) {
+        const row = wr.row_payload as Record<string, string>;
+        const email = row['Email'] || row['email'] || 'Unknown';
+        const rowNumber = (wr.row_index as number) + 2;
+        if (wr.error_message) warnings.push({ rowNumber, identifier: email, field: 'Note', error: wr.error_message, rawData: row });
+      }
+
+      setImportErrors(errors);
+      setImportWarnings(warnings);
+      setImportStats({ success: lastJobMeta.succeeded_rows, total: lastJobMeta.total_rows });
+      setShowImportErrorReport(true);
+    } finally {
+      setIsLoadingLastJob(false);
+    }
+  };
 
   // --- Import progress banner ---
   const [activeImportJob, setActiveImportJob] = useState<PersistedImportJob | null>(() => {
@@ -277,6 +336,16 @@ const UserManagement: React.FC = () => {
                       : `Send Activation Emails (${pendingProfiles.length})`}
                   </Button>
                 )}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handleShowLastImport}
+                  disabled={isLoadingLastJob || !lastJobMeta}
+                  aria-label={lastJobMeta ? `Last import: ${lastJobMeta.original_filename ?? 'unknown'} (${lastJobMeta.status})` : 'No import history'}
+                  title={lastJobMeta ? `${lastJobMeta.original_filename ?? 'Import'} · ${lastJobMeta.import_mode} · ${lastJobMeta.succeeded_rows}/${lastJobMeta.total_rows} imported · ${lastJobMeta.status}` : 'No import history'}
+                >
+                  <History className="h-4 w-4" />
+                </Button>
                 <ImportUsersDialog
                   onImportStart={(job) => {
                     setActiveImportJob(job);
@@ -301,6 +370,7 @@ const UserManagement: React.FC = () => {
                 job={activeImportJob}
                 onImportComplete={async () => {
                   await refetch();
+                  void fetchLastJob();
                 }}
                 onImportError={(errors, warnings, stats) => {
                   setImportErrors(errors);

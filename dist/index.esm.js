@@ -511,6 +511,17 @@ const Hash = createLucideIcon("Hash", [
  * This source code is licensed under the ISC license.
  * See the LICENSE file in the root directory of this source tree.
  */
+const History = createLucideIcon("History", [
+  ["path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8", key: "1357e3" }],
+  ["path", { d: "M3 3v5h5", key: "1xhq8a" }],
+  ["path", { d: "M12 7v5l4 2", key: "1fdv2h" }]
+]);
+/**
+ * @license lucide-react v0.462.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
 const IdCard = createLucideIcon("IdCard", [
   ["path", { d: "M16 10h2", key: "8sgtl7" }],
   ["path", { d: "M16 14h2", key: "epxaof" }],
@@ -2434,6 +2445,40 @@ const UserManagement = () => {
   const [importErrors, setImportErrors] = useState([]);
   const [importWarnings, setImportWarnings] = useState([]);
   const [importStats, setImportStats] = useState({ success: 0, total: 0 });
+  const [lastJobMeta, setLastJobMeta] = useState(null);
+  const [isLoadingLastJob, setIsLoadingLastJob] = useState(false);
+  const fetchLastJob = async () => {
+    const { data } = await supabaseClient.from("user_import_jobs").select("id, original_filename, import_mode, status, succeeded_rows, failed_rows, total_rows, last_error").order("created_at", { ascending: false }).limit(1).maybeSingle();
+    setLastJobMeta(data ?? null);
+  };
+  useEffect(() => {
+    void fetchLastJob();
+  }, []);
+  const handleShowLastImport = async () => {
+    if (!lastJobMeta) return;
+    setIsLoadingLastJob(true);
+    try {
+      const { data: failRows } = await supabaseClient.from("user_import_job_rows").select("row_index, row_payload, error_message").eq("job_id", lastJobMeta.id).eq("status", "failed");
+      const { data: warnRows } = await supabaseClient.from("user_import_job_rows").select("row_index, row_payload, error_message").eq("job_id", lastJobMeta.id).eq("status", "succeeded").not("error_message", "is", null);
+      const errors = (failRows || []).map((fr) => {
+        const row = fr.row_payload;
+        return { rowNumber: fr.row_index + 2, identifier: row["Email"] || row["email"] || "Unknown", error: fr.error_message || "Failed", rawData: row };
+      });
+      const warnings = [];
+      for (const wr of warnRows || []) {
+        const row = wr.row_payload;
+        const email = row["Email"] || row["email"] || "Unknown";
+        const rowNumber = wr.row_index + 2;
+        if (wr.error_message) warnings.push({ rowNumber, identifier: email, field: "Note", error: wr.error_message, rawData: row });
+      }
+      setImportErrors(errors);
+      setImportWarnings(warnings);
+      setImportStats({ success: lastJobMeta.succeeded_rows, total: lastJobMeta.total_rows });
+      setShowImportErrorReport(true);
+    } finally {
+      setIsLoadingLastJob(false);
+    }
+  };
   const [activeImportJob, setActiveImportJob] = useState(() => {
     return readPersistedImportJob();
   });
@@ -2586,6 +2631,18 @@ const UserManagement = () => {
               }
             ),
             /* @__PURE__ */ jsx(
+              Button,
+              {
+                variant: "outline",
+                size: "icon",
+                onClick: handleShowLastImport,
+                disabled: isLoadingLastJob || !lastJobMeta,
+                "aria-label": lastJobMeta ? `Last import: ${lastJobMeta.original_filename ?? "unknown"} (${lastJobMeta.status})` : "No import history",
+                title: lastJobMeta ? `${lastJobMeta.original_filename ?? "Import"} · ${lastJobMeta.import_mode} · ${lastJobMeta.succeeded_rows}/${lastJobMeta.total_rows} imported · ${lastJobMeta.status}` : "No import history",
+                children: /* @__PURE__ */ jsx(History, { className: "h-4 w-4" })
+              }
+            ),
+            /* @__PURE__ */ jsx(
               ImportUsersDialog,
               {
                 onImportStart: (job) => {
@@ -2613,6 +2670,7 @@ const UserManagement = () => {
               job: activeImportJob,
               onImportComplete: async () => {
                 await refetch();
+                void fetchLastJob();
               },
               onImportError: (errors, warnings, stats) => {
                 setImportErrors(errors);

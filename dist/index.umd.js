@@ -1964,7 +1964,7 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
             /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsxRuntime.jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
             importMode === "update" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",

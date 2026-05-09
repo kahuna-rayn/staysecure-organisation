@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import debug from '../../utils/debug';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useDropzone } from 'react-dropzone';

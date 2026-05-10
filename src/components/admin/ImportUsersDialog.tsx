@@ -47,7 +47,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportStart }) 
   });
 
   const generateSampleCSV = () => {
-    const csvContent = `"Email","Full Name","First Name","Last Name","Phone","Employee ID","Access Level","Location","Department","Role","Manager"
+    const csvContent = `"Email","Full Name","First Name","Last Name","Business Phone","Employee ID","Access Level","Location","Department","Role","Manager"
 "john.doe@company.com","John Doe","John","Doe","+65-555-0123","EMP-2024-001","User","Main Office","Engineering","Software Engineer","jane.smith@company.com"
 "jane.smith@company.com","Jane Smith","Jane","Smith","+65-555-0124","EMP-2024-002","Admin","Branch Office","Human Resources","HR Manager",""`;
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -267,8 +267,8 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportStart }) 
             <h4 className="font-semibold text-blue-900 mb-2">Available Columns</h4>
             <div className="flex flex-wrap gap-2 mb-4">
               {(importMode === 'update'
-                ? ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Location', 'Department', 'Role', 'Manager']
-                : ['Email', 'Full Name', 'First Name', 'Last Name', 'Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager']
+                ? ['Email', 'Full Name', 'First Name', 'Last Name', 'Business Phone', 'Employee ID', 'Location', 'Department', 'Role', 'Manager']
+                : ['Email', 'Full Name', 'First Name', 'Last Name', 'Business Phone', 'Employee ID', 'Access Level', 'Location', 'Department', 'Role', 'Manager']
               ).map((column) => (
                 <Badge key={column} variant="outline" className="text-xs">{column}</Badge>
               ))}
@@ -295,7 +295,7 @@ const ImportUsersDialog: React.FC<ImportUsersDialogProps> = ({ onImportStart }) 
                 <p>• <strong>Department</strong> (optional) - created automatically if it doesn't exist</p>
                 <p>• <strong>Role</strong> (optional) - created automatically if it doesn't exist. If Department is also provided, the role is linked to that department; otherwise it is created as a general role.</p>
                 <p>• <strong>Manager</strong> (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported</p>
-                <p>• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided</p>
+                <p>• All other fields (Business Phone, Employee ID, etc.) are optional and will use default values if not provided</p>
               </div>
             )}
           </div>

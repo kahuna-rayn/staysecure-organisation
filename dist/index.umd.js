@@ -1588,14 +1588,14 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "phone", children: "Phone" }),
+              /* @__PURE__ */ jsxRuntime.jsx(label.Label, { htmlFor: "phone", children: " Business  Phone" }),
               /* @__PURE__ */ jsxRuntime.jsx(
                 input.Input,
                 {
                   id: "phone",
                   value: newUser.phone,
                   onChange: (e) => updateField("phone", e.target.value),
-                  placeholder: "Enter phone number"
+                  placeholder: "Enter buinsess phone number"
                 }
               )
             ] }),
@@ -1809,7 +1809,7 @@
       multiple: false
     });
     const generateSampleCSV = () => {
-      const csvContent = `"Email","Full Name","First Name","Last Name","Phone","Employee ID","Access Level","Location","Department","Role","Manager"
+      const csvContent = `"Email","Full Name","First Name","Last Name","Business Phone","Employee ID","Access Level","Location","Department","Role","Manager"
 "john.doe@company.com","John Doe","John","Doe","+65-555-0123","EMP-2024-001","User","Main Office","Engineering","Software Engineer","jane.smith@company.com"
 "jane.smith@company.com","Jane Smith","Jane","Smith","+65-555-0124","EMP-2024-002","Admin","Branch Office","Human Resources","HR Manager",""`;
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -1975,7 +1975,7 @@
           ] }),
           /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
             /* @__PURE__ */ jsxRuntime.jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+            /* @__PURE__ */ jsxRuntime.jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Business Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Business Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsxRuntime.jsx(badge.Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
             importMode === "update" ? /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("p", { children: [
                 "• ",
@@ -2051,7 +2051,7 @@
                 /* @__PURE__ */ jsxRuntime.jsx("strong", { children: "Manager" }),
                 " (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported"
               ] }),
-              /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided" })
+              /* @__PURE__ */ jsxRuntime.jsx("p", { children: "• All other fields (Business Phone, Employee ID, etc.) are optional and will use default values if not provided" })
             ] })
           ] })
         ] })
@@ -11392,7 +11392,7 @@ Thank you`
               {
                 value: phone || "Not provided",
                 fieldKey: "phone",
-                placeholder: "Phone number",
+                placeholder: "Business phone number",
                 onSave,
                 isEditing: editingField === "phone",
                 onEdit,

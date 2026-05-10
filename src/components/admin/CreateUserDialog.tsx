@@ -303,12 +303,12 @@ const handleFullNameChange = (value: string) => {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone"> Business  Phone</Label>
               <Input
                 id="phone"
                 value={newUser.phone}
                 onChange={(e) => updateField('phone', e.target.value)}
-                placeholder="Enter phone number"
+                placeholder="Enter buinsess phone number"
               />
             </div>
             <div className="space-y-2">

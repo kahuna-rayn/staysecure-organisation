@@ -1630,14 +1630,14 @@ const CreateUserDialog = ({
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
           /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-            /* @__PURE__ */ jsx(Label, { htmlFor: "phone", children: "Phone" }),
+            /* @__PURE__ */ jsx(Label, { htmlFor: "phone", children: " Business  Phone" }),
             /* @__PURE__ */ jsx(
               Input,
               {
                 id: "phone",
                 value: newUser.phone,
                 onChange: (e) => updateField("phone", e.target.value),
-                placeholder: "Enter phone number"
+                placeholder: "Enter buinsess phone number"
               }
             )
           ] }),
@@ -1851,7 +1851,7 @@ const ImportUsersDialog = ({ onImportStart }) => {
     multiple: false
   });
   const generateSampleCSV = () => {
-    const csvContent = `"Email","Full Name","First Name","Last Name","Phone","Employee ID","Access Level","Location","Department","Role","Manager"
+    const csvContent = `"Email","Full Name","First Name","Last Name","Business Phone","Employee ID","Access Level","Location","Department","Role","Manager"
 "john.doe@company.com","John Doe","John","Doe","+65-555-0123","EMP-2024-001","User","Main Office","Engineering","Software Engineer","jane.smith@company.com"
 "jane.smith@company.com","Jane Smith","Jane","Smith","+65-555-0124","EMP-2024-002","Admin","Branch Office","Human Resources","HR Manager",""`;
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -2017,7 +2017,7 @@ const ImportUsersDialog = ({ onImportStart }) => {
         ] }),
         /* @__PURE__ */ jsxs("div", { className: "bg-blue-50 border border-blue-200 rounded-lg p-4", children: [
           /* @__PURE__ */ jsx("h4", { className: "font-semibold text-blue-900 mb-2", children: "Available Columns" }),
-          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
+          /* @__PURE__ */ jsx("div", { className: "flex flex-wrap gap-2 mb-4", children: (importMode === "update" ? ["Email", "Full Name", "First Name", "Last Name", "Business Phone", "Employee ID", "Location", "Department", "Role", "Manager"] : ["Email", "Full Name", "First Name", "Last Name", "Business Phone", "Employee ID", "Access Level", "Location", "Department", "Role", "Manager"]).map((column) => /* @__PURE__ */ jsx(Badge, { variant: "outline", className: "text-xs", children: column }, column)) }),
           importMode === "update" ? /* @__PURE__ */ jsxs("div", { className: "text-sm text-blue-800 space-y-1", children: [
             /* @__PURE__ */ jsxs("p", { children: [
               "• ",
@@ -2093,7 +2093,7 @@ const ImportUsersDialog = ({ onImportStart }) => {
               /* @__PURE__ */ jsx("strong", { children: "Manager" }),
               " (optional) - must be specified by email address. If manager email doesn't exist, user will be created but a warning will be reported"
             ] }),
-            /* @__PURE__ */ jsx("p", { children: "• All other fields (Phone, Employee ID, etc.) are optional and will use default values if not provided" })
+            /* @__PURE__ */ jsx("p", { children: "• All other fields (Business Phone, Employee ID, etc.) are optional and will use default values if not provided" })
           ] })
         ] })
       ] })
@@ -11434,7 +11434,7 @@ const ProfileBasicInfo = ({
             {
               value: phone || "Not provided",
               fieldKey: "phone",
-              placeholder: "Phone number",
+              placeholder: "Business phone number",
               onSave,
               isEditing: editingField === "phone",
               onEdit,

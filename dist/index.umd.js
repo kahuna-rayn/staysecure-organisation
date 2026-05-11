@@ -12005,7 +12005,7 @@ Thank you`
         } catch (err) {
           debug.error("[DocumentForm] upload error:", err);
           const rawMsg = (err == null ? void 0 : err.message) ?? "";
-          const description2 = rawMsg === "Failed to fetch" || (err == null ? void 0 : err.name) === "StorageUnknownError" || !rawMsg ? "Upload failed: Make sure the document actually on your local drive and not larger than 10MB. Check your internet connection and try again. If the problem persists, the file may not exist, may be too large or you may not have permission to access it." : rawMsg;
+          const description2 = rawMsg === "Failed to fetch" || (err == null ? void 0 : err.name) === "StorageUnknownError" || !rawMsg ? "Upload failed: Make sure the document is actually on your local drive and not larger than 10MB. Check your internet connection and try again. If the problem persists, the file may not exist, may be too large or you may not have permission to access it." : rawMsg;
           useToast.toast({ title: "Upload failed", description: description2, variant: "destructive" });
           return;
         } finally {

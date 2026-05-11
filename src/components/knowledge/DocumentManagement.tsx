@@ -483,7 +483,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSu
         const rawMsg: string = err?.message ?? '';
         const description =
           rawMsg === 'Failed to fetch' || err?.name === 'StorageUnknownError' || !rawMsg
-            ? 'Upload failed: Make sure the document actually on your local drive and not larger than 10MB. Check your internet connection and try again. If the problem persists, the file may not exist, may be too large or you may not have permission to access it.'
+            ? 'Upload failed: Make sure the document is actually on your local drive and not larger than 10MB. Check your internet connection and try again. If the problem persists, the file may not exist, may be too large or you may not have permission to access it.'
             : rawMsg;
         toast({ title: 'Upload failed', description, variant: 'destructive' });
         return;

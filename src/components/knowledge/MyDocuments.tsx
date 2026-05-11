@@ -287,13 +287,22 @@ const MyDocuments: React.FC<MyDocumentsProps> = ({ userId }) => {
       const { data, error } = await supabase.functions.invoke('get-document-url', {
         body: { document_id: documentId },
       });
-      if (error) throw error;
+      if (error) {
+        // FunctionsHttpError carries the response body in error.context — extract the
+        // human-readable message our edge function set instead of the generic SDK string.
+        let message = 'Could not open document. Please try again.';
+        try {
+          const body = await (error as any).context?.json?.();
+          if (body?.error) message = body.error;
+        } catch { /* ignore parse failure, use fallback */ }
+        throw new Error(message);
+      }
       window.open(data.url, '_blank', 'noopener,noreferrer');
       // Refresh assignments so first_opened_at gates update in the UI
       queryClient.invalidateQueries({ queryKey: ['document-assignments', targetUserId] });
     } catch (err: unknown) {
       toast({
-        title: 'Error',
+        title: 'Document unavailable',
         description: err instanceof Error ? err.message : 'Could not open document',
         variant: 'destructive',
       });

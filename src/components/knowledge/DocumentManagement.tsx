@@ -160,11 +160,20 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
       });
 
       debug.log('[DocumentManagement.handleOpenDocument] invoke result — data:', data, '| error:', error);
-      if (error) throw error;
+      if (error) {
+        // FunctionsHttpError carries the response body in error.context — extract the
+        // human-readable message our edge function set instead of the generic SDK string.
+        let message = 'Could not open document. Please try again.';
+        try {
+          const body = await (error as any).context?.json?.();
+          if (body?.error) message = body.error;
+        } catch { /* ignore parse failure, use fallback */ }
+        throw new Error(message);
+      }
       window.open(data.url, '_blank', 'noopener,noreferrer');
     } catch (err: any) {
       debug.error('[DocumentManagement.handleOpenDocument] error:', err);
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: 'Document unavailable', description: err.message, variant: 'destructive' });
     } finally {
       setOpeningDocId(null);
     }
@@ -471,7 +480,12 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSu
         finalUrl = undefined;
       } catch (err: any) {
         debug.error('[DocumentForm] upload error:', err);
-        toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+        const rawMsg: string = err?.message ?? '';
+        const description =
+          rawMsg === 'Failed to fetch' || err?.name === 'StorageUnknownError' || !rawMsg
+            ? 'Upload failed: Make sure the document actually on your local drive and not larger than 10MB. Check your internet connection and try again. If the problem persists, the file may not exist, may be too large or you may not have permission to access it.'
+            : rawMsg;
+        toast({ title: 'Upload failed', description, variant: 'destructive' });
         return;
       } finally {
         setIsUploading(false);

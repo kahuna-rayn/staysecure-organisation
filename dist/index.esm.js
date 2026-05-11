@@ -8609,6 +8609,7 @@ const MyDocuments = ({ userId }) => {
     resetCompletionMutation.mutate(payload);
   };
   const handleOpenDocument = async (documentId, url, fileName) => {
+    var _a, _b;
     if (!fileName && url) {
       window.open(url, "_blank", "noopener,noreferrer");
       if (isOwnDocuments) {
@@ -8622,12 +8623,20 @@ const MyDocuments = ({ userId }) => {
       const { data, error } = await supabase2.functions.invoke("get-document-url", {
         body: { document_id: documentId }
       });
-      if (error) throw error;
+      if (error) {
+        let message2 = "Could not open document. Please try again.";
+        try {
+          const body = await ((_b = (_a = error.context) == null ? void 0 : _a.json) == null ? void 0 : _b.call(_a));
+          if (body == null ? void 0 : body.error) message2 = body.error;
+        } catch {
+        }
+        throw new Error(message2);
+      }
       window.open(data.url, "_blank", "noopener,noreferrer");
       queryClient.invalidateQueries({ queryKey: ["document-assignments", targetUserId] });
     } catch (err) {
       toast({
-        title: "Error",
+        title: "Document unavailable",
         description: err instanceof Error ? err.message : "Could not open document",
         variant: "destructive"
       });
@@ -11774,7 +11783,7 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
     }
   });
   const handleOpenDocument = async (doc) => {
-    var _a;
+    var _a, _b, _c;
     if (!doc.file_name && doc.url) {
       window.open(doc.url, "_blank", "noopener,noreferrer");
       return;
@@ -11791,11 +11800,19 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
         body: { document_id: doc.document_id }
       });
       debug.log("[DocumentManagement.handleOpenDocument] invoke result — data:", data, "| error:", error);
-      if (error) throw error;
+      if (error) {
+        let message2 = "Could not open document. Please try again.";
+        try {
+          const body = await ((_c = (_b = error.context) == null ? void 0 : _b.json) == null ? void 0 : _c.call(_b));
+          if (body == null ? void 0 : body.error) message2 = body.error;
+        } catch {
+        }
+        throw new Error(message2);
+      }
       window.open(data.url, "_blank", "noopener,noreferrer");
     } catch (err) {
       debug.error("[DocumentManagement.handleOpenDocument] error:", err);
-      toast({ title: "Error", description: err.message, variant: "destructive" });
+      toast({ title: "Document unavailable", description: err.message, variant: "destructive" });
     } finally {
       setOpeningDocId(null);
     }
@@ -12029,7 +12046,9 @@ const DocumentForm = ({ supabase: supabase2, initialData, onSubmit, isSubmitting
         finalUrl = void 0;
       } catch (err) {
         debug.error("[DocumentForm] upload error:", err);
-        toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+        const rawMsg = (err == null ? void 0 : err.message) ?? "";
+        const description2 = rawMsg === "Failed to fetch" || (err == null ? void 0 : err.name) === "StorageUnknownError" || !rawMsg ? "Upload failed: Make sure the document actually on your local drive and not larger than 10MB. Check your internet connection and try again. If the problem persists, the file may not exist, may be too large or you may not have permission to access it." : rawMsg;
+        toast({ title: "Upload failed", description: description2, variant: "destructive" });
         return;
       } finally {
         setIsUploading(false);

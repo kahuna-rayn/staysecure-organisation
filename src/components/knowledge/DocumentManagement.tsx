@@ -72,7 +72,8 @@ const DocumentManagement: React.FC<DocumentManagementProps> = ({ onNavigateToAss
       const { data, error } = await supabase
         .from('documents')
         .select('*')
-        .order('created_at', { ascending: false });
+        .order('title', { ascending: true })
+        .order('created_at', { ascending: true });
 
       if (error) throw error;
       return data as Document[];
@@ -536,15 +537,20 @@ const DocumentForm: React.FC<DocumentFormProps> = ({ supabase, initialData, onSu
             list="category-options"
             value={category}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCategory(e.target.value)}
-            placeholder="e.g., Policy, Handbook"
+            placeholder="e.g., policy, handbook"
           />
           <datalist id="category-options">
-            <option value="policy" />
+            <option value="act" />
+            <option value="framework" />
+            <option value="guide" />
             <option value="handbook" />
+            <option value="legal" />
+            <option value="other" />
+            <option value="policy" />
             <option value="procedure" />
-            <option value="guideline" />
-            <option value="template" />
             <option value="report" />
+            <option value="standard" />
+            <option value="template" />
           </datalist>
         </div>
         <div>

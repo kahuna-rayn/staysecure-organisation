@@ -933,9 +933,8 @@ const OrganisationProfile: React.FC = () => {
               </div>
             </div>
 
-            {/* Device Management — Govern only */}
-            {!isLearnMode && (
-              <>
+            {/* Device Management */}
+            <>
                 <Separator />
 
                 <div className="space-y-4">
@@ -1086,7 +1085,6 @@ const OrganisationProfile: React.FC = () => {
                   )}
                 </div>
               </>
-            )}
 
           </CardContent>
         </Card>

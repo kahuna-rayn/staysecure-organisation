@@ -6513,7 +6513,7 @@ const OrganisationProfile = () => {
             !isSuperAdmin && /* @__PURE__ */ jsx("p", { className: "text-xs text-muted-foreground", children: "Contact your RAYN administrator to update the tenant ID." })
           ] })
         ] }),
-        !isLearnMode && /* @__PURE__ */ jsxs(Fragment, { children: [
+        /* @__PURE__ */ jsxs(Fragment, { children: [
           /* @__PURE__ */ jsx(Separator, {}),
           /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
@@ -11733,7 +11733,7 @@ const DocumentManagement = ({ onNavigateToAssignments: _onNavigateToAssignments 
   const { data: documents, isLoading } = useQuery({
     queryKey: ["documents"],
     queryFn: async () => {
-      const { data, error } = await supabase2.from("documents").select("*").order("created_at", { ascending: false });
+      const { data, error } = await supabase2.from("documents").select("*").order("title", { ascending: true }).order("created_at", { ascending: true });
       if (error) throw error;
       return data;
     }
@@ -12101,16 +12101,21 @@ const DocumentForm = ({ supabase: supabase2, initialData, onSubmit, isSubmitting
             list: "category-options",
             value: category,
             onChange: (e) => setCategory(e.target.value),
-            placeholder: "e.g., Policy, Handbook"
+            placeholder: "e.g., policy, handbook"
           }
         ),
         /* @__PURE__ */ jsxs("datalist", { id: "category-options", children: [
-          /* @__PURE__ */ jsx("option", { value: "policy" }),
+          /* @__PURE__ */ jsx("option", { value: "act" }),
+          /* @__PURE__ */ jsx("option", { value: "framework" }),
+          /* @__PURE__ */ jsx("option", { value: "guide" }),
           /* @__PURE__ */ jsx("option", { value: "handbook" }),
+          /* @__PURE__ */ jsx("option", { value: "legal" }),
+          /* @__PURE__ */ jsx("option", { value: "other" }),
+          /* @__PURE__ */ jsx("option", { value: "policy" }),
           /* @__PURE__ */ jsx("option", { value: "procedure" }),
-          /* @__PURE__ */ jsx("option", { value: "guideline" }),
-          /* @__PURE__ */ jsx("option", { value: "template" }),
-          /* @__PURE__ */ jsx("option", { value: "report" })
+          /* @__PURE__ */ jsx("option", { value: "report" }),
+          /* @__PURE__ */ jsx("option", { value: "standard" }),
+          /* @__PURE__ */ jsx("option", { value: "template" })
         ] })
       ] }),
       /* @__PURE__ */ jsxs("div", { children: [

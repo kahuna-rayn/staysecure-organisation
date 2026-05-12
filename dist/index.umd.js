@@ -6471,7 +6471,7 @@
               !isSuperAdmin && /* @__PURE__ */ jsxRuntime.jsx("p", { className: "text-xs text-muted-foreground", children: "Contact your RAYN administrator to update the tenant ID." })
             ] })
           ] }),
-          !isLearnMode && /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, { children: [
             /* @__PURE__ */ jsxRuntime.jsx(separator.Separator, {}),
             /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "space-y-4", children: [
               /* @__PURE__ */ jsxRuntime.jsxs("div", { className: "flex items-center justify-between", children: [
@@ -11691,7 +11691,7 @@ Thank you`
     const { data: documents, isLoading } = reactQuery.useQuery({
       queryKey: ["documents"],
       queryFn: async () => {
-        const { data, error } = await supabase.from("documents").select("*").order("created_at", { ascending: false });
+        const { data, error } = await supabase.from("documents").select("*").order("title", { ascending: true }).order("created_at", { ascending: true });
         if (error) throw error;
         return data;
       }
@@ -12059,16 +12059,21 @@ Thank you`
               list: "category-options",
               value: category,
               onChange: (e) => setCategory(e.target.value),
-              placeholder: "e.g., Policy, Handbook"
+              placeholder: "e.g., policy, handbook"
             }
           ),
           /* @__PURE__ */ jsxRuntime.jsxs("datalist", { id: "category-options", children: [
-            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "policy" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "act" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "framework" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "guide" }),
             /* @__PURE__ */ jsxRuntime.jsx("option", { value: "handbook" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "legal" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "other" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "policy" }),
             /* @__PURE__ */ jsxRuntime.jsx("option", { value: "procedure" }),
-            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "guideline" }),
-            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "template" }),
-            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "report" })
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "report" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "standard" }),
+            /* @__PURE__ */ jsxRuntime.jsx("option", { value: "template" })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntime.jsxs("div", { children: [
